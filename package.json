@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.5.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -20,6 +21,10 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "prisma": "^6.5.0"
+  },
+  "prisma": {
+    "schema": "src/utils/prisma/schema"
   }
 }
