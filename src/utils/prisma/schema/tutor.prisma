@@ -1,16 +1,17 @@
 model Tutor {
     id           String   @id @default(uuid(7))
     userId       String   @unique
-    birthDate    DateTime
-    gender       Gender
-    phone        String
-    subjects     String
-    status       StudyStatus
-    school       String      // Asal kampus
-    teachLevel   SchoolLevel
-    teachingDays String
-    teachingTimes String
-    description  String
+    birthDate    DateTime?
+    gender       Gender?
+    phone        String?
+    subjects     String?
+    status       StudyStatus?
+    major        String?
+    school       String?      // Asal kampus
+    teachLevel   SchoolLevel?
+    teachingDays String?
+    teachingTimes String?
+    description  String?
     photo        String?
 
     user User @relation(fields: [userId], references: [id])

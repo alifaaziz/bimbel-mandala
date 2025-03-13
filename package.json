@@ -6,17 +6,21 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development concurrently \"nodemon src/index.js\"",
     "db:migrate": "dotenv -e .env -- prisma migrate dev",
-    "db:reset": "dotenv -e .env.local -- prisma migrate reset --force"
+    "db:reset": "dotenv -e .env -- prisma migrate reset --force"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "bcrypt": "^5.1.1",
     "cross-env": "^7.0.3",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "dotenv-cli": "^8.0.0",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "pino": "^9.6.0",
     "pino-http": "^10.4.0",

@@ -9,6 +9,9 @@ function main() {
   const app = express();
   const server = createServer(app);
 
+  app.use(express.json()); // HARUS ADA
+  app.use(express.urlencoded({ extended: true }));
+
   loaders(app, server);
   routes(app);
 
