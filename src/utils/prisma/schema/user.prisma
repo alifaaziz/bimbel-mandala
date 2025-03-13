@@ -4,7 +4,7 @@ model User{
     email      String   @unique
     password   String
     role       RoleUser @default(siswa)
-    verified   Boolean
+    verified   Boolean  @default(false)
 
     otps            Otp[]
     passwordResets  PasswordReset[]

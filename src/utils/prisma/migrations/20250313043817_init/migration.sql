@@ -69,7 +69,7 @@ CREATE TABLE `users` (
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `role` ENUM('siswa', 'tutor', 'admin') NOT NULL DEFAULT 'siswa',
-    `verified` BOOLEAN NOT NULL,
+    `verified` BOOLEAN NOT NULL DEFAULT false,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL,
 
