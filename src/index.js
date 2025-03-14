@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import loaders from './loaders/index.js';
 import routes from './routes/index.js';
+import errorMiddleware from './middlewares/error.js';
 import { appEnv } from './utils/env.js';
 import { logger } from './loaders/pino.js';
 
@@ -9,11 +10,11 @@ function main() {
   const app = express();
   const server = createServer(app);
 
-  app.use(express.json()); // HARUS ADA
-  app.use(express.urlencoded({ extended: true }));
-
   loaders(app, server);
   routes(app);
+
+  // Middleware penanganan kesalahan harus ditempatkan setelah semua rute
+  errorMiddleware(app);
 
   server.listen(appEnv.PORT, () => {
     logger.info(`🚀 Server running on port http://localhost:${appEnv.PORT}`);

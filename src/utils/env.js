@@ -9,7 +9,8 @@ logger.info('✅ Environment variables loaded from .env');
 
 // Schema validasi environment variables
 const envSchema = z.object({
-  PORT: validStringSchema
+  PORT: validStringSchema,
+  VALID_ORIGINS: validStringSchema
 });
 
 /** @typedef {z.infer<typeof envSchema>} EnvSchema */

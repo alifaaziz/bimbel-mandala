@@ -5,25 +5,45 @@ import { OtpService } from './otp.js';
 
 /** @param {ValidCreateUserPayload} payload */
 async function createUser(payload) {
-    console.log('Received payload:', payload, null, 2); // Log the payload
-    if (!payload || !payload.name || !payload.email || !payload.password || !payload.role) {
-        throw new HttpError(400, { message: 'Invalid payload' });
-    }
-
     const { name, email, password, role } = payload;
     const encryptedPassword = await AuthService.hashPassword(password);
 
-    const existingUser = await prisma.user.findFirst({
-        where: { OR: [{ email }], verified: true }
-    });
+    /** @type {Prisma.UserCreateInput} */
+    const parsedUserWithEncryptedPassword = {
+        ...payload,
+        password: encryptedPassword
+    };
 
-    if (existingUser) {
-        throw new HttpError(409, { message: 'Email already exists' });
+    const verifiedUser = await prisma.user.findFirst({
+        where: {
+          email,
+          verified: true
+        }
+      });
+
+    if (verifiedUser) {
+        let errorMessage = 'Email already exists';
+        throw new HttpError(409, { message: errorMessage });
     }
 
-    const user = await prisma.user.create({
-        data: { name, email, password: encryptedPassword, verified: false, role }
-    });
+    let user = null;
+
+    const unverifiedUser = await prisma.user.findFirst({
+        where: {
+          email ,
+          verified: false
+        }
+      });
+
+    if (unverifiedUser) {
+        let errorMessage = 'Email already exists but not verified';
+        throw new HttpError(409, { message: errorMessage });
+    } else {
+        const newUser = await prisma.user.create({
+            data: parsedUserWithEncryptedPassword
+        });
+        user = newUser;
+    }
 
     if (role === 'siswa') {
         await prisma.student.create({
