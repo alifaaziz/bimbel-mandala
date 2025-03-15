@@ -4,7 +4,7 @@ import { appEnv } from '../utils/env.js';
 import { prisma } from '../utils/db.js';
 import { HttpError } from '../utils/error.js';
 import { generateRandomToken } from '../utils/helper.js';
-// import { sendResetPasswordEmail } from '../utils/emails/core/password-reset.js';
+import { sendResetPasswordEmail } from '../utils/emails/core/password-reset.js';
 
 /** @import {Request} from 'express' */
 /** @import {ValidLoginPayload, ValidResetPasswordPayload} from '../middlewares/validation/auth.js' */
@@ -18,8 +18,11 @@ async function login(payload) {
       email,
       verified: true
     },
-    omit: {
-      password: false
+    select: {
+      id: true,
+      email: true,
+      password: true,
+      name: true
     }
   });
 
@@ -143,11 +146,11 @@ async function sendPasswordResetEmail(email) {
       }
     });
 
-    // await sendResetPasswordEmail({
-    //   name: user.name,
-    //   email: user.email,
-    //   token: newVerifyResetPassword.token
-    // });
+    await sendResetPasswordEmail({
+      name: user.name,
+      email: user.email,
+      token: newVerifyResetPassword.token
+    });
   });
 }
 
@@ -195,7 +198,7 @@ async function resetPassword({ token, password }) {
       data: {
         userId: resetPasswordData.userId,
         name: 'Notifikasi',
-        description: 'Password berhasil diganti!'
+        desciption: 'Password berhasil diganti!' // Perbaiki kesalahan pengetikan di sini
       }
     });
   });

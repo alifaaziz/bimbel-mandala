@@ -10,9 +10,10 @@ model User{
     passwordResets  PasswordReset[]
     tutors          Tutor[]
     students        Student[]
+    notifications   Notification[]
 
     createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
-    updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamp()
+    updatedAt  DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
 
     @@map("users")
 }

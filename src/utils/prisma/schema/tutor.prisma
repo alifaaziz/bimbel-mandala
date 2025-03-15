@@ -1,6 +1,6 @@
 model Tutor {
     id           String   @id @default(uuid(7))
-    userId       String   @unique
+    userId       String   @unique @map("user_id")
     birthDate    DateTime?
     gender       Gender?
     phone        String?
@@ -8,16 +8,16 @@ model Tutor {
     status       StudyStatus?
     major        String?
     school       String?      // Asal kampus
-    teachLevel   SchoolLevel?
-    teachingDays String?
-    teachingTimes String?
+    teachLevel   SchoolLevel?  @map("teach_level")
+    teachingDays String?  @map("teaching_days")
+    teachingTimes String? @map("teaching_times")
     description  String?
     photo        String?
 
     user User @relation(fields: [userId], references: [id])
 
     createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
-    updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp()
+    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
 
     @@map("tutors")
 }

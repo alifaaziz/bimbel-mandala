@@ -38,7 +38,7 @@ async function register(req, res) {
  */
 async function sendPasswordResetEmail(req, res) {
     await AuthService.sendPasswordResetEmail(req.body.email);
-    res.status(200).json({ message: 'Password reset email sent if email exists' });
+    res.status(200).json({ message: 'Password reset has been sent in your email' });
 }
 
 /**

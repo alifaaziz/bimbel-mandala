@@ -1,15 +1,15 @@
-model Otp {
+model Notification {
     id        String   @id @default(uuid(7))
-    otp       String
-    used      Boolean  @default(false)
-    expiredAt DateTime @map("expired_at") @db.Timestamp()
+    name       String
+    viewed      Boolean  @default(false)
+    desciption  String?
 
     userId String @map("user_id")
 
     user User @relation(fields: [userId], references: [id])
 
     createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
-    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp()
+    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
 
-    @@map("otps")
+    @@map("notifications")
 }
