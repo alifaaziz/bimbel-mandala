@@ -1,9 +1,7 @@
 import { prisma } from '../utils/db.js';
-// import { sendOtpEmail } from '../utils/emails/core/otp.js';
 import { HttpError } from '../utils/error.js';
+import { sendOtpEmail } from '../utils/emails/core/otp.js';
 import { generateRandomOTP } from '../utils/helper.js';
-
-// /** @import {ValidOtpPayload} from '../middlewares/validation/otp.js' */
 
 /** @param {string} name */
 /** @param {string} email */
@@ -13,24 +11,24 @@ async function sendUserVerificationOtp(name, email, userId) {
     await tx.otp.deleteMany({ where: { userId } });
 
     const otpCode = generateRandomOTP();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // Expire in 5 mins
+    const expiredAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    await tx.otp.create({ data: { userId, code: otpCode, expiresAt } });
-    // await sendOtpEmail({ name, email, otpCode });
+    await tx.otp.create({ data: { userId, otp: otpCode, expiredAt } });
+    await sendOtpEmail(email, otpCode, name);
   });
 }
 
 /** @param {ValidOtpPayload} payload */
-async function verifyOtp({ email, code }) {
-  const otp = await prisma.otp.findFirst({
-    where: { user: { email }, code, expiresAt: { gte: new Date() } }
+async function verifyOtp({ email, otp }) {
+  const otpRecord = await prisma.otp.findFirst({
+    where: { user: { email }, otp, expiredAt: { gte: new Date() }, used: false }
   });
 
-  if (!otp) throw new HttpError(400, { message: 'Invalid or expired OTP' });
+  if (!otpRecord) throw new HttpError(400, { message: 'Invalid or expired OTP' });
 
   await prisma.$transaction(async (tx) => {
-    await tx.otp.deleteMany({ where: { userId: otp.userId } });
-    await tx.user.update({ where: { id: otp.userId }, data: { verified: true } });
+    await tx.otp.updateMany({ where: { userId: otpRecord.userId }, data: { used: true } });
+    await tx.user.update({ where: { id: otpRecord.userId }, data: { verified: true } });
   });
 
   return { message: 'OTP verified successfully' };

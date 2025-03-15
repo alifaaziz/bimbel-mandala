@@ -13,6 +13,7 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
 /**
  * @param {Request<{ id: string }>} req
  * @param {Response} res
+ * 
  */
 async function login(req, res) {
     const userWithToken = await AuthService.login(req.body);
@@ -73,8 +74,8 @@ async function sendUserVerificationOtp(_req, res) {
  * @param {Response<unknown, { user: User }>} res
  */
 async function verifyUserVerificationOtp(req, res) {
-    const payload = req.body;
-    await OtpService.verifyUserVerificationOtp(payload);
+    const { email, otp } = req.body;
+    await OtpService.verifyOtp({ email, otp });
     res.status(200).json({ message: 'OTP verified successfully' });
 }
 

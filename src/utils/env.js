@@ -10,7 +10,8 @@ logger.info('✅ Environment variables loaded from .env');
 // Schema validasi environment variables
 const envSchema = z.object({
   PORT: validStringSchema,
-  VALID_ORIGINS: validStringSchema
+  VALID_ORIGINS: validStringSchema,
+  JWT_SECRET: validStringSchema
 });
 
 /** @typedef {z.infer<typeof envSchema>} EnvSchema */

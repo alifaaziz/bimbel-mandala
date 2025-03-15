@@ -17,7 +17,5 @@ export default (app) => {
 
     router.post('/password-reset/confirm', AuthController.resetPassword);
 
-    router.post('/otp', AuthController.sendUserVerificationOtp);
-
     router.post('/otp/verify', AuthController.verifyUserVerificationOtp);
 };

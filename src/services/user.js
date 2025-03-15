@@ -55,7 +55,7 @@ async function createUser(payload) {
         });
     }
 
-    // await OtpService.sendUserVerificationOtp(user.name, user.email, user.id);
+    await OtpService.sendUserVerificationOtp(user.name, user.email, user.id);
     return user;
 }
 
