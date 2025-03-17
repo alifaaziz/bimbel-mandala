@@ -17,7 +17,7 @@ function main() {
   errorMiddleware(app);
 
   server.listen(appEnv.PORT, () => {
-    logger.info(`🚀 Server running on port http://localhost:${appEnv.PORT}`);
+    logger.info(`🚀 Server running on http://localhost:${appEnv.PORT}`);
   });
 
   // Handle server error

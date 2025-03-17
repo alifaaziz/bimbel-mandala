@@ -23,17 +23,17 @@ async function createUser(req, res) {
     res.status(201).json({ data: user });
 }
 
-/**
- * @param {Request<unknown, unknown, ValidUpdateUserPayload>} req
- * @param {Response<unknown, { user: User }>} res
- */
-async function updateCurrentUser(req, res) {
-    await UserService.updateUser(res.locals.user.id, req.body);
-    res.status(200).json({ message: 'User updated successfully' });
-}
+// /**
+//  * @param {Request<unknown, unknown, ValidUpdateUserPayload>} req
+//  * @param {Response<unknown, { user: User }>} res
+//  */
+// async function updateCurrentUser(req, res) {
+//     await UserService.updateUser(res.locals.user.id, req.body);
+//     res.status(200).json({ message: 'User updated successfully' });
+// }
 
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
-    updateCurrentUser: asyncWrapper(updateCurrentUser)
+    // updateCurrentUser: asyncWrapper(updateCurrentUser)
 };

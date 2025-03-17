@@ -88,6 +88,15 @@ async function verifyUserVerificationOtp(req, res) {
     res.status(200).json({ message: 'OTP verified successfully' });
 }
 
+/**
+ * @param {Request} req
+ * @param {Response} res
+ */
+async function googleOAuth(req, res) {
+    const userWithToken = await AuthService.googleOAuth(req.user);
+    res.status(200).json({ data: userWithToken });
+}
+
 export const AuthController = {
     login: asyncWrapper(login),
     register: asyncWrapper(register),

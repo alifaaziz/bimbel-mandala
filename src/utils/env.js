@@ -11,7 +11,12 @@ logger.info('✅ Environment variables loaded from .env');
 const envSchema = z.object({
   PORT: validStringSchema,
   VALID_ORIGINS: validStringSchema,
-  JWT_SECRET: validStringSchema
+  JWT_SECRET: validStringSchema,
+  BASE_URL: validStringSchema,
+  GOOGLE_CLIENT_ID: validStringSchema,
+  GOOGLE_CLIENT_SECRET: validStringSchema,
+  GOOGLE_CALLBACK_URL: validStringSchema,
+  DATABASE_URL: validStringSchema,
 });
 
 /** @typedef {z.infer<typeof envSchema>} EnvSchema */

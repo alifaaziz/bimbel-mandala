@@ -22,7 +22,8 @@ async function login(payload) {
       id: true,
       email: true,
       password: true,
-      name: true
+      name: true,
+      googleId: true
     }
   });
 

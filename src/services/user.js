@@ -5,8 +5,8 @@ import { OtpService } from './otp.js';
 
 /** @param {ValidCreateUserPayload} payload */
 async function createUser(payload) {
-    const { name, email, password, role } = payload;
-    const encryptedPassword = await AuthService.hashPassword(password);
+    const { name, email, password, role, googleId } = payload;
+    const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
 
     /** @type {Prisma.UserCreateInput} */
     const parsedUserWithEncryptedPassword = {
@@ -30,7 +30,7 @@ async function createUser(payload) {
 
     const unverifiedUser = await prisma.user.findFirst({
         where: {
-          email ,
+          email,
           verified: false
         }
       });
@@ -59,7 +59,6 @@ async function createUser(payload) {
     return user;
 }
 
-/** @param {ValidCreateUserPayload} payload */
 /** @param {ValidCreateUserPayload} payload */
 async function createAdminUser(payload) {
     const { name, email, password } = payload;
