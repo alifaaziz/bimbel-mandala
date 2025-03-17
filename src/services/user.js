@@ -59,4 +59,36 @@ async function createUser(payload) {
     return user;
 }
 
-export const UserService = { createUser };
+/** @param {ValidCreateUserPayload} payload */
+/** @param {ValidCreateUserPayload} payload */
+async function createAdminUser(payload) {
+    const { name, email, password } = payload;
+    const encryptedPassword = await AuthService.hashPassword(password);
+
+    const parsedUserWithEncryptedPassword = {
+        ...payload,
+        password: encryptedPassword
+    };
+
+    let user = await prisma.user.findFirst({
+        where: {
+            email
+        }
+    });
+
+    if (user) {
+        let errorMessage = 'Email already exists';
+        throw new HttpError(409, { message: errorMessage });
+    }
+
+    const adminUser = await prisma.user.create({
+        data: {
+            ...parsedUserWithEncryptedPassword,
+            role: 'admin'
+        }
+    });
+    user = adminUser;
+    return user;
+}
+
+export const UserService = { createUser, createAdminUser };

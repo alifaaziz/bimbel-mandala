@@ -33,6 +33,15 @@ async function register(req, res) {
 }
 
 /**
+ * @param {Request<unknown, unknown, ValidCreateUserPayload>} req
+ * @param {Response} res
+ */
+async function createAdminUser(req, res) {
+    const adminUser = await UserService.createAdminUser(req.body);
+    res.status(201).json({ data: adminUser });
+}
+
+/**
  * @param {Request<unknown, unknown, ValidEmailPayload>} req
  * @param {Response} res
  */
@@ -82,6 +91,7 @@ async function verifyUserVerificationOtp(req, res) {
 export const AuthController = {
     login: asyncWrapper(login),
     register: asyncWrapper(register),
+    createAdminUser: asyncWrapper(createAdminUser),
     sendPasswordResetEmail: asyncWrapper(sendPasswordResetEmail),
     resetPassword: asyncWrapper(resetPassword),
     verifyPasswordResetToken: asyncWrapper(verifyPasswordResetToken),

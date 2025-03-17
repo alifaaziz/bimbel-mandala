@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.js';
+import { authMiddleware } from '../middlewares/auth.js';
 
 /** @param {Router} app */
 export default (app) => {
@@ -7,12 +8,7 @@ export default (app) => {
 
     app.use('/users', router);
 
-    // Create a new user
-    router.post('/', UserController.createUser);
+    router.get('/me',  authMiddleware.isAuthorized, UserController.getCurrentUser);
 
-    // Get current user
-    router.get('/me', UserController.getCurrentUser);
-
-    // Update current user
-    router.patch('/me', UserController.updateCurrentUser);
+    // router.patch('/me', UserController.updateCurrentUser);
 };
