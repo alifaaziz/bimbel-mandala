@@ -34,9 +34,22 @@ async function login(payload) {
     }
   });
 
+  const notVerifiedUser = await prisma.user.findUnique({
+    where: {
+      email,
+      verified: false
+    }
+  });
+
+  if (notVerifiedUser) {
+    throw new HttpError(401, {
+      message: 'Your email is not verified, please check your email'
+    });
+  }
+
   if (!user) {
     throw new HttpError(401, {
-      message: 'Email or password is incorrect, please try again'
+      message: 'Your email is not registered, please sign up'
     });
   }
 

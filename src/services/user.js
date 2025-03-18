@@ -17,7 +17,7 @@ import { OtpService } from './otp.js';
  * @returns {Promise<Object>} The new user object.
  * @throws {HttpError} Throws an error if the user creation fails.
  */
-async function createUser(payload) {
+async function createStudent(payload) {
     const { name, email, password, role, googleId } = payload;
     const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
 
@@ -57,39 +57,40 @@ async function createUser(payload) {
         user = newUser;
     }
 
-    if (role === 'siswa') {
-        await prisma.student.create({
-            data: { userId: user.id }
-        });
-    } else if (role === 'tutor') {
-        await prisma.tutor.create({
-            data: { userId: user.id }
-        });
-    }
+    await prisma.student.create({
+        data: { userId: user.id }
+    });
 
     await OtpService.sendUserVerificationOtp(user.name, user.email, user.id);
     return user;
 }
 
 /**
- * Creates a new admin user.
- *
+ * Creates a new user with a role.
+ * 
  * @async
- * @function createAdminUser
+ * @function createUserWithRole
  * @param {Object} payload - The user payload.
  * @param {string} payload.name - The user's name.
  * @param {string} payload.email - The user's email.
  * @param {string} payload.password - The user's password.
- * @returns {Promise<Object>} The new admin user object.
+ * @param {string} payload.role - The user's role.
+ * @param {Object} payload.tutorData - The tutor data.
+ * @returns {Promise<Object>} The new user object.
  * @throws {HttpError} Throws an error if the user creation fails.
  */
-async function createAdminUser(payload) {
-    const { name, email, password } = payload;
+async function createUserWithRole(payload) {
+    if (payload.role !== 'tutor') {
+        throw new HttpError(400, { message: 'Invalid role for this function' });
+    }
+    const { name, email, password, role, ...tutorData } = payload;
     const encryptedPassword = await AuthService.hashPassword(password);
 
     const parsedUserWithEncryptedPassword = {
-        ...payload,
-        password: encryptedPassword
+        name,
+        email,
+        password: encryptedPassword,
+        verified: true
     };
 
     let user = await prisma.user.findFirst({
@@ -103,14 +104,25 @@ async function createAdminUser(payload) {
         throw new HttpError(409, { message: errorMessage });
     }
 
-    const adminUser = await prisma.user.create({
+    const newUser = await prisma.user.create({
         data: {
             ...parsedUserWithEncryptedPassword,
-            role: 'admin'
+            role
         }
     });
-    user = adminUser;
+
+    user = newUser;
+
+    if (role === 'tutor') {
+        await prisma.tutor.create({
+            data: {
+                userId: user.id,
+                ...tutorData,
+            }
+        });
+    }
+
     return user;
 }
 
-export const UserService = { createUser, createAdminUser };
+export const UserService = { createStudent, createUserWithRole };

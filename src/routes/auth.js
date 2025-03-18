@@ -11,7 +11,7 @@ export default (app) => {
 
     router.post('/login', AuthController.login);
 
-    router.post('/admin', AuthController.createAdminUser);
+    router.post('/add-user', AuthController.createUserWithRole);
 
     router.post('/password-reset', AuthController.sendPasswordResetEmail);
 

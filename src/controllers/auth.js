@@ -32,7 +32,7 @@ async function login(req, res) {
  */
 async function register(req, res) {
     console.log('Received request body:', req.body); 
-    await UserService.createUser(req.body);
+    await UserService.createStudent(req.body);
     res.status(200).json({
         data: { message: 'Register success, waiting for OTP verification' }
     });
@@ -41,7 +41,7 @@ async function register(req, res) {
 /**
  * Creates a new admin user.
  * 
- * @function createAdminUser
+ * @function createUserWithRole
  * @async
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
@@ -49,8 +49,8 @@ async function register(req, res) {
  * @returns {Promise<void>} Resolves with no value.
  * @throws {Error} Throws an error if admin user creation fails.
  */
-async function createAdminUser(req, res) {
-    const adminUser = await UserService.createAdminUser(req.body);
+async function createUserWithRole(req, res) {
+    const adminUser = await UserService.createUserWithRole(req.body);
     res.status(201).json({ data: adminUser });
 }
 
@@ -139,7 +139,7 @@ async function verifyUserVerificationOtp(req, res) {
 export const AuthController = {
     login: asyncWrapper(login),
     register: asyncWrapper(register),
-    createAdminUser: asyncWrapper(createAdminUser),
+    createUserWithRole: asyncWrapper(createUserWithRole),
     sendPasswordResetEmail: asyncWrapper(sendPasswordResetEmail),
     resetPassword: asyncWrapper(resetPassword),
     verifyPasswordResetToken: asyncWrapper(verifyPasswordResetToken),
