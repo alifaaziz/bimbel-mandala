@@ -19,12 +19,6 @@ const envSchema = z.object({
   DATABASE_URL: validStringSchema,
 });
 
-/** @typedef {z.infer<typeof envSchema>} EnvSchema */
-
-/**
- * Memvalidasi environment variables sesuai dengan `envSchema`
- * @returns {EnvSchema}
- */
 function validateEnv() {
   const PORT = process.env.PORT ?? process.env.HOST_PORT;
 
@@ -35,7 +29,7 @@ function validateEnv() {
     throw new Error(`❌ Environment validation error: ${error.message}`);
   }
 
-  return /** @type {EnvSchema} */ (data);
+  return (data);
 }
 
 // Eksekusi validasi environment variables

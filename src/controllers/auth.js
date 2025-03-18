@@ -3,17 +3,16 @@ import { AuthService } from '../services/auth.js';
 import { OtpService } from '../services/otp.js';
 import { asyncWrapper } from '../utils/asyncWrapper.js';
 
-/** @import {Request,Response} from 'express' */
-/** @import {User} from '@prisma/client' */
-/** @import {ValidOtpPayload} from '../middlewares/validation/otp.js' */
-/** @import {ValidCreateUserPayload} from '../middlewares/validation/user.js' */
-/** @import {ValidEmailPayload} from '../middlewares/validation/common.js' */
-/** @import {ValidResetPasswordPayload} from '../middlewares/validation/auth.js' */
-
 /**
- * @param {Request<{ id: string }>} req
- * @param {Response} res
+ * Logs in a user.
  * 
+ * @function login
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if login fails.
  */
 async function login(req, res) {
     const userWithToken = await AuthService.login(req.body);
@@ -21,8 +20,15 @@ async function login(req, res) {
 }
 
 /**
- * @param {Request<unknown, unknown, ValidCreateUserPayload>} req
- * @param {Response} res
+ * Registers a new user.
+ * 
+ * @function register
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if registration fails.
  */
 async function register(req, res) {
     console.log('Received request body:', req.body); 
@@ -33,8 +39,15 @@ async function register(req, res) {
 }
 
 /**
- * @param {Request<unknown, unknown, ValidCreateUserPayload>} req
- * @param {Response} res
+ * Creates a new admin user.
+ * 
+ * @function createAdminUser
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if admin user creation fails.
  */
 async function createAdminUser(req, res) {
     const adminUser = await UserService.createAdminUser(req.body);
@@ -42,8 +55,15 @@ async function createAdminUser(req, res) {
 }
 
 /**
- * @param {Request<unknown, unknown, ValidEmailPayload>} req
- * @param {Response} res
+ * Sends a password reset email to the user.
+ * 
+ * @function sendPasswordResetEmail
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if sending email fails.
  */
 async function sendPasswordResetEmail(req, res) {
     await AuthService.sendPasswordResetEmail(req.body.email);
@@ -51,8 +71,15 @@ async function sendPasswordResetEmail(req, res) {
 }
 
 /**
- * @param {Request<unknown, unknown, ValidResetPasswordPayload>} req
- * @param {Response} res
+ * Resets the user's password.
+ * 
+ * @function resetPassword
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if password reset fails.
  */
 async function resetPassword(req, res) {
     await AuthService.resetPassword(req.body);
@@ -60,8 +87,15 @@ async function resetPassword(req, res) {
 }
 
 /**
- * @param {Request<{ token: string }>} req
- * @param {Response} res
+ * Verifies the password reset token.
+ * 
+ * @function verifyPasswordResetToken
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if token verification fails.
  */
 async function verifyPasswordResetToken(req, res) {
     await AuthService.verifyPasswordResetToken(req.params.token);
@@ -69,8 +103,15 @@ async function verifyPasswordResetToken(req, res) {
 }
 
 /**
- * @param {Request<unknown, unknown, ValidEmailPayload>} _req
- * @param {Response<unknown, { user: User }>} res
+ * Sends a user verification OTP.
+ * 
+ * @function sendUserVerificationOtp
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if sending OTP fails.
  */
 async function sendUserVerificationOtp(_req, res) {
     const { id: userId, name, email } = res.locals.user;
@@ -79,22 +120,20 @@ async function sendUserVerificationOtp(_req, res) {
 }
 
 /**
- * @param {Request<unknown, unknown, ValidOtpPayload>} req
- * @param {Response<unknown, { user: User }>} res
+ * Verifies the user verification OTP.
+ * 
+ * @function verifyUserVerificationOtp
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if OTP verification fails.
  */
 async function verifyUserVerificationOtp(req, res) {
     const { email, otp } = req.body;
     await OtpService.verifyOtp({ email, otp });
     res.status(200).json({ message: 'OTP verified successfully' });
-}
-
-/**
- * @param {Request} req
- * @param {Response} res
- */
-async function googleOAuth(req, res) {
-    const userWithToken = await AuthService.googleOAuth(req.user);
-    res.status(200).json({ data: userWithToken });
 }
 
 export const AuthController = {

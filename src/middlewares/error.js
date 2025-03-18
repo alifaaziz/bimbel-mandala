@@ -1,18 +1,20 @@
 import { HttpError } from '../utils/error.js';
 import { logger } from '../loaders/pino.js';
 
-/** @import {Application,Request,Response,NextFunction, RequestHandler} from 'express' */
-
-/** @param {Application} app */
 export default (app) => {
   app.use(notFound);
   app.use(errorHandler);
 };
 
 /**
- * @param {Request} req
- * @param {Response} _res
- * @param {NextFunction} next
+ * Middleware to handle 404 errors.
+ *
+ * This middleware is used to catch all requests that do not match any route.
+ * It creates a new HttpError with status code 404 and passes it to the next middleware.
+ *
+ * @param {import('express').Request} req - The Express request object.
+ * @param {import('express').Response} _res - The Express response object (unused).
+ * @param {import('express').NextFunction} next - The Express next middleware function.
  */
 export function notFound(req, _res, next) {
   const notFoundError = new HttpError(404, {
@@ -23,10 +25,19 @@ export function notFound(req, _res, next) {
 }
 
 /**
- * @param {Error} err
- * @param {Request} _req
- * @param {Response} res
- * @param {NextFunction} _next
+ * Error handling middleware for Express.
+ *
+ * This middleware handles different types of errors and sends appropriate
+ * responses to the client. It distinguishes between expected HTTP errors
+ * and unexpected errors, logging them accordingly.
+ *
+ * @param {Error} err - The error object.
+ * @param {import('express').Request} _req - The Express request object (unused).
+ * @param {import('express').Response} res - The Express response object.
+ * @param {import('express').NextFunction} _next - The Express next middleware function (unused).
+ * @throws {HttpError} If the error is an instance of HttpError, it sends a response with the error's status code and message.
+ * @throws {Error} If the error is an instance of Error, it sends a 500 response with the error's message.
+ * @throws {Error} If the error is unknown, it sends a 500 response with a generic message.
  */
 export function errorHandler(err, _req, res, _next) {
   if (err instanceof HttpError) {

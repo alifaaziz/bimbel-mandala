@@ -6,10 +6,17 @@ import { HttpError } from '../utils/error.js';
 import { generateRandomToken } from '../utils/helper.js';
 import { sendResetPasswordEmail } from '../utils/emails/core/password-reset.js';
 
-/** @import {Request} from 'express' */
-/** @import {ValidLoginPayload, ValidResetPasswordPayload} from '../middlewares/validation/auth.js' */
-
-/** @param {ValidLoginPayload} payload */
+/**
+ * Logs in a user using the provided email and password.
+ *
+ * @async
+ * @function login
+ * @param {Object} payload - The login payload.
+ * @param {string} payload.email - The user's email.
+ * @param {string} payload.password - The user's password.
+ * @returns {Promise<Object>} The user object with a token.
+ * @throws {HttpError} Throws an error if the email or password is incorrect.
+ */ 
 async function login(payload) {
   const { email, password } = payload;
 
@@ -54,24 +61,41 @@ async function login(payload) {
 }
 
 /**
- * @param {string} password
- * @param {number} salt
- */
+ * Hashes a password using bcrypt.
+ * 
+ * @async
+ * @function hashPassword
+ * @param {string} password - The password to hash.
+ * @param {number} [salt=10] - The salt rounds to use.
+ * @returns {Promise<string>} The hashed password.
+ */ 
 async function hashPassword(password, salt = 10) {
   const hashedPassword = await bcrypt.hash(password, salt);
   return hashedPassword;
 }
 
 /**
- * @param {string} password
- * @param {string} hashedPassword
+ * Compares a password with a hashed password.
+ *
+ * @async
+ * @function isPasswordMatch
+ * @param {string} password - The password to compare.
+ * @param {string} hashedPassword - The hashed password to compare.
+ * @returns {Promise<boolean>} A boolean indicating whether the password matches the hashed password.
  */
 async function isPasswordMatch(password, hashedPassword) {
   const isMatch = await bcrypt.compare(password, hashedPassword);
   return isMatch;
 }
 
-/** @param {string} id */
+/**
+ * Generates a JWT token for the user.
+ *
+ * @async
+ * @function generateToken
+ * @param {number} id - The user ID to include in the token.
+ * @returns {Promise<string>} The generated JWT token.
+ */
 async function generateToken(id) {
   const token = jwt.sign({ id }, appEnv.JWT_SECRET, {
     expiresIn: '7d'
@@ -80,7 +104,15 @@ async function generateToken(id) {
   return token;
 }
 
-/** @param {string} token */
+/**
+ * Verifies a JWT token and returns the user.
+ * 
+ * @async
+ * @function verifyToken
+ * @param {string} token - The token to verify.
+ * @returns {Promise<Object>} The user object.
+ * @throws {HttpError} Throws an error if the token is invalid.
+ */
 async function verifyToken(token) {
   try {
     const decodedToken = jwt.verify(token, appEnv.JWT_SECRET);
@@ -111,7 +143,14 @@ async function verifyToken(token) {
   }
 }
 
-/** @param {string} email */
+/**
+ * Sends a password reset email to the user.
+ *
+ * @async
+ * @function sendPasswordResetEmail
+ * @param {string} email - The email address of the user.
+ * @returns {Promise<void>} Resolves when the email has been sent.
+ */
 async function sendPasswordResetEmail(email) {
   const user = await prisma.user.findUnique({
     where: {
@@ -155,7 +194,17 @@ async function sendPasswordResetEmail(email) {
   });
 }
 
-/** @param {ValidResetPasswordPayload} payload */
+/**
+ * Resets the user's password using the provided token and new password.
+ * 
+ * @async
+ * @function resetPassword
+ * @param {Object} params - The parameters for resetting the password.
+ * @param {string} params.token - The token used to validate the password reset request.
+ * @param {string} params.password - The new password to set for the user.
+ * @throws {HttpError} Throws an error if the token is invalid or expired.
+ * @returns {Promise<void>} Resolves when the password has been successfully reset.
+ */
 async function resetPassword({ token, password }) {
   const resetPasswordData = await prisma.passwordReset.findFirst({
     where: {
@@ -205,7 +254,15 @@ async function resetPassword({ token, password }) {
   });
 }
 
-/** @param {string} token */
+/**
+ * Verifies the password reset token.
+ *
+ * @async
+ * @function verifyPasswordResetToken
+ * @param {string} token - The token to verify.
+ * @throws {HttpError} Throws an error if the token is invalid or expired.
+ * @returns {Promise<void>} Resolves when the token is valid.
+ */
 async function verifyPasswordResetToken(token) {
   const resetPasswordData = await prisma.passwordReset.findFirst({
     where: {
@@ -222,7 +279,14 @@ async function verifyPasswordResetToken(token) {
   }
 }
 
-/** @param {Request} req */
+/**
+ * Extracts the Bearer token from the request headers.
+ *
+ * @function getAuthorizationBearerToken
+ * @param {Object} req - The request object.
+ * @returns {string} The Bearer token.
+ * @throws {HttpError} Throws an error if the token is invalid.
+ */
 function getAuthorizationBearerToken(req) {
   const authorization = req.get('authorization');
 

@@ -1,13 +1,16 @@
 import { UserService } from '../services/user.js';
 import { asyncWrapper } from '../utils/asyncWrapper.js';
 
-/** @import {Request, Response, NextFunction} from 'express' */
-/** @import {User} from '@prisma/client' */
-// /** @import {ValidCreateUserPayload, ValidUpdateUserPayload} from '../middlewares/validation/user.js' */
-
 /**
- * @param {Request<{ id: string }>} _req
- * @param {Response<unknown, { user: User }>} res
+ * Retrieves the current user.
+ * 
+ * @function getCurrentUser
+ * @async
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if retrieval fails.
  */
 async function getCurrentUser(_req, res) {
     const user = res.locals.user;
@@ -15,18 +18,32 @@ async function getCurrentUser(_req, res) {
 }
 
 /**
- * @param {Request<unknown, unknown>} req
- * @param {Response} res
+ * Creates a new user.
+ * 
+ * @function createUser
+ * @async
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if user creation fails.
  */
 async function createUser(req, res) {
     const user = await UserService.createUser(req.body);
     res.status(201).json({ data: user });
 }
 
-// /**
-//  * @param {Request<unknown, unknown, ValidUpdateUserPayload>} req
-//  * @param {Response<unknown, { user: User }>} res
-//  */
+/**
+ * Updates the current user.
+ * 
+ * @function updateCurrentUser
+ * @async
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @returns {Promise<void>} Resolves with no value.
+ * @throws {Error} Throws an error if update fails.
+ */
 // async function updateCurrentUser(req, res) {
 //     await UserService.updateUser(res.locals.user.id, req.body);
 //     res.status(200).json({ message: 'User updated successfully' });

@@ -3,12 +3,24 @@ import { HttpError } from '../utils/error.js';
 import { AuthService } from './auth.js';
 import { OtpService } from './otp.js';
 
-/** @param {ValidCreateUserPayload} payload */
+/**
+ * Creates a new user.
+ *
+ * @async
+ * @function createUser
+ * @param {Object} payload - The user payload.
+ * @param {string} payload.name - The user's name.
+ * @param {string} payload.email - The user's email.
+ * @param {string} payload.password - The user's password.
+ * @param {string} payload.role - The user's role.
+ * @param {string} payload.googleId - The user's Google ID.
+ * @returns {Promise<Object>} The new user object.
+ * @throws {HttpError} Throws an error if the user creation fails.
+ */
 async function createUser(payload) {
     const { name, email, password, role, googleId } = payload;
     const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
 
-    /** @type {Prisma.UserCreateInput} */
     const parsedUserWithEncryptedPassword = {
         ...payload,
         password: encryptedPassword
@@ -59,7 +71,18 @@ async function createUser(payload) {
     return user;
 }
 
-/** @param {ValidCreateUserPayload} payload */
+/**
+ * Creates a new admin user.
+ *
+ * @async
+ * @function createAdminUser
+ * @param {Object} payload - The user payload.
+ * @param {string} payload.name - The user's name.
+ * @param {string} payload.email - The user's email.
+ * @param {string} payload.password - The user's password.
+ * @returns {Promise<Object>} The new admin user object.
+ * @throws {HttpError} Throws an error if the user creation fails.
+ */
 async function createAdminUser(payload) {
     const { name, email, password } = payload;
     const encryptedPassword = await AuthService.hashPassword(password);

@@ -69,10 +69,10 @@ passport.deserializeUser(async (data, done) => {
         if (user) {
           done(null, { user, token: data.token });
         } else {
-          done(null, null); // User not found, no error
+          done(null, null);
         }
       } else {
-        done(null, null); // Invalid user data, no error
+        done(null, null);
       }
     } catch (err) {
       done(err, null);

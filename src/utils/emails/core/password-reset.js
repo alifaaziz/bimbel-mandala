@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import fs from 'fs';
 import path from 'path';
+import { appEnv } from '../../env.js';
 
 async function sendResetPasswordEmail({ name, email, token }) {
   let transporter = nodemailer.createTransport({
@@ -15,7 +16,7 @@ async function sendResetPasswordEmail({ name, email, token }) {
   const templatePath = path.join(__dirname, 'src', 'utils', 'emails', 'template', 'password-reset.html');
   const htmlTemplate = fs.readFileSync(templatePath, 'utf8');
 
-  const resetPasswordUrl = `http://localhost:3000/auth/password-reset?token=${token}`;
+  const resetPasswordUrl = `${appEnv.BASE_URL}/auth/password-reset?token=${token}`;
 
   let mailOptions = {
     from: process.env.SMTP_USER,

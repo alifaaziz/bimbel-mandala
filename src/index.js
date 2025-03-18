@@ -35,6 +35,6 @@ function handleExit(signal) {
 }
 
 process.on('SIGTERM', handleExit);
-process.on('SIGINT', handleExit); // Menangani Ctrl+C
+process.on('SIGINT', handleExit);
 
 main();
