@@ -1,5 +1,4 @@
 import { prisma } from '../utils/db.js';
-import { HttpError } from '../utils/error.js';
 import { sendOtpEmail } from '../utils/emails/core/otp.js';
 import { generateRandomOTP } from '../utils/helper.js';
 
@@ -15,13 +14,23 @@ import { generateRandomOTP } from '../utils/helper.js';
  */
 async function sendUserVerificationOtp(name, email, userId) {
   await prisma.$transaction(async (tx) => {
-    await tx.otp.deleteMany({ where: { userId } });
+    await invalidateAllUserOtps(tx, userId);
 
-    const otpCode = generateRandomOTP();
-    const expiredAt = new Date(Date.now() + 10 * 60 * 1000);
+    const nextFiveMinutesDate = new Date();
+    nextFiveMinutesDate.setMinutes(nextFiveMinutesDate.getMinutes() + 5);
 
-    await tx.otp.create({ data: { userId, otp: otpCode, expiredAt } });
-    await sendOtpEmail(email, otpCode, name);
+    const payload = {
+      otp: generateRandomOTP(),
+      used: false,
+      userId: userId,
+      expiredAt: nextFiveMinutesDate
+    };
+
+    const { otp } = await tx.otp.create({
+      data: payload
+    });
+
+    await sendOtpEmail(email, otp, nextFiveMinutesDate);
   });
 }
 
@@ -51,4 +60,22 @@ async function verifyOtp({ email, otp }) {
   return { message: 'OTP verified successfully' };
 }
 
-export const OtpService = { sendUserVerificationOtp, verifyOtp };
+/**
+ * @param {PrismaTransaction} tx
+ * @param {string} userId
+ */
+function invalidateAllUserOtps(tx, userId) {
+  return tx.otp.updateMany({
+    where: {
+      userId,
+      expiredAt: {
+        gte: new Date()
+      }
+    },
+    data: {
+      used: true
+    }
+  });
+}
+
+export const OtpService = { sendUserVerificationOtp, verifyOtp, invalidateAllUserOtps };

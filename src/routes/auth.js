@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.js';
 import passport from '../loaders/passport.js';
+import { authMiddleware } from '../middlewares/auth.js';
+import { UserValidation } from '../middlewares/validation/user.js';
 
 export default (app) => {
     const router = Router();
@@ -22,6 +24,8 @@ export default (app) => {
     router.get('/otp', (_req, res) => {
         res.status(200).json({ message: 'disini tempat otp nanti' });
       });
+    
+    router.post('/otp', UserValidation.isUnverifiedUserExistsPayload, AuthController.sendUserVerificationOtp);
 
     router.post('/otp/verify', AuthController.verifyUserVerificationOtp);
 

@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import fs from 'fs';
 import path from 'path';
 
-async function sendOtpEmail(to, otp, name) {
+async function sendOtpEmail(to, otp, expiredAt) {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -15,11 +15,14 @@ async function sendOtpEmail(to, otp, name) {
     const templatePath = path.join(__dirname, 'src', 'utils', 'emails', 'template', 'otp.html');
     const htmlTemplate = fs.readFileSync(templatePath, 'utf8');
 
+    // Pastikan expiredAt diformat sebagai string
+    const formattedExpiredAt = new Date(expiredAt).toLocaleString();
+
     let mailOptions = {
         from: process.env.SMTP_USER,
         to: to, 
         subject: 'Your OTP Code',
-        html: htmlTemplate.replace('{{otp}}', otp).replace('{{name}}', name)
+        html: htmlTemplate.replace('{{otp}}', otp).replace('{{expired}}', formattedExpiredAt)
     };
 
     try {
