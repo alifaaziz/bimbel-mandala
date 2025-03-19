@@ -146,35 +146,47 @@ async function updateUser(payload) {
     const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
 
     const parsedUserWithEncryptedPassword = {
+        ...additionalData,
         password: encryptedPassword
     };
 
+    // Remove undefined properties from parsedUserWithEncryptedPassword
     Object.keys(parsedUserWithEncryptedPassword).forEach(key => {
         if (parsedUserWithEncryptedPassword[key] === undefined) {
             delete parsedUserWithEncryptedPassword[key];
         }
     });
 
-    if (Object.keys(parsedUserWithEncryptedPassword).length > 0) {
+    // Separate user data and additional data
+    const { name, email, googleId, password: userPassword, ...additionalUserData } = parsedUserWithEncryptedPassword;
+
+    // Update user data if there are any changes
+    if (name || email || googleId || userPassword) {
         await prisma.user.update({
             where: { id: id },
-            data: parsedUserWithEncryptedPassword
+            data: {
+                name,
+                email,
+                googleId,
+                password: userPassword
+            }
         });
     }
 
+    // Update additional data based on user role
     if (role === 'siswa') {
         await prisma.student.update({
             where: { userId: id },
-            data: additionalData
+            data: additionalUserData
         });
     } else if (role === 'tutor') {
         await prisma.tutor.update({
-            
             where: { userId: id },
-            data: additionalData
+            data: additionalUserData
         });
     }
 
+    // Retrieve the updated user data
     const user = await prisma.user.findUnique({
         where: { id: id },
         include: {
