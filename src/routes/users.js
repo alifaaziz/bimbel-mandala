@@ -9,5 +9,5 @@ export default (app) => {
 
     router.get('/me',  authMiddleware.isAuthorized, UserController.getCurrentUser);
 
-    // router.patch('/me', UserController.updateCurrentUser);
+    router.patch('/me', authMiddleware.isAuthorized, UserController.updateCurrentUser);
 };

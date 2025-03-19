@@ -125,4 +125,65 @@ async function createUserWithRole(payload) {
     return user;
 }
 
-export const UserService = { createStudent, createUserWithRole };
+/**
+ * Updates a user.
+ * 
+ * @async
+ * @function updateUser
+ * @param {Object} payload - The user payload.
+ * @param {string} payload.id - The user's ID.
+ * @param {string} [payload.name] - The user's name.
+ * @param {string} [payload.email] - The user's email.
+ * @param {string} [payload.password] - The user's password.
+ * @param {string} [payload.role] - The user's role.
+ * @param {string} [payload.googleId] - The user's Google ID.
+ * @param {Object} [additionalData] - Additional data for the user.
+ * @returns {Promise<Object>} The updated user object.
+ * @throws {Error} Throws an error if the update fails.
+ */
+async function updateUser(payload) {
+    const { id, password, role, ...additionalData } = payload;
+    const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
+
+    const parsedUserWithEncryptedPassword = {
+        password: encryptedPassword
+    };
+
+    Object.keys(parsedUserWithEncryptedPassword).forEach(key => {
+        if (parsedUserWithEncryptedPassword[key] === undefined) {
+            delete parsedUserWithEncryptedPassword[key];
+        }
+    });
+
+    if (Object.keys(parsedUserWithEncryptedPassword).length > 0) {
+        await prisma.user.update({
+            where: { id: id },
+            data: parsedUserWithEncryptedPassword
+        });
+    }
+
+    if (role === 'siswa') {
+        await prisma.student.update({
+            where: { userId: id },
+            data: additionalData
+        });
+    } else if (role === 'tutor') {
+        await prisma.tutor.update({
+            
+            where: { userId: id },
+            data: additionalData
+        });
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: id },
+        include: {
+            students: true,
+            tutors: true
+        }
+    });
+
+    return user;
+}
+
+export const UserService = { createStudent, createUserWithRole, updateUser };

@@ -44,13 +44,13 @@ async function createUser(req, res) {
  * @returns {Promise<void>} Resolves with no value.
  * @throws {Error} Throws an error if update fails.
  */
-// async function updateCurrentUser(req, res) {
-//     await UserService.updateUser(res.locals.user.id, req.body);
-//     res.status(200).json({ message: 'User updated successfully' });
-// }
+async function updateCurrentUser(req, res) {
+    await UserService.updateUser({ id: res.locals.user.id, role: res.locals.user.role, ...req.body });
+    res.status(200).json({ message: 'User updated successfully' });
+}
 
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
-    // updateCurrentUser: asyncWrapper(updateCurrentUser)
+    updateCurrentUser: asyncWrapper(updateCurrentUser)
 };
