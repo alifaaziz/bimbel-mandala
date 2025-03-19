@@ -55,6 +55,13 @@ async function verifyOtp({ email, otp }) {
   await prisma.$transaction(async (tx) => {
     await tx.otp.updateMany({ where: { userId: otpRecord.userId }, data: { used: true } });
     await tx.user.update({ where: { id: otpRecord.userId }, data: { verified: true } });
+    await tx.notification.create({
+      data: {
+        userId: otpRecord.userId,
+        name: 'Welcome to Bimbel Mandala!🎉📚',
+        description: "Let's embark on a journey of learning and success together! 🚀"
+      }
+    });
   });
 
   return { message: 'OTP verified successfully' };
