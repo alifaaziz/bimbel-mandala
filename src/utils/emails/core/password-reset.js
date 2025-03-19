@@ -16,7 +16,7 @@ async function sendResetPasswordEmail({ name, email, token }) {
   const templatePath = path.join(__dirname, 'src', 'utils', 'emails', 'template', 'password-reset.html');
   const htmlTemplate = fs.readFileSync(templatePath, 'utf8');
 
-  const resetPasswordUrl = `${appEnv.BASE_URL}/auth/password-reset?token=${token}`;
+  const resetPasswordUrl = `${appEnv.FRONTEND_URL}/auth/password-reset?token=${token}`;
 
   let mailOptions = {
     from: process.env.SMTP_USER,
