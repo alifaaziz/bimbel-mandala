@@ -16,7 +16,13 @@ async function sendOtpEmail(to, otp, expiredAt) {
     const htmlTemplate = fs.readFileSync(templatePath, 'utf8');
 
     // Pastikan expiredAt diformat sebagai string
-    const formattedExpiredAt = new Date(expiredAt).toLocaleString();
+    const formattedExpiredAt = new Date(expiredAt).toLocaleString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 
     let mailOptions = {
         from: process.env.SMTP_USER,
