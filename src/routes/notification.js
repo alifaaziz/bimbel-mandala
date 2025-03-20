@@ -1,17 +1,39 @@
 import { Router } from "express";
 import { NotificationController } from "../controllers/notification.js";
-import { authMiddleware } from "../middlewares/auth.js";
+import { AuthMiddleware } from "../middlewares/auth.js";
+import { CommonValidationMiddleware } from "../middlewares/validation/common.js";
+import { NotificationMiddleware } from "../middlewares/notification.js";
 
 export default (app) => {
     const router = Router();
 
     app.use('/notification', router);
 
-    router.get('/', authMiddleware.isAuthorized, NotificationController.getNotifications);
+    router.get(
+        '/',
+        AuthMiddleware.isAuthorized,
+        NotificationController.getNotifications
+    );
 
-    router.post('/:id', authMiddleware.isAuthorized, NotificationController.markNotificationAsRead);
+    router.post(
+        '/:id',
+        CommonValidationMiddleware.isValidParamsIdUuid,
+        AuthMiddleware.isAuthorized,
+        NotificationMiddleware.isNotificationExists,
+        NotificationController.markNotificationAsRead
+    );
 
-    router.post('/', authMiddleware.isAuthorized, NotificationController.markAllNotificationsAsRead);
+    router.post(
+        '/',
+        AuthMiddleware.isAuthorized,
+        NotificationController.markAllNotificationsAsRead
+    );
 
-    router.delete('/:id', authMiddleware.isAuthorized, NotificationController.deleteNotification);
+    router.delete(
+        '/:id',
+        CommonValidationMiddleware.isValidParamsIdUuid,
+        AuthMiddleware.isAuthorized,
+        NotificationMiddleware.isNotificationExists,
+        NotificationController.deleteNotification
+    );
 }

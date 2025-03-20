@@ -80,10 +80,12 @@ async function createStudent(payload) {
  * @throws {HttpError} Throws an error if the user creation fails.
  */
 async function createUserWithRole(payload) {
-    if (payload.role !== 'tutor') {
+    const { name, email, password, role, ...additionalData } = payload;
+
+    if (role !== 'tutor' && role !== 'admin') {
         throw new HttpError(400, { message: 'Invalid role for this function' });
     }
-    const { name, email, password, role, ...tutorData } = payload;
+
     const encryptedPassword = await AuthService.hashPassword(password);
 
     const parsedUserWithEncryptedPassword = {
@@ -117,7 +119,15 @@ async function createUserWithRole(payload) {
         await prisma.tutor.create({
             data: {
                 userId: user.id,
-                ...tutorData,
+                ...additionalData,
+            }
+        });
+
+        await prisma.notification.create({
+            data: {
+                userId: user.id,
+                name: 'Welcome to the platform! You are now a tutor.',
+                description: 'You can now start tutoring students on the platform.'
             }
         });
     }

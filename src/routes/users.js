@@ -1,13 +1,23 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.js';
-import { authMiddleware } from '../middlewares/auth.js';
+import { AuthMiddleware } from '../middlewares/auth.js';
+import { UserValidation } from '../middlewares/validation/user.js';
 
 export default (app) => {
     const router = Router();
 
     app.use('/users', router);
 
-    router.get('/me',  authMiddleware.isAuthorized, UserController.getCurrentUser);
+    router.get(
+        '/me',
+        AuthMiddleware.isAuthorized,
+        UserController.getCurrentUser
+    );
 
-    router.patch('/me', authMiddleware.isAuthorized, UserController.updateCurrentUser);
+    router.patch(
+        '/me',
+        AuthMiddleware.isAuthorized,
+        UserValidation.isValidUserUpdatePayload,
+        UserController.updateCurrentUser
+    );
 };

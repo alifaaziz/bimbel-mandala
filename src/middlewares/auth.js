@@ -24,6 +24,6 @@ async function isAuthorized(req, res, next) {
   next();
 }
 
-export const authMiddleware = {
+export const AuthMiddleware = {
   isAuthorized
 };
