@@ -2,13 +2,13 @@ import { prisma } from '../../../utils/db.js';
 
 async function main() {
     const days = [
-        { days_name: 'Senin' },
-        { days_name: 'Selasa' },
-        { days_name: 'Rabu' },
-        { days_name: 'Kamis' },
-        { days_name: 'Jumat' },
-        { days_name: 'Sabtu' },
-        { days_name: 'Minggu' },
+        { daysName: 'Senin' },
+        { daysName: 'Selasa' },
+        { daysName: 'Rabu' },
+        { daysName: 'Kamis' },
+        { daysName: 'Jumat' },
+        { daysName: 'Sabtu' },
+        { daysName: 'Minggu' },
     ];
 
     for (const day of days) {
