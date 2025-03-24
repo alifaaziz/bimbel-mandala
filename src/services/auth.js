@@ -260,8 +260,8 @@ async function resetPassword({ token, password }) {
     await tx.notification.create({
       data: {
         userId: resetPasswordData.userId,
-        name: 'Password Changed',
-        description: 'Your password has been changed successfully'
+        type: 'Perubahan Akun',
+        description: 'Password akun Anda berhasil diubah, jika Anda tidak merasa melakukan perubahan ini, segera hubungi kami.'
       }
     });
   });

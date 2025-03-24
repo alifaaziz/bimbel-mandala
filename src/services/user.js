@@ -126,8 +126,8 @@ async function createUserWithRole(payload) {
         await prisma.notification.create({
             data: {
                 userId: user.id,
-                name: 'Welcome to the platform! You are now a tutor.',
-                description: 'You can now start tutoring students on the platform.'
+                type: 'Pendaftaran Akun',
+                description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.'
             }
         });
     }

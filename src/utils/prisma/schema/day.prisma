@@ -1,0 +1,11 @@
+model Day {
+    id        String    @id @default(uuid(7))
+    days_name String
+
+    tutorDay  TutorDay[]
+
+    createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
+    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
+
+    @@map("days")
+}

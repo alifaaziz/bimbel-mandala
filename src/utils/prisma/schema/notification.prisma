@@ -1,6 +1,6 @@
 model Notification {
     id        String   @id @default(uuid(7))
-    name       String
+    type       String
     viewed      Boolean  @default(false)
     description  String?
 

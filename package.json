@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development concurrently \"nodemon src/index.js\"",
     "db:migrate": "dotenv -e .env -- prisma migrate dev",
-    "db:reset": "dotenv -e .env -- prisma migrate reset --force"
+    "db:reset": "dotenv -e .env -- prisma migrate reset --force",
+    "db:seed": "dotenv -e .env -- node src/utils/prisma/seed/seed.js"
   },
   "keywords": [],
   "author": "",

@@ -11,6 +11,9 @@ const omitConfig = {
     ...omittedTimestampFields,
     password: true
   },
+  notification: {
+    ...omittedTimestampFields
+  },
 };
 
 export const prisma = new PrismaClient({
