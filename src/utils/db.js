@@ -14,6 +14,9 @@ const omitConfig = {
   notification: {
     ...omittedTimestampFields
   },
+  bimbelPackage: {
+    ...omittedTimestampFields
+  },
 };
 
 export const prisma = new PrismaClient({
