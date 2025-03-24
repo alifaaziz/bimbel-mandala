@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP</title>
+    <style>
+        img {
+            width: 480px; 
+            height: auto; 
+            display: block;
+            margin: 32px auto;
+        }
+        .container {
+            width: 520px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        h1 {
+            font-size: 16px;
+            font-family: sans-serif;
+            color: rgb(70, 70, 70);
+        }
+        p {
+            font-size: 12px;
+            font-family: sans-serif;
+            font-weight: normal;
+            color: slategrey;
+        }
+        h2 {
+            font-size: 32px;
+            font-family: sans-serif;
+            margin: 20px auto;
+            color: rgb(70, 70, 70);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo Mandala -->
+    <img src="https://raw.githubusercontent.com/alifaaziz/backend-mandala-express/refs/heads/auth/src/utils/emails/assets/logo-mandala.png" alt="kosong">
+
+    <div class="container">
+        <!-- teks -->
+        <h1>
+            Kode Verifikasi Pendaftaran
+        </h1>
+
+        <p>
+            Hai siswa/siswi berprestasi,
+            Gunakan kode OTP sekali pakai di bawah ini untuk menyelesaikan 
+            pembuatan akun kamu di Bimbel Mandala:
+        </p>
+
+        <!-- Kode -->
+        <h2>
+            {{otp}}
+        </h2>
+
+        <!-- Foot -->
+        <p>
+            Kode ini akan aktif hingga {{expired}}. Kamu dapat meminta kode baru
+            jika kamu tidak memasukkannya dalam waktu yang ditentukan.
+        </p>
+    </div>
+
+</body>
+</html> 

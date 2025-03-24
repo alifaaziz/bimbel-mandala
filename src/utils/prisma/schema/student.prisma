@@ -1,0 +1,22 @@
+model Student {
+    id          String   @id @default(uuid(7))
+    userId      String   @unique @map("user_id")
+    phone       String?
+    parentPhone String? @map("parent_phone")
+    level       SchoolLevel?
+    schoolName  String? @map("school_name")
+    address     String?
+
+    user User @relation(fields: [userId], references: [id])
+
+    createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
+    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
+
+    @@map("students") 
+}
+
+enum SchoolLevel {
+  SD
+  SMP
+  SMA
+}

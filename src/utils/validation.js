@@ -1,16 +1,27 @@
 import { z } from 'zod';
 
-/** Validasi string tidak boleh kosong */
 export const validStringSchema = z.string().trim().min(1, 'String tidak boleh kosong');
 
-/**
- * Fungsi untuk memformat error dari Zod
- * @param {import('zod').ZodError} error - Error dari validasi Zod
- * @returns {{ message: string; errors: string[] }}
- */
-export function formatZodError(error) {
-  return {
-    message: 'Validasi gagal',
-    errors: error.errors.map(({ message, path }) => `${path.join('.')} ${message}`)
-  };
+export function formatZodError(error, formatZodErrorOptions = {}) {
+ const errors = error.errors.map(({ message, path }) => {
+   const name = path.join('.');
+
+   const result = name ? `${name} ${message}` : message;
+
+   return result;
+ });
+
+ let parsedMessage = formatZodErrorOptions.errorMessage ?? 'Invalid body';
+
+ let parsedErrors = errors;
+
+ if (formatZodErrorOptions.preferSingleError) {
+   parsedMessage = errors[0];
+   parsedErrors = undefined;
+ }
+
+ return ({
+   message: parsedMessage,
+   errors: parsedErrors
+ });
 }

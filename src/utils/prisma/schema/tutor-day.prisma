@@ -1,0 +1,13 @@
+model TutorDay {
+    id      String  @id @default(uuid(7))
+    tutorId String  @map("tutor_id")
+    daysId  String  @map("days_id")
+
+    tutor Tutor @relation(fields: [tutorId], references: [id])
+    day Day @relation(fields: [daysId], references: [id])
+
+    createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
+    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
+
+    @@map("tutor_days")
+}

@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import loaders from './loaders/index.js';
 import routes from './routes/index.js';
+import errorMiddleware from './middlewares/error.js';
 import { appEnv } from './utils/env.js';
 import { logger } from './loaders/pino.js';
 
@@ -12,8 +13,11 @@ function main() {
   loaders(app, server);
   routes(app);
 
+  // Middleware penanganan kesalahan harus ditempatkan setelah semua rute
+  errorMiddleware(app);
+
   server.listen(appEnv.PORT, () => {
-    logger.info(`🚀 Server running on port http://localhost:${appEnv.PORT}`);
+    logger.info(`🚀 Server running on http://localhost:${appEnv.PORT}`);
   });
 
   // Handle server error
@@ -31,6 +35,6 @@ function handleExit(signal) {
 }
 
 process.on('SIGTERM', handleExit);
-process.on('SIGINT', handleExit); // Menangani Ctrl+C
+process.on('SIGINT', handleExit);
 
 main();
