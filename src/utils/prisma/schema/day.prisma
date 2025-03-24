@@ -3,6 +3,7 @@ model Day {
     daysName  String    @map("days_name")
 
     tutorDay  TutorDay[]
+    packageDay  PackageDay[]
 
     createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
     updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()

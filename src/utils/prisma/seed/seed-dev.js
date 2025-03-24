@@ -1,4 +1,5 @@
 import { prisma } from '../../../utils/db.js';
+import bcrypt from 'bcrypt';
 
 async function main() {
     // Seed days
@@ -24,7 +25,7 @@ async function main() {
             id: "0195c5ed-3fc8-705b-8a17-dcef7de62796",
             name: 'Admin Development',
             email: 'admin@admin.com',
-            password: 'password123',
+            password: await bcrypt.hash('password123', 10),
             role: 'admin',
             verified: true,
         },
@@ -32,7 +33,7 @@ async function main() {
             id: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa",
             name: 'Su Yon Oh',
             email: 'suyono@mail.com',
-            password: 'password123',
+            password: await bcrypt.hash('password123', 10),
             role: 'siswa',
             verified: true,
         },
@@ -40,7 +41,7 @@ async function main() {
             id: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2",
             name: 'Dendy Wan S.Pd',
             email: 'dendy@example.com',
-            password: 'password123',
+            password: await bcrypt.hash('password123', 10),
             role: 'tutor',
             verified: true,
         },
@@ -138,6 +139,80 @@ async function main() {
     for (const notification of notifications) {
         await prisma.notification.create({
             data: notification,
+        });
+    }
+
+    // Seed Bimbel Packages
+    const bimbelPackages = [
+        {
+            id: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            name: 'Matematika',
+            level: 'SMP',
+            totalMeetings: 6,
+            time: new Date('1970-01-01T15:00:00Z'),
+            duration: 120,
+            basePrice: 700000,
+            area: 'Semarang',
+            userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2'
+        },
+    ];
+
+    for (const bimbelPackage of bimbelPackages) {
+        await prisma.bimbelPackage.create({
+            data: bimbelPackage,
+        });
+    }
+
+    //Seed Group Types
+    const groupTypes = [
+        { 
+            id: "0195c63c-8fce-7232-990e-6d11e9ff2d02",
+            type: 'privat',
+            price: 300000,
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+        },
+        { 
+            id: "0195c63c-8fce-73ee-beb0-f075a8d73cfc",
+            type: 'grup3',
+            price: 540000,
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+        },
+        { 
+            id: "0195c63c-8fce-74a3-bb8f-c3b07e4b0cb1",
+            type: 'grup5',
+            price: 720000,
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+        },
+    ];
+
+    for (const groupType of groupTypes) {
+        await prisma.groupType.create({
+            data: groupType,
+        });
+    }
+
+    // Seed Packages Day
+    const packagesDays = [
+        {
+            id : "0195c714-07f8-752f-9851-39965d06919e",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52"
+        },
+        {
+            id : "0195c714-07f8-7774-8c05-0b5addb724b0",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21"
+        },
+        {
+            id : "0195c714-07f8-74ac-8c81-b47289e3596b",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2"
+        }
+    ]
+
+    for (const packageDay of packagesDays) {
+        await prisma.packageDay.create({
+            data: packageDay,
         });
     }
 
