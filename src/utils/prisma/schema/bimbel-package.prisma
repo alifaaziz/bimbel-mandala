@@ -8,6 +8,7 @@ model BimbelPackage {
     basePrice     Decimal    @map("base_price")
     area          String
     userId        String     @map("user_id")
+    isActive      Boolean    @default(true) @map("is_active")
 
     user User @relation(fields: [userId], references: [id])
 
