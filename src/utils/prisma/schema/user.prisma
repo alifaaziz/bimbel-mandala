@@ -13,6 +13,7 @@ model User{
     students        Student[]
     notifications   Notification[]
     bimbelPackages  BimbelPackage[]
+    orders          Order[]
 
     createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
     updatedAt  DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()

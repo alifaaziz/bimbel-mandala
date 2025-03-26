@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { appEnv } from './env.js';
+import order from '../routes/order.js';
 
 const omittedTimestampFields = ({
   createdAt: true,
@@ -15,6 +16,9 @@ const omitConfig = {
     ...omittedTimestampFields
   },
   bimbelPackage: {
+    ...omittedTimestampFields
+  },
+  order: {
     ...omittedTimestampFields
   },
 };
