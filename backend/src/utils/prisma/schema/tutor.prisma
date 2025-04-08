@@ -1,0 +1,39 @@
+model Tutor {
+    id           String   @id @default(uuid(7))
+    userId       String   @unique @map("user_id")
+    birthDate    DateTime? @map("birth_date")
+    gender       Gender?
+    phone        String?
+    subjects     String?      //Mata pelajaran
+    status       StudyStatus? //Status Perkuliahan
+    major        String?      //Prodi
+    school       String?      // Asal kampus
+    teachLevel   String?      @map("teach_level") // Jenjang mengajar
+    description  String?
+    photo        String?
+
+    user User @relation(fields: [userId], references: [id])
+
+    tutorDay  TutorDay[]
+
+    createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
+    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
+
+    @@map("tutors")
+}
+
+enum StudyStatus {
+  TH1
+  TH2
+  TH3
+  TH4
+  TH5
+  S1
+  S2
+  S3
+}
+
+enum Gender {
+  Male
+  Female
+}

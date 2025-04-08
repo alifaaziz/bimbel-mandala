@@ -1,0 +1,23 @@
+model BimbelPackage {
+    id            String     @id @default(uuid(7))
+    name          String
+    level         String
+    totalMeetings Int        @map("total_meetings")
+    time          DateTime   
+    duration      Int
+    basePrice     Decimal    @map("base_price")
+    area          String
+    userId        String     @map("user_id")
+    isActive      Boolean    @default(true) @map("is_active")
+
+    user User @relation(fields: [userId], references: [id])
+
+    groupType   GroupType[]
+    packageDay  PackageDay[]
+    orders      Order[]
+
+    createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
+    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
+
+    @@map("bimbel_packages")
+}

@@ -1,0 +1,10 @@
+model PackageDay {
+    id              String  @id @default(uuid(7))
+    packageId       String  @map("package_id")
+    dayId           String  @map("day_id")
+
+    bimbelPackage   BimbelPackage  @relation(fields: [packageId], references: [id])
+    day             Day            @relation(fields: [dayId], references: [id])
+
+    @@map("package_days")
+}
