@@ -38,6 +38,14 @@ async function main() {
             verified: true,
         },
         {
+            id: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
+            name: 'So Lie Kien',
+            email: 'solikin@mail.com',
+            password: await bcrypt.hash('password123', 10),
+            role: 'siswa',
+            verified: true,
+        },
+        {
             id: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2",
             name: 'Dendy Wan S.Pd',
             email: 'dendy@example.com',

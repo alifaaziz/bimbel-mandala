@@ -1,0 +1,23 @@
+model Order {
+    id          String      @id @default(uuid()) @map("id")
+    userId      String      @map("user_id")
+    packageId   String      @map("package_id")
+    address     String?     
+    status      OrderStatus @default(pending)
+
+    user User @relation(fields: [userId], references: [id])
+    bimbelPackage BimbelPackage @relation(fields: [packageId], references: [id])
+
+    class       Class[]
+
+    createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
+    updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
+
+    @@map("orders")
+}
+
+enum OrderStatus {
+    pending
+    paid
+    cancel
+}

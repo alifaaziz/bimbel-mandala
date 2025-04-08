@@ -4,7 +4,7 @@ This is the backend server for the Mandala Express application.
 
 ## Description
 
-A Node.js/Express.js backend service providing REST APIs for Mandala Express.
+A Node.js/Express.js backend service providing REST APIs for Bimbingan Belajar Mandala.
 
 ## Prerequisites
 

@@ -11,5 +11,13 @@ export default (app) => {
     router.get('/:id', BimbelPackageController.getBimbelPackageById);
 
     router.post('/', BimbelPackageController.createBimbelPackage);
+
+    router.post('/class', BimbelPackageController.createClassBimbelPackage);
+
+    router.patch('/:id', BimbelPackageController.updateBimbelPackage);
+
+    router.patch('/class/:id', BimbelPackageController.updateClassBimbelPackage);
+
+    router.delete('/:id', BimbelPackageController.deleteBimbelPackage);
 }
 
