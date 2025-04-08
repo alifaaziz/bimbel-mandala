@@ -1,22 +1,22 @@
-# Backend Mandala Express
+# Backend Bimbingan Belajar Mandala
 
-This is the backend server for the Mandala Express application.
+This repository contains both the backend (Express.js) and frontend (....) code for the Bimbingan Belajar Mandala application.
 
-## Description
+## Backend - Express.js
 
 A Node.js/Express.js backend service providing REST APIs for Bimbingan Belajar Mandala.
 
-## Prerequisites
+### Prerequisites
 
 - Node.js
 - npm
 - MySQL
 
-## Installation
+### Installation
 
 1. Clone the repository
 ```bash
-git clone https://github.com/alifaaziz/backend-mandala-express.git
+git clone https://github.com/alifaaziz/bimbel-mandala.git
 ```
 
 2. Install dependencies
@@ -29,16 +29,21 @@ npm install
 cp .env.example .env
 ```
 
-## Usage
+### Usage
 
 To start the development server:
 ```bash
 npm run dev
 ```
 
-## API Documentation
+### API Documentation
 
 API endpoints will be documented here.
+
+
+## Frontend - ...
+
+Placeholder for future development.
 
 ## License
 
