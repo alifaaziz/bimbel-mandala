@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { appEnv } from './env.js';
 import order from '../routes/order.js';
+import { schedule } from 'node-cron';
 
 const omittedTimestampFields = ({
   createdAt: true,
@@ -21,6 +22,7 @@ const omitConfig = {
   order: {
     ...omittedTimestampFields
   },
+  schedule
 };
 
 export const prisma = new PrismaClient({
