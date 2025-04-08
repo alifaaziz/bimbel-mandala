@@ -29,6 +29,11 @@ npm install
 cp .env.example .env
 ```
 
+4. Set up Prisma
+```bash
+npx prisma generate
+```
+
 ### Usage
 
 To start the development server:
