@@ -13,7 +13,9 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
  * @throws {Error} Throws an error if order creation fails.
  */
 async function createOrder(req, res) {
-    await OrderService.createOrder(req.body);
+    const userId = res.locals.user.id;
+    const { packageId, groupTypeId, address } = req.body;
+    await OrderService.createOrder(userId, packageId, groupTypeId, address);
     res.status(201).json({ message: 'Order created successfully'});
 }
 
