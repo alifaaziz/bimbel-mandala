@@ -8,13 +8,13 @@ import { prisma } from '../utils/db.js';
  * @param {Object} data - The order data.
  * @returns {Promise<Object>} The created order.
  */
-async function createOrder(data) {
-  const { userId, packageId, address } = data;
+async function createOrder(userId, packageId, groupTypeId, address) {
 
   await prisma.order.create({
     data: {
       userId,
       packageId,
+      groupTypeId,
       address,
       status: 'pending'
     }
