@@ -23,25 +23,6 @@ export async function isUnverifiedUserExistsPayload(req, res, next) {
 }
 
 /**
- * @param {Request<unknown, CreateUserPayload>} req
- * @param {Response<unknown, { user: OmittedModel<'user'> }>} res
- * @param {NextFunction} next
- */
-export async function isValidUserCreatePayload(req, _res, next) {
-  const { email } = req.body;
-  
-  const user = await prisma.user.findFirst({
-    where: { email }
-  });
-  
-  if (user) {
-    throw new HttpError(400, { message: 'User already exists' });
-  }
-  
-  next();
-}
-
-/**
  * @param {Request<unknown, UpdateUserPayload>} req
  * @param {Response<unknown, { user: OmittedModel<'user'> }>} res
  * @param {NextFunction} next
@@ -62,6 +43,5 @@ export async function isValidUserUpdatePayload(_req, res, next) {
 
 export const UserValidation = {
   isUnverifiedUserExistsPayload,
-  isValidUserCreatePayload,
   isValidUserUpdatePayload
 };

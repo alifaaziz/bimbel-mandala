@@ -1,6 +1,7 @@
 import { prisma } from '../utils/db.js';
 import { sendOtpEmail } from '../utils/emails/core/otp.js';
 import { generateRandomOTP } from '../utils/helper.js';
+import { HttpError } from '../utils/error.js';
 
 /**
  * Sends an OTP to the user's email for verification.

@@ -12,8 +12,7 @@ export default (app) => {
     app.use('/auth', router);
 
     router.post(
-        '/register', 
-        UserValidation.isValidUserCreatePayload, 
+        '/register',
         AuthController.register
     );
 
@@ -24,8 +23,7 @@ export default (app) => {
     );
 
     router.post(
-        '/add-user', 
-        UserValidation.isValidUserCreatePayload, 
+        '/add-user',
         AuthController.createUserWithRole
     );
 
