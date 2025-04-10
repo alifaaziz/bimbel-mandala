@@ -9,25 +9,33 @@ defineProps({
 
 <template>
   <div class="greetings">
-    <h1 class="green">{{ msg }}</h1>
+    <img alt="Logo Mandala" class="logo" src="../assets/logomandala.svg" width= 184px />
+    <h1 class="Hero">{{ msg }}</h1>
     <h3>
-      You’ve successfully created a project with
-      <a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+      Vulputate ut laoreet velit ma.
     </h3>
   </div>
 </template>
 
 <style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
+
+.Hero {
+  color: #ffffff;
+  transition: 0.4s;
+  padding: 3px;
+  line-height: 48px;
+  font-weight: bold;
+  font-size: 2rem;
   position: relative;
   top: -10px;
+  font-family: 'Poppins', sans-serif;
 }
 
 h3 {
-  font-size: 1.2rem;
+  font-size: 1rem;
+  color: white;
+  font-family: 'Poppins', sans-serif;
 }
 
 .greetings h1,
@@ -40,5 +48,10 @@ h3 {
   .greetings h3 {
     text-align: left;
   }
+}
+
+.logo {
+  display: block;
+  margin-bottom: 120px;
 }
 </style>
