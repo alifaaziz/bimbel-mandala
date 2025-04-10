@@ -1,5 +1,7 @@
+import { date } from 'zod';
 import { prisma } from '../../../utils/db.js';
 import bcrypt from 'bcrypt';
+import { ScheduleService } from '../../../services/schedule.js';
 
 async function main() {
     // Seed days
@@ -46,13 +48,29 @@ async function main() {
             verified: true,
         },
         {
+            id: "019618a1-68a4-7742-9471-2548f7726e86",
+            name: 'Ma Tor Nu Won',
+            email: 'maturnuwun@mail.com',
+            password: await bcrypt.hash('password123', 10),
+            role: 'siswa',
+            verified: true,
+        },
+        {
             id: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2",
             name: 'Dendy Wan S.Pd',
-            email: 'dendy@example.com',
+            email: 'dendy@mail.com',
             password: await bcrypt.hash('password123', 10),
             role: 'tutor',
             verified: true,
         },
+        {
+            id: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+            name: 'Venita S.Pd',
+            email: 'venita@mail.com',
+            password: await bcrypt.hash('password123', 10),
+            role: 'tutor',
+            verified: true,
+        }
     ];
 
     for (const user of users) {
@@ -71,6 +89,24 @@ async function main() {
             level: 'SMP',
             schoolName: 'SMP Negeri 1',
             address: 'Jl. Merdeka No. 1',
+        },
+        {
+            id: "019618a1-68a4-7dd8-b39c-5ecd04d1c010",
+            userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
+            phone: '1234567890',
+            parentPhone: '0987654321',
+            level: 'SMA',
+            schoolName: 'SMA Negeri 2',
+            address: 'Jl. Merdeka No. 2',
+        },
+        {
+            id: "019618a1-68a4-7bdf-853b-916546c664a7",
+            userId: "019618a1-68a4-7742-9471-2548f7726e86",
+            phone: '1234567890',
+            parentPhone: '0987654321',
+            level: 'SD',
+            schoolName: 'SD Negeri 3',
+            address: 'Jl. Merdeka No. 3',
         },
     ];
 
@@ -95,6 +131,19 @@ async function main() {
             teachLevel: 'SMP',
             description: 'Experienced tutor in Mathematics, once guided a math competition at the rt level in mijen sub-district. hardworking and responsive.',
         },
+        {
+            id: "019618a1-68a4-76ba-97fe-accd364715e8",
+            userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+            birthDate: new Date('1998-03-03'),
+            gender: 'Female',
+            phone: '0987654321',
+            subjects: 'Bahasa Inggris',
+            status: 'S1',
+            major: 'Pendidikan Bahasa Inggris',
+            school: 'Universitas Bikini Bottom',
+            teachLevel: 'SMA',
+            description: 'Experienced tutor in English, once guided an English competition at the rt level in tembalang sub-district. hardworking and responsive.',
+        }
     ];
 
     for (const tutor of tutors) {
@@ -120,6 +169,16 @@ async function main() {
             tutorId: "0195c5ed-3fc9-7a1f-92ed-f2a421fd5fac", 
             daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2",
         },
+        {
+            id: "019618a1-68a4-7f81-8724-1236b9138665",
+            tutorId: "019618a1-68a4-76ba-97fe-accd364715e8",
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413",
+        },
+        {
+            id: "019618a1-68a4-70e1-948f-618b94aa3bdb",
+            tutorId: "019618a1-68a4-76ba-97fe-accd364715e8",
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0",
+        }
     ];
 
     for (const tutorDay of tutorDays) {
@@ -137,8 +196,26 @@ async function main() {
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
         },
         {
+            id: "019618a1-68a4-7d40-bcf4-ed7d4e8305ff",
+            userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
+            type: 'Pendaftaran Akun',
+            description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
+        },
+        {
+            id: "019618a1-68a4-725a-bd3d-e62956fbd79b",
+            userId: "019618a1-68a4-7742-9471-2548f7726e86",
+            type: 'Pendaftaran Akun',
+            description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
+        },
+        {
             id: "0195c5fa-413e-7927-afed-d65683fb14c0",
             userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2",
+            type: 'Pendaftaran Akun',
+            description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
+        },
+        {
+            id: "019618a1-68a4-7bff-a08a-255d2635db95",
+            userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
         },
@@ -162,6 +239,17 @@ async function main() {
             basePrice: 700000,
             area: 'Semarang',
             userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2'
+        },
+        {
+            id: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            name: 'Bahasa Inggris',
+            level: 'SMA',
+            totalMeetings: 2,
+            time: new Date('1970-01-01T15:00:00Z'),
+            duration: 120,
+            basePrice: 300000,
+            area: 'Semarang',
+            userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa'
         },
     ];
 
@@ -191,6 +279,24 @@ async function main() {
             price: 720000,
             packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
         },
+        {
+            id: "019618a1-68a4-7fbd-adfa-b4f55c9c5d5c",
+            type: 'privat',
+            price: 150000,
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+        },
+        { 
+            id: "019618a1-68a4-7a75-948f-e8df29d3bb9c",
+            type: 'grup3',
+            price: 270000,
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+        },
+        { 
+            id: "019618a1-68a4-7ddc-ad78-9f9e43be8ffb",
+            type: 'grup5',
+            price: 360000,
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+        }
     ];
 
     for (const groupType of groupTypes) {
@@ -215,6 +321,16 @@ async function main() {
             id : "0195c714-07f8-74ac-8c81-b47289e3596b",
             packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
             dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2"
+        },
+        {
+            id: "019618a1-68a4-75d2-b3c6-a0879be13185",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413",
+        },
+        {
+            id: "019618a1-68a4-7f43-bba4-4e8f5b047428",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0",
         }
     ]
 
@@ -223,6 +339,73 @@ async function main() {
             data: packageDay,
         });
     }
+
+    // Seed Orders
+    const orders = [
+        {
+            id: "019618a1-68a4-7134-b8a7-98ba49f8e50f",
+            userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            groupTypeId: "0195c63c-8fce-7232-990e-6d11e9ff2d02",
+            address: 'Jl. Merdeka No. 1',
+            status: 'pending'
+        },
+        {
+            id: "019618a1-68a4-75a4-abe4-dffa3730c045",
+            userId: "019618a1-68a4-7742-9471-2548f7726e86",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            groupTypeId: "019618a1-68a4-7a75-948f-e8df29d3bb9c",
+            address: 'Jl. Merdeka No. 2',
+            status: 'paid',
+        }
+    ];
+    for (const order of orders) {
+        await prisma.order.create({
+            data: order,
+        });
+    }
+
+    // Seed Class
+    const classes = [
+        {
+            id: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+            code: 'ABC123',
+            tutorId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+            orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",
+        },
+    ];
+    for (const classData of classes) {
+        await prisma.class.create({
+            data: classData,
+        });
+    }
+
+    // Seed Student Class
+    const studentClasses = [
+        {
+            id: "019618a1-68a4-740e-b6dd-a6c779e631b1",
+            classId: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+            userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa",
+        },
+        {
+            id: "01961933-236b-736d-8117-8ea235547fc6",
+            classId: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+            userId: "019618a1-68a4-7742-9471-2548f7726e86",
+        },
+        {
+            id: "01961933-236b-73b2-8a95-7e64183d1357",
+            classId: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+            userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
+        }
+    ];
+    for (const studentClass of studentClasses) {
+        await prisma.studentClass.create({
+            data: studentClass,
+        });
+    }
+
+    // Seed Schedule
+    await ScheduleService.createSchedules("019618a1-68a4-7fbc-87af-6cc1cc6cffd0");
 
     console.log('Development data seeded successfully');
 }

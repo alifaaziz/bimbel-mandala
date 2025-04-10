@@ -6,6 +6,8 @@ model GroupType {
 
     bimbelPackage BimbelPackage @relation(fields: [packageId], references: [id])
 
+    order Order []
+
     @@map("group_types")
 }
 

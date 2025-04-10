@@ -2,11 +2,13 @@ model Order {
     id          String      @id @default(uuid()) @map("id")
     userId      String      @map("user_id")
     packageId   String      @map("package_id")
+    groupTypeId String      @map("group_type_id")
     address     String?     
     status      OrderStatus @default(pending)
 
     user User @relation(fields: [userId], references: [id])
     bimbelPackage BimbelPackage @relation(fields: [packageId], references: [id])
+    groupType GroupType @relation(fields: [groupTypeId], references: [id])
 
     class       Class[]
 

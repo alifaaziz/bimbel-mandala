@@ -1,4 +1,4 @@
-# Backend Bimbingan Belajar Mandala
+# Bimbingan Belajar Mandala
 
 This repository contains both the backend (Express.js) and frontend (....) code for the Bimbingan Belajar Mandala application.
 
@@ -18,18 +18,22 @@ A Node.js/Express.js backend service providing REST APIs for Bimbingan Belajar M
 ```bash
 git clone https://github.com/alifaaziz/bimbel-mandala.git
 ```
+2. Change directory
+```bash
+cd backend
+```
 
-2. Install dependencies
+3. Install dependencies
 ```bash
 npm install
 ```
 
-3. Set up environment variables
+4. Set up environment variables
 ```bash
 cp .env.example .env
 ```
 
-4. Set up Prisma
+5. Set up Prisma
 ```bash
 npx prisma generate
 ```
