@@ -7,11 +7,11 @@ const router = Router();
 export default (app) => {
   app.use('/schedules', router);
 
-  router.post('/', ScheduleController.createSchedules);
+  router.post('/', AuthMiddleware.isAuthorized, ScheduleController.createSchedules);
 
-  router.patch('/reschedule/:id', ScheduleController.reschedule);
+  router.patch('/reschedule/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin', 'tutor']), ScheduleController.reschedule);
 
-  router.get('/closest', ScheduleController.getClosestSchedules);
+  router.get('/closest', AuthMiddleware.isAuthorized, ScheduleController.getClosestSchedules);
 
   router.get('/', AuthMiddleware.isAuthorized, ScheduleController.getSchedules);
 };
