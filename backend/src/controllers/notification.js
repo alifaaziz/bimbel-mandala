@@ -56,9 +56,24 @@ async function deleteNotification(req, res) {
   res.status(200).json({ message: 'Notification deleted' });
 }
 
+/**
+ * Gets all notifications for a admin
+ * 
+ * @async
+ * @function getAllNotifications
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the notifications.
+ */
+async function getAllNotifications(req, res) {
+  const notifications = await NotificationService.getAllNotifications();
+  res.status(200).json({ data: notifications });
+}
+
 export const NotificationController = {
   getNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
-  deleteNotification
+  deleteNotification,
+  getAllNotifications
 };

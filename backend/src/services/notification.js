@@ -67,9 +67,60 @@ async function deleteNotification(userId, notificationId) {
     });
 }
 
+/**
+ * Retrieves all notifications (admin only).
+ *
+ * @async
+ * @function getAllNotifications
+ * @returns {Promise<Array>} All notifications in the system.
+ */
+async function getAllNotifications() {
+  const notifications = await prisma.notification.findMany({
+    select: {
+      id: true,
+      type: true,
+      createdAt: true,
+      description: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          role: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  const enrichedNotifications = notifications.map((notification) => {
+    const { description, type } = notification;
+
+    if (['Program', 'Perubahan Jadwal', 'Izin', 'Absensi'].includes(type) && description) {
+      const match = description.match(/<b>(.*?)<\/b>.*?<b>(.*?) #([A-Z0-9]+)<\/b>/);
+      const programName = match ? match[2] : null;
+      const classCode = match ? match[3] : null;
+
+      return {
+        ...notification,
+        programName,
+        classCode
+      };
+    }
+    
+    return {
+      ...notification,
+      programName: null,
+      classCode: null
+    };
+  });
+
+  return enrichedNotifications;
+}
+
 export const NotificationService = {
   getNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
-  deleteNotification
+  deleteNotification,
+  getAllNotifications
 };

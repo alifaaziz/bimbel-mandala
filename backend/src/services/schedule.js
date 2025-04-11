@@ -117,10 +117,13 @@ function getNextDate(currentDate, dayIndex) {
  * @function reschedule
  * @param {String} scheduleId - The ID of the schedule to be rescheduled.
  * @param {Date} newDate - The new date for the schedule.
+ * @param {Object} req - The request object containing user information.
+ * @param {Object} res - The response object containing user information.
+ * @param {Boolean} isAdmin - Whether the action is performed by an admin.
  * @returns {Promise<Object>} The updated schedule.
  * @throws {Error} If the schedule is not found or the new date is invalid.
  */
-async function reschedule(scheduleId, newDate) {
+async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
   if (!newDate || isNaN(new Date(newDate).getTime())) {
     throw new Error('Invalid new date format');
   }
@@ -130,7 +133,19 @@ async function reschedule(scheduleId, newDate) {
   }
 
   const schedule = await prisma.schedule.findUnique({
-    where: { id: scheduleId }
+    where: { id: scheduleId },
+    include: {
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: true,
+              user: true
+            }
+          }
+        }
+      }
+    }
   });
 
   if (!schedule) {
@@ -140,6 +155,45 @@ async function reschedule(scheduleId, newDate) {
   const updatedSchedule = await prisma.schedule.update({
     where: { id: scheduleId },
     data: { date: new Date(newDate) }
+  });
+
+  const { class: classData } = schedule;
+  const { order } = classData;
+  const { bimbelPackage, user: student } = order;
+
+  const tutor = await prisma.tutor.findUnique({
+    where: { userId: bimbelPackage.userId },
+    include: { user: true }
+  });
+
+  const loggedInUser = res.locals.user;
+
+  const actorForStudent = isAdmin
+    ? 'Admin'
+    : `${tutor.gender === 'Male' ? 'Pak' : 'Bu'} ${tutor.user.name}`;
+
+  const actorForTutor = isAdmin
+    ? 'Admin'
+    : loggedInUser.id === tutor.userId
+    ? 'Anda'
+    : `${tutor.gender === 'Male' ? 'Pak' : 'Bu'} ${tutor.user.name}`;
+
+  const studentDescription = `<b>${actorForStudent}</b> melakukan perubahan jadwal pada <b>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</b>.`;
+  await prisma.notification.create({
+    data: {
+      userId: student.id,
+      type: 'Perubahan Jadwal',
+      description: studentDescription
+    }
+  });
+
+  const tutorDescription = `<b>${actorForTutor}</b> melakukan perubahan jadwal pada <b>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</b>.`;
+  await prisma.notification.create({
+    data: {
+      userId: tutor.userId,
+      type: 'Perubahan Jadwal',
+      description: tutorDescription
+    }
   });
 
   return updatedSchedule;

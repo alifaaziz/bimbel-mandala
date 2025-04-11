@@ -47,7 +47,7 @@ npm run dev
 
 ### API Documentation
 
-API endpoints will be documented here.
+[API documentation click here](https://documenter.getpostman.com/view/33519949/2sB2cXA2MZ)
 
 
 ## Frontend - ...
