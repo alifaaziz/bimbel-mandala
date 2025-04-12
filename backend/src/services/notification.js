@@ -101,14 +101,20 @@ async function getAllNotifications() {
       const classCode = match ? match[3] : null;
 
       return {
-        ...notification,
+        id: notification.id,
+        type : notification.type,
+        createdAt: notification.createdAt,
+        user: notification.user,
         programName,
         classCode
       };
     }
     
     return {
-      ...notification,
+      id: notification.id,
+      type : notification.type,
+      createdAt: notification.createdAt,
+      user: notification.user,
       programName: null,
       classCode: null
     };

@@ -6,6 +6,7 @@ import _package from './package.js';
 import order from './order.js';
 import _class from './class.js';
 import schedule from './schedule.js';
+import docs from './docs.js';
 
 export default (app) => {
     root(app);
@@ -16,4 +17,5 @@ export default (app) => {
     order(app);
     _class(app);
     schedule(app);
+    docs(app);
   };
