@@ -32,14 +32,30 @@ async function getBimbelPackageById(req, res) {
 
 /**
  * Handles the request to create a new bimbel package.
- * 
+ *
  * @async
  * @function createBimbelPackage
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the created bimbel package.
  */
 async function createBimbelPackage(req, res) {
-    const packageData = req.body;
-    const newPackage = await BimbelPackageService.createBimbelPackage(packageData);
-    res.status(201).json(newPackage);
+  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+
+  const createdPackage = await BimbelPackageService.createBimbelPackage({
+    name,
+    level,
+    totalMeetings,
+    time,
+    duration,
+    area,
+    tutorId,
+    groupType,
+    days,
+    discount
+  });
+
+  res.status(201).json(createdPackage);
 }
 
 /**
@@ -52,9 +68,9 @@ async function createBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the created bimbel package.
  */
 async function createClassBimbelPackage(req, res) {
-    const packageData = req.body;
-    const newPackage = await BimbelPackageService.createClassBimbelPackage(packageData);
-    res.status(201).json(newPackage);
+    const packageData = req.body; // Ambil data dari request body
+    const newPackage = await BimbelPackageService.createClassBimbelPackage(packageData); // Panggil service
+    res.status(201).json(newPackage); // Kembalikan respons
 }
 
 
@@ -68,26 +84,57 @@ async function createClassBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the updated bimbel package.
  */
 async function updateBimbelPackage(req, res) {
-    const { id } = req.params;
-    const packageData = req.body;
-    const updatedPackage = await BimbelPackageService.updateBimbelPackage(id, packageData);
-    res.status(200).json(updatedPackage);
+  const { id } = req.params; // Ambil ID dari parameter URL
+  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+
+  const updatedPackage = await BimbelPackageService.updateBimbelPackage(id, {
+    name,
+    level,
+    totalMeetings,
+    time,
+    duration,
+    area,
+    tutorId,
+    groupType,
+    days,
+    discount
+  });
+
+  res.status(200).json(updatedPackage);
 }
 
 /**
- * Update a class bimbel package by ID with new data.
- * 
+ * Updates a class bimbel package by ID with new data.
+ *
  * @async
  * @function updateClassBimbelPackage
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Promise<void>} Resolves with the updated bimbel package.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the updated class bimbel package.
  */
 async function updateClassBimbelPackage(req, res) {
-    const { id } = req.params;
-    const packageData = req.body;
-    const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(id, packageData);
-    res.status(200).json(updatedPackage);
+  const { id } = req.params; // Ambil ID dari parameter URL
+  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+
+  // Pastikan `groupType` memiliki `price`
+  if (!groupType || !groupType.price) {
+    return res.status(400).json({ message: 'Group type price is required' });
+  }
+
+  const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(id, {
+    name,
+    level,
+    totalMeetings,
+    time,
+    duration,
+    area,
+    tutorId,
+    groupType,
+    days,
+    discount
+  });
+
+  res.status(200).json(updatedPackage); // Kembalikan respons
 }
 
 /**

@@ -2,7 +2,7 @@ model GroupType {
     id          String     @id @default(uuid(7))
     type        StudyType
     price       Decimal
-    discount    Decimal?
+    discPrice   Decimal?
     packageId   String  @map("package_id")
 
     bimbelPackage BimbelPackage @relation(fields: [packageId], references: [id])
