@@ -9,78 +9,83 @@ import { prisma } from '../utils/db.js';
  * @returns {Promise<Array>} The created schedules.
  */
 async function createSchedules(classId) {
-    const classData = await prisma.class.findUnique({
-      where: { id: classId },
-      include: {
-        order: {
-          include: {
-            bimbelPackage: {
-              include: {
-                packageDay: {
-                  include: {
-                    day: true
-                  }
+  const classData = await prisma.class.findUnique({
+    where: { id: classId },
+    include: {
+      order: {
+        include: {
+          bimbelPackage: {
+            include: {
+              packageDay: {
+                include: {
+                  day: true
                 }
               }
             }
           }
         }
       }
-    });
-  
-    if (!classData) {
-      throw new Error('Class not found');
     }
-  
-    const { bimbelPackage } = classData.order;
-    const { packageDay, totalMeetings, time } = bimbelPackage;
-  
-    if (!time || isNaN(new Date(time).getTime())) {
-      throw new Error('Invalid time format in bimbelPackage');
-    }
+  });
 
-    const days = packageDay.map((pd) => pd.day.daysName);
+  if (!classData) {
+    throw new Error('Class not found');
+  }
 
-    const startDate = new Date();
-    const schedules = [];
-    let meet = 1;
+  const { order } = classData;
+  const { bimbelPackage } = order;
+  const { packageDay, totalMeetings, time } = bimbelPackage;
 
-    const totalWeeks = totalMeetings * 4; // Asumsi 4 minggu dalam sebulan
-    let currentDate = new Date(startDate);
-  
-    for (let week = 0; week < totalWeeks; week++) {
-      for (const dayName of days) {
-        const dayIndex = getDayIndex(dayName);
-        const scheduleDate = getNextDate(currentDate, dayIndex);
+  if (!totalMeetings || totalMeetings <= 0) {
+    throw new Error('Invalid totalMeetings in bimbelPackage');
+  }
 
-        if (scheduleDate > currentDate) {
-          const scheduleWithTime = new Date(scheduleDate);
-          const timeDate = new Date(time);
-          scheduleWithTime.setHours(timeDate.getHours(), timeDate.getMinutes(), 0, 0);
-  
-          schedules.push({
-            classId,
-            date: scheduleWithTime,
-            meet: meet++,
-            status: 'terjadwal'
-          });
+  if (!time || isNaN(new Date(time).getTime())) {
+    throw new Error('Invalid time format in bimbelPackage');
+  }
 
-          currentDate = new Date(scheduleWithTime);
-        }
+  const days = packageDay.map((pd) => pd.day.daysName);
+
+  const startDate = new Date();
+  const schedules = [];
+  let meet = 1;
+  let currentDate = new Date(startDate);
+
+  while (meet <= totalMeetings) {
+    for (const dayName of days) {
+      if (meet > totalMeetings) break;
+
+      const dayIndex = getDayIndex(dayName);
+      const scheduleDate = getNextDate(currentDate, dayIndex);
+
+      if (scheduleDate > currentDate) {
+        const scheduleWithTime = new Date(scheduleDate);
+        const timeDate = new Date(time);
+        scheduleWithTime.setHours(timeDate.getHours(), timeDate.getMinutes(), 0, 0);
+
+        schedules.push({
+          classId,
+          date: scheduleWithTime,
+          meet: meet++,
+          status: 'terjadwal'
+        });
+
+        currentDate = new Date(scheduleWithTime);
       }
     }
-
-    await prisma.schedule.createMany({
-      data: schedules
-    });
-
-    const createdSchedules = await prisma.schedule.findMany({
-      where: { classId },
-      orderBy: { date: 'asc' }
-    });
-  
-    return createdSchedules;
   }
+
+  await prisma.schedule.createMany({
+    data: schedules
+  });
+
+  const createdSchedules = await prisma.schedule.findMany({
+    where: { classId },
+    orderBy: { date: 'asc' }
+  });
+
+  return createdSchedules;
+}
 
 /**
  * Converts a day name in Indonesian to its corresponding index (e.g., Senin -> 1).

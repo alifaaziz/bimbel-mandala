@@ -5,7 +5,6 @@ model BimbelPackage {
     totalMeetings Int        @map("total_meetings")
     time          DateTime   
     duration      Int
-    basePrice     Decimal    @map("base_price")
     area          String
     userId        String     @map("user_id")
     isActive      Boolean    @default(true) @map("is_active")

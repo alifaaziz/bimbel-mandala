@@ -236,7 +236,6 @@ async function main() {
             totalMeetings: 6,
             time: new Date('1970-01-01T15:00:00Z'),
             duration: 120,
-            basePrice: 700000,
             area: 'Semarang',
             userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2'
         },
@@ -247,7 +246,6 @@ async function main() {
             totalMeetings: 2,
             time: new Date('1970-01-01T15:00:00Z'),
             duration: 120,
-            basePrice: 300000,
             area: 'Semarang',
             userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa'
         },
@@ -264,8 +262,13 @@ async function main() {
         { 
             id: "0195c63c-8fce-7232-990e-6d11e9ff2d02",
             type: 'privat',
-            price: 300000,
+            price: 4320000,
             packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+        },
+        {
+            id: "019631ed-ff7f-77c0-a7bc-6911e8e01b97",
+            type: 'grup2',
+            price: 450000,
         },
         { 
             id: "0195c63c-8fce-73ee-beb0-f075a8d73cfc",

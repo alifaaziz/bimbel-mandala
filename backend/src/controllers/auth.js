@@ -132,8 +132,11 @@ async function sendUserVerificationOtp(_req, res) {
  */
 async function verifyUserVerificationOtp(req, res) {
     const { email, otp } = req.body;
-    await OtpService.verifyOtp({ email, otp });
-    res.status(200).json({ message: 'OTP verified successfully' });
+    const userWithToken = await OtpService.verifyOtp({ email, otp });
+    res.status(200).json({
+        message: 'OTP verified successfully',
+        data: userWithToken
+    });
 }
 
 export const AuthController = {
