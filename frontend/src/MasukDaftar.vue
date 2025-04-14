@@ -1,10 +1,23 @@
 <script setup>
-import navbar from './components/navbar.vue'
+import HelloWorld from './components/HelloWorld.vue'
+import LoginCom from './components/logincom.vue'
 </script>
 
 <template>
-  <!-- <p style="position: left;">test</p> -->
-  <navbar />
+
+  <!-- Header dengan componen dan msg  -->
+  <header>
+      <!-- Background -->
+    <div class="background"></div>
+    <div class="wrapper">
+      <HelloWorld msg="Selamat Datang di Mandala!" />
+    </div>
+  </header>
+
+  <!-- main pake componen form -->
+  <main>
+    <LoginCom />
+  </main>
 </template>
 
 <style scoped>
@@ -54,4 +67,10 @@ import navbar from './components/navbar.vue'
     height: 100%;
   }
 }
+
+#template {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    padding: 0 2rem;
+  }
 </style>

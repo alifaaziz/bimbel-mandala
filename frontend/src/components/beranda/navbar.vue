@@ -2,7 +2,7 @@
     <n-layout>
       <n-layout-header class="navbar">
         <div class="logo">
-          <img src="../assets/logomandala.svg" alt="Logo" />
+          <img src="../../assets/logomandala22.png" alt="Logo" />
         </div>
         <div class="menu-container">
           <n-button
@@ -116,12 +116,19 @@
     z-index: 1000;
     display: flex;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 0 20px;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+    padding: 0 8rem;
+    border-bottom: 2px solid #9BAFCB; 
   }
   
+  .logo {
+    display: contents;
+    align-items: center;
+    height: 100%;
+  }
+
   .logo img {
-    height: 40px;
+    height: 56px;
     object-fit: contain;
   }
   
@@ -149,6 +156,12 @@
     color: #FB8312 !important;
     font-weight: 600; /* optional: to highlight selected item more */
 }
+
+@media (max-width: 961px) {
+    .navbar {
+      padding: 2rem 40px;
+    }
+  }
 
 </style>
 

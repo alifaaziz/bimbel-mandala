@@ -18,7 +18,7 @@ function login() {
       <p class="bodyr2">Lorem ipsum dolor sit amet</p>
     </div>
 
-    <div class="container">
+    <div class="compo">
         
         <n-form-item label="Username">Username</n-form-item>
         <n-input 
@@ -127,5 +127,9 @@ function login() {
 :deep(.n-input:focus-within) {
   border-color: #154484 !important; /* Warna border saat focus */
   box-shadow: 0 0 4px #154484 !important; /* Tambahkan efek glow */
+}
+
+.compo {
+  padding: 1rem 0;
 }
 </style>
