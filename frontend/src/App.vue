@@ -43,7 +43,7 @@ header {
 }
 
 .part {
-  padding: 4rem 0 0 ;
+  padding: 4rem 0 ;
 }
 
 @media (min-width: 982px) {
