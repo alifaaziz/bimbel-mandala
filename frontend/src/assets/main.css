@@ -2,17 +2,7 @@
 
 #app {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+  margin-top: 68px ;
 }
 
 @media (hover: hover) {
@@ -23,13 +13,71 @@ a,
 
 @media (min-width: 1024px) {
   body {
-    display: flex;
+    margin-top: 0px;
+    display: block;
     place-items: center;
   }
 
-  #app {
+  /* #app {
+    padding-top: 3rem;
+  } */
+  
+  /* #app {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr; 
     padding: 0 2rem;
+    } */
   }
+  @media (max-width: 961px) {
+    #app {
+      padding: 3rem 40px;
+    }
+  }
+
+/* Font Header */
+
+.headerb1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.headersb1 {
+  color: #154484;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: flex;
+  position: relative;
+}
+
+.headerr2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 1.5;
+}
+
+.headersb3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Font Body */
+
+.bodyr2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+/* Font Button */
+
+.buttonb2{
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
 }
