@@ -155,9 +155,19 @@ async function createBimbelPackage(data) {
     }
   });
 
+  if (dayIds.length === 0) {
+    throw new Error('Invalid days provided');
+  }
+
   const calculatedGroupType = groupType.map(gt => ({
     ...gt,
-    discPrice: Math.round(gt.price * (1 - discount / 100))
+    discPrice: Math.round(gt.price * (1 - discount / 100)),
+    maxStudent: gt.type === 'privat' ? 1 :
+                gt.type === 'grup2' ? 2 :
+                gt.type === 'grup3' ? 3 :
+                gt.type === 'grup4' ? 4 :
+                gt.type === 'grup5' ? 5 :
+                gt.maxStudent
   }));
 
   const createdPackage = await prisma.bimbelPackage.create({
@@ -174,7 +184,8 @@ async function createBimbelPackage(data) {
         create: calculatedGroupType.map(gt => ({
           type: gt.type,
           price: gt.price,
-          discPrice: gt.discPrice
+          discPrice: gt.discPrice,
+          maxStudent: gt.maxStudent
         }))
       },
       packageDay: {
@@ -237,7 +248,8 @@ async function createClassBimbelPackage(data) {
       groupType: {
         create: {
           type: 'kelas',
-          price: groupType.price
+          price: groupType.price,
+          maxStudent: groupType.maxStudent 
         }
       },
       packageDay: {
@@ -278,7 +290,6 @@ async function createClassBimbelPackage(data) {
 async function updateBimbelPackage(id, data) {
   const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = data;
 
-
   const dayIds = await prisma.day.findMany({
     where: {
       daysName: {
@@ -296,7 +307,13 @@ async function updateBimbelPackage(id, data) {
 
   const calculatedGroupType = groupType.map(gt => ({
     ...gt,
-    discPrice: Math.round(gt.price * (1 - discount / 100))
+    discPrice: Math.round(gt.price * (1 - discount / 100)),
+    maxStudent: gt.type === 'privat' ? 1 :
+                gt.type === 'grup2' ? 2 :
+                gt.type === 'grup3' ? 3 :
+                gt.type === 'grup4' ? 4 :
+                gt.type === 'grup5' ? 5 :
+                gt.maxStudent
   }));
 
   const updatedPackage = await prisma.bimbelPackage.update({
@@ -311,17 +328,18 @@ async function updateBimbelPackage(id, data) {
       duration,
       area,
       userId: tutorId,
-      discount, 
+      discount,
       groupType: {
         deleteMany: {},
         create: calculatedGroupType.map(gt => ({
           type: gt.type,
           price: gt.price,
-          discPrice: gt.discPrice
+          discPrice: gt.discPrice,
+          maxStudent: gt.maxStudent
         }))
       },
       packageDay: {
-        deleteMany: {}, 
+        deleteMany: {},
         create: dayIds.map(day => ({
           day: {
             connect: {
@@ -335,7 +353,7 @@ async function updateBimbelPackage(id, data) {
       groupType: true,
       packageDay: {
         include: {
-          day: true 
+          day: true
         }
       }
     }
@@ -378,7 +396,8 @@ async function updateClassBimbelPackage(id, data) {
     {
       type: 'kelas',
       price: groupType.price,
-      discPrice: Math.round(groupType.price * (1 - discount / 100)) 
+      discPrice: Math.round(groupType.price * (1 - discount / 100)),
+      maxStudent: groupType.maxStudent
     }
   ];
 
@@ -414,7 +433,7 @@ async function updateClassBimbelPackage(id, data) {
       groupType: true,
       packageDay: {
         include: {
-          day: true 
+          day: true
         }
       }
     }
