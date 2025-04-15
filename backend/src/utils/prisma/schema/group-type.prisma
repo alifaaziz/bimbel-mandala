@@ -4,7 +4,7 @@ model GroupType {
     price       Decimal
     discPrice   Decimal?
     packageId   String  @map("package_id")
-    maxStudent  Decimal 
+    maxStudent  Decimal @map("max_student")
 
     bimbelPackage BimbelPackage @relation(fields: [packageId], references: [id])
 

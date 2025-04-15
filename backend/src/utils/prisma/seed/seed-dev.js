@@ -265,65 +265,75 @@ async function main() {
             type: 'privat',
             price: 1540000,
             discPrice: 1386000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 1
         },
         {
             id: "019631ed-ff7f-77c0-a7bc-6911e8e01b97",
             type: 'grup2',
             price: 2860000,
             discPrice: 2574000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 2
         },
         { 
             id: "0195c63c-8fce-73ee-beb0-f075a8d73cfc",
             type: 'grup3',
             price: 4180000,
             discPrice: 3762000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 3
         },
         { 
             id: "01963701-9f9b-7fd9-81d8-82d1e63bf5fa",
             type: 'grup4',
             price: 5500000,
             discPrice: 4950000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 4
         },
         { 
             id: "0195c63c-8fce-74a3-bb8f-c3b07e4b0cb1",
             type: 'grup5',
             price: 6820000,
             discPrice: 6138000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 5
         },
         {
             id: "019618a1-68a4-7fbd-adfa-b4f55c9c5d5c",
             type: 'privat',
             price: 580000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 1
         },
         { 
             id: "019618a1-68a4-7a75-948f-e8df29d3bb9c",
             type: 'grup2',
             price: 1020000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 2
         },
         { 
             id: "019618a1-68a4-7ddc-ad78-9f9e43be8ffb",
             type: 'grup3',
             price: 1460000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 3
         },
         { 
             id: "01963714-7d72-73a8-adf1-ba8ac656ca62",
             type: 'grup4',
             price: 1900000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 4
         },
         { 
             id: "01963714-a4a0-7260-b049-1aedc3b832f1",
             type: 'grup5',
             price: 2340000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 5
         }
     ];
 
