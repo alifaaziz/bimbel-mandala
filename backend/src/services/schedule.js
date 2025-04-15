@@ -140,6 +140,7 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
   const schedule = await prisma.schedule.findUnique({
     where: { id: scheduleId },
     include: {
+      attendances: true,
       class: {
         include: {
           order: {
@@ -157,9 +158,18 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
     throw new Error('Schedule not found');
   }
 
+  if (schedule.status === 'jadwal_ulang') {
+    throw new Error('Reschedule can only be done once');
+  }
+
+  const attendance = schedule.attendances[0];
+  if (attendance && (attendance.status === 'masuk' || attendance.status === 'izin')) {
+    throw new Error('Cannot reschedule after attendance has been recorded');
+  }
+
   const updatedSchedule = await prisma.schedule.update({
     where: { id: scheduleId },
-    data: { date: new Date(newDate) }
+    data: { date: new Date(newDate), status: 'jadwal_ulang' }
   });
 
   const { class: classData } = schedule;
@@ -241,7 +251,6 @@ async function getClosestSchedules() {
  * @returns {Promise<Array>} The schedules for the student.
  */
 async function getSchedulesForStudent(userId) {
-
   const studentClasses = await prisma.studentClass.findMany({
     where: { userId: userId },
     select: { classId: true }
@@ -255,7 +264,15 @@ async function getSchedulesForStudent(userId) {
 
   const schedules = await prisma.schedule.findMany({
     where: { classId: { in: classIds } },
-    include: { class: true },
+    include: {
+      class: true, // Sertakan data lengkap dari relasi `class`
+      attendances: { // Gunakan relasi `attendances`
+        where: { userId }, // Ambil attendance hanya untuk user yang sedang login
+        select: {
+          status: true // Ambil status attendance
+        }
+      }
+    },
     orderBy: { date: 'asc' }
   });
 
@@ -263,9 +280,25 @@ async function getSchedulesForStudent(userId) {
     throw new Error('No schedules found for this student');
   }
 
-  return schedules;
+  // Map data untuk menampilkan status attendance jika ada
+  return schedules.map(schedule => {
+    const attendance = schedule.attendances[0]; // Ambil attendance pertama (jika ada)
+    return {
+      id: schedule.id,
+      classId: schedule.classId,
+      date: schedule.date,
+      meet: schedule.meet,
+      status: attendance ? attendance.status : schedule.status, // Tampilkan status attendance jika ada, jika tidak tampilkan status schedule
+      information: schedule.information,
+      class: {
+        id: schedule.class.id,
+        code: schedule.class.code,
+        orderId: schedule.class.orderId,
+        tutorId: schedule.class.tutorId
+      }
+    };
+  });
 }
-
 
 /**
  * Get schedules for a tutor based on their user ID.
@@ -279,15 +312,17 @@ async function getSchedulesForTutor(userId) {
   const schedules = await prisma.schedule.findMany({
     where: {
       class: {
-        order: {
-          bimbelPackage: {
-            userId 
-          }
-        }
+        tutorId: userId // Filter langsung berdasarkan tutorId di tabel Class
       }
     },
     include: {
-      class: true
+      class: true, // Sertakan data lengkap dari relasi `class`
+      attendances: { // Gunakan relasi `attendances`
+        where: { userId }, // Ambil attendance hanya untuk user yang sedang login
+        select: {
+          status: true // Ambil status attendance
+        }
+      }
     },
     orderBy: {
       date: 'asc'
@@ -298,7 +333,24 @@ async function getSchedulesForTutor(userId) {
     throw new Error('No schedules found for this tutor');
   }
 
-  return schedules;
+  // Map data untuk menampilkan status attendance jika ada
+  return schedules.map(schedule => {
+    const attendance = schedule.attendances[0]; // Ambil attendance pertama (jika ada)
+    return {
+      id: schedule.id,
+      classId: schedule.classId,
+      date: schedule.date,
+      meet: schedule.meet,
+      status: attendance ? attendance.status : schedule.status, // Tampilkan status attendance jika ada, jika tidak tampilkan status schedule
+      information: schedule.information,
+      class: {
+        id: schedule.class.id,
+        code: schedule.class.code,
+        orderId: schedule.class.orderId,
+        tutorId: schedule.class.tutorId // Ambil tutorId langsung dari tabel Class
+      }
+    };
+  });
 }
 
 /**
