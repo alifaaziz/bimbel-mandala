@@ -12,7 +12,7 @@ import { prisma } from '../utils/db.js';
  * @param {string} [data.reason] - The reason for absence (only for izin).
  * @returns {Promise<Object>} The created attendance record.
  */
-export async function createAttendance({ scheduleId, userId, status, reason = null }) {
+async function createAttendance({ scheduleId, userId, status, reason = null }) {
   const attendance = await prisma.attendance.create({
     data: {
       scheduleId,
@@ -33,7 +33,7 @@ export async function createAttendance({ scheduleId, userId, status, reason = nu
  * @function markAlphaForMissedSchedules
  * @returns {Promise<void>}
  */
-export async function markAlphaForMissedSchedules() {
+async function markAlphaForMissedSchedules() {
   const now = new Date();
 
   const schedules = await prisma.schedule.findMany({
@@ -85,3 +85,8 @@ export async function markAlphaForMissedSchedules() {
     }
   }
 }
+
+export const AttendanceService = {
+  createAttendance,
+  markAlphaForMissedSchedules,
+};

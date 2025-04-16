@@ -477,6 +477,49 @@ async function deleteBimbelPackage(id) {
   };
 }
 
+/**
+ * Updates the isActive status of bimbelPackage to true
+ * if all schedules in a class have attendances.
+ *
+ * @async
+ * @function updateBimbelPackageStatus
+ * @returns {Promise<void>}
+ */
+async function updateBimbelPackageStatus() {
+  const classes = await prisma.class.findMany({
+    include: {
+      schedules: {
+        include: {
+          attendances: true
+        }
+      },
+      order: {
+        include: {
+          bimbelPackage: true
+        }
+      }
+    }
+  });
+
+  for (const classItem of classes) {
+    const allSchedulesHaveAttendance = classItem.schedules.every(
+      (schedule) => schedule.attendances.length > 0
+    );
+
+    if (allSchedulesHaveAttendance && classItem.order?.bimbelPackage) {
+      await prisma.bimbelPackage.update({
+        where: {
+          id: classItem.order.bimbelPackage.id
+        },
+        data: {
+          isActive: true
+        }
+      });
+    }
+  }
+  return { message: 'Bimbel package status updated successfully' };
+}
+
 export const BimbelPackageService = {
   getAllBimbelPackages,
   getBimbelPackageById,
@@ -484,5 +527,6 @@ export const BimbelPackageService = {
   createClassBimbelPackage,
   updateBimbelPackage,
   updateClassBimbelPackage,
-  deleteBimbelPackage
+  deleteBimbelPackage,
+  updateBimbelPackageStatus
 };

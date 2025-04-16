@@ -1,4 +1,4 @@
-import { createAttendance, markAlphaForMissedSchedules } from "../services/attendance.js";
+import { AttendanceService } from "../services/attendance.js";
 import { asyncWrapper } from "../utils/asyncWrapper.js";
 
 /**
@@ -14,7 +14,7 @@ async function absenMasuk(req, res) {
     const { scheduleId } = req.body; 
     const userId = res.locals.user.id;
 
-    const attendance = await createAttendance({
+    const attendance = await AttendanceService.createAttendance({
         scheduleId,
         userId,
         status: "masuk",
@@ -43,7 +43,7 @@ async function absenIzin(req, res) {
         return res.status(400).json({ message: "Reason is required for izin" });
     }
 
-    const attendance = await createAttendance({
+    const attendance = await AttendanceService.createAttendance({
         scheduleId,
         userId,
         status: "izin",
@@ -66,12 +66,12 @@ async function absenIzin(req, res) {
  * @returns {Promise<void>} Resolves with a success message.
  */
 async function markAlphaAttendance(req, res) {
-  await markAlphaForMissedSchedules();
+  await AttendanceService.markAlphaForMissedSchedules();
   res.status(200).json({ message: 'Alpha attendance marked for missed schedules.' });
 }
 
 export const AttendanceController = {
     absenMasuk: asyncWrapper(absenMasuk),
     absenIzin: asyncWrapper(absenIzin),
-    markAlphaAttendance: asyncWrapper(markAlphaAttendance)
+    markAlphaAttendance: asyncWrapper(markAlphaAttendance),
 };

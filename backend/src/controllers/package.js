@@ -151,6 +151,21 @@ async function deleteBimbelPackage(req, res) {
     res.status(200).json({ message: 'Bimbel package deleted successfully' });
 }
 
+/**
+ * Update bimbel package isActive when all schedule have been attended
+ *
+ * @async
+ * @function updateBimbelPackageStatus
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the updated bimbel package.
+ */
+async function updateBimbelPackageStatus(req, res) {
+  const { packageId } = req.body;
+  const updatedPackage = await BimbelPackageService.updateBimbelPackageStatus(packageId);
+  res.status(200).json(updatedPackage);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getBimbelPackageById: asyncWrapper(getBimbelPackageById),
@@ -158,5 +173,6 @@ export const BimbelPackageController = {
     createClassBimbelPackage: asyncWrapper(createClassBimbelPackage),
     updateBimbelPackage: asyncWrapper(updateBimbelPackage),
     updateClassBimbelPackage: asyncWrapper(updateClassBimbelPackage),
-    deleteBimbelPackage: asyncWrapper(deleteBimbelPackage)
+    deleteBimbelPackage: asyncWrapper(deleteBimbelPackage),
+    updateBimbelPackageStatus: asyncWrapper(updateBimbelPackageStatus),
 };
