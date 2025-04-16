@@ -24,3 +24,64 @@ export async function createAttendance({ scheduleId, userId, status, reason = nu
 
   return attendance;
 }
+
+/**
+ * Automatically marks attendance as 'alpha' for all users and tutors
+ * involved in a schedule if the schedule date has passed and no attendance exists.
+ *
+ * @async
+ * @function markAlphaForMissedSchedules
+ * @returns {Promise<void>}
+ */
+export async function markAlphaForMissedSchedules() {
+  const now = new Date();
+
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      date: {
+        lt: now
+      },
+      attendances: {
+        none: {}
+      }
+    },
+    include: {
+      class: {
+        include: {
+          studentClasses: {
+            include: {
+              user: true
+            }
+          },
+          tutor: true
+        }
+      }
+    }
+  });
+
+  for (const schedule of schedules) {
+    const { id: scheduleId, class: { studentClasses, tutorId } } = schedule;
+
+    for (const studentClass of studentClasses) {
+      await prisma.attendance.create({
+        data: {
+          scheduleId,
+          userId: studentClass.user.id,
+          status: 'alpha',
+          reason: null
+        }
+      });
+    }
+
+    if (tutorId) {
+      await prisma.attendance.create({
+        data: {
+          scheduleId,
+          userId: tutorId,
+          status: 'alpha',
+          reason: null
+        }
+      });
+    }
+  }
+}

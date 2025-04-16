@@ -10,4 +10,6 @@ export default (app) => {
     router.post('/masuk', AuthMiddleware.isAuthorized, AttendanceController.absenMasuk);
 
     router.post('/izin', AuthMiddleware.isAuthorized, AttendanceController.absenIzin);
+
+    router.post('/alpha', AuthMiddleware.isAuthorized, AttendanceController.markAlphaAttendance);
 };

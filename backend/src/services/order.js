@@ -21,6 +21,15 @@ async function createOrder(userId, packageId, groupTypeId, address) {
       status: 'pending'
     }
   });
+
+  await prisma.bimbelPackage.update({
+    where: {
+      id: packageId
+    },
+    data: {
+      isActive: false
+    }
+  });
 }
 
 /**
@@ -48,11 +57,6 @@ async function updateOrderStatus(orderId, status) {
       }
     }
   });
-
-  if (status === 'paid') {
-    const newClass = await ClassService.createClass({ orderId });
-    await ScheduleService.createSchedules(newClass.id);
-  }
 
   if (status === 'paid') {
     const newClass = await ClassService.createClass({ orderId });

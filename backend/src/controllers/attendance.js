@@ -1,4 +1,4 @@
-import { createAttendance } from "../services/attendance.js";
+import { createAttendance, markAlphaForMissedSchedules } from "../services/attendance.js";
 import { asyncWrapper } from "../utils/asyncWrapper.js";
 
 /**
@@ -56,7 +56,22 @@ async function absenIzin(req, res) {
     });
 }
 
+/**
+ * Handles the request to mark attendance as 'alpha' for missed schedules.
+ *
+ * @function markAlphaAttendance
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with a success message.
+ */
+async function markAlphaAttendance(req, res) {
+  await markAlphaForMissedSchedules();
+  res.status(200).json({ message: 'Alpha attendance marked for missed schedules.' });
+}
+
 export const AttendanceController = {
     absenMasuk: asyncWrapper(absenMasuk),
     absenIzin: asyncWrapper(absenIzin),
+    markAlphaAttendance: asyncWrapper(markAlphaAttendance)
 };

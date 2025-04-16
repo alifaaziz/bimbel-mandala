@@ -17,4 +17,5 @@ model Attendance {
 enum AttendanceStatus {
   masuk
   izin
+  alpha
 }
