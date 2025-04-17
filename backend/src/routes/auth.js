@@ -5,6 +5,7 @@ import { AuthValidationMiddleware } from '../middlewares/validation/auth.js';
 import { UserValidation } from '../middlewares/validation/user.js';
 import { CommonValidationMiddleware } from '../middlewares/validation/common.js';
 import { OtpValidationMiddleware } from '../middlewares/validation/otp.js';
+import { AuthMiddleware } from '../middlewares/auth.js';
 
 export default (app) => {
     const router = Router();
@@ -43,6 +44,12 @@ export default (app) => {
         '/password-reset/confirm',
         AuthValidationMiddleware.isValidResetPasswordPayload,
         AuthController.resetPassword
+    );
+
+    router.post(
+        '/password-change',
+        AuthMiddleware.isAuthorized,
+        AuthController.changePassword
     );
 
     router.get('/otp', (_req, res) => {

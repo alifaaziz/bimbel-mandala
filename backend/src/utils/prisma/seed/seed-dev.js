@@ -26,7 +26,7 @@ async function main() {
         {
             id: "0195c5ed-3fc8-705b-8a17-dcef7de62796",
             name: 'Admin Development',
-            email: 'admin@admin.com',
+            email: 'admin@mail.com',
             password: await bcrypt.hash('password123', 10),
             role: 'admin',
             verified: true,

@@ -3,7 +3,7 @@ CREATE TABLE `attendances` (
     `id` VARCHAR(191) NOT NULL,
     `schedule_id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
-    `status` ENUM('masuk', 'izin') NOT NULL,
+    `status` ENUM('masuk', 'izin', 'alpha') NOT NULL,
     `reason` VARCHAR(191) NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -19,9 +19,9 @@ CREATE TABLE `bimbel_packages` (
     `total_meetings` INTEGER NOT NULL,
     `time` DATETIME(3) NOT NULL,
     `duration` INTEGER NOT NULL,
-    `base_price` DECIMAL(65, 30) NOT NULL,
     `area` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
+    `discount` DECIMAL(65, 30) NULL,
     `is_active` BOOLEAN NOT NULL DEFAULT true,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -46,8 +46,6 @@ CREATE TABLE `class` (
 CREATE TABLE `days` (
     `id` VARCHAR(191) NOT NULL,
     `days_name` VARCHAR(191) NOT NULL,
-    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -55,9 +53,11 @@ CREATE TABLE `days` (
 -- CreateTable
 CREATE TABLE `group_types` (
     `id` VARCHAR(191) NOT NULL,
-    `type` ENUM('privat', 'grup3', 'grup5', 'kelas') NOT NULL,
+    `type` ENUM('privat', 'grup2', 'grup3', 'grup4', 'grup5', 'kelas') NOT NULL,
     `price` DECIMAL(65, 30) NOT NULL,
+    `discPrice` DECIMAL(65, 30) NULL,
     `package_id` VARCHAR(191) NOT NULL,
+    `max_student` DECIMAL(65, 30) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -160,6 +160,28 @@ CREATE TABLE `students` (
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     UNIQUE INDEX `students_user_id_key`(`user_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `tutor_application` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `birth_date` DATETIME(3) NULL,
+    `gender` ENUM('Male', 'Female') NULL,
+    `phone` VARCHAR(191) NULL,
+    `subjects` VARCHAR(191) NULL,
+    `status` ENUM('TH1', 'TH2', 'TH3', 'TH4', 'TH5', 'S1', 'S2', 'S3') NULL,
+    `major` VARCHAR(191) NULL,
+    `school` VARCHAR(191) NULL,
+    `teach_level` VARCHAR(191) NULL,
+    `description` VARCHAR(191) NULL,
+    `photo` VARCHAR(191) NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE INDEX `tutor_application_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
