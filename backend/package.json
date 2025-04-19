@@ -9,7 +9,8 @@
     "db:migrate:reset": "npm run db:reset && dotenv -e .env -- prisma migrate dev",
     "db:reset": "dotenv -e .env -- prisma migrate reset --force",
     "db:seed": "dotenv -e .env -- node src/utils/prisma/seed/seed.js",
-    "db:seed:dev": "npm run db:reset && dotenv -e .env -- node src/utils/prisma/seed/seed-dev.js"
+    "db:seed:dev": "npm run db:reset && dotenv -e .env -- node src/utils/prisma/seed/seed-dev.js",
+    "api": "node src/scripts/openapi.js"
   },
   "keywords": [],
   "author": "",
