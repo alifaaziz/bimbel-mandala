@@ -1,43 +1,55 @@
 <script setup>
 import { NCard } from 'naive-ui'
+import { programs } from '@/assets/dataSementara/program.js'
 </script>
 
 <template>
-  <n-card 
-    class="n-card"
-    style="width: 558px; height: 304px; margin: 0 auto; background-color: #003366;"
-  >
-    <div class="card-content">
-      <!-- Bagian gambar -->
-      <div class="card-image">
-        <img 
-          src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg" 
-          alt="Profile Image" 
-        />
-        <p class="privat">Privat/Kelompok</p>
-      </div>
-      <!-- Bagian teks -->
-      <div class="card-text">
-        <div class="header">
-          <div class="title-group">
-            <h3>Matematika</h3>
-            <p class="name">Pak Dendy Wan S.Pd</p>
+  <div class="card-container">
+    <n-card 
+      v-for="program in programs" 
+      :key="program.id"
+      class="n-card"
+      style="width: 584px; height: 304px; margin: 0 auto; background-color: #003366;"
+    >
+      <div class="card-content">
+        <!-- Bagian gambar -->
+        <div class="card-image">
+          <img 
+            :src="program.image" 
+            :alt="`Image of ${program.title}`" 
+          />
+          <p class="privat">{{ program.type }}</p>
+        </div>
+        <!-- Bagian teks -->
+        <div class="card-text">
+          <div class="header">
+            <div class="title-group">
+              <h3>{{ program.title }}</h3>
+              <p class="name">{{ program.teacher }}</p>
+            </div>
+            <div class="badge">{{ program.level }}</div>
           </div>
-          <div class="badge">SMA</div>
-        </div>
-        <p><strong>Area:</strong> Semarang</p>
-        <p><strong>Hari:</strong> Senin, Rabu, Sabtu</p>
-        <p><strong>Pukul:</strong> 15:00 WIB</p>
-        <p><strong>Durasi:</strong> 2 Jam</p>
-        <div class="footer">
-          <button class="btn-daftar">Daftar Program</button>
+          <p><strong>Area:</strong> {{ program.area }}</p>
+          <p><strong>Hari:</strong> {{ program.days }}</p>
+          <p><strong>Pukul:</strong> {{ program.time }}</p>
+          <p><strong>Durasi:</strong> {{ program.duration }}</p>
+          <div class="footer">
+            <button class="btn-daftar">Daftar Program</button>
+          </div>
         </div>
       </div>
-    </div>
-  </n-card>
+    </n-card>
+  </div>
 </template>
 
 <style scoped>
+.card-container {
+  display: flex;
+  flex-wrap: wrap; /* Agar card bisa turun ke baris berikutnya jika tidak muat */
+  gap: 1rem; /* Jarak antar card */
+  justify-content: center; /* Pusatkan card secara horizontal */
+}
+  
 .n-card {
   width: 520px; 
   height: 280px; 
@@ -141,5 +153,40 @@ import { NCard } from 'naive-ui'
 
 .btn-daftar:hover {
   background-color: #fb8312;
+}
+
+@media (max-width: 960px) {
+  .card-container {
+    flex-direction: column; /* Susun kartu secara vertikal */
+    gap: 1rem; /* Jarak antar kartu */
+  }
+
+  .n-card {
+    width: 90%; /* Sesuaikan lebar kartu dengan lebar layar */
+    height: auto; /* Biarkan tinggi menyesuaikan konten */
+    transform: scale(0.9); /* Mengecilkan ukuran kartu */
+  }
+
+  .card-content {
+    flex-direction: column; /* Susun konten kartu secara vertikal */
+    align-items: flex-start; /* Rata kiri */
+    gap: 0.8rem; /* Jarak antar elemen */
+  }
+
+  .card-image img {
+    width: 90%; /* Gambar memenuhi lebar kartu */
+    height: auto; /* Biarkan tinggi menyesuaikan */
+  }
+
+  .card-text {
+    width: 90%; /* Sesuaikan teks dengan lebar kartu */
+    font-size: 0.9rem; /* Mengecilkan ukuran teks */
+  }
+
+  .btn-daftar {
+    width: 90%; /* Tombol memenuhi lebar kartu */
+    text-align: center; /* Teks tombol di tengah */
+    font-size: 0.9rem; /* Mengecilkan ukuran font tombol */
+  }
 }
 </style>
