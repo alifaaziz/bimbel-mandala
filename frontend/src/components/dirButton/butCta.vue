@@ -27,5 +27,6 @@
 .custom-button:hover {
   background-color: #0B2343; 
   color: #e8f5e9;
+  cursor: pointer;
 }
 </style>

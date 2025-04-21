@@ -12,49 +12,28 @@
         src="../../images/Banner.png"
         alt="Image 1"
       />
-      <img
-        class="carousel-img"
-        src= "../../images/Banner2.png"
-        alt="Image 2"
-      />
     </div>
     <div class="image-container">
       <img
-      class="carousel-img"
-      src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg"
-      alt="Image 1"
-      />
-      <img
-      class="carousel-img"
-      src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel2.jpeg"
-      alt="Image 2"
+        class="carousel-img"
+        src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg"
+        alt="Image 3"
       />
     </div>
     <div class="image-container">
       <img
         class="carousel-img"
         src="../../images/Banner.png"
-        alt="Image 1"
-      />
-      <img
-        class="carousel-img"
-        src= "../../images/Banner2.png"
-        alt="Image 2"
+        alt="Image 5"
       />
     </div>
     <div class="image-container">
       <img
         class="carousel-img"
         src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg"
-        alt="Image 1"
-      />
-      <img
-        class="carousel-img"
-        src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel2.jpeg"
-        alt="Image 2"
+        alt="Image 7"
       />
     </div>
-
   </n-carousel>
 </template>
 
@@ -72,7 +51,7 @@ export default defineComponent({
 
 <style scoped>
 .custom-carousel {
-  width: 100%; /* Carousel memenuhi lebar container */
+  width: 80%; /* Carousel memenuhi lebar container */
   height: 280px; /* Atur tinggi carousel */
   position: relative; /* Tambahkan posisi relatif untuk mengatur dot */
   padding-bottom: 40px; /* Tambahkan padding bawah untuk memberi ruang pada dot */
@@ -83,10 +62,10 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: center; /* Atur gambar ke tengah */
   align-items: center;
   border-radius: 8px;
-  margin-right: 1rem;
+  gap: 8px; /* Tambahkan jarak antar gambar (opsional, bisa diatur lebih kecil) */
 }
 
 .carousel-img {
@@ -95,7 +74,7 @@ export default defineComponent({
   object-fit: cover; /* Memastikan gambar tidak terdistorsi */
   border-radius: 8px; /* Menambahkan radius pada sudut gambar */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Menambahkan bayangan pada gambar */
-  margin-right: 1rem;
+  margin: 0; /* Hapus margin untuk mendekatkan gambar */
 }
 
 /* Media query untuk layar dengan lebar maksimum 964px */
@@ -103,21 +82,20 @@ export default defineComponent({
   .image-container {
     flex-direction: column; /* Ubah arah flex menjadi kolom */
     height: auto; /* Tinggi container fleksibel mengikuti konten */
-    margin-right: 2rem
+    gap: 16px; /* Tambahkan jarak antar gambar untuk layar kecil */
   }
 
   .carousel-img {
     width: 100%; /* Gambar memenuhi lebar container */
     aspect-ratio: 16 / 9; /* Menjaga rasio gambar tetap 16:9 */
-    margin-right: 0rem;
-    margin-bottom: 20px; /* Tambahkan margin bawah */
+    margin: 0; /* Hapus margin untuk mendekatkan gambar */
     border-radius: 8px;
   }
+
   .custom-carousel {
-    height: 620px; /* Atur tinggi carousel */
+    height: auto; /* Tinggi carousel fleksibel */
     width: 100%; /* Carousel memenuhi lebar container */
   }
-
 }
 
 ::v-deep(.n-carousel__dots .n-carousel__dot) {

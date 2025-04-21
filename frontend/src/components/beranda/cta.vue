@@ -4,14 +4,14 @@
 
 <template>
     <div class="cta-section">
-        <div class="contents">
-            <div class="hero">
+        <div class="padding-components">
+            <div class="hero hero-title">
                 Gapai Impianmu
             </div>
-            <p class="copy">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Sapien, est felis, sagittis viverra nulla mattis scelerisque.
-                Eget cras integer.
+            <p class="bodyr2 copy-cta">
+                Bersama Bimbel Mandala, wujudkan cita-citamu masuk sekolah atau 
+                perguruan tinggi favorit. Dapatkan bimbingan belajar terbaik dengan 
+                tutor berpengalaman dan materi yang sesuai kurikulum.
             </p>
             <butCta />
         </div>
@@ -19,31 +19,14 @@
 </template>
 
 <style setup>
-    .hero {
-        font-size: 56px;
-        font-weight: bold;
-        color: #ffffff;
-        text-align: left;
-        line-height: 1.2;
-        font-family: 'Poppins', sans-serif;
-        margin-bottom: 2rem;
-        width: 40%;
-    }
-    .copy {
+    .copy-cta {
         color: #ffffff;
         font-size: 12px;
-        text-align: left;
-        line-height: 2;
-        font-family: 'Poppins', sans-serif;
-        margin-bottom: 2rem;
         width: 60%;
-    }
-    p {
-        padding: 0 !important;
-    }
-
-    .contents {
-        padding: 0 8rem;
+        text-align: left;
+        margin: 2rem 0;
+        width: 40%;
+        letter-spacing: 0.08em; /* Menambahkan jarak per huruf */
     }
 
     .cta-section {
@@ -52,6 +35,10 @@
         justify-content: left; /* Mengatur konten ke tengah secara horizontal */
         align-items: center; /* Mengatur konten ke tengah secara vertikal */
         text-align: center; /* Opsional: untuk memastikan teks rata tengah */
+    }
+    .hero-title {
+        color: #ffffff;
+        text-align: left;
     }
     
 </style>

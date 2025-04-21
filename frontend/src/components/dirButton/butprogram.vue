@@ -5,7 +5,7 @@
           tertiary
           round
         >
-          Kenali Lebih Jauh
+          Lihat Semua
         </n-button>
     </div>
 </template>
