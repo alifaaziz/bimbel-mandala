@@ -48,6 +48,14 @@
   width: 40%;
 }
 
+/* Headline Font */
+.headlineb1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
 /* Header Fonts */
 .headerb1 {
   font-family: 'Poppins', sans-serif;

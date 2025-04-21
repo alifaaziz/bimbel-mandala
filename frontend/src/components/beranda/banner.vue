@@ -5,6 +5,7 @@
     interval="3000"
     class="custom-carousel"
     draggable="true"
+    :slides-per-view="slidesPerView"
   >
     <div class="image-container">
       <img
@@ -38,7 +39,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
 import { NCarousel } from 'naive-ui';
 
 export default defineComponent({
@@ -46,13 +47,32 @@ export default defineComponent({
   components: {
     NCarousel,
   },
+  setup() {
+    const slidesPerView = ref(window.innerWidth <= 964 ? 1 : 2);
+
+    const updateSlidesPerView = () => {
+      slidesPerView.value = window.innerWidth <= 964 ? 1 : 2;
+    };
+
+    onMounted(() => {
+      window.addEventListener('resize', updateSlidesPerView);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', updateSlidesPerView);
+    });
+
+    return {
+      slidesPerView,
+    };
+  },
 });
 </script>
 
 <style scoped>
 .custom-carousel {
   width: 80%; /* Carousel memenuhi lebar container */
-  height: 280px; /* Atur tinggi carousel */
+  height: 360px; /* Atur tinggi carousel */
   position: relative; /* Tambahkan posisi relatif untuk mengatur dot */
   padding-bottom: 40px; /* Tambahkan padding bawah untuk memberi ruang pada dot */
   border-radius: 8px;
@@ -65,16 +85,15 @@ export default defineComponent({
   justify-content: center; /* Atur gambar ke tengah */
   align-items: center;
   border-radius: 8px;
-  gap: 8px; /* Tambahkan jarak antar gambar (opsional, bisa diatur lebih kecil) */
 }
 
 .carousel-img {
-  width: 464px; /* Gambar memenuhi container */
+  width: 560px; /* Gambar memenuhi container */
   height: 100%; /* Gambar memenuhi container */
   object-fit: cover; /* Memastikan gambar tidak terdistorsi */
   border-radius: 8px; /* Menambahkan radius pada sudut gambar */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Menambahkan bayangan pada gambar */
-  margin: 0; /* Hapus margin untuk mendekatkan gambar */
+  aspect-ratio: 16 / 9;
 }
 
 /* Media query untuk layar dengan lebar maksimum 964px */
@@ -86,7 +105,7 @@ export default defineComponent({
   }
 
   .carousel-img {
-    width: 100%; /* Gambar memenuhi lebar container */
+    width: 98%; /* Gambar memenuhi lebar container */
     aspect-ratio: 16 / 9; /* Menjaga rasio gambar tetap 16:9 */
     margin: 0; /* Hapus margin untuk mendekatkan gambar */
     border-radius: 8px;
