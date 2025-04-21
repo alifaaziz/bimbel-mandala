@@ -4,7 +4,7 @@ import { keunggulanData } from "@/assets/dataSementara/keunggulan.js";
 export default {
   data() {
     return {
-      keunggulan: keunggulanData, // Menampilkan hanya 4 item
+      keunggulan: keunggulanData.slice(0, 4), // Menampilkan hanya 4 item
     };
   },
 };

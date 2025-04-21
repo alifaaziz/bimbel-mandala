@@ -5,7 +5,7 @@
           tertiary
           round
         >
-          Kenali Lebih Jauh
+          Masuk
         </n-button>
     </div>
 </template>
@@ -13,8 +13,6 @@
 <style scoped>
 .button-container {
   display: flex;
-  justify-content: center; 
-  align-items: center; 
   height: 100%; 
 }
 
