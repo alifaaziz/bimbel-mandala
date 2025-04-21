@@ -56,6 +56,8 @@
     color: #ffffff;
     padding: 3rem 8rem;
     font-family: 'Segoe UI', sans-serif;
+    width: 100%; /* Pastikan footer mengambil lebar penuh */
+    box-sizing: border-box; /* Memastikan padding tidak memengaruhi ukuran */
   }
   
   .footer-container {
