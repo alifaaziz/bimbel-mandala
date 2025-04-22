@@ -11,6 +11,11 @@
   margin-top: 68px;
 }
 
+#detailprogram {
+  max-width: 1440px;
+  margin-top: 68px;
+}
+
 /* Media Queries */
 /* @media (hover: hover) {
   a:hover {

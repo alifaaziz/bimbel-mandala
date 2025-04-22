@@ -20,8 +20,8 @@ import footerWeb from './components/beranda/footer.vue';
             <hari-mengajar />
         </div>
         <navbar />
-        <footerWeb />
     </div>
+    <footerWeb />
 </template>
 
 <style scoped>
