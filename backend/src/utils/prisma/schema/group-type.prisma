@@ -1,8 +1,8 @@
 model GroupType {
     id          String     @id @default(uuid(7))
     type        StudyType
-    price       Decimal
-    discPrice   Decimal?
+    price       Decimal    @db.Decimal(10, 2)
+    discPrice   Decimal?   @db.Decimal(10, 2)
     packageId   String  @map("package_id")
     maxStudent  Decimal @map("max_student")
 

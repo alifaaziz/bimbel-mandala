@@ -1,5 +1,5 @@
 model Attendance {
-  id         String           @id @default(uuid())
+  id         String           @id @default(uuid(7))
   scheduleId String           @map("schedule_id")
   userId     String           @map("user_id")
   status     AttendanceStatus

@@ -1,5 +1,5 @@
 model Schedule {
-  id       String           @id @default(uuid())
+  id       String           @id @default(uuid(7))
   classId  String           @map("class_id")
   date     DateTime
   meet     Int

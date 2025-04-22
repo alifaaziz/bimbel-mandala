@@ -21,7 +21,7 @@ CREATE TABLE `bimbel_packages` (
     `duration` INTEGER NOT NULL,
     `area` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
-    `discount` DECIMAL(65, 30) NULL,
+    `discount` DECIMAL(10, 2) NULL,
     `is_active` BOOLEAN NOT NULL DEFAULT true,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -54,8 +54,8 @@ CREATE TABLE `days` (
 CREATE TABLE `group_types` (
     `id` VARCHAR(191) NOT NULL,
     `type` ENUM('privat', 'grup2', 'grup3', 'grup4', 'grup5', 'kelas') NOT NULL,
-    `price` DECIMAL(65, 30) NOT NULL,
-    `discPrice` DECIMAL(65, 30) NULL,
+    `price` DECIMAL(10, 2) NOT NULL,
+    `discPrice` DECIMAL(10, 2) NULL,
     `package_id` VARCHAR(191) NOT NULL,
     `max_student` DECIMAL(65, 30) NOT NULL,
 
@@ -125,6 +125,17 @@ CREATE TABLE `password_reset` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Salary` (
+    `id` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `orderId` VARCHAR(191) NOT NULL,
+    `total` DECIMAL(10, 2) NOT NULL,
+    `status` ENUM('terbayar', 'pending') NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `schedules` (
     `id` VARCHAR(191) NOT NULL,
     `class_id` VARCHAR(191) NOT NULL,
@@ -153,7 +164,7 @@ CREATE TABLE `students` (
     `user_id` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(191) NULL,
     `parent_phone` VARCHAR(191) NULL,
-    `level` ENUM('SD', 'SMP', 'SMA') NULL,
+    `level` ENUM('SD', 'SMP', 'SMA', 'Umum') NULL,
     `school_name` VARCHAR(191) NULL,
     `address` VARCHAR(191) NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -272,6 +283,12 @@ ALTER TABLE `package_days` ADD CONSTRAINT `package_days_day_id_fkey` FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE `password_reset` ADD CONSTRAINT `password_reset_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Salary` ADD CONSTRAINT `Salary_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Salary` ADD CONSTRAINT `Salary_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `orders`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `schedules` ADD CONSTRAINT `schedules_class_id_fkey` FOREIGN KEY (`class_id`) REFERENCES `class`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
