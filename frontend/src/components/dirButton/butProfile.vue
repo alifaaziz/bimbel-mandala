@@ -4,11 +4,22 @@
           class="custom-button buttonb2"
           tertiary
           round
+          @click="navigateToDetailProgram"
         >
           Kenali Lebih Jauh
         </n-button>
     </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    navigateToDetailProgram() {
+      this.$router.push('/tentangkami');
+    }
+  }
+};
+</script>
 
 <style scoped>
 .button-container {

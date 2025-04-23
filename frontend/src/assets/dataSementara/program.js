@@ -8,7 +8,7 @@ export const programs = [
       days: "Senin, Rabu, Sabtu",
       time: "15:00 WIB",
       duration: "2 Jam",
-      image: "tutor/photo1.png",
+      image: "tutor/1.png",
       type: "Privat/Kelompok",
     },
     {

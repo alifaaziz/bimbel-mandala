@@ -10,14 +10,12 @@ export default {
 };
 </script>
 
-<script setup>
-import buttonProfile from '../dirButton/butProfile.vue'
-</script>
-
 <template>
   <div>
-    <h1 class="headerr2 title1">Mengapa pilih kami?</h1>
-    <h2 class="headerb1 title2">Keunggulan</h2>
+    <div class="header-container">
+      <h1 class="headerr2 title1">Mengapa pilih kami?</h1>
+      <h2 class="headerb1 title2">Keunggulan</h2>
+    </div>
     <div class="padding-components">
       <div v-for="item in keunggulan" :key="item.id" class="grid-item">
         <div class="icon-wrapper">
@@ -27,11 +25,14 @@ import buttonProfile from '../dirButton/butProfile.vue'
         <p class="bodyr2 col-contents">{{ item.description }}</p>
       </div>
     </div>
-    <buttonProfile class="button"/>
   </div>
 </template>
 
 <style scoped>
+.header-container {
+  align-items: center;
+  margin-bottom: 2rem;
+}
 .icon-wrapper {
   display: flex;
   justify-content: center;
@@ -83,8 +84,5 @@ import buttonProfile from '../dirButton/butProfile.vue'
   color: #9BAFCB;
   text-align: justify;
   margin: 0 1rem;
-}
-.button{
-    margin-top: 2rem;
 }
 </style>

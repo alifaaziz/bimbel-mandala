@@ -2,13 +2,11 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
-import TentangKami from './TentangKami.vue'
-import detailProgram from './detailProgram.vue'
-import pendaftaranTutor from './pendaftaranTutor.vue'
-import listProgram from './listprogram.vue'
+import router from './router'
 
-createApp(App).mount('#app')
-createApp(TentangKami).mount('#tentangkami')
-createApp(detailProgram).mount('#detailprogram')
-createApp(pendaftaranTutor).mount('#pendaftarantutor')
-createApp(listProgram).mount('#listprogram')
+const app = createApp(App)
+
+app.use(router); // Pastikan router digunakan di sini
+app.mount('#app')
+
+

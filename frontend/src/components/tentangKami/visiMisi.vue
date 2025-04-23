@@ -55,6 +55,7 @@
 
 .visi-title, .misi-title {
   text-align: left;
+  color: #154484;
 }
 
 .visi-text, .misi-text {

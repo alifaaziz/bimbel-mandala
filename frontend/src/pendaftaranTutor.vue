@@ -19,9 +19,7 @@ import footerWeb from './components/beranda/footer.vue';
             <mapel-mengajar />
             <hari-mengajar />
         </div>
-        <navbar />
     </div>
-    <footerWeb />
 </template>
 
 <style scoped>
@@ -45,4 +43,5 @@ import footerWeb from './components/beranda/footer.vue';
     border-top: 1px solid #f27f28; /* Garis tipis dengan warna abu-abu muda */
     margin: 2rem 0; /* Jarak atas dan bawah */
 }
+
 </style>

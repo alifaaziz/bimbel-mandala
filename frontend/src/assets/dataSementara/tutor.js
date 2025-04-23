@@ -6,7 +6,7 @@ export const tutors = ref([
     title: "Tutor 1",
     caption: "Ahli Matematika",
     content: "Tutor dengan pengalaman 5 tahun mengajar Matematika.",
-    image: "tutor/photo1.png"
+    image: "tutor/1.png"
   },
   {
     id: "2",

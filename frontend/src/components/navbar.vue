@@ -28,11 +28,12 @@
       return {
         isDesktop: window.innerWidth >= 981,
         drawerVisible: false,
+        currentRoute: this.$route.name, // Ambil nama rute saat ini
         menuOptions: [
-          { label: 'Beranda', key: 'Beranda' },
-          { label: 'Tentang Kami', key: 'Tentang Kami' },
-          { label: 'Program', key: 'Program' },
-          { label: 'Menjadi Tutor', key: 'Menjadi Tutor' },
+          { label: 'Beranda', key: 'Beranda', to: '/' },
+          { label: 'Tentang Kami', key: 'Tentang Kami', to: '/tentangkami' },
+          { label: 'Program', key: 'Program', to: '/#' },
+          { label: 'Menjadi Tutor', key: 'Menjadi Tutor', to: '/pendaftarantutor' },
         ],
         menuTheme: {
           itemTextColor: '#9BAFCB', // Warna teks default
@@ -51,8 +52,16 @@
         this.drawerVisible = !this.drawerVisible;
       },
       handleMenuClick(key) {
-        console.log('Menu clicked:', key);
+        const selectedOption = this.menuOptions.find(option => option.key === key);
+        if (selectedOption && selectedOption.to) {
+          this.$router.push(selectedOption.to); // Navigasi menggunakan Vue Router
+        }
         this.drawerVisible = false;
+      },
+    },
+    watch: {
+      $route(to) {
+        this.currentRoute = to.name; // Perbarui nama rute saat ini
       },
     },
     mounted() {
@@ -85,6 +94,7 @@
             mode="horizontal"
             :options="menuOptions"
             :theme-overrides="menuTheme"
+            :value="currentRoute"
             @update:value="handleMenuClick"
           />
   
@@ -118,7 +128,6 @@
     z-index: 1000;
     display: flex;
     align-items: center;
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
     padding: 0 8rem;
     border-bottom: 2px solid #9BAFCB; 
   }
@@ -156,8 +165,8 @@
 
   ::v-deep(.n-menu-item-content--selected .n-menu-item-content-header) {
     color: #FB8312 !important;
-    font-weight: 600; /* optional: to highlight selected item more */
-}
+    font-weight: 600;
+  }
 
 @media (max-width: 961px) {
     .navbar {

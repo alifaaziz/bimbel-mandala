@@ -1,16 +1,13 @@
 <script setup>
-import navbar from './components/navbar.vue'
 import HeaderAbout from './components/tentangKami/HeaderAbout.vue'
 import visiMisi from './components/tentangKami/visiMisi.vue'
 import Kapabilitas from './components/tentangKami/Kapabilitas.vue'
-import keunggulan from './components/beranda/keunggulan.vue'
+import keunggulan from './components/tentangKami/keunggulan.vue'
 import tutor from './components/tentangKami/tutor.vue'
-import Footer from './components/footer.vue'
 </script>
 
 <template>
   <div class="content-container">
-    <navbar />
     <HeaderAbout />
     <div class="part-about">
       <visiMisi />
@@ -25,7 +22,6 @@ import Footer from './components/footer.vue'
       <tutor class="tutor-pad"/>
     </div>
   </div>
-  <Footer />
 </template>
 
 <style scoped>

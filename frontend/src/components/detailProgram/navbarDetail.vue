@@ -22,6 +22,7 @@ export default {
 <style scoped>
 .navbar-detail {
   width: 100%;
+  height: 104px;
   position: fixed;
   top: 0;
   left: 0;

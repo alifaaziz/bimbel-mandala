@@ -1,9 +1,13 @@
 <script setup>
 import { tutors } from '@/assets/dataSementara/tutor.js';
 import { NCard } from 'naive-ui';
-</script>
+</script> 
 
 <template>
+  <div class="header-container">
+    <h1 class="headerr2 title1">Berbagai</h1>
+    <h2 class="headerb1 title2">Tutor Profesional</h2>
+  </div>
   <div class="card-container">
     <n-card
       v-for="(item, index) in tutors"
@@ -27,6 +31,10 @@ import { NCard } from 'naive-ui';
 </template>
 
 <style scoped>
+.header-container {
+  align-items: center;
+  margin-bottom: 2rem;
+}
 .card-container {
   display: grid; /* Ubah menjadi grid layout */
   grid-template-columns: repeat(4, 1fr); /* Maksimal 4 kolom */

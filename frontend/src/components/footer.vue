@@ -56,6 +56,7 @@
     color: #ffffff;
     padding: 3rem 8rem;
     font-family: 'Segoe UI', sans-serif;
+    width: 100%;
   }
   
   .footer-container {
