@@ -520,6 +520,80 @@ async function updateBimbelPackageStatus() {
   return { message: 'Bimbel package status updated successfully' };
 }
 
+/**
+ * Retrieves bimbel packages sorted by the number of orders (popularity).
+ *
+ * @async
+ * @function getBimbelPackagesByPopularity
+ * @returns {Promise<Array>} The list of bimbel packages sorted by popularity.
+ */
+async function getBimbelPackagesByPopularity() {
+  const orderCounts = await prisma.order.groupBy({
+    by: ['packageId'],
+    _count: {
+      packageId: true
+    },
+    orderBy: {
+      _count: {
+        packageId: 'desc'
+      }
+    }
+  });
+
+  const packageIds = orderCounts.map(order => order.packageId);
+
+  const packages = await prisma.bimbelPackage.findMany({
+    where: {
+      id: {
+        in: packageIds
+      }
+    },
+    include: {
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: {
+            select: {
+              daysName: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const sortedPackages = packageIds.map(packageId =>
+    packages.find(pkg => pkg.id === packageId)
+  );
+
+  return sortedPackages.map(pkg => {
+    const orderCount = orderCounts.find(order => order.packageId === pkg.id)._count.packageId;
+    return {
+      id: pkg.id,
+      name: pkg.name,
+      level: pkg.level,
+      totalMeetings: pkg.totalMeetings,
+      time: pkg.time,
+      duration: pkg.duration,
+      area: pkg.area,
+      isActive: pkg.isActive,
+      groupType: pkg.groupType.map(gt => ({
+        type: gt.type,
+        price: gt.price,
+        discPrice: gt.discPrice
+      })),
+      days: pkg.packageDay.map(day => day.day.daysName),
+      orderCount
+    };
+  });
+}
+
 export const BimbelPackageService = {
   getAllBimbelPackages,
   getBimbelPackageById,
@@ -528,5 +602,6 @@ export const BimbelPackageService = {
   updateBimbelPackage,
   updateClassBimbelPackage,
   deleteBimbelPackage,
-  updateBimbelPackageStatus
+  updateBimbelPackageStatus,
+  getBimbelPackagesByPopularity
 };

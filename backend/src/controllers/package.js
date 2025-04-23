@@ -166,6 +166,20 @@ async function updateBimbelPackageStatus(req, res) {
   res.status(200).json(updatedPackage);
 }
 
+/**
+ * Handles the request to get bimbel packages sorted by popularity (number of orders).
+ *
+ * @async
+ * @function getBimbelPackagesByPopularity
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of bimbel packages sorted by popularity.
+ */
+async function getBimbelPackagesByPopularity(_req, res) {
+  const packages = await BimbelPackageService.getBimbelPackagesByPopularity();
+  res.status(200).json(packages);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getBimbelPackageById: asyncWrapper(getBimbelPackageById),
@@ -175,4 +189,5 @@ export const BimbelPackageController = {
     updateClassBimbelPackage: asyncWrapper(updateClassBimbelPackage),
     deleteBimbelPackage: asyncWrapper(deleteBimbelPackage),
     updateBimbelPackageStatus: asyncWrapper(updateBimbelPackageStatus),
+    getBimbelPackagesByPopularity: asyncWrapper(getBimbelPackagesByPopularity),
 };
