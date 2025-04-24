@@ -10,28 +10,28 @@
     <div class="image-container">
       <img
         class="carousel-img"
-        src="../../images/Banner.png"
+        src="../../images/Banner1.png"
         alt="Image 1"
       />
     </div>
     <div class="image-container">
       <img
         class="carousel-img"
-        src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg"
+        src="../../images/Banner2.png"
         alt="Image 3"
       />
     </div>
     <div class="image-container">
       <img
         class="carousel-img"
-        src="../../images/Banner.png"
+        src="../../images/Banner4.png"
         alt="Image 5"
       />
     </div>
     <div class="image-container">
       <img
         class="carousel-img"
-        src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg"
+        src="../../images/Banner3.png"
         alt="Image 7"
       />
     </div>

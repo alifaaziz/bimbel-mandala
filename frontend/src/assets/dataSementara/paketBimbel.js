@@ -9,7 +9,7 @@ export const paketBimbel = [
     area: "Semarang",
     isActive: true,
     tutorName: "Ratna Dewi M.Pd",
-    photo: null,
+    photo: "tutor/2.png",
     groupType: [
       { type: "privat", price: "1540000", discPrice: null },
       { type: "grup2", price: "2860000", discPrice: null },
@@ -29,7 +29,7 @@ export const paketBimbel = [
     area: "Semarang",
     isActive: true,
     tutorName: "Dendy Wan, S.Pd",
-    photo: null,
+    photo: "tutor/1.png",
     groupType: [
       { type: "privat", price: "1540000", discPrice: null },
       { type: "grup2", price: "2860000", discPrice: null },
@@ -49,7 +49,7 @@ export const paketBimbel = [
     area: "Semarang",
     isActive: true,
     tutorName: "Intan Lestari, S.Si",
-    photo: null,
+    photo: "tutor/4.png",
     groupType: [
       { type: "privat", price: "1540000", discPrice: null },
       { type: "grup2", price: "2860000", discPrice: null },
@@ -69,7 +69,7 @@ export const paketBimbel = [
     area: "Semarang",
     isActive: true,
     tutorName: "Fajar Nugroho, S.T",
-    photo: null,
+    photo: "tutor/3.png",
     groupType: [
       { type: "privat", price: "1540000", discPrice: null },
       { type: "grup2", price: "2860000", discPrice: null },
