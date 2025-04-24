@@ -6,9 +6,20 @@ import Home from './Home.vue';
 
 <template>
   <navbar />
-  <RouterView />
+  <router-view />
   <Footer />
 </template>
+
+<script>
+export default {
+  watch: {
+    $route(to, from) {
+      // Scroll ke atas setiap kali rute berubah
+      window.scrollTo(0, 0);
+    },
+  },
+};
+</script>
 
 <style>
 #app {

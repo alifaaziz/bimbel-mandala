@@ -1,9 +1,25 @@
 <script setup>
-import { NCard } from 'naive-ui'
-import { programs } from '@/assets/dataSementara/program.js'
-import ButtonProgram from '../dirButton/butprogram.vue'
+import { NCard } from 'naive-ui';
+import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js';
+import ButtonProgram from '../dirButton/butprogram.vue';
+import { defineEmits } from 'vue';
 
-const limitedPrograms = programs.slice(0, 2);
+const limitedPrograms = paketBimbel.slice(0, 2);
+
+// Mendefinisikan event yang akan dipancarkan
+const emit = defineEmits(['refreshPage']);
+
+// Fungsi untuk memformat waktu
+function formatTime(dateTime) {
+  const time = dateTime.split('T')[1]; // Ambil bagian waktu setelah 'T'
+  const [hour, minute] = time.split(':');
+  return `${hour}:${minute} WIB`;
+}
+
+function handleClick() {
+  // Memancarkan event 'refreshPage'
+  emit('refreshPage');
+}
 </script>
 
 <template>
@@ -22,26 +38,26 @@ const limitedPrograms = programs.slice(0, 2);
           <!-- Bagian gambar -->
           <div class="card-image">
             <img 
-              :src="program.image" 
-              :alt="`Image of ${program.title}`" 
+              :src="program.photo || '/public/tutor/3.png'" 
+              :alt="`Image of ${program.name}`" 
             />
-            <p class="privat">{{ program.type }}</p>
+            <p class="privat">{{ program.groupType[0].type }}</p>
           </div>
           <!-- Bagian teks -->
           <div class="card-text">
             <div class="header">
               <div class="title-group">
-                <h3>{{ program.title }}</h3>
-                <p class="name">{{ program.teacher }}</p>
+                <h3>{{ program.name }}</h3>
+                <p class="name">{{ program.tutorName }}</p>
               </div>
               <div class="badge">{{ program.level }}</div>
             </div>
             <p><strong>Area:</strong> {{ program.area }}</p>
-            <p><strong>Hari:</strong> {{ program.days }}</p>
-            <p><strong>Pukul:</strong> {{ program.time }}</p>
-            <p><strong>Durasi:</strong> {{ program.duration }}</p>
+            <p><strong>Hari:</strong> {{ program.days.join(', ') }}</p>
+            <p><strong>Pukul:</strong> {{ formatTime(program.time) }}</p>
+            <p><strong>Durasi:</strong> {{ program.duration }} menit</p>
             <div class="footer">
-              <button class="btn-daftar">Daftar Program</button>
+              <button class="btn-daftar" @click="$router.push(`/detailProgram/${program.id}`)">Daftar Program</button>
             </div>
           </div>
         </div>
@@ -114,7 +130,7 @@ const limitedPrograms = programs.slice(0, 2);
 }
 
 .card-text h3 {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   color: #DEE4EE;
@@ -131,10 +147,10 @@ const limitedPrograms = programs.slice(0, 2);
 }
 
 .card-text .name {
-  margin-top: -1rem;
-  font-size: 1.125rem;
+  margin-top: -0.5rem;
+  font-size: 1rem;
   font-family: 'Poppins', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   color: #DEE4EE;
 }
 
@@ -162,7 +178,7 @@ const limitedPrograms = programs.slice(0, 2);
 }
 
 .btn-daftar:hover {
-  background-color: #fb8312;
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 .button {
