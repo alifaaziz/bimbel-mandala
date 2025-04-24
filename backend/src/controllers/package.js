@@ -113,7 +113,7 @@ async function updateBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the updated class bimbel package.
  */
 async function updateClassBimbelPackage(req, res) {
-  const { id } = req.params; // Ambil ID dari parameter URL
+  const { id } = req.params;
   const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
 
   if (!groupType || !groupType.price) {

@@ -47,7 +47,6 @@ async function getAllBimbelPackages() {
 
   return packages.map(pkg => {
     return {
-      id: pkg.id,
       name: pkg.name,
       level: pkg.level,
       totalMeetings: pkg.totalMeetings,

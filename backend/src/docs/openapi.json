@@ -1665,6 +1665,174 @@
         ]
       }
     },
+    "/users/tutors": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get Tutor",
+        "description": "Get Tutor",
+        "operationId": "getTutor",
+        "requestBody": {
+          "content": {}
+        },
+        "responses": {
+          "200": {
+            "description": "200 - Get Tutor",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "591"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Thu, 24 Apr 2025 08:17:11 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"24f-y0bm1QqZDXvM51BRRioxitJNZzs\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "classCount": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Experienced tutor in English, once guided an English competition at the rt level in tembalang sub-district. hardworking and responsive."
+                          },
+                          "id": {
+                            "type": "string",
+                            "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Venita S.Pd"
+                          },
+                          "photo": {
+                            "nullable": true,
+                            "example": null
+                          },
+                          "subject": {
+                            "type": "string",
+                            "example": "Bahasa Inggris"
+                          },
+                          "teachLevel": {
+                            "type": "string",
+                            "example": "SMA"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "classCount": 1,
+                          "description": "Experienced tutor in English, once guided an English competition at the rt level in tembalang sub-district. hardworking and responsive.",
+                          "id": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+                          "name": "Venita S.Pd",
+                          "photo": null,
+                          "subject": "Bahasa Inggris",
+                          "teachLevel": "SMA"
+                        },
+                        {
+                          "classCount": 0,
+                          "description": "Experienced tutor in Mathematics, once guided a math competition at the rt level in mijen sub-district. hardworking and responsive.",
+                          "id": "0195c5ed-3fc9-771d-bced-9c4b10afd9a2",
+                          "name": "Dendy Wan S.Pd",
+                          "photo": null,
+                          "subject": "Matematika",
+                          "teachLevel": "SMP"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Get Tutor": {
+                    "value": {
+                      "data": [
+                        {
+                          "classCount": 1,
+                          "description": "Experienced tutor in English, once guided an English competition at the rt level in tembalang sub-district. hardworking and responsive.",
+                          "id": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+                          "name": "Venita S.Pd",
+                          "photo": null,
+                          "subject": "Bahasa Inggris",
+                          "teachLevel": "SMA"
+                        },
+                        {
+                          "classCount": 0,
+                          "description": "Experienced tutor in Mathematics, once guided a math competition at the rt level in mijen sub-district. hardworking and responsive.",
+                          "id": "0195c5ed-3fc9-771d-bced-9c4b10afd9a2",
+                          "name": "Dendy Wan S.Pd",
+                          "photo": null,
+                          "subject": "Matematika",
+                          "teachLevel": "SMP"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {}
+        ]
+      }
+    },
     "/notification": {
       "get": {
         "tags": [
@@ -3479,6 +3647,361 @@
           }
         }
       ]
+    },
+    "/packages/populer": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get Popular Packages",
+        "description": "Get Popular Packages",
+        "operationId": "getPopularPackages",
+        "responses": {
+          "200": {
+            "description": "200 - Get Populer Package",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "1029"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Wed, 23 Apr 2025 06:38:50 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"405-rYAinh8rkDTaMT5pV9J0Knx0zbE\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "area": {
+                        "type": "string",
+                        "example": "Semarang"
+                      },
+                      "days": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "example": "Selasa"
+                        },
+                        "example": [
+                          "Selasa",
+                          "Jumat"
+                        ]
+                      },
+                      "duration": {
+                        "type": "number",
+                        "example": 120
+                      },
+                      "groupType": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "discPrice": {
+                              "nullable": true,
+                              "example": null
+                            },
+                            "price": {
+                              "type": "string",
+                              "example": "1020000"
+                            },
+                            "type": {
+                              "type": "string",
+                              "example": "grup2"
+                            }
+                          }
+                        },
+                        "example": [
+                          {
+                            "discPrice": null,
+                            "price": "1020000",
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "1460000",
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "580000",
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "1900000",
+                            "type": "grup4"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "2340000",
+                            "type": "grup5"
+                          }
+                        ]
+                      },
+                      "id": {
+                        "type": "string",
+                        "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                      },
+                      "isActive": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "level": {
+                        "type": "string",
+                        "example": "SMA"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Bahasa Inggris"
+                      },
+                      "orderCount": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "time": {
+                        "type": "string",
+                        "example": "1970-01-01T15:00:00.000Z"
+                      },
+                      "totalMeetings": {
+                        "type": "number",
+                        "example": 8
+                      }
+                    }
+                  },
+                  "example": [
+                    {
+                      "area": "Semarang",
+                      "days": [
+                        "Selasa",
+                        "Jumat"
+                      ],
+                      "duration": 120,
+                      "groupType": [
+                        {
+                          "discPrice": null,
+                          "price": "1020000",
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": "1460000",
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": "580000",
+                          "type": "privat"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": "1900000",
+                          "type": "grup4"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": "2340000",
+                          "type": "grup5"
+                        }
+                      ],
+                      "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                      "isActive": true,
+                      "level": "SMA",
+                      "name": "Bahasa Inggris",
+                      "orderCount": 2,
+                      "time": "1970-01-01T15:00:00.000Z",
+                      "totalMeetings": 8
+                    },
+                    {
+                      "area": "Semarang",
+                      "days": [
+                        "Sabtu",
+                        "Senin",
+                        "Rabu"
+                      ],
+                      "duration": 90,
+                      "groupType": [
+                        {
+                          "discPrice": "1386000",
+                          "price": "1540000",
+                          "type": "privat"
+                        },
+                        {
+                          "discPrice": "3762000",
+                          "price": "4180000",
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": "6138000",
+                          "price": "6820000",
+                          "type": "grup5"
+                        },
+                        {
+                          "discPrice": "2574000",
+                          "price": "2860000",
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": "4950000",
+                          "price": "5500000",
+                          "type": "grup4"
+                        }
+                      ],
+                      "id": "0195c63c-8fce-7c44-bf47-013da86078a3",
+                      "isActive": true,
+                      "level": "SMP",
+                      "name": "Matematika",
+                      "orderCount": 1,
+                      "time": "1970-01-01T15:00:00.000Z",
+                      "totalMeetings": 24
+                    }
+                  ]
+                },
+                "examples": {
+                  "200 - Get Populer Package": {
+                    "value": [
+                      {
+                        "area": "Semarang",
+                        "days": [
+                          "Selasa",
+                          "Jumat"
+                        ],
+                        "duration": 120,
+                        "groupType": [
+                          {
+                            "discPrice": null,
+                            "price": "1020000",
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "1460000",
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "580000",
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "1900000",
+                            "type": "grup4"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "2340000",
+                            "type": "grup5"
+                          }
+                        ],
+                        "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                        "isActive": true,
+                        "level": "SMA",
+                        "name": "Bahasa Inggris",
+                        "orderCount": 2,
+                        "time": "1970-01-01T15:00:00.000Z",
+                        "totalMeetings": 8
+                      },
+                      {
+                        "area": "Semarang",
+                        "days": [
+                          "Sabtu",
+                          "Senin",
+                          "Rabu"
+                        ],
+                        "duration": 90,
+                        "groupType": [
+                          {
+                            "discPrice": "1386000",
+                            "price": "1540000",
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": "3762000",
+                            "price": "4180000",
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": "6138000",
+                            "price": "6820000",
+                            "type": "grup5"
+                          },
+                          {
+                            "discPrice": "2574000",
+                            "price": "2860000",
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": "4950000",
+                            "price": "5500000",
+                            "type": "grup4"
+                          }
+                        ],
+                        "id": "0195c63c-8fce-7c44-bf47-013da86078a3",
+                        "isActive": true,
+                        "level": "SMP",
+                        "name": "Matematika",
+                        "orderCount": 1,
+                        "time": "1970-01-01T15:00:00.000Z",
+                        "totalMeetings": 24
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "/packages/class": {
       "post": {
