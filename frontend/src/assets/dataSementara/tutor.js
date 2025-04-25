@@ -31,7 +31,7 @@ export const tutors = ref([
   },
   {
     id: "5",
-    title: "Tutor 5",
+    title: "Ayu Lestari, S.Pd",
     caption: "Ahli Bahasa Inggris",
     content: "Tutor dengan pengalaman 6 tahun mengajar Bahasa Inggris.",
     image: "tutor/2.png"

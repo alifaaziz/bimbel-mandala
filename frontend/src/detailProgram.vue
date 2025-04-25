@@ -1,14 +1,8 @@
 <script setup>
-import { onMounted } from 'vue'
 import navbarDetail from './components/detailProgram/navbarDetail.vue'
 import programBelajar from './components/detailProgram/program.vue'
-import banner from './components/beranda/banner.vue'
 import programHighlight from './components/beranda/programHighlight.vue'
 
-function refreshPage() {
-  // Reload the current page
-  window.location.reload()
-}
 </script>
 
 <template>

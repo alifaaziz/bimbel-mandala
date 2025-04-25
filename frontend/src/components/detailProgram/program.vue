@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineComponent, h, ref } from 'vue';
 import { useRoute } from 'vue-router'; // Import useRoute
-import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js'; // Pastikan file ini sudah diubah menjadi JS
+import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js'; 
 
 // Tangkap parameter id dari URL
 const route = useRoute();
@@ -53,7 +53,7 @@ function submitToWhatsApp() {
 
   // Format pesan untuk WhatsApp
   const message = `
-    *Detail Program Bimbel Mandala*\n\n
+    *Detail Program Bimbel Mandala*\n
     Berikut adalah detail program yang ingin dipesan:\n
     - *Nama Program*: ${programData.value.name}\n
     - *Tutor*: ${programData.value.tutorName}\n
@@ -63,7 +63,7 @@ function submitToWhatsApp() {
     - *Durasi*: ${programData.value.duration} Menit\n
     - *Area*: ${programData.value.area}\n
     - *Tipe Program*: ${programData.value.groupType.map((group) => group.type).join(" / ")}\n
-    - *Harga*: ${formatCurrency(Number(programData.value.groupType[0].price))} - ${formatCurrency(Number(programData.value.groupType[programData.value.groupType.length - 1].price))}\n\n
+    - *Harga*: ${formatCurrency(Number(programData.value.groupType[0].price))} - ${formatCurrency(Number(programData.value.groupType[programData.value.groupType.length - 1].price))}\n
     Mohon untuk segera memproses pesanan ini. Terima kasih.
   `;
 
