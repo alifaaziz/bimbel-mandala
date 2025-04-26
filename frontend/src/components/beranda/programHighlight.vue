@@ -69,7 +69,7 @@ function formatTime(dateTime) {
 .n-card {
   width: 100%;
   background-color: #003366;
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -88,7 +88,7 @@ function formatTime(dateTime) {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 16px;
 }
 
 .privat {
@@ -190,7 +190,7 @@ function formatTime(dateTime) {
 
   .n-card {
     width: calc(50% - 0.75rem);
-    max-width: 584px;
+    max-width: 576px;
   }
 
   .card-image img {

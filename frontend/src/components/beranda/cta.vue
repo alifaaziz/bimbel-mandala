@@ -30,15 +30,14 @@
     }
 
     .cta-content {
-        max-width: 1440px;
+        max-width: 100%;
     }
 
     .cta-section {
         height: 620px;
         display: flex;
-        justify-content: center; /* Mengatur konten ke tengah secara horizontal */
+
         align-items: center; /* Mengatur konten ke tengah secara vertikal */
-        text-align: center; /* Opsional: untuk memastikan teks rata tengah */
     }
     .hero-title {
         color: #ffffff;

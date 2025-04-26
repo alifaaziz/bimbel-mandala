@@ -47,7 +47,7 @@ import buttonProfile from '../dirButton/butProfile.vue'
 .padding-components {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* Default: 4 kolom */
-  gap: 12px;
+  gap: 4rem;
 }
 
 .grid-item {
@@ -57,7 +57,7 @@ import buttonProfile from '../dirButton/butProfile.vue'
 }
 
 .highlight-keunggulan {
-  max-width: 1440px;
+  max-width: 100%;
   margin: 0 auto;
 }
 @media (max-width: 960px) {

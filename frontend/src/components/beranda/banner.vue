@@ -72,10 +72,10 @@ export default defineComponent({
 <style scoped>
 .custom-carousel {
   width: 80%;
-  max-width: 1440px;
+  max-width: 100%;
   height: auto; /* Ubah dari fixed height ke auto */
   padding-bottom: 40px;
-  border-radius: 8px;
+  border-radius: 16px;
   margin: 0 auto;
 }
 
@@ -93,7 +93,7 @@ export default defineComponent({
   width: 100%; /* Gambar isi penuh div image-container */
   height: auto;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   aspect-ratio: 16 / 9;
 }
@@ -110,7 +110,7 @@ export default defineComponent({
     width: 100%; /* Gambar memenuhi lebar container */
     aspect-ratio: 16 / 9; /* Menjaga rasio gambar tetap 16:9 */
     margin: 0 1rem; /* Hapus margin untuk mendekatkan gambar */
-    border-radius: 8px;
+    border-radius: 16px;
   }
 
   .custom-carousel {

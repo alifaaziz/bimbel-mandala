@@ -49,7 +49,7 @@ const displayedTutors = tutors.value.slice(0, 4);
 
 .n-card {
   flex: 1; /* Membuat lebar kartu fleksibel */
-  max-width: 300px; /* Batas maksimum lebar kartu */
+  max-width: 500px; /* Batas maksimum lebar kartu */
   border-radius: 20px;
 }
 
