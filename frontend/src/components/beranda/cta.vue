@@ -47,8 +47,15 @@
     @media (max-width: 768px) {
         .copy-cta {
             width: 80%; 
+        } 
+    }
+    @media (max-width: 576px) {
+        .copy-cta {
+            width: 80%; 
         }
-        
+        .hero-title {
+            font-size: 3rem;
+        }
     }
     
 </style>

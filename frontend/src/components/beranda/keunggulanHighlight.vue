@@ -64,6 +64,14 @@ import buttonProfile from '../dirButton/butProfile.vue'
   .padding-components {
     grid-template-columns: repeat(2, 1fr); /* 2 kolom saat layar < 960px */
     padding: 0 2rem;
+    gap: 2rem;
+  }
+  
+}
+@media (max-width: 576px) {
+  .padding-components {
+    grid-template-columns: repeat(1, 1fr); /* 2 kolom saat layar < 960px */
+    padding: 0 2rem;
   }
 }
 </style>
