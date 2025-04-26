@@ -224,6 +224,12 @@ form {
   text-align: center;
 }
 
+@media (max-width: 768px) {
+  .title-header {
+    font-size: 2.5rem;
+  }
+}
+
 .subtitle {
   font-size: 1rem;
   font-weight: 400;

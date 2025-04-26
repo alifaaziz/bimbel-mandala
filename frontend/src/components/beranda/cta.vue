@@ -4,7 +4,7 @@
 
 <template>
     <div class="cta-section">
-        <div class="padding-components">
+        <div class="padding-components cta-content">
             <div class="hero hero-title">
                 Gapai Impianmu
             </div>
@@ -29,16 +29,27 @@
         letter-spacing: 0.08em; /* Menambahkan jarak per huruf */
     }
 
+    .cta-content {
+        max-width: 1440px;
+    }
+
     .cta-section {
         height: 620px;
         display: flex;
-        justify-content: left; /* Mengatur konten ke tengah secara horizontal */
+        justify-content: center; /* Mengatur konten ke tengah secara horizontal */
         align-items: center; /* Mengatur konten ke tengah secara vertikal */
         text-align: center; /* Opsional: untuk memastikan teks rata tengah */
     }
     .hero-title {
         color: #ffffff;
         text-align: left;
+    }
+
+    @media (max-width: 768px) {
+        .copy-cta {
+            width: 80%; 
+        }
+        
     }
     
 </style>

@@ -71,49 +71,72 @@ export default defineComponent({
 
 <style scoped>
 .custom-carousel {
-  width: 80%; /* Carousel memenuhi lebar container */
-  height: 360px; /* Atur tinggi carousel */
-  position: relative; /* Tambahkan posisi relatif untuk mengatur dot */
-  padding-bottom: 40px; /* Tambahkan padding bawah untuk memberi ruang pada dot */
+  width: 80%;
+  max-width: 1440px;
+  height: auto; /* Ubah dari fixed height ke auto */
+  padding-bottom: 40px;
   border-radius: 8px;
+  margin: 0 auto;
 }
 
 .image-container {
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center; /* Atur gambar ke tengah */
+  justify-content: center;
   align-items: center;
-  border-radius: 8px;
+  padding: 0 0.5rem; /* Setengah dari gap total (1rem) */
+  box-sizing: border-box;
 }
 
 .carousel-img {
-  width: 560px; /* Gambar memenuhi container */
-  height: 100%; /* Gambar memenuhi container */
-  object-fit: cover; /* Memastikan gambar tidak terdistorsi */
-  border-radius: 8px; /* Menambahkan radius pada sudut gambar */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Menambahkan bayangan pada gambar */
+  width: 100%; /* Gambar isi penuh div image-container */
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   aspect-ratio: 16 / 9;
 }
 
 /* Media query untuk layar dengan lebar maksimum 964px */
-@media (max-width: 964px) {
+@media (max-width: 1024px) {
   .image-container {
-    flex-direction: column; /* Ubah arah flex menjadi kolom */
-    height: auto; /* Tinggi container fleksibel mengikuti konten */
-    gap: 16px; /* Tambahkan jarak antar gambar untuk layar kecil */
+    flex-direction: column; 
+    height: auto; 
+    gap: 1rem; 
   }
 
   .carousel-img {
-    width: 98%; /* Gambar memenuhi lebar container */
+    width: 100%; /* Gambar memenuhi lebar container */
     aspect-ratio: 16 / 9; /* Menjaga rasio gambar tetap 16:9 */
-    margin: 0; /* Hapus margin untuk mendekatkan gambar */
+    margin: 0 1rem; /* Hapus margin untuk mendekatkan gambar */
     border-radius: 8px;
   }
 
   .custom-carousel {
     height: auto; /* Tinggi carousel fleksibel */
-    width: 100%; /* Carousel memenuhi lebar container */
+    width: 80%; /* Carousel memenuhi lebar container */
+  }
+
+  @media (max-width: 576px) {
+    .carousel-img {
+      width: 100%; /* Gambar memenuhi lebar container */
+      height: auto; /* Tinggi gambar otomatis */
+      aspect-ratio: 16 / 9; /* Menjaga rasio gambar tetap 16:9 */
+      margin: 0 0rem;
+    }
+    .custom-carousel {
+    height: auto; /* Tinggi carousel fleksibel */
+    width: 90%; /* Carousel memenuhi lebar container */
+  }
+  }
+  @media (max-width: 480px) {
+    .carousel-img {
+      width: 100%; /* Gambar memenuhi lebar container */
+      height: auto; /* Tinggi gambar otomatis */
+      aspect-ratio: 16 / 9; /* Menjaga rasio gambar tetap 16:9 */
+      margin: 0 2rem;
+    }
   }
 }
 

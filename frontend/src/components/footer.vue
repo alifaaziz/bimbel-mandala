@@ -1,20 +1,23 @@
 <template>
-    <footer class="footer">
-    <img src="../assets/logomandala.svg" alt="Logo Bimbel Mandala" class="logo" />
+  <footer class="footer">
+    <div class="footer-content">
+      <img src="../assets/logomandala.svg" alt="Logo Bimbel Mandala" class="logo" />
+      
       <div class="footer-container">
+        <!-- Contact Section -->
+        <div class="footer-section">
+          <h4>About us</h4>
+          <p class="about">Bimbel Mandala adalah bimbingan belajar terpercaya, meraih prestasi akademik melalui metode belajar yang interaktif dan menyenangkan.</p>
+        </div>
+
         <div class="footer-section">
           <h4>Contact us</h4>
           <p>mandala@gmail.com</p>
           <p>+62-0000-0000</p>
           <p>xxx,xxx, Semarang</p>
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-          </div>
         </div>
-  
+
+        <!-- About Section -->
         <div class="footer-section">
           <h4>Bimbel Mandala</h4>
           <ul>
@@ -24,8 +27,9 @@
             <li><a href="#">Galeri</a></li>
           </ul>
         </div>
-  
-        <div class="footer-section layanan">
+
+        <!-- Services Section -->
+        <div class="footer-section">
           <h4>Layanan</h4>
           <ul>
             <li><a href="#">Informasi</a></li>
@@ -34,95 +38,117 @@
           </ul>
         </div>
       </div>
-  
-      <div class="footer-bottom">
-        <div class="language">
-          <i class="fas fa-globe"></i> Indonesia
-        </div>
-        <div class="copyright">
-          Copyright © 2025. All rights reserved.
-        </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="language">
+        <i class="fas fa-globe"></i> Indonesia
       </div>
-    </footer>
-  </template>
-  
-  <script setup>
-  // No script logic needed for now.
-  </script>
-  
-  <style scoped>
+      <div class="copyright">
+        Copyright © 2025. All rights reserved.
+      </div>
+    </div>
+  </footer>
+</template>
+
+<style scoped>
+.footer {
+  background-color: #051329;
+  color: #ffffff;
+  padding: 3rem 8rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.footer-content {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.about {
+  text-align: justify;
+}
+
+.footer-section {
+  padding: 15px;
+}
+
+.footer-section h4 {
+  color: #f9a826;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.footer-section p,
+.footer-section a {
+  color: #ccc;
+  text-decoration: none;
+  margin: 8px 0;
+  display: block;
+  font-size: 14px;
+}
+
+.footer-section a:hover {
+  text-decoration: underline;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.logo {
+  max-width: 130px;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.social-icons {
+  margin-top: 15px;
+}
+
+.social-icons a {
+  margin-right: 15px;
+  color: #ccc;
+  font-size: 1.2rem;
+}
+
+.footer-bottom {
+  border-top: 1px solid #1e2e44;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 25px;
+  margin-top: 40px;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.language i {
+  margin-right: 5px;
+}
+
+@media (max-width: 768px) {
   .footer {
-    background-color: #051329;
-    color: #ffffff;
-    padding: 3rem 8rem;
-    font-family: 'Segoe UI', sans-serif;
-    width: 100%;
+    padding: 2rem;
   }
   
   .footer-container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 40px;
-    margin-bottom: 30px;
-  }
-  
-  .footer-section {
-    flex: 1;
-    min-width: 200px;
-  }
-  
-  .footer-section h4 {
-    color: #f9a826;
-    margin-bottom: 15px;
-  }
-  
-  .footer-section p,
-  .footer-section a {
-    color: #ccc;
-    text-decoration: none;
-    margin: 5px 0;
-    display: block;
-    font-size: 14px;
-  }
-  
-  .footer-section a:hover {
-    text-decoration: underline;
-  }
-  
-  .footer-section ul {
-    list-style: none; /* Menghilangkan tanda titik pada daftar */
-    padding: 0; /* Menghapus padding default */
-    margin: 0; /* Menghapus margin default */
-  }
-  
-  .footer-section.layanan {
-    text-align: right; /* Membuat teks rata kanan */
-    margin-left: auto; /* Memindahkan elemen ke pojok kanan */
-  }
-  
-  .logo {
-    max-width: 130px;
-    margin-bottom: 10px;
-  }
-  
-  .social-icons a {
-    margin-right: 10px;
-    color: #ccc;
-    font-size: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
   
   .footer-bottom {
-    border-top: 1px solid #1e2e44;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    font-size: 13px;
-    color: #aaa;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
   }
-  
-  .language i {
-    margin-right: 5px;
-  }
-  </style>
+}
+</style>

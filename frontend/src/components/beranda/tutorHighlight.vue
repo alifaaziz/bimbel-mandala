@@ -8,7 +8,7 @@ const displayedTutors = tutors.value.slice(0, 4);
 </script>
 
 <template>
-  <div class="padding-components">
+  <div class="padding-components tutor-component">
     <h1 class="headerr2 title1">Berbagai</h1>
     <h2 class="headerb1 title2">Tutor Profesional</h2>
     <div class="card-container">
@@ -36,6 +36,10 @@ const displayedTutors = tutors.value.slice(0, 4);
 </template>
 
 <style scoped>
+
+.tutor-component {
+  place-items: center;
+}
 .card-container {
   display: flex;
   gap: 24px; /* Jarak antar kartu */

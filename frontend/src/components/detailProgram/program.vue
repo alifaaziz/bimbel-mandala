@@ -1,23 +1,18 @@
 <script setup lang="ts">
 import { defineComponent, h, ref } from 'vue';
-import { useRoute } from 'vue-router'; // Import useRoute
-import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js'; 
+import { useRoute } from 'vue-router';
+import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js';
 
-// Tangkap parameter id dari URL
 const route = useRoute();
 const programId = route.params.id;
-
-// Cari data program berdasarkan id
 const programData = ref(paketBimbel.find((program) => program.id === programId));
 
-// Fungsi untuk memformat waktu
 function formatTime(isoString: string): string {
-  const time = isoString.split('T')[1]; // Ambil bagian waktu setelah 'T'
+  const time = isoString.split('T')[1];
   const [hour, minute] = time.split(':');
   return `${hour}:${minute} WIB`;
 }
 
-// Fungsi untuk memformat angka ke dalam format Rupiah
 function formatCurrency(amount: number): string {
   return `Rp${amount.toLocaleString('id-ID')}`;
 }
@@ -51,7 +46,6 @@ const InfoRow = defineComponent({
 function submitToWhatsApp() {
   if (!programData.value) return;
 
-  // Format pesan untuk WhatsApp
   const message = `
     *Detail Program Bimbel Mandala*\n
     Berikut adalah detail program yang ingin dipesan:\n
@@ -67,13 +61,8 @@ function submitToWhatsApp() {
     Mohon untuk segera memproses pesanan ini. Terima kasih.
   `;
 
-  // Encode pesan untuk URL
   const encodedMessage = encodeURIComponent(message);
-
-  // Nomor WhatsApp tujuan (ganti dengan nomor yang sesuai)
   const whatsappNumber = "6285855852485";
-
-  // Redirect ke WhatsApp
   window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
 }
 </script>
@@ -109,10 +98,7 @@ function submitToWhatsApp() {
       <div class="space-detail">
         <n-space vertical size="medium" class="space-detail bodyr2">
           <InfoRow label="Area" :value="programData.area" />
-          <InfoRow
-            label="Pertemuan"
-            :value="`${programData.totalMeetings} Pertemuan`"
-          />
+          <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
           <InfoRow label="Pukul" :value="formatTime(programData.time)" />
           <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
         </n-space>
@@ -122,7 +108,8 @@ function submitToWhatsApp() {
           {{ programData.groupType.map((group) => group.type).join(' / ') }}
         </p>
         <p class="bodyb1 price">
-          {{ formatCurrency(Number(programData.groupType[0].price)) }} - {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
+          {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
+          {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
         </p>
       </div>
       <div class="space-detail">
@@ -136,40 +123,49 @@ function submitToWhatsApp() {
         </n-button>
       </div>
     </div>
-    <!-- Tambahkan tombol submit -->
   </div>
 </template>
 
-<style setup>
+<style scoped>
 .container-detail {
   display: flex;
-  gap: 4rem;
-  height: 496px;
-  width: 1440px;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  max-width: 1440px;
   padding: 0 8rem;
-  margin: 2rem 0;
+  margin: 2rem auto;
+  height: auto;
 }
+
 .program-photo {
   width: 541px;
-  height: 496px;
+  height: auto;
+  max-height: 496px;
   object-fit: cover;
   border-radius: 20px;
 }
 
 .head-detail {
   display: flex;
-  gap: 11rem;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
+
 .head-program {
   color: #154484;
-  width: 320px
+  width: 100%;
+  max-width: 320px;
 }
+
 .grade {
   background-color: darkgray;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 2rem;
+  white-space: nowrap;
 }
 
 .space-detail {
@@ -207,9 +203,45 @@ function submitToWhatsApp() {
   background-color: #123a6d;
 }
 
+/* Breakpoint 1200px */
+@media (max-width: 1200px) {
+  .container-detail {
+    padding: 0 4rem;
+  }
+
+  .program-photo {
+    width: 100%;
+    max-height: 400px;
+  }
+}
+
+/* Breakpoint 960px */
 @media (max-width: 960px) {
   .container-detail {
+    flex-direction: column;
+    padding: 0 2rem;
+  }
+
+  .program-photo {
     width: 100%;
+    height: auto;
+    max-height: none;
+  }
+
+  .head-program {
+    width: 100%;
+  }
+}
+
+/* Breakpoint 576px */
+@media (max-width: 576px) {
+  .container-detail {
+    padding: 0 1rem;
+  }
+
+  .submit-button {
+    width: 100%;
+    text-align: center;
   }
 }
 </style>

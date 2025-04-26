@@ -74,8 +74,9 @@
   });
 </script>
 <template>
-    <n-layout>
-      <n-layout-header class="navbar">
+  <n-layout>
+    <n-layout-header class="navbar">
+      <div class="navbar-wrapper">
         <div class="logo">
           <img src="../assets/logomandala22.png" alt="Logo" />
         </div>
@@ -87,7 +88,7 @@
           >
             ☰
           </n-button>
-  
+
           <!-- Desktop Menu -->
           <n-menu
             v-else
@@ -97,8 +98,8 @@
             :value="currentRoute"
             @update:value="handleMenuClick"
           />
-  
-          <!-- Mobile Menu -->
+
+          <!-- Mobile Drawer Menu -->
           <n-drawer
             v-if="!isDesktop"
             v-model:show="drawerVisible"
@@ -113,66 +114,83 @@
             />
           </n-drawer>
         </div>
-      </n-layout-header>
-    </n-layout>
-  </template>
+      </div>
+    </n-layout-header>
+  </n-layout>
+</template>
+
   
   
-  <style scoped>
+<style scoped>
+.navbar {
+  width: 100%;
+  height: 68px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  border-bottom: 2px solid #9BAFCB;
+  background-color: white;
+  padding: 0 8rem;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 56px;
+  object-fit: contain;
+}
+
+.menu-container {
+  display: flex;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Deep style overrides */
+::v-deep(.n-menu-item) {
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+::v-deep(.n-menu-item-content-header:hover),
+::v-deep(.n-menu-item-content:hover) {
+  color: #FB8312 !important;
+}
+
+::v-deep(.n-menu-item-content--selected .n-menu-item-content-header) {
+  color: #FB8312 !important;
+  font-weight: 600;
+}
+
+/* Responsive padding */
+@media (max-width: 1024px) {
   .navbar {
-    width: 100%;
-    height: 68px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    padding: 0 8rem;
-    border-bottom: 2px solid #9BAFCB; 
+    padding: 0 4rem;
   }
-  
-  .logo {
-    display: contents;
-    align-items: center;
-    height: 100%;
-  }
+}
 
-  .logo img {
-    height: 56px;
-    object-fit: contain;
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 2rem;
   }
-  
-  .menu-container {
-    display: flex;
-    align-items: center;
-    margin-left: 20px;
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  ::v-deep(.n-menu-item) {
-    transition: all 0.2s ease;
-    border-radius: 8px;
-  }
+}
 
-  ::v-deep(.n-menu-item-content-header:hover) {
-    color: #FB8312 !important;
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 1rem;
   }
-
-  ::v-deep(.n-menu-item-content:hover) {
-    color: #FB8312 !important;
-  }
-
-  ::v-deep(.n-menu-item-content--selected .n-menu-item-content-header) {
-    color: #FB8312 !important;
-    font-weight: 600;
-  }
-
-@media (max-width: 961px) {
-    .navbar {
-      padding: 2rem 40px;
-    }
-  }
-
+}
 </style>
-

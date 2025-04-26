@@ -15,7 +15,7 @@ import buttonProfile from '../dirButton/butProfile.vue'
 </script>
 
 <template>
-  <div>
+  <div class="highlight-keunggulan">
     <h1 class="headerr2 title1">Mengapa pilih kami?</h1>
     <h2 class="headerb1 title2">Keunggulan</h2>
     <div class="padding-components">
@@ -56,6 +56,10 @@ import buttonProfile from '../dirButton/butProfile.vue'
   align-items: center;
 }
 
+.highlight-keunggulan {
+  max-width: 1440px;
+  margin: 0 auto;
+}
 @media (max-width: 960px) {
   .padding-components {
     grid-template-columns: repeat(2, 1fr); /* 2 kolom saat layar < 960px */

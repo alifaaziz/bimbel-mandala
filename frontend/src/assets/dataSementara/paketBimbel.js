@@ -11,7 +11,7 @@ export const paketBimbel = [
     tutorName: "Ratna Dewi M.Pd",
     photo: "/public/tutor/2.png",
     groupType: [
-      { type: "privat", price: "1540000", discPrice: null },
+      { type: "Privat", price: "1540000", discPrice: null },
       { type: "grup2", price: "2860000", discPrice: null },
       { type: "grup3", price: "4180000", discPrice: null },
       { type: "grup4", price: "5500000", discPrice: null },

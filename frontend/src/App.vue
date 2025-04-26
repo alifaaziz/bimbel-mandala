@@ -23,7 +23,7 @@ export default {
 
 <style>
 #app {
-  max-width: 1440px;
+  max-width: 100%;
   margin-top: 68px;
 }
 </style>

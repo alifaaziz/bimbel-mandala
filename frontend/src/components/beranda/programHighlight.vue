@@ -6,19 +6,12 @@ import { defineEmits } from 'vue';
 
 const limitedPrograms = paketBimbel.slice(0, 2);
 
-// Mendefinisikan event yang akan dipancarkan
 const emit = defineEmits(['refreshPage']);
 
-// Fungsi untuk memformat waktu
 function formatTime(dateTime) {
-  const time = dateTime.split('T')[1]; // Ambil bagian waktu setelah 'T'
+  const time = dateTime.split('T')[1];
   const [hour, minute] = time.split(':');
   return `${hour}:${minute} WIB`;
-}
-
-function handleClick() {
-  // Memancarkan event 'refreshPage'
-  emit('refreshPage');
 }
 </script>
 
@@ -32,23 +25,20 @@ function handleClick() {
         v-for="program in limitedPrograms" 
         :key="program.id"
         class="n-card"
-        style="width: 584px; height: 304px; margin: 0 auto; background-color: #003366;"
       >
         <div class="card-content">
-          <!-- Bagian gambar -->
           <div class="card-image">
             <img 
               :src="program.photo || '/public/tutor/3.png'" 
               :alt="`Image of ${program.name}`" 
             />
-            <p class="privat">{{ program.groupType[0].type }}</p>
+            <p class="headersb1 privat">{{ program.groupType[0].type }}</p>
           </div>
-          <!-- Bagian teks -->
           <div class="card-text">
             <div class="header">
               <div class="title-group">
-                <h3>{{ program.name }}</h3>
-                <p class="name">{{ program.tutorName }}</p>
+                <h3 class="headerb3">{{ program.name }}</h3>
+                <p class="name bodyr3">{{ program.tutorName }}</p>
               </div>
               <div class="badge">{{ program.level }}</div>
             </div>
@@ -64,135 +54,189 @@ function handleClick() {
       </n-card>
     </div>
 
-    <ButtonProgram class="button"/>
+    <ButtonProgram class="button" @click="handleClick"/>
   </div>
 </template>
 
 <style scoped>
 .card-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1rem;
-  justify-content: center;
+  width: 100%;
 }
 
 .n-card {
-  width: 520px; 
-  height: 280px; 
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  width: 100%;
   background-color: #003366;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card-content {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  height: 100%;
+  flex-direction: column;
 }
 
 .card-image {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
 }
 
 .card-image img {
-  width: 200px;
-  height: 228px;
+  width: 100%;
+  height: 200px;
   object-fit: cover;
   border-radius: 8px;
 }
 
-.card-image .privat {
-  margin-top: 0.5rem;
-  font-size: 1rem;
+.privat {
   color: white;
-  font-weight: bold;
   text-align: center;
 }
 
 .card-text {
-  flex: 1;
   color: white;
-  height: 100%;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
 }
 
-.title-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-text h3 {
-  font-size: 1.5rem;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
+.title-group h3 {
   color: #DEE4EE;
 }
 
-.card-text .badge {
-  padding: 10px 20px;
+.name {
+  color: #DEE4EE;
+}
+
+.badge {
+  padding: 6px 12px;
   background-color: #dee4ee;
-  font-size: 1.5rem;
   color: #617592;
-  border: none;
-  border-radius: 90px; 
+  border-radius: 90px;
+  font-size: 0.8rem;
   font-weight: bold;
 }
 
-.card-text .name {
-  margin-top: -0.5rem;
-  font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  color: #DEE4EE;
-}
-
 .card-text p {
-  margin-top: 0.65rem;
-  font-size: 16px;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 400;
+  font-size: 0.9rem;
   color: white;
 }
 
-.footer {
-  margin-top: 1rem;
-}
-
 .btn-daftar {
-  padding: 10px 20px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 1rem;
   background-color: #9bafcb;
   color: #154484;
   border: none;
   border-radius: 90px;
-  cursor: pointer;
-  font-size: 1rem;
   font-weight: bold;
-}
-
-.btn-daftar:hover {
-  background-color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
 }
 
 .button {
   margin-top: 2rem;
+  width: 100%;
 }
 
-.title1 {
-  color: #FDC998 !important;
-  text-align: center;
+/* Tablet (768px and up) */
+@media (min-width: 920px) {
+  header {
+    padding: 0 2rem;
+  }
+  .card-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .n-card {
+    width: calc(50% - 0.75rem);
+  }
+
+  .card-content {
+    flex-direction: row;
+    height: 100%;
+  }
+
+  .card-image {
+    width: 40%;
+    margin-bottom: 0;
+    margin-right: 1.5rem;
+  }
+
+  .card-image img {
+    height: 200px;
+  }
+
+  .card-text {
+    width: 60%;
+  }
+
+  .btn-daftar {
+    width: auto;
+    padding: 10px 20px;
+  }
 }
 
-.title2 {
-  color: #154484;
-  text-align: center;
-  margin-bottom: 12px;
+/* Desktop (1024px and up) */
+@media (min-width: 1200px) {
+
+  .n-card {
+    width: calc(50% - 0.75rem);
+    max-width: 584px;
+  }
+
+  .card-image img {
+    height: 228px;
+  }
+
+  .title-group h3 {
+    font-size: 1.2rem;
+  }
+
+  .badge {
+    padding: 10px 20px;
+    font-size: 0.75rem;
+  }
+
+  .card-text p {
+    font-size: 1rem;
+  }
+
+  .btn-daftar {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+}
+
+/* Large Desktop (1440px and up) */
+@media (min-width: 1440px) {
+
+  .card-container {
+    justify-content: center;
+  }
+}
+
+/* Small Mobile Adjustments (below 400px) */
+@media (max-width: 400px) {
+  .card-image img {
+    height: 150px;
+  }
+
+  .card-text p {
+    font-size: 0.8rem;
+  }
+
+  .btn-daftar {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
 }
 </style>

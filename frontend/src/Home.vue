@@ -34,7 +34,7 @@ import tutorHighlight from './components/beranda/tutorHighlight.vue'
   padding: 2rem 0;
 }
 .banner {
-  display: flex; /* Menggunakan Flexbox */
+
   justify-content: center; 
 }
 
