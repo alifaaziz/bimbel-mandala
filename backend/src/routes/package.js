@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { BimbelPackageController } from '../controllers/package.js';
+import { AuthMiddleware } from '../middlewares/auth.js';
 
 export default (app) => {
     const router = Router();
@@ -8,16 +9,22 @@ export default (app) => {
 
     router.get('/', BimbelPackageController.getAllBimbelPackages);
 
-    router.get('/:id', BimbelPackageController.getBimbelPackageById);
+    router.get('/populer', BimbelPackageController.getBimbelPackagesByPopularity);
 
-    router.post('/', BimbelPackageController.createBimbelPackage);
+    router.get('/:id', AuthMiddleware.isAuthorized, BimbelPackageController.getBimbelPackageById);
 
-    router.post('/class', BimbelPackageController.createClassBimbelPackage);
+    router.post('/', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.createBimbelPackage);
 
-    router.patch('/:id', BimbelPackageController.updateBimbelPackage);
+    router.post('/class', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.createClassBimbelPackage);
 
-    router.patch('/class/:id', BimbelPackageController.updateClassBimbelPackage);
+    router.patch('/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.updateBimbelPackage);
 
-    router.delete('/:id', BimbelPackageController.deleteBimbelPackage);
+    router.patch('/class/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.updateClassBimbelPackage);
+
+    router.delete('/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.deleteBimbelPackage);
+
+    router.post('/status', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.updateBimbelPackageStatus);
+
+    router.get('/populer', BimbelPackageController.getBimbelPackagesByPopularity);
 }
 

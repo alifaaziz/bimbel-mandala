@@ -36,4 +36,11 @@ export default (app) => {
         NotificationMiddleware.isNotificationExists,
         NotificationController.deleteNotification
     );
+
+    router.get(
+        '/all',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole(['admin']),
+        NotificationController.getAllNotifications
+    );
 }

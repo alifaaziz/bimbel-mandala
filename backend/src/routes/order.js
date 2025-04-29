@@ -9,11 +9,11 @@ export default (app) => {
 
     router.post('/', AuthMiddleware.isAuthorized, OrderController.createOrder);
 
-    router.patch('/status', OrderController.updateOrderStatus);
+    router.patch('/status', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), OrderController.updateOrderStatus);
 
-    router.get('/', OrderController.getAllOrders);
+    router.get('/', AuthMiddleware.isAuthorized,  OrderController.getAllOrders);
 
-    router.get('/:id', OrderController.getOrderById);
+    router.get('/:id', AuthMiddleware.isAuthorized, OrderController.getOrderById);
 
-    router.delete('/:id', OrderController.deleteOrder);
+    router.delete('/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), OrderController.deleteOrder);
 };

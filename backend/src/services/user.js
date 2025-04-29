@@ -203,4 +203,63 @@ async function updateUser(payload) {
     return user;
 }
 
-export const UserService = { createStudent, createUserWithRole, updateUser };
+/**
+ * Retrieves tutors sorted by the number of classes they are associated with.
+ *
+ * @async
+ * @function getTutorsSortedByClassCount
+ * @returns {Promise<Array>} The list of tutors sorted by class count.
+ */
+async function getTutorsSortedByClassCount() {
+    const tutors = await prisma.user.findMany({
+        where: {
+            role: 'tutor'
+        },
+        select: {
+            id: true,
+            name: true,
+            _count: {
+                select: {
+                    class: true // Count the number of classes associated with the tutor
+                }
+            }
+        },
+        orderBy: {
+            class: {
+                _count: 'desc' // Sort by class count in descending order
+            }
+        }
+    });
+
+    const tutorDetails = await prisma.tutor.findMany({
+        where: {
+            userId: {
+                in: tutors.map(tutor => tutor.id)
+            }
+        },
+        select: {
+            userId: true,
+            subjects: true,
+            teachLevel: true,
+            description: true,
+            photo: true
+        }
+    });
+
+    const tutorDetailsMap = tutorDetails.reduce((map, detail) => {
+        map[detail.userId] = detail;
+        return map;
+    }, {});
+
+    return tutors.map(tutor => ({
+        id: tutor.id,
+        name: tutor.name,
+        subject: tutorDetailsMap[tutor.id]?.subjects || null,
+        teachLevel: tutorDetailsMap[tutor.id]?.teachLevel || null,
+        description: tutorDetailsMap[tutor.id]?.description || null,
+        photo: tutorDetailsMap[tutor.id]?.photo || null,
+        classCount: tutor._count.class
+    }));
+}
+
+export const UserService = { createStudent, createUserWithRole, updateUser, getTutorsSortedByClassCount };

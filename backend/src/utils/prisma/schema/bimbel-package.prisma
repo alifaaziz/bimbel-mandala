@@ -5,9 +5,9 @@ model BimbelPackage {
     totalMeetings Int        @map("total_meetings")
     time          DateTime   
     duration      Int
-    basePrice     Decimal    @map("base_price")
     area          String
     userId        String     @map("user_id")
+    discount      Decimal?   @db.Decimal(10, 2)
     isActive      Boolean    @default(true) @map("is_active")
 
     user User @relation(fields: [userId], references: [id])

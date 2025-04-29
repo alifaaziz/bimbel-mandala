@@ -1,5 +1,5 @@
 model Class {
-    id       String   @id @default(uuid())
+    id       String   @id @default(uuid(7))
     code     String   @unique
     orderId  String?  @map("order_id")
     order    Order?   @relation(fields: [orderId], references: [id])

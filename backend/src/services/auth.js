@@ -316,6 +316,46 @@ function getAuthorizationBearerToken(req) {
   return token;
 }
 
+/**
+ * Changes the user's password.
+ *
+ * @async
+ * @function changePassword
+ * @param {Object} params - The parameters for changing the password.
+ * @throws {HttpError} Throws an error if the old password is incorrect.
+ * @returns {Promise<void>} Resolves when the password has been successfully changed.
+ */
+async function changePassword({ userId, oldPassword, newPassword }) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { password: true }
+  });
+
+  if (!user) {
+    throw new HttpError(404, { message: 'User not found' });
+  }
+
+  const isMatch = await isPasswordMatch(oldPassword, user.password);
+  if (!isMatch) {
+    throw new HttpError(400, { message: 'Old password is incorrect' });
+  }
+
+  const hashedNewPassword = await hashPassword(newPassword);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedNewPassword }
+  });
+
+  await prisma.notification.create({
+    data: {
+      userId,
+      type: 'Perubahan Akun',
+      description: 'Password akun Anda berhasil diubah, jika Anda tidak merasa melakukan perubahan ini, segera hubungi kami.'
+    }
+  });
+}
+
 export const AuthService = {
   login,
   hashPassword,
@@ -325,5 +365,6 @@ export const AuthService = {
   sendPasswordResetEmail,
   resetPassword,
   verifyPasswordResetToken,
-  getAuthorizationBearerToken
+  getAuthorizationBearerToken,
+  changePassword
 };

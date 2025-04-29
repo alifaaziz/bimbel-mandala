@@ -17,7 +17,9 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: validStringSchema,
   GOOGLE_CALLBACK_URL: validStringSchema,
   DATABASE_URL: validStringSchema,
-  FRONTEND_URL: validStringSchema
+  FRONTEND_URL: validStringSchema,
+  POSTMAN_API_KEY: validStringSchema,
+  POSTMAN_COLLECTION_ID: validStringSchema,
 });
 
 function validateEnv() {

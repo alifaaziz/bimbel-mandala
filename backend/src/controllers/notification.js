@@ -1,4 +1,5 @@
 import { NotificationService } from "../services/notification.js";
+import { asyncWrapper } from "../utils/asyncWrapper.js";
 
 /**
  * Retrieves all notifications for the current user.
@@ -38,8 +39,8 @@ async function markNotificationAsRead(req, res) {
  * @returns {Promise<void>} Resolves with no value.
  */
 async function markAllNotificationsAsRead(req, res) {
-    await NotificationService.markAllNotificationsAsRead(res.locals.user.id);
-    res.status(200).json({ message: 'All notifications marked as read' });
+  await NotificationService.markAllNotificationsAsRead(res.locals.user.id);
+  res.status(200).json({ message: 'All notifications marked as read' });
 }
 
 /**
@@ -56,9 +57,24 @@ async function deleteNotification(req, res) {
   res.status(200).json({ message: 'Notification deleted' });
 }
 
+/**
+ * Gets all notifications for an admin.
+ * 
+ * @async
+ * @function getAllNotifications
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the notifications.
+ */
+async function getAllNotifications(req, res) {
+  const notifications = await NotificationService.getAllNotifications();
+  res.status(200).json({ data: notifications });
+}
+
 export const NotificationController = {
-  getNotifications,
-  markNotificationAsRead,
-  markAllNotificationsAsRead,
-  deleteNotification
+  getNotifications: asyncWrapper(getNotifications),
+  markNotificationAsRead: asyncWrapper(markNotificationAsRead),
+  markAllNotificationsAsRead: asyncWrapper(markAllNotificationsAsRead),
+  deleteNotification: asyncWrapper(deleteNotification),
+  getAllNotifications: asyncWrapper(getAllNotifications)
 };

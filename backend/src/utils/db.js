@@ -12,7 +12,7 @@ const omitConfig = {
     password: true
   },
   notification: {
-    ...omittedTimestampFields
+    updatedAt: true,
   },
   bimbelPackage: {
     ...omittedTimestampFields
@@ -24,6 +24,9 @@ const omitConfig = {
     ...omittedTimestampFields
   },
   class: {
+    ...omittedTimestampFields
+  },
+  attendance: {
     ...omittedTimestampFields
   },
 };

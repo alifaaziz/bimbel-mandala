@@ -32,14 +32,30 @@ async function getBimbelPackageById(req, res) {
 
 /**
  * Handles the request to create a new bimbel package.
- * 
+ *
  * @async
  * @function createBimbelPackage
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the created bimbel package.
  */
 async function createBimbelPackage(req, res) {
-    const packageData = req.body;
-    const newPackage = await BimbelPackageService.createBimbelPackage(packageData);
-    res.status(201).json(newPackage);
+  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+
+  const createdPackage = await BimbelPackageService.createBimbelPackage({
+    name,
+    level,
+    totalMeetings,
+    time,
+    duration,
+    area,
+    tutorId,
+    groupType,
+    days,
+    discount
+  });
+
+  res.status(201).json(createdPackage);
 }
 
 /**
@@ -52,8 +68,8 @@ async function createBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the created bimbel package.
  */
 async function createClassBimbelPackage(req, res) {
-    const packageData = req.body;
-    const newPackage = await BimbelPackageService.createClassBimbelPackage(packageData);
+    const packageData = req.body; 
+    const newPackage = await BimbelPackageService.createClassBimbelPackage(packageData); // Panggil service
     res.status(201).json(newPackage);
 }
 
@@ -68,26 +84,56 @@ async function createClassBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the updated bimbel package.
  */
 async function updateBimbelPackage(req, res) {
-    const { id } = req.params;
-    const packageData = req.body;
-    const updatedPackage = await BimbelPackageService.updateBimbelPackage(id, packageData);
-    res.status(200).json(updatedPackage);
+  const { id } = req.params;
+  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+
+  const updatedPackage = await BimbelPackageService.updateBimbelPackage(id, {
+    name,
+    level,
+    totalMeetings,
+    time,
+    duration,
+    area,
+    tutorId,
+    groupType,
+    days,
+    discount
+  });
+
+  res.status(200).json(updatedPackage);
 }
 
 /**
- * Update a class bimbel package by ID with new data.
- * 
+ * Updates a class bimbel package by ID with new data.
+ *
  * @async
  * @function updateClassBimbelPackage
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Promise<void>} Resolves with the updated bimbel package.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the updated class bimbel package.
  */
 async function updateClassBimbelPackage(req, res) {
-    const { id } = req.params;
-    const packageData = req.body;
-    const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(id, packageData);
-    res.status(200).json(updatedPackage);
+  const { id } = req.params;
+  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+
+  if (!groupType || !groupType.price) {
+    return res.status(400).json({ message: 'Group type price is required' });
+  }
+
+  const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(id, {
+    name,
+    level,
+    totalMeetings,
+    time,
+    duration,
+    area,
+    tutorId,
+    groupType,
+    days,
+    discount
+  });
+
+  res.status(200).json(updatedPackage);
 }
 
 /**
@@ -105,6 +151,35 @@ async function deleteBimbelPackage(req, res) {
     res.status(200).json({ message: 'Bimbel package deleted successfully' });
 }
 
+/**
+ * Update bimbel package isActive when all schedule have been attended
+ *
+ * @async
+ * @function updateBimbelPackageStatus
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the updated bimbel package.
+ */
+async function updateBimbelPackageStatus(req, res) {
+  const { packageId } = req.body;
+  const updatedPackage = await BimbelPackageService.updateBimbelPackageStatus(packageId);
+  res.status(200).json(updatedPackage);
+}
+
+/**
+ * Handles the request to get bimbel packages sorted by popularity (number of orders).
+ *
+ * @async
+ * @function getBimbelPackagesByPopularity
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of bimbel packages sorted by popularity.
+ */
+async function getBimbelPackagesByPopularity(_req, res) {
+  const packages = await BimbelPackageService.getBimbelPackagesByPopularity();
+  res.status(200).json(packages);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getBimbelPackageById: asyncWrapper(getBimbelPackageById),
@@ -112,5 +187,7 @@ export const BimbelPackageController = {
     createClassBimbelPackage: asyncWrapper(createClassBimbelPackage),
     updateBimbelPackage: asyncWrapper(updateBimbelPackage),
     updateClassBimbelPackage: asyncWrapper(updateClassBimbelPackage),
-    deleteBimbelPackage: asyncWrapper(deleteBimbelPackage)
+    deleteBimbelPackage: asyncWrapper(deleteBimbelPackage),
+    updateBimbelPackageStatus: asyncWrapper(updateBimbelPackageStatus),
+    getBimbelPackagesByPopularity: asyncWrapper(getBimbelPackagesByPopularity),
 };

@@ -5,10 +5,17 @@ import routes from './routes/index.js';
 import errorMiddleware from './middlewares/error.js';
 import { appEnv } from './utils/env.js';
 import { logger } from './loaders/pino.js';
+import cors from 'cors';
 
 function main() {
   const app = express();
   const server = createServer(app);
+  
+  app.use(cors({
+    origin: '*', // Mengizinkan semua origin (ubah sesuai kebutuhan)
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode HTTP yang diizinkan
+    allowedHeaders: ['Content-Type', 'Authorization'] // Header yang diizinkan
+  }));
 
   loaders(app, server);
   routes(app);

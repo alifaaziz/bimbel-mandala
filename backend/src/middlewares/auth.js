@@ -15,15 +15,42 @@ import { AuthService } from '../services/auth.js';
  * @throws {Error} If the token is invalid or verification fails.
  */
 async function isAuthorized(req, res, next) {
-  const token = AuthService.getAuthorizationBearerToken(req);
+  try{
+    const token = AuthService.getAuthorizationBearerToken(req);
 
   const user = await AuthService.verifyToken(token);
 
   res.locals.user = user;
 
   next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Middleware to restrict access based on user roles.
+ *
+ * @param {Array<string>} allowedRoles - An array of roles that are allowed to access the route.
+ * @returns {Function} Middleware function.
+ */
+export function hasRole(allowedRoles) {
+  return (req, res, next) => {
+    try {
+      const user = res.locals.user;
+
+      if (!user || !allowedRoles.includes(user.role)) {
+        return res.status(403).json({ error: 'Access denied. Insufficient permissions.' });
+      }
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const AuthMiddleware = {
-  isAuthorized
+  isAuthorized,
+  hasRole
 };

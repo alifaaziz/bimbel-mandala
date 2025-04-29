@@ -6,6 +6,6 @@ export default (app) => {
   app.use('/', router);
 
   router.get('/', (_req, res) => {
-    res.status(200).json({ message: 'Hello, World' });
+    res.redirect('/docs');
   });
 };

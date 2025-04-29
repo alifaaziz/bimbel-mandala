@@ -49,8 +49,28 @@ async function updateCurrentUser(req, res) {
     res.status(200).json({ message: 'User updated successfully' });
 }
 
+/**
+ * Retrieves tutors sorted by the number of classes they are associated with.
+ *
+ * @async
+ * @function getTutorsSortedByClassCount
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of tutors sorted by class count.
+ */
+async function getTutorsSortedByClassCount(req, res) {
+    try {
+        const tutors = await UserService.getTutorsSortedByClassCount();
+        res.status(200).json({ data: tutors });
+    } catch (error) {
+        console.error('Error in getTutorsSortedByClassCount:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
-    updateCurrentUser: asyncWrapper(updateCurrentUser)
+    updateCurrentUser: asyncWrapper(updateCurrentUser),
+    getTutorsSortedByClassCount: asyncWrapper(getTutorsSortedByClassCount)
 };

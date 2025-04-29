@@ -31,7 +31,6 @@ async function login(req, res) {
  * @throws {Error} Throws an error if registration fails.
  */
 async function register(req, res) {
-    console.log('Received request body:', req.body); 
     await UserService.createStudent(req.body);
     res.status(200).json({
         data: { message: 'Register success, waiting for OTP verification' }
@@ -132,8 +131,29 @@ async function sendUserVerificationOtp(_req, res) {
  */
 async function verifyUserVerificationOtp(req, res) {
     const { email, otp } = req.body;
-    await OtpService.verifyOtp({ email, otp });
-    res.status(200).json({ message: 'OTP verified successfully' });
+    const userWithToken = await OtpService.verifyOtp({ email, otp });
+    res.status(200).json({
+        message: 'OTP verified successfully',
+        data: userWithToken
+    });
+}
+
+/**
+ * Changes the user's password.
+ *
+ * @async
+ * @function changePassword
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves when the password has been successfully changed.
+ */
+async function changePassword(req, res) {
+    const { oldPassword, newPassword } = req.body;
+    const userId = res.locals.user.id;
+
+    await AuthService.changePassword({ userId, oldPassword, newPassword });
+
+    res.status(200).json({ message: 'Password changed successfully' });
 }
 
 export const AuthController = {
@@ -144,5 +164,6 @@ export const AuthController = {
     resetPassword: asyncWrapper(resetPassword),
     verifyPasswordResetToken: asyncWrapper(verifyPasswordResetToken),
     sendUserVerificationOtp: asyncWrapper(sendUserVerificationOtp),
-    verifyUserVerificationOtp: asyncWrapper(verifyUserVerificationOtp)
+    verifyUserVerificationOtp: asyncWrapper(verifyUserVerificationOtp),
+    changePassword: asyncWrapper(changePassword)
 };

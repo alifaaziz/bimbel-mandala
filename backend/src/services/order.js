@@ -1,4 +1,6 @@
 import { prisma } from '../utils/db.js';
+import { ClassService } from './class.js';
+import { ScheduleService } from './schedule.js';
 
 /**
  * Creates a new order.
@@ -19,6 +21,15 @@ async function createOrder(userId, packageId, groupTypeId, address) {
       status: 'pending'
     }
   });
+
+  await prisma.bimbelPackage.update({
+    where: {
+      id: packageId
+    },
+    data: {
+      isActive: false
+    }
+  });
 }
 
 /**
@@ -37,6 +48,70 @@ async function updateOrderStatus(orderId, status) {
     },
     data: {
       status
+    },
+    include: {
+      bimbelPackage: {
+        include: {
+          user: true
+        }
+      }
+    }
+  });
+
+  if (status === 'paid') {
+    const newClass = await ClassService.createClass({ orderId });
+    await ScheduleService.createSchedules(newClass.id);
+
+    const { name: packageName, level, userId } = order.bimbelPackage;
+    const tutor = await prisma.tutor.findUnique({
+      where: { userId },
+      include: { user: true }
+    });
+
+    const tutorName = tutor?.user?.name || 'Tutor';
+    const genderPrefix = tutor?.gender === 'Male' ? 'Pak' : 'Bu';
+
+    const studentDescription = `Selamat, Bimbingan belajar <b>${packageName} ${level} #${newClass.code}</b> bersama <b>${genderPrefix} ${tutorName}</b> sudah terkonfirmasi dan segera berlangsung.`;
+    await prisma.notification.create({
+      data: {
+        userId: order.userId,
+        type: 'Program',
+        description: studentDescription
+      }
+    });
+
+    const tutorDescription = `Selamat, Bimbingan belajar <b>${packageName} ${level} #${newClass.code}</b> sudah terkonfirmasi dan segera berlangsung.`;
+    await prisma.notification.create({
+      data: {
+        userId: tutor.userId,
+        type: 'Program',
+        description: tutorDescription
+      }
+    });
+  } else {
+    await prisma.notification.create({
+      data: {
+        userId: order.userId,
+        type: 'Program',
+        description: `The order status has been updated to <b>${status}</b>`
+      }
+    });
+  }
+
+  const groupType = await prisma.groupType.findUnique({
+    where: {
+      id: order.groupTypeId
+    }
+  });
+
+  const totalSalary = groupType.price * 0.9;
+
+  await prisma.salary.create({
+    data: {
+      userId: order.bimbelPackage.userId,
+      orderId: order.id,
+      total: totalSalary,
+      status: 'pending'
     }
   });
 

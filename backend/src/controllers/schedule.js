@@ -28,8 +28,13 @@ async function createSchedules(req, res) {
 async function reschedule(req, res) {
   const { id: scheduleId } = req.params;
   const { newDate } = req.body;
-  const updatedSchedule = await ScheduleService.reschedule(scheduleId, newDate);
-  res.status(200).json(updatedSchedule);
+
+  const loggedInUser = res.locals.user;
+  const isAdmin = loggedInUser.role === 'admin';
+  
+  const updatedSchedule = await ScheduleService.reschedule(scheduleId, newDate, req, res, isAdmin);
+
+  res.status(200).json({ data: updatedSchedule });
 }
 
 /**

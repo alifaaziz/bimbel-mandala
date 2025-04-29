@@ -1,5 +1,5 @@
 model StudentClass {
-  id      String @id @default(uuid())
+  id      String @id @default(uuid(7))
   userId  String @map("user_id")
   classId String @map("class_id")
 

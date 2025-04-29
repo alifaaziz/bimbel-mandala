@@ -1,4 +1,5 @@
 import { ClassService } from '../services/class.js';
+import { asyncWrapper } from '../utils/asyncWrapper.js';
 
 /**
  * Handles the request to create a new class.
@@ -25,18 +26,13 @@ async function createClass(req, res) {
  * @returns {Promise<void>} Resolves with the joined class.
  */
 async function joinClass(req, res) {
-    try {
-      const { code } = req.body;
-      const userId = res.locals.user.id; // Assuming `req.user` contains the current user's information
-      const joinedClass = await ClassService.joinClass({ code, userId });
-      res.status(200).json({ data: joinedClass });
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ error: error.message });
-    }
-  }
-  
+  const { code } = req.body;
+  const userId = res.locals.user.id;
+  const joinedClass = await ClassService.joinClass({ code, userId });
+  res.status(200).json({ data: joinedClass });
+}
+
 export const ClassController = {
-    createClass,
-    joinClass
+  createClass: asyncWrapper(createClass),
+  joinClass: asyncWrapper(joinClass)
 };

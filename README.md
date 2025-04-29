@@ -40,6 +40,16 @@ npx prisma generate
 
 ### Usage
 
+To seed database:
+```bash
+npm run db:seed
+```
+
+To seed for development:
+```bash
+npm run db:seed:dev
+```
+
 To start the development server:
 ```bash
 npm run dev
@@ -47,7 +57,13 @@ npm run dev
 
 ### API Documentation
 
-API endpoints will be documented here.
+API Documentation on 
+[Postman](https://documenter.getpostman.com/view/33519949/2sB2cXA2MZ)
+
+API Documentation on Web (Swagger)
+```bash
+{{bash url}}/docs
+```
 
 
 ## Frontend - ...
