@@ -7,6 +7,7 @@ const email = ref('')
 const password = ref('')
 const emailError = ref('')
 const passwordError = ref('')
+const isLoading = ref(false)
 
 function validateEmail() {
   if (!email.value) {
@@ -22,18 +23,44 @@ function validatePassword() {
   if (!password.value) {
     passwordError.value = 'Password wajib diisi.'
   } else if (password.value.length < 8) {
-    passwordError.value = 'Password minimal 6 karakter.'
+    passwordError.value = 'Password minimal 8 karakter.'
   } else {
     passwordError.value = ''
   }
 }
 
-function handleSignup() {
+async function handleSignup() {
   validateEmail()
   validatePassword()
 
   if (!emailError.value && !passwordError.value) {
-    alert(`Signup sebagai ${name.value}`)
+    isLoading.value = true
+    try {
+      const response = await fetch('http://localhost:3000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name.value,
+          email: email.value,
+          password: password.value,
+          role: 'siswa',
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Registrasi gagal. Periksa kembali data Anda.')
+      }
+
+      const data = await response.json()
+      alert(`Registrasi berhasil: ${data.message}`)
+    } catch (error) {
+      alert(error.message)
+    } finally {
+      isLoading.value = false
+    }
   }
 }
 
@@ -92,6 +119,7 @@ function goToLogin() {
         type="primary"
         block
         @click="handleSignup"
+        :loading="isLoading"
         class="butSign buttonb2"
       >
         Daftar

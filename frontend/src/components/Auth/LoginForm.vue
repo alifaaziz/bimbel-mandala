@@ -6,6 +6,7 @@ const email = ref('')
 const password = ref('')
 const emailError = ref('')
 const passwordError = ref('')
+const isLoading = ref(false)
 
 function validateEmail() {
   if (!email.value) {
@@ -21,18 +22,42 @@ function validatePassword() {
   if (!password.value) {
     passwordError.value = 'Password wajib diisi.'
   } else if (password.value.length < 8) {
-    passwordError.value = 'Password minimal 6 karakter.'
+    passwordError.value = 'Password minimal 8 karakter.'
   } else {
     passwordError.value = ''
   }
 }
 
-function handleLogin() {
+async function handleLogin() {
   validateEmail()
   validatePassword()
 
   if (!emailError.value && !passwordError.value) {
-    alert(`Login sebagai ${email.value}`)
+    isLoading.value = true
+    try {
+      const response = await fetch('http://localhost:3000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.value,
+          password: password.value,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Login gagal. Periksa kembali data Anda.')
+      }
+
+      const data = await response.json()
+      alert(`Login berhasil: ${data.message}`)
+    } catch (error) {
+      alert(error.message)
+    } finally {
+      isLoading.value = false
+    }
   }
 }
 
@@ -40,7 +65,6 @@ const emit = defineEmits(['toggle-form'])
 function goToSignup() {
   emit('toggle-form')
 }
-
 </script>
 
 <template>
@@ -82,6 +106,7 @@ function goToSignup() {
         type="primary"
         block
         @click="handleLogin"
+        :loading="isLoading"
         class="butSign buttonb2"
       >
         Login
