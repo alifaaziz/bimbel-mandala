@@ -1,14 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../Home.vue'; // Pastikan path ke komponen benar
+import Main from '../Main.vue';
+import Home from '../Home.vue'; 
 import TentangKami from '../TentangKami.vue';
 import DetailProgram from '../detailProgram.vue';
 import PendaftaranTutor from '../pendaftaranTutor.vue';
 
+import MasukDaftar from '../MasukDaftar.vue'
+
 const routes = [
-  { path: '/', name: 'Beranda', component: Home },
-  { path: '/detailprogram/:id', name: 'Detail Program', component: DetailProgram },
-  { path: '/tentangkami', name: 'Tentang Kami', component: TentangKami },
-  { path: '/pendaftarantutor', name: 'Menjadi Tutor', component: PendaftaranTutor },
+  { 
+    path: '/', 
+    component: Main,
+    children: [
+      {
+        path: '', 
+        name: 'Beranda', 
+        component: Home,
+      },
+      { 
+        path: '/detailprogram/:id', 
+        name: 'Detail Program', 
+        component: DetailProgram 
+      },
+      { path: '/tentangkami', 
+        name: 'Tentang Kami', 
+        component: TentangKami 
+      },
+      { path: '/pendaftarantutor', 
+        name: 'Menjadi Tutor', 
+        component: PendaftaranTutor 
+      },
+    ]
+   },
+   {
+    path: '/MasukDaftar', 
+    component: MasukDaftar,
+   },
 ]
 
 const router = createRouter({

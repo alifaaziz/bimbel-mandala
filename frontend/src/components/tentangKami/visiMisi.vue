@@ -61,6 +61,7 @@
 .visi-text, .misi-text {
   text-align: left;
   margin: 0 !important;
+  color: #061222;
 }
 
 .visi-image img, .misi-image img {

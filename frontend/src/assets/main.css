@@ -27,14 +27,19 @@
   font-weight: bold;
   line-height: 1.2;
   font-family: 'Poppins', sans-serif;
-  margin-bottom: 2rem;
-  width: 40%;
+}
+
+.hero2 {
+  font-size: 52px;
+  font-weight: bold;
+  line-height: 1.2;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Headline Font */
 .headlineb1 {
   font-family: 'Poppins', sans-serif;
-  font-size: 2rem;
+  font-size: 32px;
   font-weight: bold;
   line-height: 1.2;
 }
@@ -101,6 +106,12 @@
   font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: normal;
+}
+
+.bodym3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .bodyr4 {

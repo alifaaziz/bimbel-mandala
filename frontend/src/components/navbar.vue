@@ -1,78 +1,83 @@
 <script setup>
-  import butDaftar from './dirButton/butDaftar.vue';
-  import butMasuk from './dirButton/butMasuk.vue';
+import butDaftar from './dirButton/butDaftar.vue';
+import butMasuk from './dirButton/butMasuk.vue';
 </script>
 
 <script>
-  import {
-    defineComponent,
-  } from 'vue';
-  import {
+import { defineComponent } from 'vue';
+import { NLayout, NLayoutHeader, NMenu, NButton, NDrawer } from 'naive-ui';
+
+export default defineComponent({
+  name: 'Navbar',
+  components: {
     NLayout,
     NLayoutHeader,
     NMenu,
     NButton,
     NDrawer,
-  } from 'naive-ui';
-  
-  export default defineComponent({
-    name: 'Navbar',
-    components: {
-      NLayout,
-      NLayoutHeader,
-      NMenu,
-      NButton,
-      NDrawer,
-    },
-    data() {
-      return {
-        isDesktop: window.innerWidth >= 981,
-        drawerVisible: false,
-        currentRoute: this.$route.name, // Ambil nama rute saat ini
-        menuOptions: [
-          { label: 'Beranda', key: 'Beranda', to: '/' },
-          { label: 'Tentang Kami', key: 'Tentang Kami', to: '/tentangkami' },
-          { label: 'Program', key: 'Program', to: '/#' },
-          { label: 'Menjadi Tutor', key: 'Menjadi Tutor', to: '/pendaftarantutor' },
-        ],
-        menuTheme: {
-          itemTextColor: '#9BAFCB', // Warna teks default
-          borderRadius: '6px', // Radius border item
-          itemColorHover: '#000000', 
-          fontSize: '16px', // Ukuran font
-          colorHover: '#FB8312', // Warna teks saat hover
-        },
-      };
-    },
-    methods: {
-      handleResize() {
-        this.isDesktop = window.innerWidth >= 981;
+    butDaftar,
+    butMasuk,
+  },
+  data() {
+    return {
+      isDesktop: window.innerWidth >= 981,
+      drawerVisible: false,
+      currentRoute: this.$route.name,
+      menuOptions: [
+        { label: 'Beranda', key: 'Beranda', to: '/' },
+        { label: 'Tentang Kami', key: 'Tentang Kami', to: '/tentangkami' },
+        { label: 'Program', key: 'Program', to: '/#' },
+        { label: 'Menjadi Tutor', key: 'Menjadi Tutor', to: '/pendaftarantutor' },
+        { label: 'Daftar', key: 'Daftar', to: '/#' }, 
+        { label: 'Masuk', key: 'Masuk', to: '/Auth' },  
+      ],
+      menuTheme: {
+        itemTextColor: '#9BAFCB',
+        borderRadius: '6px',
+        itemColorHover: '#154484',
+        fontSize: '16px',
+        colorHover: '#FB8312',
       },
-      toggleMenu() {
-        this.drawerVisible = !this.drawerVisible;
-      },
-      handleMenuClick(key) {
-        const selectedOption = this.menuOptions.find(option => option.key === key);
-        if (selectedOption && selectedOption.to) {
-          this.$router.push(selectedOption.to); // Navigasi menggunakan Vue Router
-        }
-        this.drawerVisible = false;
-      },
+    };
+  },
+  computed: {
+    // Hapus Masuk dan Daftar dari menu yang ditampilkan
+    filteredMenuOptions() {
+      return this.menuOptions.filter(
+        (option) => option.label !== 'Masuk' && option.label !== 'Daftar'
+      );
     },
-    watch: {
-      $route(to) {
-        this.currentRoute = to.name; // Perbarui nama rute saat ini
-      },
+  },
+  methods: {
+    handleResize() {
+      this.isDesktop = window.innerWidth >= 981;
     },
-    mounted() {
-      this.handleResize();
-      window.addEventListener('resize', this.handleResize);
+    toggleMenu() {
+      this.drawerVisible = !this.drawerVisible;
     },
-    beforeUnmount() {
-      window.removeEventListener('resize', this.handleResize);
+    handleMenuClick(key) {
+      const selectedOption = this.menuOptions.find(option => option.key === key);
+      if (selectedOption && selectedOption.to) {
+        this.$router.push(selectedOption.to);
+      }
+      this.drawerVisible = false;
     },
-  });
+  },
+  watch: {
+    $route(to) {
+      this.currentRoute = to.name;
+    },
+  },
+  mounted() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+  },
+});
 </script>
+
 <template>
   <n-layout>
     <n-layout-header class="navbar">
@@ -80,7 +85,9 @@
         <div class="logo">
           <img src="../assets/logomandala22.png" alt="Logo" />
         </div>
+
         <div class="menu-container">
+          <!-- Tombol untuk mobile -->
           <n-button
             class="menu-button"
             @click="toggleMenu"
@@ -90,16 +97,23 @@
           </n-button>
 
           <!-- Desktop Menu -->
-          <n-menu
-            v-else
-            mode="horizontal"
-            :options="menuOptions"
-            :theme-overrides="menuTheme"
-            :value="currentRoute"
-            @update:value="handleMenuClick"
-          />
+          <template v-else>
+            <n-menu
+              mode="horizontal"
+              :options="filteredMenuOptions"
+              :theme-overrides="menuTheme"
+              :value="currentRoute"
+              @update:value="handleMenuClick"
+            />
 
-          <!-- Mobile Drawer Menu -->
+            <!-- Khusus tombol Masuk & Daftar -->
+            <div class="auth-buttons">
+              <butDaftar />
+              <butMasuk />
+            </div>
+          </template>
+
+          <!-- Drawer Menu Mobile -->
           <n-drawer
             v-if="!isDesktop"
             v-model:show="drawerVisible"
@@ -119,8 +133,6 @@
   </n-layout>
 </template>
 
-  
-  
 <style scoped>
 .navbar {
   width: 100%;
@@ -157,6 +169,13 @@
   display: flex;
   align-items: center;
   font-family: 'Poppins', sans-serif;
+}
+
+/* Tambahan baru: tombol Masuk & Daftar */
+.auth-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 1rem;
 }
 
 /* Deep style overrides */

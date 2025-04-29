@@ -34,6 +34,7 @@
     .title {
         color: #ffffff;
         text-align: center;
+        margin: 1rem 0;
     }
     
     .headAbout::before {
@@ -72,7 +73,8 @@
     }
     @media (max-width: 960px) {
         .title {
-            width: 520px; /* Ukuran font untuk judul pada layar kecil */
+            width: 100%; 
+            font-size: 4rem;
         }
     }
     

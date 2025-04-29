@@ -4,6 +4,7 @@
           class="custom-button buttonb2"
           tertiary
           round
+          @click="$router.push('/Auth')"
         >
           Masuk
         </n-button>

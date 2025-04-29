@@ -1,30 +1,34 @@
-<script setup>
-import Footer from './components/footer.vue';
-import navbar from './components/navbar.vue';
-import Home from './Home.vue';
-</script>
-
 <template>
-  <navbar />
-  <router-view />
-  <Footer />
+  <n-config-provider :theme-overrides="themeOverrides">
+    <component :is="layout">
+      <router-view />
+    </component>
+  </n-config-provider>
 </template>
 
-<script>
-export default {
-  watch: {
-    $route(to, from) {
-      // Scroll ke atas setiap kali rute berubah
-      window.scrollTo(0, 0);
-    },
-  },
-};
-</script>
+<script setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import Main from './Main.vue';
+import Auth from './MasukDaftar.vue';
+import { NConfigProvider } from 'naive-ui'
 
-<style>
-#app {
-  max-width: 100%;
-  margin-top: 68px;
+const route = useRoute();
+
+const layout = computed(() => {
+  if (route.path.startsWith('/Auth')) {
+    return Auth;
+  } else {
+    return Main;
+  }
+});
+
+const themeOverrides = {
+  common: {
+    primaryColor: '#154484', // ganti dengan warna utama kamu
+    primaryColorHover: '#103364',
+    primaryColorPressed: '#103364',
+    primaryColorSuppl: '#103364'
+  }
 }
-</style>
-
+</script>

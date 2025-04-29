@@ -8,5 +8,3 @@ const app = createApp(App)
 
 app.use(router); // Pastikan router digunakan di sini
 app.mount('#app')
-
-
