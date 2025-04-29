@@ -29,11 +29,9 @@ async function reschedule(req, res) {
   const { id: scheduleId } = req.params;
   const { newDate } = req.body;
 
-  // Ambil informasi pengguna yang sedang login dari res.locals.user
   const loggedInUser = res.locals.user;
   const isAdmin = loggedInUser.role === 'admin';
-
-  // Panggil service reschedule dengan parameter tambahan
+  
   const updatedSchedule = await ScheduleService.reschedule(scheduleId, newDate, req, res, isAdmin);
 
   res.status(200).json({ data: updatedSchedule });

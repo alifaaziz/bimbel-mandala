@@ -7,6 +7,8 @@ import order from './order.js';
 import _class from './class.js';
 import schedule from './schedule.js';
 import docs from './docs.js';
+import attendance from './attendance.js';
+import tutorApplication from './tutorApplication.js';
 
 export default (app) => {
     root(app);
@@ -18,4 +20,6 @@ export default (app) => {
     _class(app);
     schedule(app);
     docs(app);
+    attendance(app);
+    tutorApplication(app);
   };

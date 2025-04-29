@@ -26,7 +26,7 @@ async function main() {
         {
             id: "0195c5ed-3fc8-705b-8a17-dcef7de62796",
             name: 'Admin Development',
-            email: 'admin@admin.com',
+            email: 'admin@mail.com',
             password: await bcrypt.hash('password123', 10),
             role: 'admin',
             verified: true,
@@ -233,21 +233,20 @@ async function main() {
             id: "0195c63c-8fce-7c44-bf47-013da86078a3",
             name: 'Matematika',
             level: 'SMP',
-            totalMeetings: 6,
+            totalMeetings: 24,
             time: new Date('1970-01-01T15:00:00Z'),
-            duration: 120,
-            basePrice: 700000,
+            duration: 90,
             area: 'Semarang',
-            userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2'
+            userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2',
+            discount: 10
         },
         {
             id: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
             name: 'Bahasa Inggris',
             level: 'SMA',
-            totalMeetings: 2,
+            totalMeetings: 8,
             time: new Date('1970-01-01T15:00:00Z'),
             duration: 120,
-            basePrice: 300000,
             area: 'Semarang',
             userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa'
         },
@@ -264,38 +263,77 @@ async function main() {
         { 
             id: "0195c63c-8fce-7232-990e-6d11e9ff2d02",
             type: 'privat',
-            price: 300000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+            price: 1540000,
+            discPrice: 1386000,
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 1
+        },
+        {
+            id: "019631ed-ff7f-77c0-a7bc-6911e8e01b97",
+            type: 'grup2',
+            price: 2860000,
+            discPrice: 2574000,
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 2
         },
         { 
             id: "0195c63c-8fce-73ee-beb0-f075a8d73cfc",
             type: 'grup3',
-            price: 540000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+            price: 4180000,
+            discPrice: 3762000,
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 3
+        },
+        { 
+            id: "01963701-9f9b-7fd9-81d8-82d1e63bf5fa",
+            type: 'grup4',
+            price: 5500000,
+            discPrice: 4950000,
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 4
         },
         { 
             id: "0195c63c-8fce-74a3-bb8f-c3b07e4b0cb1",
             type: 'grup5',
-            price: 720000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3"
+            price: 6820000,
+            discPrice: 6138000,
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            maxStudent: 5
         },
         {
             id: "019618a1-68a4-7fbd-adfa-b4f55c9c5d5c",
             type: 'privat',
-            price: 150000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+            price: 580000,
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 1
         },
         { 
             id: "019618a1-68a4-7a75-948f-e8df29d3bb9c",
-            type: 'grup3',
-            price: 270000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+            type: 'grup2',
+            price: 1020000,
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 2
         },
         { 
             id: "019618a1-68a4-7ddc-ad78-9f9e43be8ffb",
+            type: 'grup3',
+            price: 1460000,
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 3
+        },
+        { 
+            id: "01963714-7d72-73a8-adf1-ba8ac656ca62",
+            type: 'grup4',
+            price: 1900000,
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 4
+        },
+        { 
+            id: "01963714-a4a0-7260-b049-1aedc3b832f1",
             type: 'grup5',
-            price: 360000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+            price: 2340000,
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            maxStudent: 5
         }
     ];
 
@@ -406,6 +444,17 @@ async function main() {
 
     // Seed Schedule
     await ScheduleService.createSchedules("019618a1-68a4-7fbc-87af-6cc1cc6cffd0");
+
+    // Seed Salary
+    await prisma.salary.create({
+        data: {
+            id: "01965b4e-ec32-791f-b338-25cd592ed5e8",
+            userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+            orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",
+            total: 918000,
+            status: 'pending',
+        }
+    });
 
     console.log('Development data seeded successfully');
 }

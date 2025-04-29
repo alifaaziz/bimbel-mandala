@@ -20,4 +20,9 @@ export default (app) => {
         UserValidation.isValidUserUpdatePayload,
         UserController.updateCurrentUser
     );
+
+    router.get(
+        '/tutors',
+        UserController.getTutorsSortedByClassCount
+    )
 };

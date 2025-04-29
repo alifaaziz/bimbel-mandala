@@ -26,6 +26,9 @@ const omitConfig = {
   class: {
     ...omittedTimestampFields
   },
+  attendance: {
+    ...omittedTimestampFields
+  },
 };
 
 export const prisma = new PrismaClient({

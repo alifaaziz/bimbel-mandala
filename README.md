@@ -40,6 +40,16 @@ npx prisma generate
 
 ### Usage
 
+To seed database:
+```bash
+npm run db:seed
+```
+
+To seed for development:
+```bash
+npm run db:seed:dev
+```
+
 To start the development server:
 ```bash
 npm run dev

@@ -1,0 +1,15 @@
+model Salary {
+    id       String        @id @default(uuid(7))
+    userId   String
+    orderId  String
+    total    Decimal       @db.Decimal(10, 2)
+    status   SalaryStatus
+
+    user       User             @relation(fields: [userId], references: [id])
+    order      Order            @relation(fields: [orderId], references: [id])
+}
+
+enum SalaryStatus {
+    terbayar
+    pending
+}

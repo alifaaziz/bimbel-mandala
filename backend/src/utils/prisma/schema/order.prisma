@@ -1,5 +1,5 @@
 model Order {
-    id          String      @id @default(uuid()) @map("id")
+    id          String      @id @default(uuid(7))
     userId      String      @map("user_id")
     packageId   String      @map("package_id")
     groupTypeId String      @map("group_type_id")
@@ -11,6 +11,7 @@ model Order {
     groupType GroupType @relation(fields: [groupTypeId], references: [id])
 
     class       Class[]
+    salary      Salary[]
 
     createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
     updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()

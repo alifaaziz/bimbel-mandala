@@ -1,7 +1,7 @@
 import { HttpError } from '../utils/error.js';
 import { logger } from '../loaders/pino.js';
 
-export default (app) => {
+export default function errorMiddleware(app) {
   app.use(notFound);
   app.use(errorHandler);
 };

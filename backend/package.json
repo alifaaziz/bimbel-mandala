@@ -6,15 +6,17 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development concurrently \"nodemon src/index.js\"",
     "db:migrate": "dotenv -e .env -- prisma migrate dev",
+    "db:migrate:reset": "npm run db:reset && dotenv -e .env -- prisma migrate dev",
     "db:reset": "dotenv -e .env -- prisma migrate reset --force",
     "db:seed": "dotenv -e .env -- node src/utils/prisma/seed/seed.js",
-    "db:seed:dev": "npm run db:reset && dotenv -e .env -- node src/utils/prisma/seed/seed-dev.js"
+    "db:seed:dev": "npm run db:reset && dotenv -e .env -- node src/utils/prisma/seed/seed-dev.js",
+    "api": "node src/scripts/openapi.js"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^6.6.0",
     "axios": "^1.8.3",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
@@ -39,7 +41,7 @@
   "devDependencies": {
     "concurrently": "^9.1.2",
     "postman2openapi": "^1.2.1",
-    "prisma": "^6.5.0"
+    "prisma": "^6.6.0"
   },
   "prisma": {
     "schema": "src/utils/prisma/schema"

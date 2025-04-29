@@ -21,6 +21,15 @@ async function createOrder(userId, packageId, groupTypeId, address) {
       status: 'pending'
     }
   });
+
+  await prisma.bimbelPackage.update({
+    where: {
+      id: packageId
+    },
+    data: {
+      isActive: false
+    }
+  });
 }
 
 /**
@@ -48,11 +57,6 @@ async function updateOrderStatus(orderId, status) {
       }
     }
   });
-
-  if (status === 'paid') {
-    const newClass = await ClassService.createClass({ orderId });
-    await ScheduleService.createSchedules(newClass.id);
-  }
 
   if (status === 'paid') {
     const newClass = await ClassService.createClass({ orderId });
@@ -93,6 +97,23 @@ async function updateOrderStatus(orderId, status) {
       }
     });
   }
+
+  const groupType = await prisma.groupType.findUnique({
+    where: {
+      id: order.groupTypeId
+    }
+  });
+
+  const totalSalary = groupType.price * 0.9;
+
+  await prisma.salary.create({
+    data: {
+      userId: order.bimbelPackage.userId,
+      orderId: order.id,
+      total: totalSalary,
+      status: 'pending'
+    }
+  });
 
   return order;
 }

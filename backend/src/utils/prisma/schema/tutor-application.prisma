@@ -1,0 +1,19 @@
+model TutorApplication {
+  id          String   @id @default(uuid(7))
+  name        String
+  email       String   @unique
+  birthDate   DateTime? @map("birth_date")
+  gender      Gender?
+  phone       String?
+  subjects    String?
+  status      StudyStatus?
+  major       String?
+  school      String?
+  teachLevel  String? @map("teach_level")
+  description String?
+  photo       String?
+  createdAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at") @db.Timestamp()
+  updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
+
+  @@map("tutor_application")
+}
