@@ -19,19 +19,6 @@ defineProps({
 </template>
 
 <style scoped>
-
-.Hero {
-  color: #ffffff;
-  transition: 0.4s;
-  padding: 3px;
-  line-height: 48px;
-  font-weight: bold;
-  font-size: 2rem;
-  position: relative;
-  top: -10px;
-  font-family: 'Poppins', sans-serif;
-}
-
 h3 {
   font-size: 1rem;
   color: white;

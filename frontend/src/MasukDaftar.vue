@@ -1,76 +1,111 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import LoginCom from './components/logincom.vue'
+import { ref } from 'vue';
+import LoginForm from './components/Auth/LoginForm.vue';
+import SignupForm from './components/Auth/SignupForm.vue';
+
+const showLogin = ref(true);
+
+const toggleForm = () => {
+  showLogin.value = !showLogin.value;
+};
 </script>
 
 <template>
-
-  <!-- Header dengan componen dan msg  -->
-  <header>
-      <!-- Background -->
-    <div class="background"></div>
-    <div class="wrapper">
-      <HelloWorld msg="Selamat Datang di Mandala!" />
+  <div class="container-auth">
+    <!-- Left Side: Background dan Text dinamis -->
+    <div :class="['left-side', showLogin ? 'login-bg' : 'signup-bg']">
+      <div class="overlay">
+        <router-link to="/">
+          <img src="./assets/logomandala.svg" alt="Mandala Logo" class="logo" />
+        </router-link>
+        <div>
+          <h1 class="headlineb1 welcoming-text">
+            {{ showLogin ? 'Selamat Datang di Mandala!' : 'Selamat Datang di Mandala!' }}
+          </h1>
+          <p class="bodyr2">
+            {{ showLogin 
+              ? 'Kami senang Anda kembali. Masuk untuk melanjutkan dengan lebih banyak pengalaman seru.'
+              : 'Daftar sekarang dan rasakan berbagai kemudahan dalam belajar bersama kami!' }}
+          </p>
+        </div>
+      </div>
     </div>
-  </header>
 
-  <!-- main pake componen form -->
-  <main>
-    <LoginCom />
-  </main>
+    <!-- Right Side: Form -->
+    <div class="right-side">
+      <div class="form-container">
+        <LoginForm v-if="showLogin" @toggle-form="toggleForm" />
+        <SignupForm v-else @toggle-form="toggleForm" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
+.container-auth {
+  display: flex;
+  height: 100vh;
+}
 
-  header {
-    line-height: 1.5;
-  }
+/* Left Side Umum */
+.left-side {
+  flex: 1;
+  position: relative;
+}
 
-  .logo {
-    display: block;
-    margin: 0 auto 1rem;
-  }
+.welcoming-text {
+  margin-bottom: 1rem;
+}
 
-  @media (min-width: 982px) {
-    header {
-      display: flex;
-      place-items: center;
-      padding-right: calc(var(--section-gap) / 2);
-    }
+/* Background untuk Login */
+.login-bg {
+  background: url('./assets/login.jpg') no-repeat 20% center/cover;
+}
 
-    header .wrapper {
-      display: flex;
-      place-items: flex-start;
-      flex-wrap: wrap;
-      min-height: 0;
-    }
-  }
-</style>
+/* Background untuk Signup */
+.signup-bg {
+  background: url('./assets/signup.png') no-repeat right center/cover;
+}
 
-<style>
-.background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 50%;
+/* Overlay hitam setengah transparan */
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
   height: 100%;
-  background-image: url('./assets/bg.jpg');
-  background-size: cover;
-  background-position: 20% center;
-  z-index: -1;
-  filter: brightness(0.5);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8rem;
 }
 
-@media (max-width: 982px) {
-  .background {
-    width: 100%;
-    height: 100%;
-  }
+/* Logo */
+.logo {
+  width: 200px;
+  margin-bottom: 2rem;
 }
 
-#template {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    padding: 0 2rem;
-  }
+/* Text di overlay */
+.overlay h1 {
+  color: #ffffff;
+}
+
+.overlay p {
+  color: #ffffff;
+}
+
+/* Right Side */
+.right-side {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Container form */
+.form-container {
+  width: 100%;
+  max-width: 400px;
+}
 </style>
