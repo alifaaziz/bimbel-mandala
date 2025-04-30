@@ -6,6 +6,8 @@ import butMasuk from './dirButton/butMasuk.vue';
 <script>
 import { defineComponent } from 'vue';
 import { NLayout, NLayoutHeader, NMenu, NButton, NDrawer } from 'naive-ui';
+import { auth } from '../auth.js';
+
 
 export default defineComponent({
   name: 'Navbar',
@@ -107,10 +109,16 @@ export default defineComponent({
             />
 
             <!-- Khusus tombol Masuk & Daftar -->
-            <div class="auth-buttons">
+            <template v-if="!auth.isLoggedIn">
               <butDaftar />
               <butMasuk />
-            </div>
+            </template>
+            <template v-else>
+              <div class="user-info">
+                <span>{{ auth.user.name }}</span>
+                <n-button size="small" @click="logout">Logout</n-button>
+              </div>
+            </template>
           </template>
 
           <!-- Drawer Menu Mobile -->
