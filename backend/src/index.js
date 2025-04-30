@@ -6,6 +6,7 @@ import errorMiddleware from './middlewares/error.js';
 import { appEnv } from './utils/env.js';
 import { logger } from './loaders/pino.js';
 import cors from 'cors';
+import morgan from 'morgan';
 
 function main() {
   const app = express();
@@ -16,6 +17,8 @@ function main() {
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode HTTP yang diizinkan
     allowedHeaders: ['Content-Type', 'Authorization'] // Header yang diizinkan
   }));
+
+  app.use(morgan('dev'));
 
   loaders(app, server);
   routes(app);

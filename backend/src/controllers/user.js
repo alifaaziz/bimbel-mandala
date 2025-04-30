@@ -13,7 +13,8 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
  * @throws {Error} Throws an error if retrieval fails.
  */
 async function getCurrentUser(_req, res) {
-    const user = res.locals.user;
+    const userId = res.locals.user.id;
+    const user = await UserService.getUserById(userId);
     res.status(200).json({ data: user });
 }
 

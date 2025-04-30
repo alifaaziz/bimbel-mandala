@@ -262,4 +262,34 @@ async function getTutorsSortedByClassCount() {
     }));
 }
 
-export const UserService = { createStudent, createUserWithRole, updateUser, getTutorsSortedByClassCount };
+/**
+ * Get details of a user by ID.
+ *
+ * @async
+ * @function getUserById
+ * @param {string} id - The user's ID.
+ * @returns {Promise<Object>} The user object.
+*/
+async function getUserById(id) {
+    const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+            students: true,
+            tutors: true
+        }
+    });
+
+    if (!user) {
+        throw new HttpError(404, { message: 'User not found' });
+    }
+
+    return user;
+}
+
+export const UserService = { 
+    createStudent,
+    createUserWithRole, 
+    updateUser, 
+    getTutorsSortedByClassCount,
+    getUserById
+};
