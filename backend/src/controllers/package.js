@@ -180,6 +180,35 @@ async function getBimbelPackagesByPopularity(_req, res) {
   res.status(200).json(packages);
 }
 
+/**
+ * Handles the request to get running programs with incomplete schedules.
+ *
+ * @async
+ * @function getRunningPrograms
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of running programs.
+ */
+async function getRunningPrograms(_req, res) {
+  const runningPrograms = await BimbelPackageService.getRunningPrograms();
+  res.status(200).json(runningPrograms);
+}
+
+/**
+ * Handles the request to get running programs associated with the logged-in user.
+ *
+ * @async
+ * @function getMyRunningPrograms
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of running programs for the user.
+ */
+async function getMyRunningPrograms(req, res) {
+  const user = res.locals.user; // Retrieve user from auth middleware
+  const myRunningPrograms = await BimbelPackageService.getMyRunningPrograms(user);
+  res.status(200).json(myRunningPrograms);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getBimbelPackageById: asyncWrapper(getBimbelPackageById),
@@ -190,4 +219,6 @@ export const BimbelPackageController = {
     deleteBimbelPackage: asyncWrapper(deleteBimbelPackage),
     updateBimbelPackageStatus: asyncWrapper(updateBimbelPackageStatus),
     getBimbelPackagesByPopularity: asyncWrapper(getBimbelPackagesByPopularity),
+    getRunningPrograms: asyncWrapper(getRunningPrograms),
+    getMyRunningPrograms: asyncWrapper(getMyRunningPrograms),
 };
