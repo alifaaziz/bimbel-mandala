@@ -593,6 +593,105 @@ async function getBimbelPackagesByPopularity() {
   });
 }
 
+/**
+ * Retrieves bimbel packages with schedules that are still running (not completed).
+ *
+ * @async
+ * @function getRunningPrograms
+ * @returns {Promise<Array>} The list of bimbel packages with incomplete schedules.
+ */
+async function getRunningPrograms() {
+  const classes = await prisma.class.findMany({
+    include: {
+      schedules: {
+        include: {
+          attendances: true
+        }
+      },
+      order: {
+        include: {
+          bimbelPackage: true
+        }
+      }
+    }
+  });
+
+  const result = [];
+
+  for (const classItem of classes) {
+    const allSchedulesHaveAttendance = classItem.schedules.every(
+      (schedule) => schedule.attendances.length > 0
+    );
+
+    if (!allSchedulesHaveAttendance && classItem.order?.bimbelPackage) {
+      result.push({
+        order: classItem.order
+      });
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Retrieves running programs associated with the logged-in user.
+ *
+ * @async
+ * @function getMyRunningPrograms
+ * @param {Object} user - The logged-in user object.
+ * @returns {Promise<Array>} The list of running programs for the user.
+ */
+async function getMyRunningPrograms(user) {
+  // Jalankan logika "getRunningPrograms" terlebih dahulu
+  const runningPrograms = await getRunningPrograms();
+
+  if (user.role === 'siswa') {
+    // Jika role siswa, cari melalui studentClass -> class -> order
+    const studentClasses = await prisma.studentClass.findMany({
+      where: {
+        userId: user.id
+      },
+      include: {
+        class: {
+          include: {
+            order: {
+              include: {
+                bimbelPackage: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Filter program yang terkait dengan siswa
+    return studentClasses
+      .map(sc => sc.class.order)
+      .filter(order => order && runningPrograms.some(rp => rp.order.id === order.id));
+  } else if (user.role === 'tutor') {
+    // Jika role tutor, cari melalui class -> order
+    const classes = await prisma.class.findMany({
+      where: {
+        tutorId: user.id
+      },
+      include: {
+        order: {
+          include: {
+            bimbelPackage: true
+          }
+        }
+      }
+    });
+
+    // Filter program yang terkait dengan tutor
+    return classes
+      .map(cls => cls.order)
+      .filter(order => order && runningPrograms.some(rp => rp.order.id === order.id));
+  } else {
+    throw new Error('Role not supported for this operation');
+  }
+}
+
 export const BimbelPackageService = {
   getAllBimbelPackages,
   getBimbelPackageById,
@@ -602,5 +701,7 @@ export const BimbelPackageService = {
   updateClassBimbelPackage,
   deleteBimbelPackage,
   updateBimbelPackageStatus,
-  getBimbelPackagesByPopularity
+  getBimbelPackagesByPopularity,
+  getRunningPrograms,
+  getMyRunningPrograms
 };

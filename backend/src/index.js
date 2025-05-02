@@ -13,9 +13,9 @@ function main() {
   const server = createServer(app);
   
   app.use(cors({
-    origin: '*', // Mengizinkan semua origin (ubah sesuai kebutuhan)
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode HTTP yang diizinkan
-    allowedHeaders: ['Content-Type', 'Authorization'] // Header yang diizinkan
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   }));
 
   app.use(morgan('dev'));
