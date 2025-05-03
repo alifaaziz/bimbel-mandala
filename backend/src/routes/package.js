@@ -15,6 +15,10 @@ export default (app) => {
 
     router.get('/running/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyRunningPrograms);
     
+    router.get('/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackages);
+
+    router.get('/completed', AuthMiddleware.isAuthorized, BimbelPackageController.getCompletedPrograms);
+
     router.get('/:id', AuthMiddleware.isAuthorized, BimbelPackageController.getBimbelPackageById);
     
     router.post('/', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.createBimbelPackage);

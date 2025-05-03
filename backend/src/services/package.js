@@ -642,11 +642,9 @@ async function getRunningPrograms() {
  * @returns {Promise<Array>} The list of running programs for the user.
  */
 async function getMyRunningPrograms(user) {
-  // Jalankan logika "getRunningPrograms" terlebih dahulu
   const runningPrograms = await getRunningPrograms();
 
   if (user.role === 'siswa') {
-    // Jika role siswa, cari melalui studentClass -> class -> order
     const studentClasses = await prisma.studentClass.findMany({
       where: {
         userId: user.id
@@ -664,12 +662,10 @@ async function getMyRunningPrograms(user) {
       }
     });
 
-    // Filter program yang terkait dengan siswa
     return studentClasses
       .map(sc => sc.class.order)
       .filter(order => order && runningPrograms.some(rp => rp.order.id === order.id));
   } else if (user.role === 'tutor') {
-    // Jika role tutor, cari melalui class -> order
     const classes = await prisma.class.findMany({
       where: {
         tutorId: user.id
@@ -683,13 +679,43 @@ async function getMyRunningPrograms(user) {
       }
     });
 
-    // Filter program yang terkait dengan tutor
     return classes
       .map(cls => cls.order)
       .filter(order => order && runningPrograms.some(rp => rp.order.id === order.id));
   } else {
     throw new Error('Role not supported for this operation');
   }
+}
+
+/**
+ * Retrieves bimbel packages associated with the logged-in tutor.
+ *
+ * @async
+ * @function getMyPackages
+ * @param {Object} user - The logged-in user object.
+ * @returns {Promise<Array>} The list of bimbel packages for the tutor.
+ */
+async function getMyPackages(user) {
+  if (user.role !== 'tutor') {
+    throw new Error('Only tutors can access this resource');
+  }
+
+  const packages = await prisma.bimbelPackage.findMany({
+    where: {
+      userId: user.id
+    },
+  });
+
+  return packages.map(pkg => ({
+    id: pkg.id,
+    name: pkg.name,
+    level: pkg.level,
+    totalMeetings: pkg.totalMeetings,
+    time: pkg.time,
+    duration: pkg.duration,
+    area: pkg.area,
+    isActive: pkg.isActive
+  }));
 }
 
 export const BimbelPackageService = {
@@ -703,5 +729,6 @@ export const BimbelPackageService = {
   updateBimbelPackageStatus,
   getBimbelPackagesByPopularity,
   getRunningPrograms,
-  getMyRunningPrograms
+  getMyRunningPrograms,
+  getMyPackages
 };

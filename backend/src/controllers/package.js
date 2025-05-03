@@ -209,6 +209,35 @@ async function getMyRunningPrograms(req, res) {
   res.status(200).json(myRunningPrograms);
 }
 
+/**
+ * Handles the request to get bimbel packages associated with the logged-in tutor.
+ *
+ * @async
+ * @function getMyPackages
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of bimbel packages for the tutor.
+ */
+async function getMyPackages(req, res) {
+  const user = res.locals.user;
+  const packages = await BimbelPackageService.getMyPackages(user);
+  res.status(200).json(packages);
+}
+
+/**
+ * Handles the request to get completed programs.
+ *
+ * @async
+ * @function getCompletedPrograms
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of completed programs.
+ */
+async function getCompletedPrograms(_req, res) {
+  const completedPrograms = await BimbelPackageService.getCompletedPrograms();
+  res.status(200).json(completedPrograms);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getBimbelPackageById: asyncWrapper(getBimbelPackageById),
@@ -221,4 +250,6 @@ export const BimbelPackageController = {
     getBimbelPackagesByPopularity: asyncWrapper(getBimbelPackagesByPopularity),
     getRunningPrograms: asyncWrapper(getRunningPrograms),
     getMyRunningPrograms: asyncWrapper(getMyRunningPrograms),
+    getMyPackages: asyncWrapper(getMyPackages),
+    getCompletedPrograms: asyncWrapper(getCompletedPrograms),
 };
