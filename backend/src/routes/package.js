@@ -12,14 +12,18 @@ export default (app) => {
     router.get('/populer', BimbelPackageController.getBimbelPackagesByPopularity);
     
     router.get('/running', AuthMiddleware.isAuthorized, BimbelPackageController.getRunningPrograms);
-
+    
     router.get('/running/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyRunningPrograms);
     
     router.get('/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackages);
-
+    
     router.get('/completed', AuthMiddleware.isAuthorized, BimbelPackageController.getCompletedPrograms);
 
+    router.get('/completed/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyCompletedPrograms);
+    
     router.get('/:id', AuthMiddleware.isAuthorized, BimbelPackageController.getBimbelPackageById);
+    
+    router.get('/completed', AuthMiddleware.isAuthorized, BimbelPackageController.getCompletedPrograms);
     
     router.post('/', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.createBimbelPackage);
     

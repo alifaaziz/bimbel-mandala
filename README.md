@@ -1,6 +1,6 @@
 # Bimbingan Belajar Mandala
 
-This repository contains both the backend (Express.js) and frontend (....) code for the Bimbingan Belajar Mandala application.
+This repository contains both the backend (Express.js) and frontend (Vue.js) code for the Bimbingan Belajar Mandala application.
 
 ## Backend - Express.js
 

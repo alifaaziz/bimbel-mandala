@@ -238,6 +238,21 @@ async function getCompletedPrograms(_req, res) {
   res.status(200).json(completedPrograms);
 }
 
+/**
+ * Handles the request to get completed programs associated with the logged-in user.
+ *
+ * @async
+ * @function getMyCompletedPrograms
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of completed programs for the user.
+ */
+async function getMyCompletedPrograms(req, res) {
+  const user = res.locals.user; // Retrieve user from auth middleware
+  const myCompletedPrograms = await BimbelPackageService.getMyCompletedPrograms(user);
+  res.status(200).json(myCompletedPrograms);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getBimbelPackageById: asyncWrapper(getBimbelPackageById),
@@ -252,4 +267,5 @@ export const BimbelPackageController = {
     getMyRunningPrograms: asyncWrapper(getMyRunningPrograms),
     getMyPackages: asyncWrapper(getMyPackages),
     getCompletedPrograms: asyncWrapper(getCompletedPrograms),
+    getMyCompletedPrograms: asyncWrapper(getMyCompletedPrograms),
 };

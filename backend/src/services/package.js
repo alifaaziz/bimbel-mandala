@@ -718,6 +718,121 @@ async function getMyPackages(user) {
   }));
 }
 
+/**
+ * Retrieves completed programs where all schedules have been attended.
+ *
+ * @async
+ * @function getCompletedPrograms
+ * @returns {Promise<Array>} The list of completed programs with their orders and bimbel packages.
+ */
+async function getCompletedPrograms() {
+  const classes = await prisma.class.findMany({
+    include: {
+      schedules: {
+        include: {
+          attendances: true
+        }
+      },
+      order: {
+        include: {
+          bimbelPackage: true
+        }
+      }
+    }
+  });
+
+  const completedPrograms = classes
+    .filter(async classItem => {
+      const allSchedulesCompleted = await Promise.all(
+        classItem.schedules.map(async schedule => {
+          const totalParticipants = await prisma.studentClass.count({
+            where: {
+              classId: classItem.id
+            }
+          }) + 1;
+          return schedule.attendances.length >= totalParticipants;
+        })
+      ).then(results => results.every(result => result));
+
+      return allSchedulesCompleted && classItem.order?.bimbelPackage;
+    })
+    .map(classItem => ({
+      classId: classItem.id,
+      order: classItem.order
+    }));
+
+  return completedPrograms;
+}
+
+/**
+ * Retrieves completed programs associated with the logged-in user.
+ *
+ * @async
+ * @function getMyCompletedPrograms
+ * @param {Object} user - The logged-in user object.
+ * @returns {Promise<Array>} The list of completed programs for the user.
+ */
+async function getMyCompletedPrograms(user) {
+  // Jalankan logika "getCompletedPrograms" terlebih dahulu
+  const completedPrograms = await getCompletedPrograms();
+
+  if (user.role === 'siswa') {
+    // Jika role siswa, cari melalui studentClass -> class
+    const studentClasses = await prisma.studentClass.findMany({
+      where: {
+        userId: user.id,
+        classId: {
+          in: completedPrograms.map(cp => cp.classId) // Filter berdasarkan classId dari completedPrograms
+        }
+      },
+      include: {
+        class: {
+          include: {
+            order: {
+              include: {
+                bimbelPackage: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Tampilkan hanya data yang terhubung dengan classId
+    return studentClasses.map(sc => ({
+      classId: sc.classId,
+      order: sc.class.order,
+      bimbelPackage: sc.class.order?.bimbelPackage || null
+    }));
+  } else if (user.role === 'tutor') {
+    // Jika role tutor, cari melalui class -> order
+    const classes = await prisma.class.findMany({
+      where: {
+        tutorId: user.id,
+        id: {
+          in: completedPrograms.map(cp => cp.classId) // Filter berdasarkan classId dari completedPrograms
+        }
+      },
+      include: {
+        order: {
+          include: {
+            bimbelPackage: true
+          }
+        }
+      }
+    });
+
+    // Tampilkan hanya data yang terhubung dengan classId
+    return classes.map(cls => ({
+      classId: cls.id,
+      order: cls.order,
+      bimbelPackage: cls.order?.bimbelPackage || null
+    }));
+  } else {
+    throw new Error('Role not supported for this operation');
+  }
+}
+
 export const BimbelPackageService = {
   getAllBimbelPackages,
   getBimbelPackageById,
@@ -730,5 +845,7 @@ export const BimbelPackageService = {
   getBimbelPackagesByPopularity,
   getRunningPrograms,
   getMyRunningPrograms,
-  getMyPackages
+  getMyPackages,
+  getCompletedPrograms,
+  getMyCompletedPrograms
 };
