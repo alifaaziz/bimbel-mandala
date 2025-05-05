@@ -139,14 +139,17 @@ const schedule = {
 .card-container {
   display: flex;
   gap: 2rem;
-  max-width: 1000px;
-  padding: 2rem;
+  padding: 1rem;
   background-color: white;
   border-radius: 16px;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
 
 .tutor-photo {
-  width: 541px;
+  width: 100%;
+  max-width: 541px;
   height: auto;
   object-fit: cover;
   border-radius: 16px;
@@ -281,5 +284,40 @@ const schedule = {
   border-radius: 8px;
   font-size: 1rem;
 }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .card-container {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .tutor-photo {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .card-content {
+    width: 100%;
+  }
+
+  .info-section,
+  .tutor-info,
+  .meeting-link,
+  .popup-content .bodyr2 {
+    font-size: 0.9rem;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .modal-actions button {
+    font-size: 0.95rem;
+  }
+}
+
 
 </style>

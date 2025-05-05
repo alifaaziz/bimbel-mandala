@@ -13,9 +13,60 @@ const props = defineProps({
 const router = useRouter();
 const route = useRoute();
 
+// State management
 const isDesktop = ref(window.innerWidth >= 981);
 const drawerVisible = ref(false);
 const currentRoute = ref(route.name);
+const showNotificationPopup = ref(false);
+
+// Notification data
+const notifications = ref([
+  { 
+    id: 1, 
+    type: 'Program', 
+    message: 'Selamat, Bimbingan belajar Matematika SMA #11234 bersama Pak Dendy Wan S.Pd telah selesai dilakukan.', 
+    read: false, 
+    time: '10 menit lalu',
+    photo: './tutor/3.png'
+  },
+  { 
+    id: 2, 
+    type: 'Absensi', 
+    message: 'Anda telah melakukan absensi pada bimbingan belajar Matematika SMA #11234.', 
+    read: false, 
+    time: '1 jam lalu',
+    photo: './tutor/3.png'
+  },
+  { 
+    id: 3, 
+    type: 'Absensi', 
+    message: 'Pak Dendy Wan S.Pd telah melakukan absensi pada bimbingan belajar Matematika SMA #11234.', 
+    read: true, 
+    time: '2 hari lalu',
+    photo: './tutor/3.png'
+  },
+  { 
+    id: 4, 
+    type: 'Jadwal', 
+    message: 'Pak Dendy Wan S.Pd melakukan perubahan jadwal pada Matematika SMA #11234.', 
+    read: true, 
+    time: '1 minggu lalu',
+    photo: './tutor/3.png',
+    scheduleId: '11234'
+  },
+  { 
+    id: 5, 
+    type: 'Izin', 
+    message: 'Pak Dendy Wan S.Pd melakukan izin pada Matematika SMA #11234.', 
+    read: true, 
+    time: '1 minggu lalu',
+    photo: './tutor/3.png',
+    reason: 'Sakit flu berat, tidak memungkinkan untuk mengajar'
+  }
+]);
+
+// Computed properties
+const unreadCount = computed(() => notifications.value.filter(n => !n.read).length);
 
 const menuOptionsLoggedOut = [
   { label: 'Beranda', key: 'Beranda', to: '/' },
@@ -47,7 +98,6 @@ const filteredMenuOptions = computed(() => {
     return menuOptionsLoggedIn;
   }
 
-  // Hide 'Daftar' and 'Masuk' on desktop (they'll be shown as buttons)
   if (isDesktop.value) {
     return menuOptionsLoggedOut.filter(option => 
       option.key !== 'Daftar' && option.key !== 'Masuk'
@@ -56,6 +106,12 @@ const filteredMenuOptions = computed(() => {
 
   return menuOptionsLoggedOut;
 });
+
+// Methods
+const goToSchedule = (scheduleId) => {
+  showNotificationPopup.value = false;
+  router.push(`/jadwal/${scheduleId}`);
+};
 
 const handleResize = () => {
   isDesktop.value = window.innerWidth >= 981;
@@ -73,12 +129,26 @@ const handleMenuClick = (key) => {
   drawerVisible.value = false;
 };
 
+const toggleNotifications = () => {
+  showNotificationPopup.value = !showNotificationPopup.value;
+  if (showNotificationPopup.value) {
+    notifications.value.forEach(n => n.read = true);
+  }
+};
+
+const closeNotifications = (event) => {
+  if (!event.target.closest('.notification-popup') && 
+      !event.target.closest('.notification-wrapper')) {
+    showNotificationPopup.value = false;
+  }
+};
+
 const logout = () => {
-  // Implement your logout logic here
   auth.logout();
   router.push('/');
 };
 
+// Watchers and lifecycle hooks
 watch(
   () => route.name,
   (newRoute) => {
@@ -88,10 +158,12 @@ watch(
 
 onMounted(() => {
   window.addEventListener('resize', handleResize);
+  document.addEventListener('click', closeNotifications);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
+  document.removeEventListener('click', closeNotifications);
 });
 </script>
 
@@ -133,13 +205,88 @@ onBeforeUnmount(() => {
             
             <template v-else>
               <div class="user-actions">
-                <router-link 
-                  to="/notification" 
-                  class="action-icon"
-                  aria-label="Notifications"
-                >
-                  <ion-icon name="notifications-outline"></ion-icon>
-                </router-link>
+                <div class="notification-wrapper">
+                  <button 
+                    @click.stop="toggleNotifications"
+                    class="action-icon"
+                    aria-label="Notifications"
+                  >
+                    <ion-icon name="notifications-outline"></ion-icon>
+                    <span v-if="unreadCount > 0" class="notification-badge">
+                      {{ unreadCount }}
+                    </span>
+                  </button>
+                  
+                  <div v-if="showNotificationPopup" class="notification-popup">
+                    <div class="notification-header">
+                      <h3 class="headersb2">Notifikasi</h3>
+                      <button 
+                        @click.stop="showNotificationPopup = false" 
+                        class="close-btn"
+                      >
+                        <ion-icon name="close-outline"></ion-icon>
+                      </button>
+                    </div>
+                    
+                    <div class="notification-list">
+                      <div 
+                        v-for="notification in notifications" 
+                        :key="notification.id"
+                        class="notification-item"
+                        :class="{ 'unread': !notification.read }"
+                      >
+                        <div class="notification-photo">
+                          <img 
+                            :src="notification.photo" 
+                            alt="Foto notifikasi" 
+                          />
+                        </div>
+                        
+                        <div class="notification-content">
+                          <h4 class="bodyb2">{{ notification.type }}</h4>
+                          <p class="bodyr3">{{ notification.message }}</p>
+                          <div v-if="notification.type === 'Izin' && notification.reason" class="reason-box">
+                            <div class="reason-label">Alasan Izin:</div>
+                            <div class="reason-text bodyr3">{{ notification.reason }}</div>
+                          </div>
+                          <span class="notification-time bodyr3">
+                            {{ notification.time }}
+                          </span>
+                          
+                          <div 
+                            v-if="notification.type === 'Jadwal'" 
+                            class="notification-actions"
+                          >
+                            <n-button 
+                              size="small"
+                              @click.stop="goToSchedule(notification.scheduleId)"
+                              class="schedule-button buttonm4"
+                              round
+                            >
+                              Lihat Jadwal
+                            </n-button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div 
+                        v-if="notifications.length === 0" 
+                        class="empty-notifications"
+                      >
+                        Tidak ada notifikasi
+                      </div>
+                    </div>
+                    
+                    <router-link 
+                      to="/notification" 
+                      class="view-all"
+                      @click.stop="showNotificationPopup = false"
+                    >
+                      Lihat Semua Notifikasi
+                    </router-link>
+                  </div>
+                </div>
+                
                 <router-link 
                   to="/jadwal" 
                   class="action-icon"
@@ -147,6 +294,7 @@ onBeforeUnmount(() => {
                 >
                   <ion-icon name="calendar-outline"></ion-icon>
                 </router-link>
+                
                 <router-link 
                   to="/akun" 
                   class="action-icon"
@@ -164,20 +312,113 @@ onBeforeUnmount(() => {
             v-model:show="drawerVisible"
             placement="right"
             :width="260"
-          >
+          >            
+            <div class="mobile-auth-actions" v-if="auth.isLoggedIn">
+              <div class="user-actions">
+                <div class="notification-wrapper">
+                  <button 
+                    @click.stop="toggleNotifications"
+                    class="action-icon"
+                    aria-label="Notifications"
+                  >
+                    <ion-icon name="notifications-outline"></ion-icon>
+                    <span v-if="unreadCount > 0" class="notification-badge">
+                      {{ unreadCount }}
+                    </span>
+                  </button>
+                  
+                  <div v-if="showNotificationPopup" class="notification-popup">
+                    <div class="notification-header">
+                      <h3 class="headersb2">Notifikasi</h3>
+                      <button 
+                        @click.stop="showNotificationPopup = false" 
+                        class="close-btn"
+                      >
+                        <ion-icon name="close-outline"></ion-icon>
+                      </button>
+                    </div>
+                    
+                    <div class="notification-list">
+                      <div 
+                        v-for="notification in notifications" 
+                        :key="notification.id"
+                        class="notification-item"
+                        :class="{ 'unread': !notification.read }"
+                      >
+                        <div class="notification-photo">
+                          <img 
+                            :src="notification.photo" 
+                            alt="Foto notifikasi" 
+                          />
+                        </div>
+                        
+                        <div class="notification-content">
+                          <h4 class="bodyb2">{{ notification.type }}</h4>
+                          <p class="bodyr3">{{ notification.message }}</p>
+                          <div v-if="notification.type === 'Izin' && notification.reason" class="reason-box">
+                            <div class="reason-label">Alasan Izin:</div>
+                            <div class="reason-text bodyr3">{{ notification.reason }}</div>
+                          </div>
+                          <span class="notification-time bodyr3">
+                            {{ notification.time }}
+                          </span>
+                          
+                          <div 
+                            v-if="notification.type === 'Jadwal'" 
+                            class="notification-actions"
+                          >
+                            <n-button 
+                              size="small" 
+                              @click.stop="goToSchedule(notification.scheduleId)"
+                              class="schedule-button"
+                            >
+                              Lihat Jadwal
+                            </n-button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div 
+                        v-if="notifications.length === 0" 
+                        class="empty-notifications"
+                      >
+                        Tidak ada notifikasi
+                      </div>
+                    </div>
+                    
+                    <router-link 
+                      to="/notification" 
+                      class="view-all"
+                      @click.stop="showNotificationPopup = false"
+                    >
+                      Lihat Semua Notifikasi
+                    </router-link>
+                  </div>
+                </div>
+                
+                <router-link 
+                  to="/jadwal" 
+                  class="action-icon"
+                  aria-label="Schedule"
+                >
+                  <ion-icon name="calendar-outline"></ion-icon>
+                </router-link>
+                
+                <router-link 
+                  to="/akun" 
+                  class="action-icon"
+                  aria-label="Account"
+                >
+                  <ion-icon name="person-outline"></ion-icon>
+                </router-link>
+              </div>
+            </div>
             <n-menu
               mode="vertical"
               :options="filteredMenuOptions"
               :theme-overrides="menuTheme"
               @update:value="handleMenuClick"
             />
-            
-            <div class="mobile-auth-actions" v-if="auth.isLoggedIn">
-              <div class="user-info">
-                <span>{{ auth.user.name }}</span>
-                <n-button size="small" @click="logout">Logout</n-button>
-              </div>
-            </div>
           </n-drawer>
         </div>
       </div>
@@ -186,9 +427,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* Layout and structure */
 .navbar {
   --navbar-height: 68px;
-  --navbar-padding-x: clamp(1rem, 5vw, 8rem);
+  --navbar-padding-x:  8rem;
   --menu-divider-color: #9BAFCB;
   --icon-color: #154484;
   --icon-hover-color: #FB8312;
@@ -201,7 +443,7 @@ onBeforeUnmount(() => {
   z-index: 1000;
   border-bottom: 2px solid var(--menu-divider-color);
   background-color: white;
-  padding: 0 8rem;
+  padding: 0 var(--navbar-padding-x);
 }
 
 .navbar-wrapper {
@@ -212,6 +454,15 @@ onBeforeUnmount(() => {
   height: 100%;
 }
 
+.menu-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: 'Poppins', sans-serif;
+  height: 100%;
+}
+
+/* Logo styles */
 .logo {
   display: flex;
   align-items: center;
@@ -223,14 +474,7 @@ onBeforeUnmount(() => {
   object-fit: contain;
 }
 
-.menu-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-family: 'Poppins', sans-serif;
-  height: 100%;
-}
-
+/* Menu divider */
 .menu-divider {
   width: 2px;
   height: 32px;
@@ -252,6 +496,11 @@ onBeforeUnmount(() => {
   justify-content: center;
   color: var(--icon-color);
   transition: color 0.2s ease;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
 .action-icon:hover {
@@ -260,6 +509,158 @@ onBeforeUnmount(() => {
 
 ion-icon {
   font-size: 24px;
+}
+
+/* Notification styles */
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #FF4757;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-popup {
+  width: 400px; 
+  position: absolute;
+  top: 100%;
+  right: 0;
+  max-height: 500px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.notification-header h3 {
+  color: #154484;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.notification-list {
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.notification-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.notification-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.notification-content {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.notification-item:hover {
+  background-color: #f9f9f9;
+}
+
+.notification-item.unread {
+  background-color: #f8f9ff;
+}
+
+.notification-content h4 {
+  margin: 0 0 4px 0;
+  color: #154484;
+}
+
+.notification-content p {
+  margin: 0 0 4px 0;
+  color: #555;
+}
+
+.notification-time {
+  color: #999;
+}
+
+.empty-notifications {
+  padding: 16px;
+  text-align: center;
+  color: #999;
+}
+
+.view-all {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  font-size: 13px;
+  color: #154484;
+  text-decoration: none;
+  border-top: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.view-all:hover {
+  background-color: #f5f5f5;
+}
+
+/* Notification actions */
+.notification-actions {
+  margin-top: 8px;
+}
+
+.schedule-button {
+  background-color: #154484;
+  color: white;
+  padding: 4px 8px;
+}
+
+.schedule-button:hover {
+  background-color: #1a56b4;
 }
 
 /* Mobile auth actions */
@@ -291,6 +692,38 @@ ion-icon {
   font-weight: 600;
 }
 
+.reason-box {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #154484;
+}
+
+.reason-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.reason-text {
+  color: #333;
+  line-height: 1.4;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .menu-divider {
@@ -300,5 +733,25 @@ ion-icon {
   .navbar {
     padding: 0 2rem;
   }
+  
+  .notification-popup {
+    width: 90vw;
+    max-width: 350px;
+    left: 50%; 
+    right: auto; 
+    transform: translateX(-50%);
+    top: 60px; 
+    position: fixed; 
+  }
+  @keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
 }
 </style>

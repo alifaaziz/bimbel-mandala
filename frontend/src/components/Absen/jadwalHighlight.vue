@@ -1,7 +1,7 @@
 <script setup>
 import { tutors } from '@/assets/dataSementara/tutor.js';
 import { NCard } from 'naive-ui';
-import butProfile from '../dirButton/butProfile.vue';
+import butJadwal from '../dirButton/butJadwal.vue';
 import Scheduled from './Scheduled.vue';
 import butDetailJadwal from '../dirButton/butDetailJadwal.vue';
 
@@ -10,7 +10,7 @@ const displayedTutors = tutors.value.slice(0, 4);
 </script>
 
 <template>
-  <div class="padding-components tutor-component">
+  <div class="tutor-component">
     <h1 class="headerr2 title1">Jadwal Program</h1>
     <h2 class="headerb1 title2">Terdekat</h2>
     <div class="card-container">
@@ -36,7 +36,7 @@ const displayedTutors = tutors.value.slice(0, 4);
         <butDetailJadwal />
       </n-card>
     </div>
-    <butProfile />
+    <butJadwal />
   </div>
 </template>
 

@@ -5,10 +5,8 @@ import jadwalHighlight from './Absen/jadwalHighlight.vue';
 </script>
 
 <template>
-  <div class="container-absensi">
+  <div class="container-absensi padding-components">
     <Absensi />
-  </div>
-  <div class="container-absensi">
     <jadwalHighlight />
   </div>
     <Footer />
@@ -20,7 +18,12 @@ import jadwalHighlight from './Absen/jadwalHighlight.vue';
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin: 4rem 0;
+}
 
-  padding: 2rem;
+@media (max-width: 768px) {
+  .container-absensi {
+    margin: 2rem 0;
+  }
 }
 </style>
