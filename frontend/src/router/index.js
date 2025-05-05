@@ -4,6 +4,7 @@ import Home from '../Home.vue';
 import TentangKami from '../TentangKami.vue';
 import DetailProgram from '../detailProgram.vue';
 import PendaftaranTutor from '../pendaftaranTutor.vue';
+import AbsenSiswa from '../components/Absen.vue';
 
 import MasukDaftar from '../MasukDaftar.vue'
 
@@ -18,18 +19,26 @@ const routes = [
         component: Home,
       },
       { 
-        path: '/detailprogram/:id', 
+        path: 'detailprogram/:id', 
         name: 'Detail Program', 
         component: DetailProgram 
       },
-      { path: '/tentangkami', 
+      { path: 'tentangkami', 
         name: 'Tentang Kami', 
         component: TentangKami 
       },
-      { path: '/pendaftarantutor', 
+      { path: 'pendaftarantutor', 
         name: 'Menjadi Tutor', 
         component: PendaftaranTutor 
       },
+      { path: 'absen', 
+        name: 'Absen', 
+        component: AbsenSiswa 
+      },
+      // { path: 'rekap', 
+      //   name: 'Rekap', 
+      //   component: RekapSiswa 
+      // },
     ]
    },
    {

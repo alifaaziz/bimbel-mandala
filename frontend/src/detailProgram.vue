@@ -2,7 +2,7 @@
 import navbarDetail from './components/detailProgram/navbarDetail.vue'
 import programBelajar from './components/detailProgram/program.vue'
 import programHighlight from './components/beranda/programHighlight.vue'
-
+import Footer from './components/footer.vue';
 </script>
 
 <template>
@@ -15,6 +15,7 @@ import programHighlight from './components/beranda/programHighlight.vue'
       <programHighlight />
     </div>
   </div>
+  <Footer />
 </template>
 
 <style scoped>

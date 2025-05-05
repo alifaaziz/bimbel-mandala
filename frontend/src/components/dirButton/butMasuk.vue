@@ -14,7 +14,7 @@
 <style scoped>
 .button-container {
   display: flex;
-  height: 100%; 
+  height: 2.5rem; 
 }
 
 .custom-button {

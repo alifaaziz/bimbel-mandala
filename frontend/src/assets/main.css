@@ -65,6 +65,12 @@
   font-weight: bold;
   line-height: 1.5;
 }
+
+.headersb2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+}
 .headerr2 {
   font-family: 'Poppins', sans-serif;
   font-size: 20px;
@@ -82,11 +88,28 @@
   font-size: 16px;
   font-weight: 600;
 }
+.headerr3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+}
 
 /* Body Fonts */
+.bodysb1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
 .bodyb1 {
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
+  font-weight: bold;
+}
+
+.bodyb2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
   font-weight: bold;
 }
 
@@ -121,8 +144,26 @@
 }
 
 /* Button Fonts */
+.buttonm1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.buttonm2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .buttonb2 {
   font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: bold;
+}
+
+.buttonm4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
 }

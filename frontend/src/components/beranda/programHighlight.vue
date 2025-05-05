@@ -46,7 +46,7 @@ function formatTime(dateTime) {
             <p><strong>Hari:</strong> {{ program.days.join(', ') }}</p>
             <p><strong>Pukul:</strong> {{ formatTime(program.time) }}</p>
             <p><strong>Durasi:</strong> {{ program.duration }} menit</p>
-            <div class="footer">
+            <div class="Action">
               <button class="btn-daftar" @click="$router.push(`/detailProgram/${program.id}`)">Daftar Program</button>
             </div>
           </div>

@@ -1,5 +1,4 @@
 <script setup>
-import Footer from './components/footer.vue';
 import navbar from './components/navbar.vue';
 </script>
 
@@ -7,7 +6,6 @@ import navbar from './components/navbar.vue';
   <div class="Main">
     <navbar />
     <router-view />
-    <Footer />
   </div>
 </template>
 
@@ -15,7 +13,6 @@ import navbar from './components/navbar.vue';
 export default {
   watch: {
     $route(to, from) {
-      // Scroll ke atas setiap kali rute berubah
       window.scrollTo(0, 0);
     },
   },

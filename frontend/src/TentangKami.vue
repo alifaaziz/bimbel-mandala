@@ -4,6 +4,7 @@ import visiMisi from './components/tentangKami/visiMisi.vue'
 import Kapabilitas from './components/tentangKami/Kapabilitas.vue'
 import keunggulan from './components/tentangKami/keunggulan.vue'
 import tutor from './components/tentangKami/tutor.vue'
+import Footer from './components/footer.vue';
 </script>
 
 <template>
@@ -22,6 +23,7 @@ import tutor from './components/tentangKami/tutor.vue'
       <tutor class="tutor-pad"/>
     </div>
   </div>
+  <Footer />
 </template>
 
 <style scoped>

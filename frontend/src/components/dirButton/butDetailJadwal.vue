@@ -1,16 +1,12 @@
-<script setup>
-
-</script>
-
 <template>
     <div class="button-container">
         <n-button
-          class="custom-button buttonb2"
+          class="custom-button buttonm4"
           tertiary
           round
           @click="$router.push('/#')"
         >
-          Daftar
+          Detail
         </n-button>
     </div>
 </template>
@@ -18,19 +14,21 @@
 <style scoped>
 .button-container {
   display: flex;
-  height: 2.5rem; 
+  height: 2rem; 
+  align-items: center;
 }
 
 .custom-button {
-  background-color: white;
-  color: #154484;
-  padding: 10px 20px;
+  background-color: #154484;
+  color: white;
+  padding: 0.5rem 1.5rem;
   transition: all 0.3s ease;
   border-radius: 25px;
 }
 
 .custom-button:hover {
-  background-color: #9BAFCB; 
+  background-color: #0B2343; 
+  color: #e8f5e9;
   cursor: pointer;
 }
 </style>

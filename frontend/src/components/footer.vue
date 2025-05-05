@@ -52,7 +52,7 @@
 </template>
 
 <style scoped>
-.footer {
+footer {
   background-color: #051329;
   color: #ffffff;
   padding: 3rem 8rem;

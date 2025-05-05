@@ -140,6 +140,10 @@ function goToSignup() {
   color: #154484;
 }
 
+.container .bodyr2, .form-input .bodym2, .compo p {
+  color: #061222;
+}
+
 .input-custom {
   text-align: left;
 }

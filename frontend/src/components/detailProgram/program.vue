@@ -130,7 +130,7 @@ function submitToWhatsApp() {
 .container-detail {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 4rem;
   width: 100%;
   max-width: 1440px;
   padding: 0 8rem;

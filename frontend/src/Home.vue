@@ -4,6 +4,7 @@ import keunggulanH from './components/beranda/keunggulanHighlight.vue'
 import cta from './components/beranda/cta.vue'
 import programHighlight from './components/beranda/programHighlight.vue'
 import tutorHighlight from './components/beranda/tutorHighlight.vue'
+import Footer from './components/footer.vue';
 </script>
 
 <template>
@@ -27,6 +28,7 @@ import tutorHighlight from './components/beranda/tutorHighlight.vue'
       <tutorHighlight />
     </div>
   </div>
+  <Footer />
 </template>
 
 <style scoped>

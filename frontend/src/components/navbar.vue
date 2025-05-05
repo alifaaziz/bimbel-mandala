@@ -1,82 +1,97 @@
 <script setup>
 import butDaftar from './dirButton/butDaftar.vue';
 import butMasuk from './dirButton/butMasuk.vue';
-</script>
-
-<script>
-import { defineComponent } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { NLayout, NLayoutHeader, NMenu, NButton, NDrawer } from 'naive-ui';
 import { auth } from '../auth.js';
 
+const props = defineProps({
+  // You can add props here if needed
+});
 
-export default defineComponent({
-  name: 'Navbar',
-  components: {
-    NLayout,
-    NLayoutHeader,
-    NMenu,
-    NButton,
-    NDrawer,
-    butDaftar,
-    butMasuk,
-  },
-  data() {
-    return {
-      isDesktop: window.innerWidth >= 981,
-      drawerVisible: false,
-      currentRoute: this.$route.name,
-      menuOptions: [
-        { label: 'Beranda', key: 'Beranda', to: '/' },
-        { label: 'Tentang Kami', key: 'Tentang Kami', to: '/tentangkami' },
-        { label: 'Program', key: 'Program', to: '/#' },
-        { label: 'Menjadi Tutor', key: 'Menjadi Tutor', to: '/pendaftarantutor' },
-        { label: 'Daftar', key: 'Daftar', to: '/#' }, 
-        { label: 'Masuk', key: 'Masuk', to: '/Auth' },  
-      ],
-      menuTheme: {
-        itemTextColor: '#9BAFCB',
-        borderRadius: '6px',
-        itemColorHover: '#154484',
-        fontSize: '16px',
-        colorHover: '#FB8312',
-      },
-    };
-  },
-  computed: {
-    // Hapus Masuk dan Daftar dari menu yang ditampilkan
-    filteredMenuOptions() {
-      return this.menuOptions.filter(
-        (option) => option.label !== 'Masuk' && option.label !== 'Daftar'
-      );
-    },
-  },
-  methods: {
-    handleResize() {
-      this.isDesktop = window.innerWidth >= 981;
-    },
-    toggleMenu() {
-      this.drawerVisible = !this.drawerVisible;
-    },
-    handleMenuClick(key) {
-      const selectedOption = this.menuOptions.find(option => option.key === key);
-      if (selectedOption && selectedOption.to) {
-        this.$router.push(selectedOption.to);
-      }
-      this.drawerVisible = false;
-    },
-  },
-  watch: {
-    $route(to) {
-      this.currentRoute = to.name;
-    },
-  },
-  mounted() {
-    this.handleResize();
-    window.addEventListener('resize', this.handleResize);
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.handleResize);
-  },
+const router = useRouter();
+const route = useRoute();
+
+const isDesktop = ref(window.innerWidth >= 981);
+const drawerVisible = ref(false);
+const currentRoute = ref(route.name);
+
+const menuOptionsLoggedOut = [
+  { label: 'Beranda', key: 'Beranda', to: '/' },
+  { label: 'Tentang Kami', key: 'Tentang Kami', to: '/tentangkami' },
+  { label: 'Program', key: 'Program', to: '/program' },
+  { label: 'Menjadi Tutor', key: 'Menjadi Tutor', to: '/pendaftarantutor' },
+  { label: 'Daftar', key: 'Daftar', to: '/daftar' },
+  { label: 'Masuk', key: 'Masuk', to: '/auth' },
+];
+
+const menuOptionsLoggedIn = [
+  { label: 'Beranda', key: 'Beranda', to: '/' },
+  { label: 'Tentang Kami', key: 'Tentang Kami', to: '/tentangkami' },
+  { label: 'Absen', key: 'Absen', to: '/absen' },
+  { label: 'Program', key: 'Program', to: '/program' },
+  { label: 'Rekap', key: 'Rekap', to: '/rekap' },
+];
+
+const menuTheme = {
+  itemTextColor: '#9BAFCB',
+  borderRadius: '6px',
+  itemColorHover: '#154484',
+  fontSize: '16px',
+  colorHover: '#FB8312',
+};
+
+const filteredMenuOptions = computed(() => {
+  if (auth.isLoggedIn) {
+    return menuOptionsLoggedIn;
+  }
+
+  // Hide 'Daftar' and 'Masuk' on desktop (they'll be shown as buttons)
+  if (isDesktop.value) {
+    return menuOptionsLoggedOut.filter(option => 
+      option.key !== 'Daftar' && option.key !== 'Masuk'
+    );
+  }
+
+  return menuOptionsLoggedOut;
+});
+
+const handleResize = () => {
+  isDesktop.value = window.innerWidth >= 981;
+};
+
+const toggleMenu = () => {
+  drawerVisible.value = !drawerVisible.value;
+};
+
+const handleMenuClick = (key) => {
+  const selectedOption = filteredMenuOptions.value.find(option => option.key === key);
+  if (selectedOption?.to) {
+    router.push(selectedOption.to);
+  }
+  drawerVisible.value = false;
+};
+
+const logout = () => {
+  // Implement your logout logic here
+  auth.logout();
+  router.push('/');
+};
+
+watch(
+  () => route.name,
+  (newRoute) => {
+    currentRoute.value = newRoute;
+  }
+);
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
 });
 </script>
 
@@ -84,21 +99,22 @@ export default defineComponent({
   <n-layout>
     <n-layout-header class="navbar">
       <div class="navbar-wrapper">
-        <div class="logo">
+        <router-link to="/" class="logo">
           <img src="../assets/logomandala22.png" alt="Logo" />
-        </div>
+        </router-link>
 
         <div class="menu-container">
-          <!-- Tombol untuk mobile -->
+          <!-- Mobile menu button -->
           <n-button
+            v-if="!isDesktop"
             class="menu-button"
             @click="toggleMenu"
-            v-if="!isDesktop"
+            aria-label="Toggle menu"
           >
             ☰
           </n-button>
 
-          <!-- Desktop Menu -->
+          <!-- Desktop menu -->
           <template v-else>
             <n-menu
               mode="horizontal"
@@ -108,32 +124,60 @@ export default defineComponent({
               @update:value="handleMenuClick"
             />
 
-            <!-- Khusus tombol Masuk & Daftar -->
+            <div class="menu-divider"></div>
+
             <template v-if="!auth.isLoggedIn">
               <butDaftar />
               <butMasuk />
             </template>
+            
             <template v-else>
-              <div class="user-info">
-                <span>{{ auth.user.name }}</span>
-                <n-button size="small" @click="logout">Logout</n-button>
+              <div class="user-actions">
+                <router-link 
+                  to="/notification" 
+                  class="action-icon"
+                  aria-label="Notifications"
+                >
+                  <ion-icon name="notifications-outline"></ion-icon>
+                </router-link>
+                <router-link 
+                  to="/jadwal" 
+                  class="action-icon"
+                  aria-label="Schedule"
+                >
+                  <ion-icon name="calendar-outline"></ion-icon>
+                </router-link>
+                <router-link 
+                  to="/akun" 
+                  class="action-icon"
+                  aria-label="Account"
+                >
+                  <ion-icon name="person-outline"></ion-icon>
+                </router-link>
               </div>
             </template>
           </template>
 
-          <!-- Drawer Menu Mobile -->
+          <!-- Mobile drawer menu -->
           <n-drawer
             v-if="!isDesktop"
             v-model:show="drawerVisible"
             placement="right"
-            size="260"
+            :width="260"
           >
             <n-menu
               mode="vertical"
-              :options="menuOptions"
+              :options="filteredMenuOptions"
               :theme-overrides="menuTheme"
               @update:value="handleMenuClick"
             />
+            
+            <div class="mobile-auth-actions" v-if="auth.isLoggedIn">
+              <div class="user-info">
+                <span>{{ auth.user.name }}</span>
+                <n-button size="small" @click="logout">Logout</n-button>
+              </div>
+            </div>
           </n-drawer>
         </div>
       </div>
@@ -143,17 +187,21 @@ export default defineComponent({
 
 <style scoped>
 .navbar {
+  --navbar-height: 68px;
+  --navbar-padding-x: clamp(1rem, 5vw, 8rem);
+  --menu-divider-color: #9BAFCB;
+  --icon-color: #154484;
+  --icon-hover-color: #FB8312;
+  
   width: 100%;
-  height: 68px;
+  height: var(--navbar-height);
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-  border-bottom: 2px solid #9BAFCB;
+  border-bottom: 2px solid var(--menu-divider-color);
   background-color: white;
   padding: 0 8rem;
-  display: flex;
-  align-items: center;
 }
 
 .navbar-wrapper {
@@ -161,11 +209,13 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  height: 100%;
 }
 
 .logo {
   display: flex;
   align-items: center;
+  height: 100%;
 }
 
 .logo img {
@@ -176,48 +226,79 @@ export default defineComponent({
 .menu-container {
   display: flex;
   align-items: center;
+  gap: 1rem;
   font-family: 'Poppins', sans-serif;
+  height: 100%;
 }
 
-/* Tambahan baru: tombol Masuk & Daftar */
-.auth-buttons {
+.menu-divider {
+  width: 2px;
+  height: 32px;
+  background-color: var(--menu-divider-color);
+  margin: 0 1rem;
+  align-self: center;
+}
+
+/* User actions */
+.user-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem;
   margin-left: 1rem;
 }
 
-/* Deep style overrides */
-::v-deep(.n-menu-item) {
+.action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-color);
+  transition: color 0.2s ease;
+}
+
+.action-icon:hover {
+  color: var(--icon-hover-color);
+}
+
+ion-icon {
+  font-size: 24px;
+}
+
+/* Mobile auth actions */
+.mobile-auth-actions {
+  padding: 1rem;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 1rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Menu item styles */
+:deep(.n-menu-item) {
   transition: all 0.2s ease;
   border-radius: 8px;
 }
 
-::v-deep(.n-menu-item-content-header:hover),
-::v-deep(.n-menu-item-content:hover) {
-  color: #FB8312 !important;
+:deep(.n-menu-item-content-header:hover),
+:deep(.n-menu-item-content:hover) {
+  color: var(--icon-hover-color) !important;
 }
 
-::v-deep(.n-menu-item-content--selected .n-menu-item-content-header) {
-  color: #FB8312 !important;
+:deep(.n-menu-item-content--selected .n-menu-item-content-header) {
+  color: var(--icon-hover-color) !important;
   font-weight: 600;
 }
 
-/* Responsive padding */
-@media (max-width: 1024px) {
-  .navbar {
-    padding: 0 4rem;
-  }
-}
-
+/* Responsive adjustments */
 @media (max-width: 768px) {
+  .menu-divider {
+    margin: 0 0.5rem;
+  }
+
   .navbar {
     padding: 0 2rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar {
-    padding: 0 1rem;
   }
 }
 </style>

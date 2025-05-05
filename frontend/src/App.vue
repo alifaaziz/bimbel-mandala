@@ -1,11 +1,3 @@
-<template>
-  <n-config-provider :theme-overrides="themeOverrides">
-    <component :is="layout">
-      <router-view />
-    </component>
-  </n-config-provider>
-</template>
-
 <script setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
@@ -32,3 +24,11 @@ const themeOverrides = {
   }
 }
 </script>
+
+<template>
+  <n-config-provider :theme-overrides="themeOverrides">
+    <component :is="layout">
+      <router-view />
+    </component>
+  </n-config-provider>
+</template>
