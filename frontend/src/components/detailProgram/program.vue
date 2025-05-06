@@ -203,6 +203,10 @@ function submitToWhatsApp() {
   background-color: #123a6d;
 }
 
+.head-detail .bodym2, .space-detail {
+  color: #061222;
+}
+
 /* Breakpoint 1200px */
 @media (max-width: 1200px) {
   .container-detail {

@@ -75,7 +75,7 @@ export default {
     text-align: center;
     margin-bottom: 12px;
 }
-.headersb3 {
+.grid-item .headersb3 {
   color: #154484;
   text-align: center;
   margin-bottom: 4px;

@@ -8,6 +8,8 @@ import AbsenSiswa from '../components/Absen.vue';
 
 import MasukDaftar from '../MasukDaftar.vue'
 
+import Jadwal from '@/components/Jadwal.vue';
+
 const routes = [
   { 
     path: '/', 
@@ -44,6 +46,10 @@ const routes = [
    {
     path: '/MasukDaftar', 
     component: MasukDaftar,
+   },
+   {
+    path: '/Jadwal', 
+    component: Jadwal,
    },
 ]
 

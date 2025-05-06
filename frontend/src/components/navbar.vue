@@ -235,6 +235,7 @@ onBeforeUnmount(() => {
                         class="notification-item"
                         :class="{ 'unread': !notification.read }"
                       >
+                        <span v-if="!notification.read" class="unread-dot"></span>
                         <div class="notification-photo">
                           <img 
                             :src="notification.photo" 
