@@ -1,3 +1,4 @@
+import { get } from 'http';
 import { prisma } from '../utils/db.js';
 
 /**
@@ -7,11 +8,74 @@ import { prisma } from '../utils/db.js';
  * @function getAllBimbelPackages
  * @returns {Promise<Array>} The list of bimbel packages.
  */
-async function getAllBimbelPackages() {
+async function getActiveBimbelPackages() {
   const packages = await prisma.bimbelPackage.findMany({
     where: {
       isActive: true
     },
+    include: {
+      user: {
+        select: {
+          name: true,
+          tutors: {
+            select: {
+              photo: true
+            }
+          }
+        }
+      },
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: {
+            select: {
+              daysName: true
+            }
+          }
+        }
+      },
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
+
+  return packages.map(pkg => {
+    return {
+      name: pkg.name,
+      level: pkg.level,
+      totalMeetings: pkg.totalMeetings,
+      time: pkg.time,
+      duration: pkg.duration,
+      area: pkg.area,
+      isActive: pkg.isActive,
+      tutorName: pkg.user.name,
+      photo: pkg.user.tutors[0]?.photo,
+      groupType: pkg.groupType.map(gt => ({
+        type: gt.type,
+        price: gt.price,
+        discPrice: gt.discPrice
+      })),
+      days: pkg.packageDay.map(day => day.day.daysName)
+    };
+  });
+}
+
+/**
+ * Retrieves all bimbel packages regardless of their isActive status.
+ *
+ * @async
+ * @function getAllBimbelPackages
+ * @returns {Promise<Array>} The list of bimbel packages.
+ */
+async function getAllBimbelPackages() {
+  const packages = await prisma.bimbelPackage.findMany({
     include: {
       user: {
         select: {
@@ -704,6 +768,24 @@ async function getMyPackages(user) {
     where: {
       userId: user.id
     },
+    include: {
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: {
+            select: {
+              daysName: true
+            }
+          }
+        }
+      }
+    }
   });
 
   return packages.map(pkg => ({
@@ -714,7 +796,13 @@ async function getMyPackages(user) {
     time: pkg.time,
     duration: pkg.duration,
     area: pkg.area,
-    isActive: pkg.isActive
+    isActive: pkg.isActive,
+    groupType: pkg.groupType.map(gt => ({
+      type: gt.type,
+      price: gt.price * 0.9,
+      discPrice: gt.discPrice !== null ? gt.discPrice * 0.9 : null
+    })),
+    days: pkg.packageDay.map(day => day.day.daysName)
   }));
 }
 
@@ -833,7 +921,92 @@ async function getMyCompletedPrograms(user) {
   }
 }
 
+/**
+ * Retrieves a bimbel package by ID associated with the logged-in user.
+ *
+ * @async
+ * @function getMyPackageById
+ * @param {string} id - The package ID.
+ * @param {Object} user - The logged-in user object.
+ * @returns {Promise<Object|null>} The bimbel package or null if not found or not associated with the user.
+ */
+async function getMyPackageById(id, user) {
+  if (user.role !== 'tutor') {
+    throw new Error('Only tutors can access this resource');
+  }
+  
+  const pkg = await prisma.bimbelPackage.findFirst({
+    where: {
+      id: id,
+      userId: user.id 
+    },
+    include: {
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: {
+            select: {
+              daysName: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!pkg) {
+    return null;
+  }
+
+  return {
+    id: pkg.id,
+    name: pkg.name,
+    level: pkg.level,
+    totalMeetings: pkg.totalMeetings,
+    time: pkg.time,
+    duration: pkg.duration,
+    area: pkg.area,
+    isActive: pkg.isActive,
+    groupType: pkg.groupType.map(gt => ({
+      type: gt.type,
+      price: gt.price * 0.9,
+      discPrice: gt.discPrice !== null ? gt.discPrice * 0.9 : null
+    })),
+    days: pkg.packageDay.map(day => day.day.daysName)
+  };
+}
+
+/**
+ * Retrieves statistics for bimbel packages.
+ *
+ * @async
+ * @function getBimbelPackageStatistics
+ * @returns {Promise<Object>} The statistics for bimbel packages.
+ */
+async function getBimbelPackageStatistics() {
+  const totalPackages = await prisma.bimbelPackage.count();
+  const activePackages = await prisma.bimbelPackage.count({
+    where: {
+      isActive: true
+    }
+  });
+  const inactivePackages = totalPackages - activePackages;
+
+  return {
+    totalPackages,
+    activePackages,
+    inactivePackages
+  };
+}
+
 export const BimbelPackageService = {
+  getActiveBimbelPackages,
   getAllBimbelPackages,
   getBimbelPackageById,
   createBimbelPackage,
@@ -847,5 +1020,7 @@ export const BimbelPackageService = {
   getMyRunningPrograms,
   getMyPackages,
   getCompletedPrograms,
-  getMyCompletedPrograms
+  getMyCompletedPrograms,
+  getMyPackageById,
+  getBimbelPackageStatistics
 };
