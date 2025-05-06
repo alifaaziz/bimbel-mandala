@@ -34,7 +34,7 @@ async function isAuthorized(req, res, next) {
  * @param {Array<string>} allowedRoles - An array of roles that are allowed to access the route.
  * @returns {Function} Middleware function.
  */
-export function hasRole(allowedRoles) {
+function hasRole(allowedRoles) {
   return (req, res, next) => {
     try {
       const user = res.locals.user;
