@@ -33,6 +33,7 @@ CREATE TABLE `bimbel_packages` (
 CREATE TABLE `class` (
     `id` VARCHAR(191) NOT NULL,
     `code` VARCHAR(191) NOT NULL,
+    `status` ENUM('berjalan', 'selesai') NOT NULL,
     `order_id` VARCHAR(191) NULL,
     `tutor_id` VARCHAR(191) NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

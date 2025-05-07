@@ -408,6 +408,7 @@ async function main() {
         {
             id: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
             code: 'ABC123',
+            status: 'berjalan',
             tutorId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",
         },
