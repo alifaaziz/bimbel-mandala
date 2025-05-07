@@ -2744,9 +2744,9 @@
         "tags": [
           "Package"
         ],
-        "summary": "Get All Packages",
-        "description": "Get All Packages",
-        "operationId": "getAllPackages",
+        "summary": "Get All Active Packages",
+        "description": "Get All Active Packages",
+        "operationId": "getAllActivePackages",
         "responses": {
           "200": {
             "description": "200 - Get All Packages",
@@ -3256,6 +3256,362 @@
             "bearerAuth": []
           }
         ]
+      }
+    },
+    "/packages/all": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get All Packages",
+        "description": "Get All Packages",
+        "operationId": "getAllPackages",
+        "responses": {
+          "200": {
+            "description": "200 - Get All Packages",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "992"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 06 May 2025 01:34:22 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"3e0-HQFanp15swmaHT8NSS5apFF4SiI\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "area": {
+                        "type": "string",
+                        "example": "Semarang"
+                      },
+                      "days": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "example": "Sabtu"
+                        },
+                        "example": [
+                          "Sabtu",
+                          "Senin",
+                          "Rabu"
+                        ]
+                      },
+                      "duration": {
+                        "type": "number",
+                        "example": 90
+                      },
+                      "groupType": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "discPrice": {
+                              "type": "string",
+                              "example": "1386000"
+                            },
+                            "price": {
+                              "type": "string",
+                              "example": "1540000"
+                            },
+                            "type": {
+                              "type": "string",
+                              "example": "privat"
+                            }
+                          }
+                        },
+                        "example": [
+                          {
+                            "discPrice": "1386000",
+                            "price": "1540000",
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": "3762000",
+                            "price": "4180000",
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": "6138000",
+                            "price": "6820000",
+                            "type": "grup5"
+                          },
+                          {
+                            "discPrice": "2574000",
+                            "price": "2860000",
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": "4950000",
+                            "price": "5500000",
+                            "type": "grup4"
+                          }
+                        ]
+                      },
+                      "isActive": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "level": {
+                        "type": "string",
+                        "example": "SMP"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Matematika"
+                      },
+                      "photo": {
+                        "nullable": true,
+                        "example": null
+                      },
+                      "time": {
+                        "type": "string",
+                        "example": "1970-01-01T15:00:00.000Z"
+                      },
+                      "totalMeetings": {
+                        "type": "number",
+                        "example": 24
+                      },
+                      "tutorName": {
+                        "type": "string",
+                        "example": "Dendy Wan S.Pd"
+                      }
+                    }
+                  },
+                  "example": [
+                    {
+                      "area": "Semarang",
+                      "days": [
+                        "Sabtu",
+                        "Senin",
+                        "Rabu"
+                      ],
+                      "duration": 90,
+                      "groupType": [
+                        {
+                          "discPrice": "1386000",
+                          "price": "1540000",
+                          "type": "privat"
+                        },
+                        {
+                          "discPrice": "3762000",
+                          "price": "4180000",
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": "6138000",
+                          "price": "6820000",
+                          "type": "grup5"
+                        },
+                        {
+                          "discPrice": "2574000",
+                          "price": "2860000",
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": "4950000",
+                          "price": "5500000",
+                          "type": "grup4"
+                        }
+                      ],
+                      "isActive": true,
+                      "level": "SMP",
+                      "name": "Matematika",
+                      "photo": null,
+                      "time": "1970-01-01T15:00:00.000Z",
+                      "totalMeetings": 24,
+                      "tutorName": "Dendy Wan S.Pd"
+                    },
+                    {
+                      "area": "Semarang",
+                      "days": [
+                        "Selasa",
+                        "Jumat"
+                      ],
+                      "duration": 120,
+                      "groupType": [
+                        {
+                          "discPrice": null,
+                          "price": "1020000",
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": "1460000",
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": "580000",
+                          "type": "privat"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": "1900000",
+                          "type": "grup4"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": "2340000",
+                          "type": "grup5"
+                        }
+                      ],
+                      "isActive": true,
+                      "level": "SMA",
+                      "name": "Bahasa Inggris",
+                      "photo": null,
+                      "time": "1970-01-01T15:00:00.000Z",
+                      "totalMeetings": 8,
+                      "tutorName": "Venita S.Pd"
+                    }
+                  ]
+                },
+                "examples": {
+                  "200 - Get All Packages": {
+                    "value": [
+                      {
+                        "area": "Semarang",
+                        "days": [
+                          "Sabtu",
+                          "Senin",
+                          "Rabu"
+                        ],
+                        "duration": 90,
+                        "groupType": [
+                          {
+                            "discPrice": "1386000",
+                            "price": "1540000",
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": "3762000",
+                            "price": "4180000",
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": "6138000",
+                            "price": "6820000",
+                            "type": "grup5"
+                          },
+                          {
+                            "discPrice": "2574000",
+                            "price": "2860000",
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": "4950000",
+                            "price": "5500000",
+                            "type": "grup4"
+                          }
+                        ],
+                        "isActive": true,
+                        "level": "SMP",
+                        "name": "Matematika",
+                        "photo": null,
+                        "time": "1970-01-01T15:00:00.000Z",
+                        "totalMeetings": 24,
+                        "tutorName": "Dendy Wan S.Pd"
+                      },
+                      {
+                        "area": "Semarang",
+                        "days": [
+                          "Selasa",
+                          "Jumat"
+                        ],
+                        "duration": 120,
+                        "groupType": [
+                          {
+                            "discPrice": null,
+                            "price": "1020000",
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "1460000",
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "580000",
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "1900000",
+                            "type": "grup4"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": "2340000",
+                            "type": "grup5"
+                          }
+                        ],
+                        "isActive": true,
+                        "level": "SMA",
+                        "name": "Bahasa Inggris",
+                        "photo": null,
+                        "time": "1970-01-01T15:00:00.000Z",
+                        "totalMeetings": 8,
+                        "tutorName": "Venita S.Pd"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/packages/{id}": {
@@ -4127,328 +4483,6 @@
         }
       }
     },
-    "/packages/my": {
-      "get": {
-        "tags": [
-          "Package"
-        ],
-        "summary": "Get My Packages",
-        "description": "Get My Packages",
-        "operationId": "getMyPackages",
-        "responses": {
-          "200": {
-            "description": "200 - Get All Packages",
-            "headers": {
-              "Access-Control-Allow-Credentials": {
-                "schema": {
-                  "type": "string",
-                  "example": "true"
-                }
-              },
-              "Connection": {
-                "schema": {
-                  "type": "string",
-                  "example": "keep-alive"
-                }
-              },
-              "Content-Length": {
-                "schema": {
-                  "type": "string",
-                  "example": "808"
-                }
-              },
-              "Date": {
-                "schema": {
-                  "type": "string",
-                  "example": "Thu, 10 Apr 2025 04:16:30 GMT"
-                }
-              },
-              "ETag": {
-                "schema": {
-                  "type": "string",
-                  "example": "W/\"328-CwLuf566amOd9ZcGRxHr01BIVEc\""
-                }
-              },
-              "Keep-Alive": {
-                "schema": {
-                  "type": "string",
-                  "example": "timeout=5"
-                }
-              },
-              "Vary": {
-                "schema": {
-                  "type": "string",
-                  "example": "Origin"
-                }
-              },
-              "X-Powered-By": {
-                "schema": {
-                  "type": "string",
-                  "example": "Express"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "area": {
-                        "type": "string",
-                        "example": "Semarang"
-                      },
-                      "days": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "daysName": {
-                              "type": "string",
-                              "example": "Selasa"
-                            }
-                          }
-                        },
-                        "example": [
-                          {
-                            "daysName": "Selasa"
-                          },
-                          {
-                            "daysName": "Jumat"
-                          }
-                        ]
-                      },
-                      "duration": {
-                        "type": "number",
-                        "example": 120
-                      },
-                      "groupTypePrices": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "price": {
-                              "type": "number",
-                              "example": 570000
-                            },
-                            "type": {
-                              "type": "string",
-                              "example": "grup3"
-                            }
-                          }
-                        },
-                        "example": [
-                          {
-                            "price": 570000,
-                            "type": "grup3"
-                          },
-                          {
-                            "price": 660000,
-                            "type": "grup5"
-                          },
-                          {
-                            "price": 450000,
-                            "type": "privat"
-                          }
-                        ]
-                      },
-                      "id": {
-                        "type": "string",
-                        "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
-                      },
-                      "isActive": {
-                        "type": "boolean",
-                        "example": true
-                      },
-                      "level": {
-                        "type": "string",
-                        "example": "SMA"
-                      },
-                      "name": {
-                        "type": "string",
-                        "example": "Bahasa Inggris"
-                      },
-                      "photo": {
-                        "nullable": true,
-                        "example": null
-                      },
-                      "time": {
-                        "type": "string",
-                        "example": "1970-01-01T15:00:00.000Z"
-                      },
-                      "totalMeetings": {
-                        "type": "number",
-                        "example": 2
-                      },
-                      "tutorName": {
-                        "type": "string",
-                        "example": "Venita S.Pd"
-                      }
-                    }
-                  },
-                  "example": [
-                    {
-                      "area": "Semarang",
-                      "days": [
-                        {
-                          "daysName": "Selasa"
-                        },
-                        {
-                          "daysName": "Jumat"
-                        }
-                      ],
-                      "duration": 120,
-                      "groupTypePrices": [
-                        {
-                          "price": 570000,
-                          "type": "grup3"
-                        },
-                        {
-                          "price": 660000,
-                          "type": "grup5"
-                        },
-                        {
-                          "price": 450000,
-                          "type": "privat"
-                        }
-                      ],
-                      "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
-                      "isActive": true,
-                      "level": "SMA",
-                      "name": "Bahasa Inggris",
-                      "photo": null,
-                      "time": "1970-01-01T15:00:00.000Z",
-                      "totalMeetings": 2,
-                      "tutorName": "Venita S.Pd"
-                    },
-                    {
-                      "area": "Semarang",
-                      "days": [
-                        {
-                          "daysName": "Sabtu"
-                        },
-                        {
-                          "daysName": "Senin"
-                        },
-                        {
-                          "daysName": "Rabu"
-                        }
-                      ],
-                      "duration": 120,
-                      "groupTypePrices": [
-                        {
-                          "price": 1000000,
-                          "type": "privat"
-                        },
-                        {
-                          "price": 1240000,
-                          "type": "grup3"
-                        },
-                        {
-                          "price": 1420000,
-                          "type": "grup5"
-                        }
-                      ],
-                      "id": "0195c63c-8fce-7c44-bf47-013da86078a3",
-                      "isActive": true,
-                      "level": "SMP",
-                      "name": "Matematika",
-                      "photo": null,
-                      "time": "1970-01-01T15:00:00.000Z",
-                      "totalMeetings": 6,
-                      "tutorName": "Dendy Wan S.Pd"
-                    }
-                  ]
-                },
-                "examples": {
-                  "200 - Get All Packages": {
-                    "value": [
-                      {
-                        "area": "Semarang",
-                        "days": [
-                          {
-                            "daysName": "Selasa"
-                          },
-                          {
-                            "daysName": "Jumat"
-                          }
-                        ],
-                        "duration": 120,
-                        "groupTypePrices": [
-                          {
-                            "price": 570000,
-                            "type": "grup3"
-                          },
-                          {
-                            "price": 660000,
-                            "type": "grup5"
-                          },
-                          {
-                            "price": 450000,
-                            "type": "privat"
-                          }
-                        ],
-                        "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
-                        "isActive": true,
-                        "level": "SMA",
-                        "name": "Bahasa Inggris",
-                        "photo": null,
-                        "time": "1970-01-01T15:00:00.000Z",
-                        "totalMeetings": 2,
-                        "tutorName": "Venita S.Pd"
-                      },
-                      {
-                        "area": "Semarang",
-                        "days": [
-                          {
-                            "daysName": "Sabtu"
-                          },
-                          {
-                            "daysName": "Senin"
-                          },
-                          {
-                            "daysName": "Rabu"
-                          }
-                        ],
-                        "duration": 120,
-                        "groupTypePrices": [
-                          {
-                            "price": 1000000,
-                            "type": "privat"
-                          },
-                          {
-                            "price": 1240000,
-                            "type": "grup3"
-                          },
-                          {
-                            "price": 1420000,
-                            "type": "grup5"
-                          }
-                        ],
-                        "id": "0195c63c-8fce-7c44-bf47-013da86078a3",
-                        "isActive": true,
-                        "level": "SMP",
-                        "name": "Matematika",
-                        "photo": null,
-                        "time": "1970-01-01T15:00:00.000Z",
-                        "totalMeetings": 6,
-                        "tutorName": "Dendy Wan S.Pd"
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
     "/packages/running": {
       "get": {
         "tags": [
@@ -4864,6 +4898,1120 @@
                         }
                       }
                     ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/packages/my": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get Tutor Package",
+        "description": "Get Tutor Package",
+        "operationId": "getTutorPackage",
+        "responses": {
+          "200": {
+            "description": "200 - Get Tutor Package",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "475"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 06 May 2025 01:20:28 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"1db-cvVuE5mnHxt+LFIaPEXxyRBW3j0\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "area": {
+                        "type": "string",
+                        "example": "Semarang"
+                      },
+                      "days": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "example": "Selasa"
+                        },
+                        "example": [
+                          "Selasa",
+                          "Jumat"
+                        ]
+                      },
+                      "duration": {
+                        "type": "number",
+                        "example": 120
+                      },
+                      "groupType": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "discPrice": {
+                              "nullable": true,
+                              "example": null
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 918000
+                            },
+                            "type": {
+                              "type": "string",
+                              "example": "grup2"
+                            }
+                          }
+                        },
+                        "example": [
+                          {
+                            "discPrice": null,
+                            "price": 918000,
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": 1314000,
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": 522000,
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": 1710000,
+                            "type": "grup4"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": 2106000,
+                            "type": "grup5"
+                          }
+                        ]
+                      },
+                      "id": {
+                        "type": "string",
+                        "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                      },
+                      "isActive": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "level": {
+                        "type": "string",
+                        "example": "SMA"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Bahasa Inggris"
+                      },
+                      "time": {
+                        "type": "string",
+                        "example": "1970-01-01T15:00:00.000Z"
+                      },
+                      "totalMeetings": {
+                        "type": "number",
+                        "example": 8
+                      }
+                    }
+                  },
+                  "example": [
+                    {
+                      "area": "Semarang",
+                      "days": [
+                        "Selasa",
+                        "Jumat"
+                      ],
+                      "duration": 120,
+                      "groupType": [
+                        {
+                          "discPrice": null,
+                          "price": 918000,
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 1314000,
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 522000,
+                          "type": "privat"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 1710000,
+                          "type": "grup4"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 2106000,
+                          "type": "grup5"
+                        }
+                      ],
+                      "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                      "isActive": true,
+                      "level": "SMA",
+                      "name": "Bahasa Inggris",
+                      "time": "1970-01-01T15:00:00.000Z",
+                      "totalMeetings": 8
+                    }
+                  ]
+                },
+                "examples": {
+                  "200 - Get Tutor Package": {
+                    "value": [
+                      {
+                        "area": "Semarang",
+                        "days": [
+                          "Selasa",
+                          "Jumat"
+                        ],
+                        "duration": 120,
+                        "groupType": [
+                          {
+                            "discPrice": null,
+                            "price": 918000,
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": 1314000,
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": 522000,
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": 1710000,
+                            "type": "grup4"
+                          },
+                          {
+                            "discPrice": null,
+                            "price": 2106000,
+                            "type": "grup5"
+                          }
+                        ],
+                        "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                        "isActive": true,
+                        "level": "SMA",
+                        "name": "Bahasa Inggris",
+                        "time": "1970-01-01T15:00:00.000Z",
+                        "totalMeetings": 8
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/packages/my/{id}": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get Tutor Package by Id",
+        "description": "Get Tutor Package by Id",
+        "operationId": "getTutorPackageById",
+        "responses": {
+          "200": {
+            "description": "200 - Get Tutor Package by Id",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "473"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 06 May 2025 01:26:28 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"1d9-O4iumoRM/z0+agdHAHgre2xVzPo\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "area": {
+                      "type": "string",
+                      "example": "Semarang"
+                    },
+                    "days": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "Selasa"
+                      },
+                      "example": [
+                        "Selasa",
+                        "Jumat"
+                      ]
+                    },
+                    "duration": {
+                      "type": "number",
+                      "example": 120
+                    },
+                    "groupType": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "discPrice": {
+                            "nullable": true,
+                            "example": null
+                          },
+                          "price": {
+                            "type": "number",
+                            "example": 918000
+                          },
+                          "type": {
+                            "type": "string",
+                            "example": "grup2"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "discPrice": null,
+                          "price": 918000,
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 1314000,
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 522000,
+                          "type": "privat"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 1710000,
+                          "type": "grup4"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 2106000,
+                          "type": "grup5"
+                        }
+                      ]
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "level": {
+                      "type": "string",
+                      "example": "SMA"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Bahasa Inggris"
+                    },
+                    "time": {
+                      "type": "string",
+                      "example": "1970-01-01T15:00:00.000Z"
+                    },
+                    "totalMeetings": {
+                      "type": "number",
+                      "example": 8
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Get Tutor Package by Id": {
+                    "value": {
+                      "area": "Semarang",
+                      "days": [
+                        "Selasa",
+                        "Jumat"
+                      ],
+                      "duration": 120,
+                      "groupType": [
+                        {
+                          "discPrice": null,
+                          "price": 918000,
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 1314000,
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 522000,
+                          "type": "privat"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 1710000,
+                          "type": "grup4"
+                        },
+                        {
+                          "discPrice": null,
+                          "price": 2106000,
+                          "type": "grup5"
+                        }
+                      ],
+                      "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                      "isActive": true,
+                      "level": "SMA",
+                      "name": "Bahasa Inggris",
+                      "time": "1970-01-01T15:00:00.000Z",
+                      "totalMeetings": 8
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+          }
+        }
+      ]
+    },
+    "/packages/completed": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get Completed Program",
+        "description": "Get Completed Program",
+        "operationId": "getCompletedProgram",
+        "responses": {
+          "200": {
+            "description": "200 - Get Completed Program",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "569"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 05 May 2025 03:10:54 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"239-HuYjExWTlY3RAqXmL1pbAefBkb0\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "classId": {
+                        "type": "string",
+                        "example": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0"
+                      },
+                      "order": {
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "type": "string",
+                            "example": "Jl. Merdeka No. 2"
+                          },
+                          "bimbelPackage": {
+                            "type": "object",
+                            "properties": {
+                              "area": {
+                                "type": "string",
+                                "example": "Semarang"
+                              },
+                              "discount": {
+                                "nullable": true,
+                                "example": null
+                              },
+                              "duration": {
+                                "type": "number",
+                                "example": 120
+                              },
+                              "id": {
+                                "type": "string",
+                                "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                              },
+                              "isActive": {
+                                "type": "boolean",
+                                "example": true
+                              },
+                              "level": {
+                                "type": "string",
+                                "example": "SMA"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Bahasa Inggris"
+                              },
+                              "time": {
+                                "type": "string",
+                                "example": "1970-01-01T15:00:00.000Z"
+                              },
+                              "totalMeetings": {
+                                "type": "number",
+                                "example": 8
+                              },
+                              "userId": {
+                                "type": "string",
+                                "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                              }
+                            }
+                          },
+                          "groupTypeId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-7a75-948f-e8df29d3bb9c"
+                          },
+                          "id": {
+                            "type": "string",
+                            "example": "019618a1-68a4-75a4-abe4-dffa3730c045"
+                          },
+                          "packageId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "paid"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-7742-9471-2548f7726e86"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": [
+                    {
+                      "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                      "order": {
+                        "address": "Jl. Merdeka No. 2",
+                        "bimbelPackage": {
+                          "area": "Semarang",
+                          "discount": null,
+                          "duration": 120,
+                          "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                          "isActive": true,
+                          "level": "SMA",
+                          "name": "Bahasa Inggris",
+                          "time": "1970-01-01T15:00:00.000Z",
+                          "totalMeetings": 8,
+                          "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                        },
+                        "groupTypeId": "019618a1-68a4-7a75-948f-e8df29d3bb9c",
+                        "id": "019618a1-68a4-75a4-abe4-dffa3730c045",
+                        "packageId": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                        "status": "paid",
+                        "userId": "019618a1-68a4-7742-9471-2548f7726e86"
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "200 - Get Completed Program": {
+                    "value": [
+                      {
+                        "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                        "order": {
+                          "address": "Jl. Merdeka No. 2",
+                          "bimbelPackage": {
+                            "area": "Semarang",
+                            "discount": null,
+                            "duration": 120,
+                            "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                            "isActive": true,
+                            "level": "SMA",
+                            "name": "Bahasa Inggris",
+                            "time": "1970-01-01T15:00:00.000Z",
+                            "totalMeetings": 8,
+                            "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                          },
+                          "groupTypeId": "019618a1-68a4-7a75-948f-e8df29d3bb9c",
+                          "id": "019618a1-68a4-75a4-abe4-dffa3730c045",
+                          "packageId": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                          "status": "paid",
+                          "userId": "019618a1-68a4-7742-9471-2548f7726e86"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/packages/completed/my": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get User Completed Program",
+        "description": "Get User Completed Program",
+        "operationId": "getUserCompletedProgram",
+        "responses": {
+          "200": {
+            "description": "200 - Get User Completed Program",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "834"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 05 May 2025 03:18:49 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"342-D+HWA9j1WyWhdwpGyPUGTi4Ln8Q\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bimbelPackage": {
+                        "type": "object",
+                        "properties": {
+                          "area": {
+                            "type": "string",
+                            "example": "Semarang"
+                          },
+                          "discount": {
+                            "nullable": true,
+                            "example": null
+                          },
+                          "duration": {
+                            "type": "number",
+                            "example": 120
+                          },
+                          "id": {
+                            "type": "string",
+                            "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "level": {
+                            "type": "string",
+                            "example": "SMA"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Bahasa Inggris"
+                          },
+                          "time": {
+                            "type": "string",
+                            "example": "1970-01-01T15:00:00.000Z"
+                          },
+                          "totalMeetings": {
+                            "type": "number",
+                            "example": 8
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                          }
+                        }
+                      },
+                      "classId": {
+                        "type": "string",
+                        "example": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0"
+                      },
+                      "order": {
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "type": "string",
+                            "example": "Jl. Merdeka No. 2"
+                          },
+                          "bimbelPackage": {
+                            "type": "object",
+                            "properties": {
+                              "area": {
+                                "type": "string",
+                                "example": "Semarang"
+                              },
+                              "discount": {
+                                "nullable": true,
+                                "example": null
+                              },
+                              "duration": {
+                                "type": "number",
+                                "example": 120
+                              },
+                              "id": {
+                                "type": "string",
+                                "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                              },
+                              "isActive": {
+                                "type": "boolean",
+                                "example": true
+                              },
+                              "level": {
+                                "type": "string",
+                                "example": "SMA"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Bahasa Inggris"
+                              },
+                              "time": {
+                                "type": "string",
+                                "example": "1970-01-01T15:00:00.000Z"
+                              },
+                              "totalMeetings": {
+                                "type": "number",
+                                "example": 8
+                              },
+                              "userId": {
+                                "type": "string",
+                                "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                              }
+                            }
+                          },
+                          "groupTypeId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-7a75-948f-e8df29d3bb9c"
+                          },
+                          "id": {
+                            "type": "string",
+                            "example": "019618a1-68a4-75a4-abe4-dffa3730c045"
+                          },
+                          "packageId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "paid"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-7742-9471-2548f7726e86"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": [
+                    {
+                      "bimbelPackage": {
+                        "area": "Semarang",
+                        "discount": null,
+                        "duration": 120,
+                        "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                        "isActive": true,
+                        "level": "SMA",
+                        "name": "Bahasa Inggris",
+                        "time": "1970-01-01T15:00:00.000Z",
+                        "totalMeetings": 8,
+                        "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                      },
+                      "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                      "order": {
+                        "address": "Jl. Merdeka No. 2",
+                        "bimbelPackage": {
+                          "area": "Semarang",
+                          "discount": null,
+                          "duration": 120,
+                          "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                          "isActive": true,
+                          "level": "SMA",
+                          "name": "Bahasa Inggris",
+                          "time": "1970-01-01T15:00:00.000Z",
+                          "totalMeetings": 8,
+                          "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                        },
+                        "groupTypeId": "019618a1-68a4-7a75-948f-e8df29d3bb9c",
+                        "id": "019618a1-68a4-75a4-abe4-dffa3730c045",
+                        "packageId": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                        "status": "paid",
+                        "userId": "019618a1-68a4-7742-9471-2548f7726e86"
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "200 - Get User Completed Program": {
+                    "value": [
+                      {
+                        "bimbelPackage": {
+                          "area": "Semarang",
+                          "discount": null,
+                          "duration": 120,
+                          "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                          "isActive": true,
+                          "level": "SMA",
+                          "name": "Bahasa Inggris",
+                          "time": "1970-01-01T15:00:00.000Z",
+                          "totalMeetings": 8,
+                          "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                        },
+                        "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                        "order": {
+                          "address": "Jl. Merdeka No. 2",
+                          "bimbelPackage": {
+                            "area": "Semarang",
+                            "discount": null,
+                            "duration": 120,
+                            "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                            "isActive": true,
+                            "level": "SMA",
+                            "name": "Bahasa Inggris",
+                            "time": "1970-01-01T15:00:00.000Z",
+                            "totalMeetings": 8,
+                            "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                          },
+                          "groupTypeId": "019618a1-68a4-7a75-948f-e8df29d3bb9c",
+                          "id": "019618a1-68a4-75a4-abe4-dffa3730c045",
+                          "packageId": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                          "status": "paid",
+                          "userId": "019618a1-68a4-7742-9471-2548f7726e86"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/packages/statistics": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get Statistics Package",
+        "description": "Get Statistics Package",
+        "operationId": "getStatisticsPackage",
+        "responses": {
+          "200": {
+            "description": "200 -Get Statistics Package",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "59"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 06 May 2025 01:49:52 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"3b-1mdE/PLIokIQ3ajYeyOsl8276EQ\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "activePackages": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "inactivePackages": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "totalPackages": {
+                      "type": "number",
+                      "example": 2
+                    }
+                  }
+                },
+                "examples": {
+                  "200 -Get Statistics Package": {
+                    "value": {
+                      "activePackages": 2,
+                      "inactivePackages": 0,
+                      "totalPackages": 2
+                    }
                   }
                 }
               }
@@ -10320,6 +11468,487 @@
         ]
       }
     },
+    "/attendance/my": {
+      "get": {
+        "tags": [
+          "Attendance"
+        ],
+        "summary": "Get My Statistics Attendance",
+        "description": "Get My Statistics Attendance",
+        "operationId": "getMyStatisticsAttendance",
+        "responses": {
+          "200": {
+            "description": "200 - Get My Statistics Attendance Siswa / 200 - Get My Statistics Attendance Tutor",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "359"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Wed, 07 May 2025 04:20:20 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"167-9FQghg4u3fdgXa9uK24kNiysKkA\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "bimbelPackage": {
+                        "type": "object",
+                        "properties": {
+                          "level": {
+                            "type": "string",
+                            "example": "SMA"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Bahasa Inggris"
+                          }
+                        }
+                      },
+                      "classCode": {
+                        "type": "string",
+                        "example": "ABC123"
+                      },
+                      "classId": {
+                        "type": "string",
+                        "example": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0"
+                      },
+                      "studentStats": {
+                        "type": "object",
+                        "properties": {
+                          "alpha": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "izin": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "masuk": {
+                            "type": "number",
+                            "example": 7
+                          },
+                          "scheduleProgress": {
+                            "type": "number",
+                            "example": 87.5
+                          },
+                          "totalAttendance": {
+                            "type": "number",
+                            "example": 87.5
+                          },
+                          "totalSchedules": {
+                            "type": "number",
+                            "example": 8
+                          }
+                        }
+                      },
+                      "tutorStats": {
+                        "type": "object",
+                        "properties": {
+                          "alpha": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "izin": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "masuk": {
+                            "type": "number",
+                            "example": 8
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Venita S.Pd"
+                          },
+                          "tutorId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": [
+                    {
+                      "bimbelPackage": {
+                        "level": "SMA",
+                        "name": "Bahasa Inggris"
+                      },
+                      "classCode": "ABC123",
+                      "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                      "studentStats": {
+                        "alpha": 0,
+                        "izin": 1,
+                        "masuk": 7,
+                        "scheduleProgress": 87.5,
+                        "totalAttendance": 87.5,
+                        "totalSchedules": 8
+                      },
+                      "tutorStats": {
+                        "alpha": 0,
+                        "izin": 0,
+                        "masuk": 8,
+                        "name": "Venita S.Pd",
+                        "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "200 - Get My Statistics Attendance Siswa": {
+                    "value": [
+                      {
+                        "bimbelPackage": {
+                          "level": "SMA",
+                          "name": "Bahasa Inggris"
+                        },
+                        "classCode": "ABC123",
+                        "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                        "studentStats": {
+                          "alpha": 0,
+                          "izin": 1,
+                          "masuk": 7,
+                          "scheduleProgress": 87.5,
+                          "totalAttendance": 87.5,
+                          "totalSchedules": 8
+                        },
+                        "tutorStats": {
+                          "alpha": 0,
+                          "izin": 0,
+                          "masuk": 8,
+                          "name": "Venita S.Pd",
+                          "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                        }
+                      }
+                    ]
+                  },
+                  "200 - Get My Statistics Attendance Tutor": {
+                    "value": [
+                      {
+                        "bimbelPackage": {
+                          "level": "SMA",
+                          "name": "Bahasa Inggris"
+                        },
+                        "classCode": "ABC123",
+                        "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                        "tutorStats": {
+                          "alpha": 0,
+                          "izin": 0,
+                          "masuk": 8,
+                          "name": "Venita S.Pd",
+                          "payroll": 918000,
+                          "salary": 918000,
+                          "scheduleProgress": 100,
+                          "status": "pending",
+                          "totalAttendance": 100,
+                          "totalSchedules": 8,
+                          "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/attendance": {
+      "get": {
+        "tags": [
+          "Attendance"
+        ],
+        "summary": "Statistics Attendances",
+        "description": "Statistics Attendances",
+        "operationId": "statisticsAttendances",
+        "responses": {
+          "200": {
+            "description": "200 - Get statistic",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "474"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Wed, 07 May 2025 02:26:38 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"1da-vVw93s6grVHDFjrNfO1oAy1V7fU\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "classCode": {
+                            "type": "string",
+                            "example": "ABC123"
+                          },
+                          "classId": {
+                            "type": "string",
+                            "example": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0"
+                          },
+                          "studentStats": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "alpha": {
+                                  "type": "number",
+                                  "example": 0
+                                },
+                                "izin": {
+                                  "type": "number",
+                                  "example": 1
+                                },
+                                "masuk": {
+                                  "type": "number",
+                                  "example": 7
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "example": "Su Yon Oh"
+                                },
+                                "studentId": {
+                                  "type": "string",
+                                  "example": "0195c5ed-3fc9-71de-93d8-d850abe7b4fa"
+                                }
+                              }
+                            },
+                            "example": [
+                              {
+                                "alpha": 0,
+                                "izin": 1,
+                                "masuk": 7,
+                                "name": "Su Yon Oh",
+                                "studentId": "0195c5ed-3fc9-71de-93d8-d850abe7b4fa"
+                              },
+                              {
+                                "alpha": 0,
+                                "izin": 0,
+                                "masuk": 8,
+                                "name": "So Lie Kien",
+                                "studentId": "0195d575-26cb-73a9-ac9c-4395ebfb2326"
+                              }
+                            ]
+                          },
+                          "tutorStats": {
+                            "type": "object",
+                            "properties": {
+                              "alpha": {
+                                "type": "number",
+                                "example": 0
+                              },
+                              "izin": {
+                                "type": "number",
+                                "example": 0
+                              },
+                              "masuk": {
+                                "type": "number",
+                                "example": 8
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Venita S.Pd"
+                              },
+                              "tutorId": {
+                                "type": "string",
+                                "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "classCode": "ABC123",
+                          "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                          "studentStats": [
+                            {
+                              "alpha": 0,
+                              "izin": 1,
+                              "masuk": 7,
+                              "name": "Su Yon Oh",
+                              "studentId": "0195c5ed-3fc9-71de-93d8-d850abe7b4fa"
+                            },
+                            {
+                              "alpha": 0,
+                              "izin": 0,
+                              "masuk": 8,
+                              "name": "So Lie Kien",
+                              "studentId": "0195d575-26cb-73a9-ac9c-4395ebfb2326"
+                            }
+                          ],
+                          "tutorStats": {
+                            "alpha": 0,
+                            "izin": 0,
+                            "masuk": 8,
+                            "name": "Venita S.Pd",
+                            "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                          }
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Attendance statistics retrieved successfully"
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Get statistic": {
+                    "value": {
+                      "data": [
+                        {
+                          "classCode": "ABC123",
+                          "classId": "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
+                          "studentStats": [
+                            {
+                              "alpha": 0,
+                              "izin": 1,
+                              "masuk": 7,
+                              "name": "Su Yon Oh",
+                              "studentId": "0195c5ed-3fc9-71de-93d8-d850abe7b4fa"
+                            },
+                            {
+                              "alpha": 0,
+                              "izin": 0,
+                              "masuk": 8,
+                              "name": "So Lie Kien",
+                              "studentId": "0195d575-26cb-73a9-ac9c-4395ebfb2326"
+                            }
+                          ],
+                          "tutorStats": {
+                            "alpha": 0,
+                            "izin": 0,
+                            "masuk": 8,
+                            "name": "Venita S.Pd",
+                            "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                          }
+                        }
+                      ],
+                      "message": "Attendance statistics retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/attendance/masuk": {
       "post": {
         "tags": [
@@ -10633,102 +12262,6 @@
         "summary": "Create Alpha for non Attendance in past day",
         "description": "Create Alpha for non Attendance in past day",
         "operationId": "createAlphaForNonAttendanceInPastDay",
-        "responses": {
-          "200": {
-            "description": "200 - Create Alpha for non Attendance in past day",
-            "headers": {
-              "Access-Control-Allow-Credentials": {
-                "schema": {
-                  "type": "string",
-                  "example": "true"
-                }
-              },
-              "Access-Control-Allow-Origin": {
-                "schema": {
-                  "type": "string",
-                  "example": "*"
-                }
-              },
-              "Connection": {
-                "schema": {
-                  "type": "string",
-                  "example": "keep-alive"
-                }
-              },
-              "Content-Length": {
-                "schema": {
-                  "type": "string",
-                  "example": "59"
-                }
-              },
-              "Date": {
-                "schema": {
-                  "type": "string",
-                  "example": "Wed, 16 Apr 2025 02:22:17 GMT"
-                }
-              },
-              "ETag": {
-                "schema": {
-                  "type": "string",
-                  "example": "W/\"3b-V+LG1nvXTMNf8UghC0Y6dTFTtCA\""
-                }
-              },
-              "Keep-Alive": {
-                "schema": {
-                  "type": "string",
-                  "example": "timeout=5"
-                }
-              },
-              "Vary": {
-                "schema": {
-                  "type": "string",
-                  "example": "Origin"
-                }
-              },
-              "X-Powered-By": {
-                "schema": {
-                  "type": "string",
-                  "example": "Express"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Alpha attendance marked for missed schedules."
-                    }
-                  }
-                },
-                "examples": {
-                  "200 - Create Alpha for non Attendance in past day": {
-                    "value": {
-                      "message": "Alpha attendance marked for missed schedules."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/attendance/update": {
-      "post": {
-        "tags": [
-          "Attendance"
-        ],
-        "summary": "Create Alpha for non Attendance in past day Copy",
-        "description": "Create Alpha for non Attendance in past day Copy",
-        "operationId": "createAlphaForNonAttendanceInPastDayCopy",
         "responses": {
           "200": {
             "description": "200 - Create Alpha for non Attendance in past day",
