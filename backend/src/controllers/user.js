@@ -60,18 +60,43 @@ async function updateCurrentUser(req, res) {
  * @returns {Promise<void>} Resolves with the list of tutors sorted by class count.
  */
 async function getTutorsSortedByClassCount(req, res) {
-    try {
-        const tutors = await UserService.getTutorsSortedByClassCount();
-        res.status(200).json({ data: tutors });
-    } catch (error) {
-        console.error('Error in getTutorsSortedByClassCount:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+    const tutors = await UserService.getTutorsSortedByClassCount();
+    res.status(200).json({ data: tutors });
+}
+
+/**
+ * Get students sorted by createdAt
+ * 
+ * @async
+ * @function getTopStudents
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of students sorted by createdAt.
+*/
+async function getTopStudents(req, res) {
+    const students = await UserService.getTopStudents();
+    res.status(200).json({ data: students });
+}
+
+/**
+ * Retrieves newly registered students.
+ * 
+ * @async
+ * @function getNewStudents
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of new students.
+ */
+async function getNewStudents(req, res) {
+    const newStudents = await UserService.getNewStudents();
+    res.status(200).json({ data: newStudents });
 }
 
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
     updateCurrentUser: asyncWrapper(updateCurrentUser),
-    getTutorsSortedByClassCount: asyncWrapper(getTutorsSortedByClassCount)
+    getTutorsSortedByClassCount: asyncWrapper(getTutorsSortedByClassCount),
+    getTopStudents: asyncWrapper(getTopStudents),
+    getNewStudents: asyncWrapper(getNewStudents)
 };
