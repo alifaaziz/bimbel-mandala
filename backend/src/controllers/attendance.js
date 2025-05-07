@@ -70,8 +70,43 @@ async function markAlphaAttendance(req, res) {
   res.status(200).json({ message: 'Alpha attendance marked for missed schedules.' });
 }
 
+/**
+ * Handles the request to get attendance statistics for a class.
+ *
+ * @async
+ * @function getAttendanceStatistics
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the attendance statistics for the class.
+ */
+async function getAttendanceStatistics(req, res) {
+    const stats = await AttendanceService.getAttendanceStatistics();
+
+    res.status(200).json({
+        message: "Attendance statistics retrieved successfully",
+        data: stats,
+    });
+}
+
+/**
+ * Handles the request to get attendance statistics for the logged-in user.
+ *
+ * @async
+ * @function getMyAttendanceStatistics
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the attendance statistics for the user's classes.
+ */
+async function getMyAttendanceStatistics(req, res) {
+    const user = res.locals.user;
+    const stats = await AttendanceService.getMyAttendanceStatistics(user);
+    res.status(200).json(stats);
+  }
+
 export const AttendanceController = {
     absenMasuk: asyncWrapper(absenMasuk),
     absenIzin: asyncWrapper(absenIzin),
     markAlphaAttendance: asyncWrapper(markAlphaAttendance),
+    getAttendanceStatistics: asyncWrapper(getAttendanceStatistics),
+    getMyAttendanceStatistics: asyncWrapper(getMyAttendanceStatistics),
 };

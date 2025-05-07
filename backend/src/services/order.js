@@ -98,23 +98,6 @@ async function updateOrderStatus(orderId, status) {
     });
   }
 
-  const groupType = await prisma.groupType.findUnique({
-    where: {
-      id: order.groupTypeId
-    }
-  });
-
-  const totalSalary = groupType.price * 0.9;
-
-  await prisma.salary.create({
-    data: {
-      userId: order.bimbelPackage.userId,
-      orderId: order.id,
-      total: totalSalary,
-      status: 'pending'
-    }
-  });
-
   return order;
 }
 
