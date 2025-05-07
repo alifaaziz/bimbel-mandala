@@ -24,6 +24,30 @@ async function createSalary({ tutorId, orderId, totalSalary }) {
     return salary;
 }
 
+/**
+ * Updates the status of a salary record.
+ * 
+ * @async
+ * @function updateSalaryStatus
+ * @param {string} salaryId - The ID of the salary record.
+ * @param {string} status - The new status of the salary record.
+ * @returns {Promise<Object>} The updated salary record.
+ */
+async function updateSalaryStatus(salaryId, status) {
+    const salary = await prisma.salary.update({
+        where: {
+            id: salaryId
+        },
+        data: {
+            status
+        }
+    });
+
+    return salary;
+}
+
+
 export const SalaryService = {
-    createSalary
+    createSalary,
+    updateSalaryStatus
 };
