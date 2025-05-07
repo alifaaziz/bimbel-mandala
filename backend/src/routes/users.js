@@ -25,4 +25,18 @@ export default (app) => {
         '/tutors',
         UserController.getTutorsSortedByClassCount
     )
+
+    router.get(
+        '/students',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        UserController.getTopStudents
+    );
+
+    router.get(
+        '/new-students',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        UserController.getNewStudents
+    );
 };

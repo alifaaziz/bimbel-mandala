@@ -286,10 +286,95 @@ async function getUserById(id) {
     return user;
 }
 
+/**
+ * Retrieves students ordered by their creation date.
+ *
+ * @async
+ * @function getTopStudents
+ * @returns {Promise<Array>} The list of students ordered by creation date, including level and class count.
+ */
+async function getTopStudents() {
+    const students = await prisma.user.findMany({
+        where: {
+            role: 'siswa'
+        },
+        select: {
+            id: true,
+            name: true,
+            students: {
+                select: {
+                    level: true
+                }
+            },
+            _count: {
+                select: {
+                    studentClass: true
+                }
+            }
+        },
+        orderBy: {
+            studentClass: {
+                _count: 'desc'
+            }
+        },
+        take: 5
+    });
+
+    return students.map(student => ({
+        id: student.id,
+        name: student.name,
+        level: student.students?.[0]?.level || null,
+        classCount: student._count?.studentClass || 0,
+    }));
+}
+
+/**
+ * Retrieves the newest students ordered by their creation date.
+ *
+ * @async
+ * @function getNewStudents
+ * @returns {Promise<Array>} The list of newest students ordered by creation date, including level and class count.
+ */
+async function getNewStudents() {
+    const students = await prisma.user.findMany({
+        where: {
+            role: 'siswa'
+        },
+        select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            students: {
+                select: {
+                    level: true
+                }
+            },
+            _count: {
+                select: {
+                    studentClass: true
+                }
+            }
+        },
+        orderBy: {
+            createdAt: 'desc'
+        }
+    });
+
+    return students.map(student => ({
+        id: student.id,
+        name: student.name,
+        createdAt: student.createdAt,
+        level: student.students?.[0]?.level || null,
+        classCount: student._count?.studentClass || 0, // Include the class count
+    }));
+}
+
 export const UserService = { 
     createStudent,
     createUserWithRole, 
     updateUser, 
     getTutorsSortedByClassCount,
-    getUserById
+    getUserById,
+    getTopStudents,
+    getNewStudents,
 };
