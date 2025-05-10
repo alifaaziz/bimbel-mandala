@@ -658,97 +658,47 @@ async function getBimbelPackagesByPopularity() {
 }
 
 /**
- * Retrieves bimbel packages with schedules that are still running (not completed).
+ * Retrieves classes that are still running.
  *
  * @async
  * @function getRunningPrograms
- * @returns {Promise<Array>} The list of bimbel packages with incomplete schedules.
+ * @returns {Promise<Array>} The list of running programs with classId, tutorName, and bimbelPackageName.
  */
 async function getRunningPrograms() {
   const classes = await prisma.class.findMany({
+    where: {
+      status: 'berjalan'
+    },
     include: {
-      schedules: {
-        include: {
-          attendances: true
+      tutor: {
+        select: {
+          name: true,
+          tutors: {
+            select: {
+              gender: true
+            }
+          }
         }
       },
       order: {
         include: {
-          bimbelPackage: true
+          bimbelPackage: {
+            select: {
+              name: true
+            }
+          }
         }
       }
     }
   });
 
-  const result = [];
-
-  for (const classItem of classes) {
-    const allSchedulesHaveAttendance = classItem.schedules.every(
-      (schedule) => schedule.attendances.length > 0
-    );
-
-    if (!allSchedulesHaveAttendance && classItem.order?.bimbelPackage) {
-      result.push({
-        order: classItem.order
-      });
-    }
-  }
-
-  return result;
-}
-
-/**
- * Retrieves running programs associated with the logged-in user.
- *
- * @async
- * @function getMyRunningPrograms
- * @param {Object} user - The logged-in user object.
- * @returns {Promise<Array>} The list of running programs for the user.
- */
-async function getMyRunningPrograms(user) {
-  const runningPrograms = await getRunningPrograms();
-
-  if (user.role === 'siswa') {
-    const studentClasses = await prisma.studentClass.findMany({
-      where: {
-        userId: user.id
-      },
-      include: {
-        class: {
-          include: {
-            order: {
-              include: {
-                bimbelPackage: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    return studentClasses
-      .map(sc => sc.class.order)
-      .filter(order => order && runningPrograms.some(rp => rp.order.id === order.id));
-  } else if (user.role === 'tutor') {
-    const classes = await prisma.class.findMany({
-      where: {
-        tutorId: user.id
-      },
-      include: {
-        order: {
-          include: {
-            bimbelPackage: true
-          }
-        }
-      }
-    });
-
-    return classes
-      .map(cls => cls.order)
-      .filter(order => order && runningPrograms.some(rp => rp.order.id === order.id));
-  } else {
-    throw new Error('Role not supported for this operation');
-  }
+  return classes.map(cls => ({
+    classId: cls.id,
+    tutorName: cls.tutor
+      ? `${cls.tutor.tutors[0]?.gender === 'Male' ? 'Pak' : 'Bu'} ${cls.tutor.name}`
+      : null,
+    bimbelPackageName: cls.order?.bimbelPackage?.name || null
+  }));
 }
 
 /**
@@ -804,121 +754,6 @@ async function getMyPackages(user) {
     })),
     days: pkg.packageDay.map(day => day.day.daysName)
   }));
-}
-
-/**
- * Retrieves completed programs where all schedules have been attended.
- *
- * @async
- * @function getCompletedPrograms
- * @returns {Promise<Array>} The list of completed programs with their orders and bimbel packages.
- */
-async function getCompletedPrograms() {
-  const classes = await prisma.class.findMany({
-    include: {
-      schedules: {
-        include: {
-          attendances: true
-        }
-      },
-      order: {
-        include: {
-          bimbelPackage: true
-        }
-      }
-    }
-  });
-
-  const completedPrograms = classes
-    .filter(async classItem => {
-      const allSchedulesCompleted = await Promise.all(
-        classItem.schedules.map(async schedule => {
-          const totalParticipants = await prisma.studentClass.count({
-            where: {
-              classId: classItem.id
-            }
-          }) + 1;
-          return schedule.attendances.length >= totalParticipants;
-        })
-      ).then(results => results.every(result => result));
-
-      return allSchedulesCompleted && classItem.order?.bimbelPackage;
-    })
-    .map(classItem => ({
-      classId: classItem.id,
-      order: classItem.order
-    }));
-
-  return completedPrograms;
-}
-
-/**
- * Retrieves completed programs associated with the logged-in user.
- *
- * @async
- * @function getMyCompletedPrograms
- * @param {Object} user - The logged-in user object.
- * @returns {Promise<Array>} The list of completed programs for the user.
- */
-async function getMyCompletedPrograms(user) {
-  // Jalankan logika "getCompletedPrograms" terlebih dahulu
-  const completedPrograms = await getCompletedPrograms();
-
-  if (user.role === 'siswa') {
-    // Jika role siswa, cari melalui studentClass -> class
-    const studentClasses = await prisma.studentClass.findMany({
-      where: {
-        userId: user.id,
-        classId: {
-          in: completedPrograms.map(cp => cp.classId) // Filter berdasarkan classId dari completedPrograms
-        }
-      },
-      include: {
-        class: {
-          include: {
-            order: {
-              include: {
-                bimbelPackage: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    // Tampilkan hanya data yang terhubung dengan classId
-    return studentClasses.map(sc => ({
-      classId: sc.classId,
-      order: sc.class.order,
-      bimbelPackage: sc.class.order?.bimbelPackage || null
-    }));
-  } else if (user.role === 'tutor') {
-    // Jika role tutor, cari melalui class -> order
-    const classes = await prisma.class.findMany({
-      where: {
-        tutorId: user.id,
-        id: {
-          in: completedPrograms.map(cp => cp.classId) // Filter berdasarkan classId dari completedPrograms
-        }
-      },
-      include: {
-        order: {
-          include: {
-            bimbelPackage: true
-          }
-        }
-      }
-    });
-
-    // Tampilkan hanya data yang terhubung dengan classId
-    return classes.map(cls => ({
-      classId: cls.id,
-      order: cls.order,
-      bimbelPackage: cls.order?.bimbelPackage || null
-    }));
-  } else {
-    throw new Error('Role not supported for this operation');
-  }
 }
 
 /**
@@ -1005,6 +840,63 @@ async function getBimbelPackageStatistics() {
   };
 }
 
+/**
+ * Retrieves programs statistics for the logged-in user.
+ * 
+ * @async
+ * @function getMyProgramsStatistics
+ * @param {Object} user - The logged-in user object.
+ * @returns {Promise<Object>} The statistics for the user's programs.
+ */
+async function getMyProgramsStatistics(user) {
+  if (user.role === 'siswa') {
+    const studentClasses = await prisma.studentClass.findMany({
+      where: {
+        userId: user.id
+      },
+      include: {
+        class: true
+      }
+    });
+
+    const runningClasses = studentClasses.filter(sc => sc.class.status === 'berjalan').length;
+    const completedClasses = studentClasses.filter(sc => sc.class.status === 'selesai').length;
+
+    return {
+      runningClasses,
+      completedClasses
+    };
+  } else if (user.role === 'tutor') {
+    const classes = await prisma.class.findMany({
+      where: {
+        tutorId: user.id,
+        status: {
+          in: ['berjalan', 'selesai']
+        }
+      }
+    });
+
+    const activePackagesCount = await prisma.bimbelPackage.count({
+      where: {
+        userId: user.id,
+        isActive: true
+      }
+    });
+
+    const runningClasses = classes.filter(cls => cls.status === 'berjalan').length;
+    const completedClasses = classes.filter(cls => cls.status === 'selesai').length;
+
+    return {
+      runningClasses,
+      completedClasses,
+      activePackages: activePackagesCount
+    };
+  } else {
+    throw new Error('Role not supported for this operation');
+  }
+}
+
+
 export const BimbelPackageService = {
   getActiveBimbelPackages,
   getAllBimbelPackages,
@@ -1017,10 +909,8 @@ export const BimbelPackageService = {
   updateBimbelPackageStatus,
   getBimbelPackagesByPopularity,
   getRunningPrograms,
-  getMyRunningPrograms,
   getMyPackages,
-  getCompletedPrograms,
-  getMyCompletedPrograms,
   getMyPackageById,
-  getBimbelPackageStatistics
+  getBimbelPackageStatistics,
+  getMyProgramsStatistics
 };
