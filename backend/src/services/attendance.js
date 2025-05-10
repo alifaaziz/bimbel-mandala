@@ -178,6 +178,9 @@ async function markAlphaForMissedSchedules() {
  */
 async function getAttendanceStatistics() {
   const classes = await prisma.class.findMany({
+    where:{
+      status: 'selesai'
+    },
     include: {
       tutor: true,
       studentClasses: {
@@ -228,7 +231,8 @@ async function getMyAttendanceStatistics(user) {
   if (user.role === 'tutor') {
     const classes = await prisma.class.findMany({
       where: {
-        tutorId: user.id
+        tutorId: user.id,
+        status: 'selesai'
       },
       include: {
         schedules: {
@@ -304,7 +308,10 @@ async function getMyAttendanceStatistics(user) {
   } else if (user.role === 'siswa') {
     const studentClasses = await prisma.studentClass.findMany({
       where: {
-        userId: user.id
+        userId: user.id,
+        class: {
+          status: 'selesai'
+        }
       },
       include: {
         class: {
