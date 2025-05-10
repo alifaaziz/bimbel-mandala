@@ -193,7 +193,7 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
     ? 'Anda'
     : `${tutor.gender === 'Male' ? 'Pak' : 'Bu'} ${tutor.user.name}`;
 
-  const studentDescription = `<b>${actorForStudent}</b> melakukan perubahan jadwal pada <b>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</b>.`;
+  const studentDescription = `<strong>${actorForStudent}</strong> melakukan perubahan jadwal pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</strong>.`;
   await prisma.notification.create({
     data: {
       userId: student.id,
@@ -202,7 +202,7 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
     }
   });
 
-  const tutorDescription = `<b>${actorForTutor}</b> melakukan perubahan jadwal pada <b>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</b>.`;
+  const tutorDescription = `<strong>${actorForTutor}</strong> melakukan perubahan jadwal pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</strong>.`;
   await prisma.notification.create({
     data: {
       userId: tutor.userId,

@@ -7,6 +7,8 @@ const router = Router();
 export default (app) => {
   app.use('/classes', router);
 
+  router.get('/my', AuthMiddleware.isAuthorized, ClassController.getMyClass);
+
   router.post('/', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ClassController.createClass);
 
   router.post('/join',AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['siswa']), ClassController.joinClass);
