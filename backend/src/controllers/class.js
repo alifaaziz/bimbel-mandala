@@ -32,7 +32,23 @@ async function joinClass(req, res) {
   res.status(200).json({ data: joinedClass });
 }
 
+/**
+ * Handles the request to get user classes.
+ * 
+ * @async
+ * @function getMyClass
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the user's classes.
+ */
+async function getMyClass(req, res) {
+  const userId = res.locals.user.id;
+  const classes = await ClassService.getMyClass(userId);
+  res.status(200).json({ data: classes });
+}
+
 export const ClassController = {
   createClass: asyncWrapper(createClass),
-  joinClass: asyncWrapper(joinClass)
+  joinClass: asyncWrapper(joinClass),
+  getMyClass: asyncWrapper(getMyClass),
 };
