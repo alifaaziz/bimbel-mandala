@@ -157,6 +157,28 @@ async function verifyToken(token) {
 }
 
 /**
+ * Finds a valid password reset token.
+ *
+ * @async
+ * @function findValidPasswordResetToken
+ * @param {string} token - The token to find.
+ * @param {boolean} [withUser=false] - Whether to include user data.
+ * @returns {Promise<Object|null>} The password reset data or null.
+ */
+async function findValidPasswordResetToken(token, withUser = false) {
+  return prisma.passwordReset.findFirst({
+    where: {
+      token,
+      used: false,
+      expiredAt: {
+        gte: new Date()
+      }
+    },
+    ...(withUser && { include: { user: true } })
+  });
+}
+
+/**
  * Sends a password reset email to the user.
  *
  * @async
@@ -219,18 +241,7 @@ async function sendPasswordResetEmail(email) {
  * @returns {Promise<void>} Resolves when the password has been successfully reset.
  */
 async function resetPassword({ token, password }) {
-  const resetPasswordData = await prisma.passwordReset.findFirst({
-    where: {
-      token,
-      used: false,
-      expiredAt: {
-        gte: new Date()
-      }
-    },
-    include: {
-      user: true
-    }
-  });
+  const resetPasswordData = await findValidPasswordResetToken(token, true);
 
   if (!resetPasswordData) {
     throw new HttpError(400, { message: 'Invalid or expired token' });
@@ -277,15 +288,7 @@ async function resetPassword({ token, password }) {
  * @returns {Promise<void>} Resolves when the token is valid.
  */
 async function verifyPasswordResetToken(token) {
-  const resetPasswordData = await prisma.passwordReset.findFirst({
-    where: {
-      token,
-      used: false,
-      expiredAt: {
-        gte: new Date()
-      }
-    }
-  });
+  const resetPasswordData = await findValidPasswordResetToken(token);
 
   if (!resetPasswordData) {
     throw new HttpError(400, { message: 'Invalid or expired token' });
