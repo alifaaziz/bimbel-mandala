@@ -116,6 +116,17 @@ function getNextDate(currentDate, dayIndex) {
 }
 
 /**
+ * Helper to get tutor name with prefix Pak/Bu.
+ * @param {Object} tutor - Tutor object (with gender and user).
+ * @returns {string|null} Tutor name with prefix or null.
+ */
+function getTutorName(tutor) {
+  if (!tutor || !tutor.user) return null;
+  const prefix = tutor.gender === 'Male' ? 'Pak' : 'Bu';
+  return `${prefix} ${tutor.user.name}`;
+}
+
+/**
  * Reschedules a specific schedule.
  *
  * @async
@@ -185,13 +196,13 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
 
   const actorForStudent = isAdmin
     ? 'Admin'
-    : `${tutor.gender === 'Male' ? 'Pak' : 'Bu'} ${tutor.user.name}`;
+    : getTutorName(tutor);
 
   const actorForTutor = isAdmin
     ? 'Admin'
     : loggedInUser.id === tutor.userId
     ? 'Anda'
-    : `${tutor.gender === 'Male' ? 'Pak' : 'Bu'} ${tutor.user.name}`;
+    : getTutorName(tutor);
 
   const studentDescription = `<strong>${actorForStudent}</strong> melakukan perubahan jadwal pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</strong>.`;
   await prisma.notification.create({
@@ -280,8 +291,8 @@ async function getClosestSchedules() {
     const tutorId = schedule.class?.tutorId;
     const tutor = tutorMap[tutorId] || {};
     let tutorName = tutor.name || null;
-    if (tutor.gender === 'Male' && tutorName) {
-      tutorName = `Pak ${tutorName}`;
+    if (tutor.gender && tutorName) {
+      tutorName = getTutorName({ gender: tutor.gender, user: { name: tutorName } });
     }
     return {
       id: schedule.id,
