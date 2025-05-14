@@ -75,7 +75,6 @@ async function joinClass(data) {
       throw new Error('User is already in the class');
     }
   
-    // Add the user to the student_class table
     const studentClass = await prisma.studentClass.create({
       data: {
         userId,
@@ -84,6 +83,13 @@ async function joinClass(data) {
     });
   
     return studentClass;
+}
+
+function getTutorName(tutor) {
+    if (!tutor) return null;
+    const gender = tutor.tutors?.[0]?.gender;
+    const prefix = gender === 'Male' ? 'Pak' : 'Bu';
+    return `${prefix} ${tutor.name}`;
 }
 
 /**
@@ -145,9 +151,7 @@ async function getMyClass(userId) {
         const groupType = cls.order?.groupType;
         const packageDays = bimbelPackage?.packageDay;
 
-        const tutorName = cls.tutor
-            ? `${cls.tutor.tutors[0]?.gender === 'Male' ? 'Pak' : 'Bu'} ${cls.tutor.name}`
-            : null;
+        const tutorName = getTutorName(cls.tutor);
 
         const programName = bimbelPackage
             ? `${bimbelPackage.name} ${bimbelPackage.level}`
