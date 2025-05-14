@@ -13,4 +13,18 @@ export default (app) => {
         AuthMiddleware.hasRole(['admin']),
         SalaryController.updateSalaryStatus
     );
+
+    router.get(
+        '/stats',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole(['admin']),
+        SalaryController.getFinanceStats
+    );
+
+    router.get(
+        '/recap',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole(['admin']),
+        SalaryController.getFinanceRecap
+    );
 };

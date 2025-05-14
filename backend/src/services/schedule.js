@@ -218,16 +218,23 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
  * Get closest schedule from today
  * 
  * @async
- * @function getClosestSchedule
- * @param {String} classId - The ID of the class.
- * @returns {Promise<Object>} The closest schedule.
- * @throws {Error} If the class is not found or there are no schedules.
+ * @function getClosestSchedules
+ * @returns {Promise<Array>} The closest schedules, each with class code and tutor name included.
+ * @throws {Error} If there are no schedules.
  */
 async function getClosestSchedules() {
   const schedules = await prisma.schedule.findMany({
     where: {
       date: {
         gte: new Date()
+      }
+    },
+    include: {
+      class: {
+        select: {
+          code: true,
+          tutorId: true
+        }
       }
     },
     orderBy: {
@@ -239,7 +246,54 @@ async function getClosestSchedules() {
     throw new Error('No schedules found');
   }
 
-  return schedules;
+  const tutorIds = [
+    ...new Set(
+      schedules
+        .map(s => s.class?.tutorId)
+        .filter(Boolean)
+    )
+  ];
+
+  const tutors = await prisma.user.findMany({
+    where: { id: { in: tutorIds } },
+    select: {
+      id: true,
+      name: true,
+      tutors: {
+        select: {
+          gender: true
+        }
+      }
+    }
+  });
+
+  const tutorMap = {};
+  tutors.forEach(t => {
+    const gender = Array.isArray(t.tutors) && t.tutors.length > 0 ? t.tutors[0].gender : undefined;
+    tutorMap[t.id] = {
+      name: t.name,
+      gender: gender
+    };
+  });
+
+  return schedules.map(schedule => {
+    const tutorId = schedule.class?.tutorId;
+    const tutor = tutorMap[tutorId] || {};
+    let tutorName = tutor.name || null;
+    if (tutor.gender === 'Male' && tutorName) {
+      tutorName = `Pak ${tutorName}`;
+    }
+    return {
+      id: schedule.id,
+      classId: schedule.classId,
+      date: schedule.date,
+      meet: schedule.meet,
+      status: schedule.status,
+      information: schedule.information,
+      classCode: schedule.class?.code || null,
+      tutorName
+    };
+  });
 }
 
 /**
@@ -265,11 +319,11 @@ async function getSchedulesForStudent(userId) {
   const schedules = await prisma.schedule.findMany({
     where: { classId: { in: classIds } },
     include: {
-      class: true, // Sertakan data lengkap dari relasi `class`
-      attendances: { // Gunakan relasi `attendances`
-        where: { userId }, // Ambil attendance hanya untuk user yang sedang login
+      class: true,
+      attendances: { 
+        where: { userId },
         select: {
-          status: true // Ambil status attendance
+          status: true
         }
       }
     },
@@ -280,15 +334,14 @@ async function getSchedulesForStudent(userId) {
     throw new Error('No schedules found for this student');
   }
 
-  // Map data untuk menampilkan status attendance jika ada
   return schedules.map(schedule => {
-    const attendance = schedule.attendances[0]; // Ambil attendance pertama (jika ada)
+    const attendance = schedule.attendances[0]; 
     return {
       id: schedule.id,
       classId: schedule.classId,
       date: schedule.date,
       meet: schedule.meet,
-      status: attendance ? attendance.status : schedule.status, // Tampilkan status attendance jika ada, jika tidak tampilkan status schedule
+      status: attendance ? attendance.status : schedule.status,
       information: schedule.information,
       class: {
         id: schedule.class.id,
@@ -312,15 +365,15 @@ async function getSchedulesForTutor(userId) {
   const schedules = await prisma.schedule.findMany({
     where: {
       class: {
-        tutorId: userId // Filter langsung berdasarkan tutorId di tabel Class
+        tutorId: userId 
       }
     },
     include: {
-      class: true, // Sertakan data lengkap dari relasi `class`
-      attendances: { // Gunakan relasi `attendances`
-        where: { userId }, // Ambil attendance hanya untuk user yang sedang login
+      class: true,
+      attendances: { 
+        where: { userId }, 
         select: {
-          status: true // Ambil status attendance
+          status: true
         }
       }
     },
@@ -333,15 +386,14 @@ async function getSchedulesForTutor(userId) {
     throw new Error('No schedules found for this tutor');
   }
 
-  // Map data untuk menampilkan status attendance jika ada
   return schedules.map(schedule => {
-    const attendance = schedule.attendances[0]; // Ambil attendance pertama (jika ada)
+    const attendance = schedule.attendances[0]; 
     return {
       id: schedule.id,
       classId: schedule.classId,
       date: schedule.date,
       meet: schedule.meet,
-      status: attendance ? attendance.status : schedule.status, // Tampilkan status attendance jika ada, jika tidak tampilkan status schedule
+      status: attendance ? attendance.status : schedule.status, 
       information: schedule.information,
       class: {
         id: schedule.class.id,

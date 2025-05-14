@@ -716,7 +716,8 @@ async function getMyPackages(user) {
 
   const packages = await prisma.bimbelPackage.findMany({
     where: {
-      userId: user.id
+      userId: user.id,
+      isActive: true
     },
     include: {
       groupType: {
