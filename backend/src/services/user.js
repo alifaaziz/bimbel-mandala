@@ -329,44 +329,62 @@ async function getTopStudents() {
 }
 
 /**
- * Retrieves the newest students ordered by their creation date.
+ * Retrieves the newest students ordered by their creation date, with pagination.
  *
  * @async
  * @function getNewStudents
- * @returns {Promise<Array>} The list of newest students ordered by creation date, including level and class count.
+ * @param {Object} [options] - Pagination options.
+ * @param {number} [options.page=1] - Page number (1-based).
+ * @param {number} [options.pageSize=10] - Number of items per page.
+ * @returns {Promise<Object>} The paginated list of newest students and total count.
  */
-async function getNewStudents() {
-    const students = await prisma.user.findMany({
-        where: {
-            role: 'siswa'
-        },
-        select: {
-            id: true,
-            name: true,
-            createdAt: true,
-            students: {
-                select: {
-                    level: true
+async function getNewStudents({ page = 1, pageSize = 10 } = {}) {
+    const skip = (page - 1) * pageSize;
+    const [students, total] = await Promise.all([
+        prisma.user.findMany({
+            where: {
+                role: 'siswa'
+            },
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                students: {
+                    select: {
+                        level: true
+                    }
+                },
+                _count: {
+                    select: {
+                        studentClass: true
+                    }
                 }
             },
-            _count: {
-                select: {
-                    studentClass: true
-                }
+            orderBy: {
+                createdAt: 'desc'
+            },
+            skip,
+            take: pageSize
+        }),
+        prisma.user.count({
+            where: {
+                role: 'siswa'
             }
-        },
-        orderBy: {
-            createdAt: 'desc'
-        }
-    });
+        })
+    ]);
 
-    return students.map(student => ({
-        id: student.id,
-        name: student.name,
-        createdAt: student.createdAt,
-        level: student.students?.[0]?.level || null,
-        classCount: student._count?.studentClass || 0, // Include the class count
-    }));
+    return {
+        data: students.map(student => ({
+            id: student.id,
+            name: student.name,
+            createdAt: student.createdAt,
+            level: student.students?.[0]?.level || null,
+            classCount: student._count?.studentClass || 0,
+        })),
+        total,
+        page,
+        pageSize
+    };
 }
 
 export const UserService = { 
