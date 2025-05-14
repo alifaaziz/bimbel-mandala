@@ -1,6 +1,18 @@
 import { prisma } from '../utils/db.js';
 
 /**
+ * Helper to get tutor name with prefix Pak/Bu.
+ * @param {Object} user - User object (tutor).
+ * @returns {string|null} Tutor name with prefix or null.
+ */
+function getTutorName(user) {
+    if (!user) return null;
+    const gender = user.tutors?.[0]?.gender;
+    const prefix = gender === 'Male' ? 'Pak' : 'Bu';
+    return `${prefix} ${user.name}`;
+}
+
+/**
  * Creates a salary record.
  *
  * @async
@@ -133,12 +145,7 @@ async function getFinanceRecap() {
     const recap = [];
     for (const order of orders) {
         // Nama tutor dengan Pak/Bu dari bimbelPackage.user
-        let tutorName = null;
-        const user = order.bimbelPackage?.user;
-        if (user) {
-            const gender = user.tutors?.[0]?.gender;
-            tutorName = `${gender === 'Male' ? 'Pak' : 'Bu'} ${user.name}`;
-        }
+        const tutorName = getTutorName(order.bimbelPackage?.user);
 
         // Untuk setiap class dalam order, hanya yang statusnya 'selesai'
         for (const cls of order.class) {
