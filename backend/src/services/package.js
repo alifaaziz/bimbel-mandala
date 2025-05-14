@@ -5,7 +5,7 @@ import { prisma } from '../utils/db.js';
  * Retrieves all bimbel packages.
  *
  * @async
- * @function getAllBimbelPackages
+ * @function getActiveBimbelPackages
  * @returns {Promise<Array>} The list of bimbel packages.
  */
 async function getActiveBimbelPackages() {
@@ -68,49 +68,58 @@ async function getActiveBimbelPackages() {
 }
 
 /**
- * Retrieves all bimbel packages regardless of their isActive status.
+ * Retrieves all bimbel packages with pagination.
  *
  * @async
  * @function getAllBimbelPackages
- * @returns {Promise<Array>} The list of bimbel packages.
+ * @param {Object} [options] - Pagination options.
+ * @param {number} [options.page=1] - Page number (1-based).
+ * @param {number} [options.pageSize=10] - Number of items per page.
+ * @returns {Promise<Object>} The paginated list of bimbel packages and total count.
  */
-async function getAllBimbelPackages() {
-  const packages = await prisma.bimbelPackage.findMany({
-    include: {
-      user: {
-        select: {
-          name: true,
-          tutors: {
-            select: {
-              photo: true
+async function getAllBimbelPackages({ page = 1, pageSize = 10 } = {}) {
+  const skip = (page - 1) * pageSize;
+  const [packages, total] = await Promise.all([
+    prisma.bimbelPackage.findMany({
+      include: {
+        user: {
+          select: {
+            name: true,
+            tutors: {
+              select: {
+                photo: true
+              }
             }
           }
-        }
-      },
-      groupType: {
-        select: {
-          type: true,
-          price: true,
-          discPrice: true
-        }
-      },
-      packageDay: {
-        select: {
-          day: {
-            select: {
-              daysName: true
+        },
+        groupType: {
+          select: {
+            type: true,
+            price: true,
+            discPrice: true
+          }
+        },
+        packageDay: {
+          select: {
+            day: {
+              select: {
+                daysName: true
+              }
             }
           }
-        }
+        },
       },
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
+      orderBy: {
+        createdAt: 'desc'
+      },
+      skip,
+      take: pageSize
+    }),
+    prisma.bimbelPackage.count()
+  ]);
 
-  return packages.map(pkg => {
-    return {
+  return {
+    data: packages.map(pkg => ({
       name: pkg.name,
       level: pkg.level,
       totalMeetings: pkg.totalMeetings,
@@ -126,8 +135,11 @@ async function getAllBimbelPackages() {
         discPrice: gt.discPrice
       })),
       days: pkg.packageDay.map(day => day.day.daysName)
-    };
-  });
+    })),
+    total,
+    page,
+    pageSize
+  };
 }
 
 /**
