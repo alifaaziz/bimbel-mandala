@@ -2,6 +2,32 @@ import { prisma } from '../utils/db.js';
 import bcrypt from 'bcrypt';
 import { sendTutorVerificationEmail } from '../utils/emails/core/tutor.js';
 import { HttpError } from '../utils/error.js';
+import path from 'path';
+import fs from 'fs/promises';
+
+/**
+ * Helper untuk menyimpan file foto ke folder public.
+ * @param {Object} file - File object dari middleware upload (misal: multer).
+ * @param {string} applicantName - Nama applicant.
+ * @returns {Promise<string>} - Path relatif file foto.
+ */
+async function saveApplicantPhoto(file, applicantName) {
+  if (!file) return null;
+  const timestamp = Date.now();
+  const ext = path.extname(file.originalname);
+  const safeName = applicantName.replace(/\s+/g, '-').toLowerCase();
+  const filename = `${safeName}-${timestamp}${ext}`;
+  const destDir = path.resolve('public');
+  const destPath = path.join(destDir, filename);
+
+  // Pastikan folder tujuan ada
+  await fs.mkdir(destDir, { recursive: true });
+  // Pindahkan file dari temp ke folder public
+  await fs.rename(file.path, destPath);
+
+  // Path yang disimpan di DB (relatif dari public)
+  return `/public/${filename}`;
+}
 
 /**
  * Apply for tutor.
@@ -9,10 +35,11 @@ import { HttpError } from '../utils/error.js';
  * @async
  * @function applyTutor
  * @param {Object} data - The tutor application data.
+ * @param {Object} [file] - File foto dari middleware upload (opsional).
  * @returns {Promise<Object>} The created tutor application record.
  * @throws {HttpError} If the email is already registered in tutorApplication or user.
  */
-async function applyTutor(data) {
+async function applyTutor(data, file) {
   const existingApplication = await prisma.tutorApplication.findUnique({
     where: { email: data.email },
   });
@@ -29,9 +56,16 @@ async function applyTutor(data) {
     throw new HttpError(400, { message: 'Email sudah terdaftar sebagai pengguna.' });
   }
 
-  // Create tutor application
+  let photoPath = null;
+  if (file) {
+    photoPath = await saveApplicantPhoto(file, data.name);
+  }
+
   const application = await prisma.tutorApplication.create({
-    data,
+    data: {
+      ...data,
+      photo: photoPath,
+    },
   });
 
   return application;
@@ -56,11 +90,9 @@ async function verifyTutor(applicationId) {
       throw new HttpError(404, { message: 'Tutor application not found' });
     }
 
-    // Encrypt the default password
     const defaultPassword = 'bimbelmandala';
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
-    // Create a new user
     const user = await tx.user.create({
       data: {
         name: application.name,
@@ -71,7 +103,6 @@ async function verifyTutor(applicationId) {
       },
     });
 
-    // Create a new tutor
     await tx.tutor.create({
       data: {
         userId: user.id,
@@ -88,12 +119,10 @@ async function verifyTutor(applicationId) {
       },
     });
 
-    // Delete the application record
     await tx.tutorApplication.delete({
       where: { id: applicationId },
     });
 
-    // Create a notification
     await tx.notification.create({
       data: {
         userId: user.id,
@@ -102,7 +131,6 @@ async function verifyTutor(applicationId) {
       },
     });
 
-    // Send verification email
     await sendTutorVerificationEmail(user.email, user.name, defaultPassword);
 
     return user;
