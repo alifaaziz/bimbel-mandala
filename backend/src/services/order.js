@@ -3,6 +3,18 @@ import { ClassService } from './class.js';
 import { ScheduleService } from './schedule.js';
 
 /**
+ * Helper to get tutor name with prefix.
+ * @param {Object} tutor - Tutor object (with user and gender).
+ * @returns {string} Tutor name with prefix.
+ */
+function getTutorDisplayName(tutor) {
+  if (!tutor) return 'Tutor';
+  const genderPrefix = tutor.gender === 'Male' ? 'Pak' : 'Bu';
+  const name = tutor.user?.name || 'Tutor';
+  return `${genderPrefix} ${name}`;
+}
+
+/**
  * Creates a new order.
  *
  * @async
@@ -11,7 +23,6 @@ import { ScheduleService } from './schedule.js';
  * @returns {Promise<Object>} The created order.
  */
 async function createOrder(userId, packageId, groupTypeId, address) {
-
   await prisma.order.create({
     data: {
       userId,
@@ -68,10 +79,9 @@ async function updateOrderStatus(orderId, status) {
       include: { user: true }
     });
 
-    const tutorName = tutor?.user?.name || 'Tutor';
-    const genderPrefix = tutor?.gender === 'Male' ? 'Pak' : 'Bu';
+    const tutorDisplayName = getTutorDisplayName(tutor);
 
-    const studentDescription = `Selamat, Bimbingan belajar <b>${packageName} ${level} #${newClass.code}</b> bersama <b>${genderPrefix} ${tutorName}</b> sudah terkonfirmasi dan segera berlangsung.`;
+    const studentDescription = `Selamat, Bimbingan belajar <strong>${packageName} ${level} #${newClass.code}</strong> bersama <strong>${tutorDisplayName}</strong> sudah terkonfirmasi dan segera berlangsung.`;
     await prisma.notification.create({
       data: {
         userId: order.userId,
@@ -80,7 +90,7 @@ async function updateOrderStatus(orderId, status) {
       }
     });
 
-    const tutorDescription = `Selamat, Bimbingan belajar <b>${packageName} ${level} #${newClass.code}</b> sudah terkonfirmasi dan segera berlangsung.`;
+    const tutorDescription = `Selamat, Bimbingan belajar <strong>${packageName} ${level} #${newClass.code}</strong> sudah terkonfirmasi dan segera berlangsung.`;
     await prisma.notification.create({
       data: {
         userId: tutor.userId,
@@ -93,7 +103,7 @@ async function updateOrderStatus(orderId, status) {
       data: {
         userId: order.userId,
         type: 'Program',
-        description: `The order status has been updated to <b>${status}</b>`
+        description: `The order status has been updated to <strong>${status}</strong>`
       }
     });
   }
@@ -155,23 +165,23 @@ async function deleteOrder(id) {
  * @returns {Promise<void>}
  */
 async function cancelPendingOrders() {
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-  
-    const result = await prisma.order.updateMany({
-      where: {
-        status: 'pending',
-        createdAt: {
-          lt: twoDaysAgo
-        }
-      },
-      data: {
-        status: 'cancel'
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+  const result = await prisma.order.updateMany({
+    where: {
+      status: 'pending',
+      createdAt: {
+        lt: twoDaysAgo
       }
-    });
-  
-    console.log(`Orders cancelled: ${result.count}`);
-  }
+    },
+    data: {
+      status: 'cancel'
+    }
+  });
+
+  console.log(`Orders cancelled: ${result.count}`);
+}
 
 export const OrderService = {
   createOrder,
