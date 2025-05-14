@@ -1,6 +1,8 @@
 import { prisma } from '../utils/db.js';
 import { SalaryService } from './salary.js';
 
+const SALARY_PERCENTAGE = 0.9;
+
 /**
  * Utility function to calculate attendance statistics.
  *
@@ -18,6 +20,17 @@ function calculateAttendanceStats(attendances, userId) {
 }
 
 /**
+ * Helper to calculate attendance percentage.
+ *
+ * @param {number} totalMasuk - The total number of "masuk" attendances.
+ * @param {number} totalSchedules - The total number of schedules.
+ * @returns {number} The attendance percentage.
+ */
+function calculateAttendancePercentage(totalMasuk, totalSchedules) {
+  return totalSchedules > 0 ? (totalMasuk / totalSchedules) * 100 : 0;
+}
+
+/**
  * Utility function to calculate payroll for a tutor.
  *
  * @param {Object} order - The order object containing groupType and price.
@@ -26,8 +39,8 @@ function calculateAttendanceStats(attendances, userId) {
  * @returns {number} The calculated payroll.
  */
 function calculatePayroll(order, totalAttendanceMasuk, totalSchedules) {
-  const salary = (order?.groupType?.price || 0) * 0.9;
-  const totalAttendancePercentage = totalSchedules > 0 ? (totalAttendanceMasuk / totalSchedules) * 100 : 0;
+  const salary = (order?.groupType?.price || 0) * SALARY_PERCENTAGE;
+  const totalAttendancePercentage = calculateAttendancePercentage(totalAttendanceMasuk, totalSchedules);
   return salary * (totalAttendancePercentage / 100);
 }
 
@@ -40,6 +53,49 @@ function calculatePayroll(order, totalAttendanceMasuk, totalSchedules) {
  */
 function isLastSchedule(schedule, schedules) {
   return schedule.meet === schedules.length;
+}
+
+/**
+ * Helper to get tutor attendance and payroll stats.
+ *
+ * @async
+ * @function getTutorStats
+ * @param {Object} params - The parameters object.
+ * @param {Array} params.schedules - The list of schedules.
+ * @param {Object} params.order - The order object.
+ * @param {Object} params.user - The user object.
+ * @returns {Promise<Object>} The tutor statistics.
+ */
+async function getTutorStats({ schedules, order, user }) {
+  const tutorAttendance = schedules.flatMap(schedule =>
+    schedule.attendances.filter(att => att.userId === user.id)
+  );
+  const totalAttendanceMasuk = tutorAttendance.filter(att => att.status === 'masuk').length;
+  const totalAttendancePercentage = calculateAttendancePercentage(totalAttendanceMasuk, schedules.length);
+  const salary = (order?.groupType?.price || 0) * SALARY_PERCENTAGE;
+  const payroll = salary * (totalAttendancePercentage / 100);
+
+  const salaryRecord = await prisma.salary.findFirst({
+    where: {
+      userId: user.id,
+      orderId: order?.id
+    },
+    select: {
+      status: true
+    }
+  });
+
+  return {
+    tutorId: user.id,
+    name: user.name,
+    ...calculateAttendanceStats(tutorAttendance, user.id),
+    totalSchedules: schedules.length,
+    scheduleProgress: totalAttendancePercentage,
+    totalAttendance: totalAttendancePercentage,
+    salary,
+    payroll,
+    status: salaryRecord?.status || 'pending'
+  };
 }
 
 /**
@@ -178,7 +234,7 @@ async function markAlphaForMissedSchedules() {
  */
 async function getAttendanceStatistics() {
   const classes = await prisma.class.findMany({
-    where:{
+    where: {
       status: 'selesai'
     },
     include: {
@@ -200,14 +256,20 @@ async function getAttendanceStatistics() {
     const { tutor, studentClasses, schedules } = classData;
 
     const tutorStats = tutor
-      ? calculateAttendanceStats(schedules.flatMap(s => s.attendances), tutor.id)
+      ? {
+          name: tutor.name,
+          ...calculateAttendanceStats(schedules.flatMap(s => s.attendances), tutor.id)
+        }
       : null;
 
     const studentStats = studentClasses.map(studentClass => {
-      return calculateAttendanceStats(
-        schedules.flatMap(s => s.attendances),
-        studentClass.user.id
-      );
+      return {
+        name: studentClass.user.name,
+        ...calculateAttendanceStats(
+          schedules.flatMap(s => s.attendances),
+          studentClass.user.id
+        )
+      };
     });
 
     return {
@@ -260,46 +322,18 @@ async function getMyAttendanceStatistics(user) {
 
     return Promise.all(
       classes.map(async classData => {
-        const { schedules, order } = classData;
-
-        const tutorAttendance = schedules.flatMap(schedule =>
-          schedule.attendances.filter(att => att.userId === user.id)
-        );
-
-        const totalAttendanceMasuk = tutorAttendance.filter(att => att.status === 'masuk').length;
-
-        const salary = (order?.groupType?.price || 0) * 0.9;
-        const totalAttendancePercentage = (totalAttendanceMasuk / schedules.length) * 100;
-        const payroll = salary * (totalAttendancePercentage / 100);
-
-        const salaryRecord = await prisma.salary.findFirst({
-          where: {
-            userId: user.id,
-            orderId: order?.id
-          },
-          select: {
-            status: true
-          }
+        const tutorStats = await getTutorStats({
+          schedules: classData.schedules,
+          order: classData.order,
+          user
         });
-
-        const tutorStats = {
-          tutorId: user.id,
-          name: user.name,
-          ...calculateAttendanceStats(tutorAttendance, user.id),
-          totalSchedules: schedules.length,
-          scheduleProgress: totalAttendancePercentage,
-          totalAttendance: totalAttendancePercentage,
-          salary,
-          payroll,
-          status: salaryRecord?.status || 'pending'
-        };
 
         return {
           classId: classData.id,
           classCode: classData.code,
           bimbelPackage: {
-            name: order?.bimbelPackage?.name || null,
-            level: order?.bimbelPackage?.level || null,
+            name: classData.order?.bimbelPackage?.name || null,
+            level: classData.order?.bimbelPackage?.level || null,
           },
           tutorStats
         };
@@ -346,7 +380,7 @@ async function getMyAttendanceStatistics(user) {
       );
 
       const totalAttendanceMasuk = studentAttendance.filter(att => att.status === 'masuk').length;
-      const totalAttendancePercentage = (totalAttendanceMasuk / schedules.length) * 100;
+      const totalAttendancePercentage = calculateAttendancePercentage(totalAttendanceMasuk, schedules.length);
 
       const studentStats = {
         ...calculateAttendanceStats(studentAttendance, user.id),
