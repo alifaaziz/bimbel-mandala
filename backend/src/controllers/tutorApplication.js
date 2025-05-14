@@ -13,7 +13,7 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
  * @throws {Error} Throws an error if application fails.
  */
 async function applyTutor(req, res) {
-    const application = await TutorApplicationService.applyTutor(req.body);
+    const application = await TutorApplicationService.applyTutor(req.body, req.file);
     res.status(201).json({ message: 'Tutor applied successfully', data: application });
 }
 
