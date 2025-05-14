@@ -20,18 +20,19 @@ async function getNotifications(userId) {
  *
  * @async
  * @function markNotificationAsRead
+ * @param {string} userId - The user ID.
  * @param {string} notificationId - The notification ID.
  * @returns {Promise<void>} A promise that resolves when the notification is marked as read.
  */
 async function markNotificationAsRead(userId, notificationId) {
-    await prisma.notification.findFirst({
-        where: { id: notificationId, userId: userId }
-    });
+  await prisma.notification.findFirst({
+    where: { id: notificationId, userId }
+  });
 
-    await prisma.notification.update({
+  await prisma.notification.update({
     where: { id: notificationId },
     data: { viewed: true }
-    });
+  });
 }
 
 /**
@@ -54,17 +55,18 @@ async function markAllNotificationsAsRead(userId) {
  * 
  * @async
  * @function deleteNotification
+ * @param {string} userId - The user ID.
  * @param {string} notificationId - The notification ID.
  * @returns {Promise<void>} A promise that resolves when the notification is deleted.
  */
 async function deleteNotification(userId, notificationId) {
-    await prisma.notification.findFirst({
-        where: { id: notificationId, userId: userId }
-    });
-    
-    await prisma.notification.delete({
-        where: { id: notificationId }
-    });
+  await prisma.notification.findFirst({
+    where: { id: notificationId, userId }
+  });
+
+  await prisma.notification.delete({
+    where: { id: notificationId }
+  });
 }
 
 /**
@@ -102,17 +104,17 @@ async function getAllNotifications() {
 
       return {
         id: notification.id,
-        type : notification.type,
+        type: notification.type,
         createdAt: notification.createdAt,
         user: notification.user,
         programName,
         classCode
       };
     }
-    
+
     return {
       id: notification.id,
-      type : notification.type,
+      type: notification.type,
       createdAt: notification.createdAt,
       user: notification.user,
       programName: null,
