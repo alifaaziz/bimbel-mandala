@@ -1,9 +1,9 @@
 import { prisma } from '../utils/db.js';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { sendTutorVerificationEmail } from '../utils/emails/core/tutor.js';
 import { HttpError } from '../utils/error.js';
-import path from 'path';
-import fs from 'fs/promises';
+import * as path from 'path';
+import * as fs from 'fs/promises';
 
 /**
  * Helper untuk menyimpan file foto ke folder public.
@@ -140,4 +140,5 @@ async function verifyTutor(applicationId) {
 export const TutorApplicationService = {
   applyTutor,
   verifyTutor,
+  saveApplicantPhoto,
 };
