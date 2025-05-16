@@ -16,4 +16,6 @@ export default (app) => {
     router.post('/izin', AuthMiddleware.isAuthorized, AttendanceController.absenIzin);
 
     router.post('/alpha', AuthMiddleware.isAuthorized, AttendanceController.markAlphaAttendance);
+
+    router.get('/download/:classId', AttendanceController.downloadRekapPDF);
 };

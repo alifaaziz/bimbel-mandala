@@ -416,9 +416,100 @@ async function getMyAttendanceStatistics(user) {
   }
 }
 
+/**
+ * Rekap detail satu kelas untuk kebutuhan rekap PDF
+ * @param {string} classId
+ * @returns {Promise<Object>}
+ */
+async function getRekapKelasById(classId) {
+  const classData = await prisma.class.findUnique({
+    where: { id: classId },
+    include: {
+      schedules: {
+        include: {
+          attendances: true
+        }
+      },
+      tutor: true,
+      order: {
+        include: {
+          bimbelPackage: {
+            select: {
+              name: true,
+              level: true,
+            }
+          }
+        }
+      },
+      studentClasses: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!classData) throw new Error('Kelas tidak ditemukan');
+
+  // Tutor stats
+  const tutor = classData.tutor;
+  const schedules = classData.schedules;
+  const allAttendances = schedules.flatMap(s => s.attendances);
+
+  const tutorStats = tutor
+    ? {
+        tutorId: tutor.id,
+        name: tutor.name,
+        ...calculateAttendanceStats(allAttendances, tutor.id),
+        totalSchedules: schedules.length,
+        scheduleProgress: calculateAttendancePercentage(
+          allAttendances.filter(att => att.userId === tutor.id && att.status === 'masuk').length,
+          schedules.length
+        ),
+        totalAttendance: calculateAttendancePercentage(
+          allAttendances.filter(att => att.userId === tutor.id && att.status === 'masuk').length,
+          schedules.length
+        )
+      }
+    : null;
+
+  // Student stats
+  const students = classData.studentClasses.map(sc => {
+    const stats = calculateAttendanceStats(allAttendances, sc.user.id);
+    return {
+      name: sc.user.name,
+      hadir: stats.masuk,   // <-- harus 'hadir'
+      izin: stats.izin,
+      absen: stats.alpha    // <-- harus 'absen'
+    };
+  });
+
+  return {
+    name: classData.order?.bimbelPackage?.name || '',
+    level: classData.order?.bimbelPackage?.level || '',
+    classCode: classData.code,
+    tutorName: tutorStats?.name || '',
+    tutorMasuk: tutorStats?.masuk || 0,
+    tutorIzin: tutorStats?.izin || 0,
+    tutorAlpha: tutorStats?.alpha || 0,
+    students,
+    pertemuan: tutorStats?.totalSchedules || 0,
+    kosong: (tutorStats?.izin || 0) + (tutorStats?.alpha || 0),
+    progress: tutorStats?.scheduleProgress || 0,
+    absensi: tutorStats?.totalAttendance || 0
+  };
+}
+
+// Tambahkan ke export
 export const AttendanceService = {
   createAttendance,
   markAlphaForMissedSchedules,
   getAttendanceStatistics,
-  getMyAttendanceStatistics
+  getMyAttendanceStatistics,
+  getRekapKelasById
 };
