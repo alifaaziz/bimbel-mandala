@@ -180,5 +180,5 @@ export const SalaryService = {
     createSalary,
     updateSalaryStatus,
     getFinanceStats,
-    getFinanceRecap
+    getFinanceRecap,
 };

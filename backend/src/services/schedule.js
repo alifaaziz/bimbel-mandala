@@ -449,5 +449,7 @@ export const ScheduleService = {
   getClosestSchedules,
   getSchedulesForStudent,
   getSchedulesForTutor,
-  getSchedulesByRole
+  getSchedulesByRole,
+  getNextDate,
+  getTutorName
 };
