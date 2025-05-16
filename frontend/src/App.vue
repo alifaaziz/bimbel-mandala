@@ -4,16 +4,24 @@ import { useRoute } from 'vue-router';
 import Main from './Main.vue';
 import Auth from './MasukDaftar.vue';
 import Jadwal from './components/Jadwal.vue';
+import ProfileUser from './components/ProfileUser.vue';
+import DetailJadwal from './components/jadwal/DetailJadwal.vue'
 import { NConfigProvider, NMessageProvider } from 'naive-ui';
 
 const route = useRoute();
 
 const layout = computed(() => {
-  if (route.path.startsWith('/Auth')) {
+  if (route.path.startsWith('/auth')) {
     return Auth;
   } 
-  else if (route.path.startsWith('/Jadwal')) {
+  else if (route.path.startsWith('/jadwal')) {
     return Jadwal;
+  } 
+  else if (route.path.startsWith('/detailjadwal')) {
+    return DetailJadwal;
+  } 
+  else if (route.path.startsWith('/profileuser')) {
+    return ProfileUser;
   } 
   else {
     return Main;
@@ -39,3 +47,10 @@ const themeOverrides = {
     </n-message-provider>
   </n-config-provider>
 </template>
+
+
+<style>
+#app {
+  background-color: #ffffff;
+}
+</style>

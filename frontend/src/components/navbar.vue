@@ -4,7 +4,7 @@ import butMasuk from './dirButton/butMasuk.vue';
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NLayout, NLayoutHeader, NMenu, NButton, NDrawer } from 'naive-ui';
-import { auth } from '../auth.js';
+import { auth } from './Absen/auth.js';
 
 const props = defineProps({
   // You can add props here if needed
@@ -278,13 +278,13 @@ onBeforeUnmount(() => {
                       </div>
                     </div>
                     
-                    <router-link 
+                    <!-- <router-link 
                       to="/notification" 
                       class="view-all"
                       @click.stop="showNotificationPopup = false"
                     >
                       Lihat Semua Notifikasi
-                    </router-link>
+                    </router-link> -->
                   </div>
                 </div>
                 
@@ -297,7 +297,7 @@ onBeforeUnmount(() => {
                 </router-link>
                 
                 <router-link 
-                  to="/akun" 
+                  to="/profileuser" 
                   class="action-icon"
                   aria-label="Account"
                 >
@@ -406,7 +406,7 @@ onBeforeUnmount(() => {
                 </router-link>
                 
                 <router-link 
-                  to="/akun" 
+                  to="/profileuser" 
                   class="action-icon"
                   aria-label="Account"
                 >

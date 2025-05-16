@@ -4,35 +4,24 @@
           class="custom-button buttonb2"
           tertiary
           round
-          @click="navigateToJadwal"
+          @click="$emit('click')"
         >
-          Seluruh Jadwal
+          Simpan Perubahan
         </n-button>
     </div>
 </template>
 
-<script>
-export default {
-  methods: {
-    navigateToJadwal() {
-      this.$router.push('/jadwal');
-    }
-  }
-};
-</script>
-
 <style scoped>
 .button-container {
   display: flex;
-  justify-content: center; 
-  align-items: center; 
-  height: 100%; 
+  height: 100%;
+  margin: 1rem 0;
 }
 
 .custom-button {
   background-color: #154484;
   color: white;
-  padding: 10px 20px;
+  padding: 10px 4rem;
   transition: all 0.3s ease;
   border-radius: 25px;
 }

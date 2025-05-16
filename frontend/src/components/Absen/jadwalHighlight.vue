@@ -104,5 +104,9 @@ const displayedJadwal = tutors.value.slice(0, 4);
   .n-card {
     max-width: 100%; /* Kartu menyesuaikan lebar kolom */
   }
+  .jadwal_title {
+    flex-direction: column;
+    font-size: 14px;
+  }
 }
 </style>

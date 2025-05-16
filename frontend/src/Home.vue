@@ -9,7 +9,6 @@ import Footer from './components/footer.vue';
 
 <template>
   <div class="content-container">
-    <navbar />
     <div class="part banner">
       <banner />
     </div>

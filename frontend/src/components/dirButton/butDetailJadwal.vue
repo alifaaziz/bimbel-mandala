@@ -4,7 +4,7 @@
           class="custom-button buttonm4"
           tertiary
           round
-          @click="$router.push('/#')"
+          @click="$router.push('/detailjadwal')"
         >
           Detail
         </n-button>

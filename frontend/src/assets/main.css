@@ -100,6 +100,11 @@
   font-size: 16px;
   font-weight: 600;
 }
+.bodyr1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+}
 
 .bodyb1 {
   font-family: 'Poppins', sans-serif;
@@ -160,6 +165,12 @@
   font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: bold;
+}
+
+.buttonm3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .buttonm4 {

@@ -1,16 +1,11 @@
 <script setup>
-import navbarJadwal from './jadwal/navbarJadwal.vue';
-import JadwalUser from './jadwal/JadwalUser.vue';
-import Footer from './footer.vue';
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  window.scrollTo(0, 0);
+});
 </script>
 
 <template>
-    <navbarJadwal />
-    <div class="padding-components">
-        <JadwalUser />
-    </div>
-    <Footer />
+    <router-view/>
 </template>
-
-<style>
-</style>

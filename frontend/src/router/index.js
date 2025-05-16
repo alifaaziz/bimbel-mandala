@@ -9,6 +9,13 @@ import AbsenSiswa from '../components/Absen.vue';
 import MasukDaftar from '../MasukDaftar.vue'
 
 import Jadwal from '@/components/Jadwal.vue';
+import TabelJadwal from '@/components/jadwal/TabelJadwal.vue'
+import DetailJadwal from '@/components/jadwal/DetailJadwal.vue'
+
+import ProfileUser from '@/components/ProfileUser.vue'
+import User from '@/components/Profile/User.vue'
+import EditProfile from '@/components/Profile/EditProfile.vue'
+import Rekap from '@/components/rekap.vue'
 
 const routes = [
   { 
@@ -37,20 +44,51 @@ const routes = [
         name: 'Absen', 
         component: AbsenSiswa 
       },
+      { path: 'rekap', 
+        name: 'Rekap', 
+        component: Rekap 
+      },
       // { path: 'rekap', 
       //   name: 'Rekap', 
       //   component: RekapSiswa 
       // },
     ]
-   },
-   {
-    path: '/MasukDaftar', 
+  },
+  {
+    path: '/masukdaftar', 
     component: MasukDaftar,
-   },
-   {
-    path: '/Jadwal', 
+  },
+  {
+    path: '/jadwal', 
     component: Jadwal,
-   },
+    children: [
+      {
+        path: '', 
+        name: 'tabeljadwal', 
+        component: TabelJadwal,
+      },
+    ]
+  },
+  {
+    path: '/detailjadwal', 
+    component: DetailJadwal,
+  },
+  { 
+    path: '/profileuser', 
+    component: ProfileUser,
+    children: [
+      {
+        path: '', 
+        name: 'User', 
+        component: User,
+      },
+      { 
+        path: 'editprofile', 
+        name: 'EditProfile', 
+        component: EditProfile 
+      },
+    ]
+  },
 ]
 
 const router = createRouter({
