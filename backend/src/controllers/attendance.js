@@ -1,8 +1,18 @@
 import { AttendanceService } from "../services/attendance.js";
 import { asyncWrapper } from "../utils/asyncWrapper.js";
+import * as fs from "fs/promises";
+import * as path from "path";
+import puppeteer from "puppeteer";
+import Handlebars from "handlebars";
 
 /**
  * Handles attendance with status "masuk".
+ *
+ * @async
+ * @function absenMasuk
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the created attendance record.
  */
 async function absenMasuk(req, res) {
     const { scheduleId } = req.body; 
@@ -95,7 +105,48 @@ async function getMyAttendanceStatistics(req, res) {
     const user = res.locals.user;
     const stats = await AttendanceService.getMyAttendanceStatistics(user);
     res.status(200).json(stats);
-  }
+}
+
+/**
+ * Handles the request to download rekap PDF for a class.
+ *
+ * @async
+ * @function downloadRekapPDF
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Sends the generated PDF as a response.
+ */
+async function downloadRekapPDF(req, res) {
+    const { classId } = req.params;
+
+    const rekapData = await AttendanceService.getRekapKelasById(classId);
+    rekapData.printDate = new Date().toLocaleString('id-ID', {
+        dateStyle: 'long',
+        timeStyle: 'short'
+    });
+
+    const templatePath = path.resolve("src/utils/emails/template/rekap.html");
+    const templateSource = await fs.readFile(templatePath, "utf-8");
+    const template = Handlebars.compile(templateSource);
+    const html = template(rekapData);
+
+    const browser = await puppeteer.launch({
+        headless: "new",
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
+    const pdfBuffer = await page.pdf({
+        format: "A4",
+        printBackground: true,
+        margin: { top: "5mm", bottom: "0mm", left: "15mm", right: "15mm" }
+    });
+    await browser.close();
+
+    res.setHeader("Content-Disposition", `attachment; filename=rekap-${classId}.pdf`);
+    res.setHeader("Content-Type", "application/pdf");
+    res.end(pdfBuffer);
+}
 
 export const AttendanceController = {
     absenMasuk: asyncWrapper(absenMasuk),
@@ -103,4 +154,5 @@ export const AttendanceController = {
     markAlphaAttendance: asyncWrapper(markAlphaAttendance),
     getAttendanceStatistics: asyncWrapper(getAttendanceStatistics),
     getMyAttendanceStatistics: asyncWrapper(getMyAttendanceStatistics),
+    downloadRekapPDF: asyncWrapper(downloadRekapPDF),
 };

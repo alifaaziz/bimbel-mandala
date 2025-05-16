@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rekap Belajar – Bimbingan Belajar Mandala</title>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      background-color: #fff;
+      color: #000;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 40px;
+      gap: 25px;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .header img {
+      width: 180px;
+      height: auto;
+      object-fit: contain;
+      border-right: 1px solid #333;
+      padding-right: 20px;
+    }
+
+    .header-text {
+      text-align: left;
+      font-family: 'Times New Roman', Times, serif;
+      color: #222;
+    }
+
+    .header-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 0 0 8px 0;
+      text-transform: uppercase;
+    }
+
+    .header-text h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 6px 0;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .header-text p {
+      font-size: 14px;
+      margin: 0;
+      font-style: italic;
+      color: #666;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    th {
+      background-color: #154484;
+      color: white;
+      text-align: left;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #000;
+    }
+
+    td {
+      padding: 10px;
+      border: 1px solid #000;
+      font-size: 15px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 25px 0 10px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 5px;
+      color: #154484;
+    }
+
+    .tanggalData {
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    .tanggalData p {
+      margin-bottom: 20px;
+      font-size: 12px;
+    }
+
+    .container {
+      margin: 0 auto;
+      padding: 30px;
+      box-sizing: border-box;
+      background-color: white;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://ik.imagekit.io/publicmedia/logo-mandala.png" alt="Logo Bimbingan Belajar Mandala"/>
+      <div class="header-text">
+        <h1>REKAPITULASI KEHADIRAN PROGRAM BELAJAR</h1>
+        <h2>BIMBINGAN BELAJAR MANDALA</h2>
+        <p>{{name}} {{level}} #{{classCode}}</p>
+      </div>
+    </div>
+
+    <div class="section-title">Rekap Tutor</div>
+    <table>
+      <tr><td>Nama</td><td>{{tutorName}}</td></tr>
+      <tr><td>Hadir</td><td>{{tutorMasuk}}</td></tr>
+      <tr><td>Izin</td><td>{{tutorIzin}}</td></tr>
+      <tr><td>Absen</td><td>{{tutorAlpha}}</td></tr>
+    </table>
+
+    <div class="section-title">Rekap Siswa</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Hadir</th>
+          <th>Izin</th>
+          <th>Absen</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each students}}
+          <tr>
+            <td>{{name}}</td>
+            <td>{{hadir}}</td>
+            <td>{{izin}}</td>
+            <td>{{absen}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class="section-title">Program</div>
+    <table>
+      <tr><td>Pertemuan</td><td>{{pertemuan}}</td></tr>
+      <tr><td>Kosong</td><td>{{kosong}}</td></tr>
+      <tr><td>Progress</td><td>{{progress}}%</td></tr>
+      <tr><td>Absensi</td><td>{{absensi}}%</td></tr>
+    </table>
+
+    <div class="tanggalData">
+      <p><em>Data dicetak pada tanggal {{printDate}}</em></p>
+    </div>
+  </div>
+</body>
+</html>
