@@ -3,12 +3,6 @@ import { asyncWrapper } from "../utils/asyncWrapper.js";
 
 /**
  * Handles attendance with status "masuk".
- *
- * @async
- * @function absenMasuk
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Promise<void>} Resolves with the created attendance record.
  */
 async function absenMasuk(req, res) {
     const { scheduleId } = req.body; 
