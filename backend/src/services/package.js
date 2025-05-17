@@ -219,6 +219,11 @@ async function getBimbelPackageById(id) {
 async function createBimbelPackage(data) {
   const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = data;
 
+  const tutor = await prisma.user.findUnique({ where: { id: tutorId } });
+  if (!tutor) {
+    throw new Error('Tutor (user) tidak ditemukan');
+  }
+
   const dayIds = await prisma.day.findMany({
     where: {
       daysName: {
@@ -295,6 +300,12 @@ async function createBimbelPackage(data) {
  */
 async function createClassBimbelPackage(data) {
   const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days } = data;
+
+  // Validasi tutorId
+  const tutor = await prisma.user.findUnique({ where: { id: tutorId } });
+  if (!tutor) {
+    throw new Error('Tutor (user) tidak ditemukan');
+  }
 
   const dayIds = await prisma.day.findMany({
     where: {

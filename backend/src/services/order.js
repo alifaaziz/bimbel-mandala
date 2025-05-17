@@ -8,7 +8,6 @@ import { ScheduleService } from './schedule.js';
  * @returns {string} Tutor name with prefix.
  */
 function getTutorDisplayName(tutor) {
-  if (!tutor) return 'Tutor';
   const genderPrefix = tutor.gender === 'Male' ? 'Pak' : 'Bu';
   const name = tutor.user?.name || 'Tutor';
   return `${genderPrefix} ${name}`;

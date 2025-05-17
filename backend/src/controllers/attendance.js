@@ -1,7 +1,7 @@
 import { AttendanceService } from "../services/attendance.js";
 import { asyncWrapper } from "../utils/asyncWrapper.js";
-import * as fs from "fs/promises";
-import * as path from "path";
+import fs from "fs/promises";
+import path from "path";
 import puppeteer from "puppeteer";
 import Handlebars from "handlebars";
 

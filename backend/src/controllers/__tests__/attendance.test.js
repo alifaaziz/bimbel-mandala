@@ -42,10 +42,18 @@ jest.unstable_mockModule('puppeteer', () => ({
 }));
 
 jest.unstable_mockModule('fs/promises', () => ({
+  __esModule: true,
+  default: {
+    readFile: jest.fn(() => Promise.resolve('<html>template</html>')),
+  },
   readFile: jest.fn(() => Promise.resolve('<html>template</html>')),
 }));
 
 jest.unstable_mockModule('path', () => ({
+  __esModule: true,
+  default: {
+    resolve: jest.fn(() => 'template-path'),
+  },
   resolve: jest.fn(() => 'template-path'),
 }));
 
