@@ -28,7 +28,11 @@ const mockSendTutorVerificationEmail = jest.fn();
 jest.unstable_mockModule('../../utils/db.js', () => ({
   prisma: mockPrisma,
 }));
-jest.unstable_mockModule('bcrypt', () => mockBcrypt);
+jest.unstable_mockModule('bcrypt', () => ({
+  __esModule: true,
+  default: mockBcrypt,
+  ...mockBcrypt
+}));
 jest.unstable_mockModule('../../utils/emails/core/tutor.js', () => ({
   sendTutorVerificationEmail: mockSendTutorVerificationEmail,
 }));
@@ -42,10 +46,21 @@ jest.unstable_mockModule('../../utils/error.js', () => ({
   },
 }));
 jest.unstable_mockModule('fs/promises', () => ({
+  __esModule: true,
+  default: {
+    mkdir: jest.fn(),
+    rename: jest.fn(),
+  },
   mkdir: jest.fn(),
   rename: jest.fn(),
 }));
 jest.unstable_mockModule('path', () => ({
+  __esModule: true,
+  default: {
+    extname: jest.fn(() => '.jpg'),
+    resolve: jest.fn(() => '/public'),
+    join: jest.fn((...args) => args.join('/')),
+  },
   extname: jest.fn(() => '.jpg'),
   resolve: jest.fn(() => '/public'),
   join: jest.fn((...args) => args.join('/')),

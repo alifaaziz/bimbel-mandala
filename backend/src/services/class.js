@@ -86,7 +86,6 @@ async function joinClass(data) {
 }
 
 function getTutorName(tutor) {
-    if (!tutor) return null;
     const gender = tutor.tutors?.[0]?.gender;
     const prefix = gender === 'Male' ? 'Pak' : 'Bu';
     return `${prefix} ${tutor.name}`;

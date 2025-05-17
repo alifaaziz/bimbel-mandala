@@ -1,9 +1,9 @@
 import { prisma } from '../utils/db.js';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import { sendTutorVerificationEmail } from '../utils/emails/core/tutor.js';
 import { HttpError } from '../utils/error.js';
-import * as path from 'path';
-import * as fs from 'fs/promises';
+import path from 'path';
+import fs from 'fs/promises';
 
 /**
  * Helper untuk menyimpan file foto ke folder public.
