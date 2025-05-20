@@ -1,0 +1,11 @@
+Belum update:
+- Rekap tutor
+- jadwal tutor
+- halaman list program
+- edit profile tutor
+
+Noted:
+- kembali data sementara full di frontend
+(fokus ke styling dan error)
+- file auth.js buat contoh user (belum jadi menggunakan auth sistem)
+- data sementara (script) sebagian langsung di komponen 

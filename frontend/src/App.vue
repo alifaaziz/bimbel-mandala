@@ -1,47 +1,56 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import Main from './Main.vue';
+import Auth from './MasukDaftar.vue';
+import Jadwal from './components/Jadwal.vue';
+import ProfileUser from './components/ProfileUser.vue';
+import DetailJadwal from './components/jadwal/DetailJadwal.vue'
+import { NConfigProvider, NMessageProvider } from 'naive-ui';
+
+const route = useRoute();
+
+const layout = computed(() => {
+  if (route.path.startsWith('/auth')) {
+    return Auth;
+  } 
+  else if (route.path.startsWith('/jadwal')) {
+    return Jadwal;
+  } 
+  else if (route.path.startsWith('/detailjadwal')) {
+    return DetailJadwal;
+  } 
+  else if (route.path.startsWith('/profileuser')) {
+    return ProfileUser;
+  } 
+  else {
+    return Main;
+  }
+});
+
+const themeOverrides = {
+  common: {
+    primaryColor: '#154484',
+    primaryColorHover: '#103364',
+    primaryColorPressed: '#103364',
+    primaryColorSuppl: '#103364'
+  }
+};
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <n-config-provider :theme-overrides="themeOverrides">
+    <n-message-provider>
+      <component :is="layout">
+        <router-view />
+      </component>
+    </n-message-provider>
+  </n-config-provider>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+<style>
+#app {
+  background-color: #ffffff;
 }
 </style>

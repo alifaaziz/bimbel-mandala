@@ -1,35 +1,186 @@
+/* Import */
 @import './base.css';
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
 
 @media (min-width: 1024px) {
   body {
-    display: flex;
-    place-items: center;
+    margin-top: 0px;
+    display: block;
+    place-items: left;
   }
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  .padding-components {
+    padding: 0 8rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .padding-components {
     padding: 0 2rem;
   }
+}
+
+/* Font Styles */
+
+/* Hero */
+.hero {
+  font-size: 72px;
+  font-weight: bold;
+  line-height: 1.2;
+  font-family: 'Poppins', sans-serif;
+}
+
+.hero2 {
+  font-size: 52px;
+  font-weight: bold;
+  line-height: 1.2;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Headline Font */
+.headlineb1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+/* Header Fonts */
+.headerb1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.headersb1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.headerb2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.headersb2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+.headerr2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 1.5;
+}
+
+.headerb3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+}
+.headersb3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+.headerr3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+/* Body Fonts */
+.bodysb1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+.bodyr1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.bodyb1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.bodyb2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.bodyr2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.bodym2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.bodyr3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.bodym3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.bodym4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.bodyr4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: normal;
+}
+
+/* Button Fonts */
+.buttonm1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.buttonm2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.buttonb2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.buttonm3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.buttonm4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
 }
