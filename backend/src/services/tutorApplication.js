@@ -2,32 +2,7 @@ import { prisma } from '../utils/db.js';
 import bcrypt from 'bcrypt';
 import { sendTutorVerificationEmail } from '../utils/emails/core/tutor.js';
 import { HttpError } from '../utils/error.js';
-import path from 'path';
-import fs from 'fs/promises';
-
-/**
- * Helper untuk menyimpan file foto ke folder public.
- * @param {Object} file - File object dari middleware upload (misal: multer).
- * @param {string} applicantName - Nama applicant.
- * @returns {Promise<string>} - Path relatif file foto.
- */
-async function saveApplicantPhoto(file, applicantName) {
-  if (!file) return null;
-  const timestamp = Date.now();
-  const ext = path.extname(file.originalname);
-  const safeName = applicantName.replace(/\s+/g, '-').toLowerCase();
-  const filename = `${safeName}-${timestamp}${ext}`;
-  const destDir = path.resolve('public');
-  const destPath = path.join(destDir, filename);
-
-  // Pastikan folder tujuan ada
-  await fs.mkdir(destDir, { recursive: true });
-  // Pindahkan file dari temp ke folder public
-  await fs.rename(file.path, destPath);
-
-  // Path yang disimpan di DB (relatif dari public)
-  return `/public/${filename}`;
-}
+import { savePhoto } from '../utils/helper.js';
 
 /**
  * Apply for tutor.
@@ -56,15 +31,14 @@ async function applyTutor(data, file) {
     throw new HttpError(400, { message: 'Email sudah terdaftar sebagai pengguna.' });
   }
 
-  let photoPath = null;
   if (file) {
-    photoPath = await saveApplicantPhoto(file, data.name);
+    const photoPath = await savePhoto(file, data.name || 'tutor');
+    data.photo = photoPath;
   }
 
   const application = await prisma.tutorApplication.create({
     data: {
       ...data,
-      photo: photoPath,
     },
   });
 
@@ -140,5 +114,4 @@ async function verifyTutor(applicationId) {
 export const TutorApplicationService = {
   applyTutor,
   verifyTutor,
-  saveApplicantPhoto,
 };
