@@ -2,6 +2,7 @@ import { prisma } from '../utils/db.js';
 import { HttpError } from '../utils/error.js';
 import { AuthService } from './auth.js';
 import { OtpService } from './otp.js';
+import { savePhoto } from '../utils/helper.js';
 
 /**
  * Creates a new user.
@@ -151,9 +152,21 @@ async function createUserWithRole(payload) {
  * @returns {Promise<Object>} The updated user object.
  * @throws {Error} Throws an error if the update fails.
  */
-async function updateUser(payload) {
+async function updateUser(payload, file) {
     const { id, password, role, ...additionalData } = payload;
     const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
+
+    // Gunakan id jika name tidak ada
+    if (file) {
+        // Ambil nama user dari database jika ada
+        let userName = additionalData.name;
+        if (!userName) {
+            const userDb = await prisma.user.findUnique({ where: { id } });
+            userName = userDb?.name || id || 'tutor';
+        }
+        const photoPath = await savePhoto(file, userName);
+        additionalData.photo = photoPath;
+    }
 
     const parsedUserWithEncryptedPassword = {
         ...additionalData,
@@ -188,7 +201,7 @@ async function updateUser(payload) {
     } else if (role === 'tutor') {
         await prisma.tutor.update({
             where: { userId: id },
-            data: additionalUserData
+            data: additionalUserData // photo akan ikut terupdate jika ada
         });
     }
 

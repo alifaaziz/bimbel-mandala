@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { UserController } from '../controllers/user.js';
 import { AuthMiddleware } from '../middlewares/auth.js';
 import { UserValidation } from '../middlewares/validation/user.js';
+import { upload } from '../middlewares/upload.js';
 
 export default (app) => {
     const router = Router();
@@ -17,6 +18,7 @@ export default (app) => {
     router.patch(
         '/me',
         AuthMiddleware.isAuthorized,
+        upload.single('photo'),
         UserValidation.isValidUserUpdatePayload,
         UserController.updateCurrentUser
     );

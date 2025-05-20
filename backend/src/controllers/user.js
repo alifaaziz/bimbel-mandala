@@ -46,7 +46,10 @@ async function createUser(req, res) {
  * @throws {Error} Throws an error if update fails.
  */
 async function updateCurrentUser(req, res) {
-    await UserService.updateUser({ id: res.locals.user.id, role: res.locals.user.role, ...req.body });
+    await UserService.updateUser(
+        { id: res.locals.user.id, role: res.locals.user.role, ...req.body },
+        req.file
+    );
     res.status(200).json({ message: 'User updated successfully' });
 }
 
