@@ -30,8 +30,14 @@ const displayedJadwal = tutors.value.slice(0, 4);
           </div>
         </template>
         <div class="bodyr3 content">
-            <div class="info-row"><strong>Hari</strong><span>: Rabu, 12 Maret 2025</span></div>
-            <div class="info-row"><strong>Pukul</strong><span>: 15:00 WIB</span></div>
+          <div class="info-row">
+              <span class="label"><strong>Hari</strong></span>
+              <span class="value">: Rabu, 12 Maret 2025</span>
+          </div>
+          <div class="info-row">
+              <span class="label"><strong>Pukul</strong></span>
+              <span class="value">: 15:00 WIB</span>
+          </div>
         </div>
         <butDetailJadwal />
       </n-card>
@@ -81,6 +87,15 @@ const displayedJadwal = tutors.value.slice(0, 4);
 }
 .content {
   color: #9BAFCB;
+}
+
+.info-row {
+    display: flex;
+}
+
+.label {
+    text-align: left;
+    width: 40px;
 }
 
 .title1 {

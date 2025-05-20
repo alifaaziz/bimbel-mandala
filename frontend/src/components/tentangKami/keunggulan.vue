@@ -65,7 +65,7 @@ export default {
 }
 </style>
 
-<style>
+<style scoped>
 .title1 {
     color: #FDC998 !important;
     text-align: center;

@@ -79,11 +79,23 @@ const schedule = {
       </div>
 
       <div class="info-section bodyr2">
-        <div class="info-row"><strong>Hari</strong><span>: {{ schedule.date }}</span></div>
-        <div class="info-row"><strong>Pukul</strong><span>: {{ schedule.time }}</span></div>
-        <div class="info-row"><strong>Durasi</strong><span>: {{ schedule.duration }}</span></div>
-        <div class="info-row"><strong>Lokasi</strong><span>: {{ schedule.location }}</span></div>
-      </div>
+            <div class="info-row">
+                <span class="label"><strong>Hari</strong></span>
+                <span class="value">: {{ schedule.date }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label"><strong>Pukul</strong></span>
+                <span class="value">: {{ schedule.time }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label"><strong>Durasi</strong></span>
+                <span class="value">: {{ schedule.duration }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label"><strong>Lokasi</strong></span>
+                <span class="value">: {{ schedule.location }}</span>
+            </div>
+        </div>
 
       <div class="meeting-link bodysb1">Pertemuan ke {{ schedule.meetingNumber }}</div>
 
@@ -181,14 +193,21 @@ const schedule = {
 .info-section {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   font-size: 0.95rem;
   color: #333;
 }
 
+.info-section .label{
+    width: 80px;
+}
+
 .info-row {
-  display: flex;
-  gap: 8px;
+    display: flex;
+}
+
+.label {
+    text-align: left;
+    width: 156px;
 }
 
 .meeting-link {

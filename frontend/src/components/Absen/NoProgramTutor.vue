@@ -1,10 +1,11 @@
 <script setup>
 import { computed } from 'vue'
-import programHighlight from '../beranda/programHighlight.vue';
 import { auth } from '@/components/Absen/auth.js'
+import programTerbukaTutor from './programTerbukaTutor.vue';
 
+// Ambil user tutor yang aktif
 const userTutor = computed(() => 
-  auth.users.find(user => user.role === 'siswa' && user.isActive)
+  auth.users.find(user => user.role === 'tutor' && user.isActive)
 )
 
 const userName = computed(() => userTutor.value ? userTutor.value.nama : 'User')
@@ -16,12 +17,12 @@ const userName = computed(() => userTutor.value ? userTutor.value.nama : 'User')
         <div class="noprogram-text">
             <h1 class="hero2">Selamat Datang, {{ userName }}</h1>
             <p class="bodyr1">
-                Sepertinya kamu belum terdaftar program manapun di Bimbel Mandala.
-                Silahkan jelajahi dan daftar salah satu program.
+                Sepertinya Anda belum memiliki kelas aktif.  
+                Silahkan tunggu sampai ada panggilan mengajar
             </p>
         </div>
     </div>
-    <programHighlight />
+    <programTerbukaTutor />
 </template>
 
 
@@ -48,5 +49,22 @@ const userName = computed(() => userTutor.value ? userTutor.value.nama : 'User')
 .noprogram-text .hero2 {
     line-height: 1;
     padding-bottom: 1rem;
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 600px) {
+  .noprogram-container {
+    flex-direction: column;
+    padding: 2rem 1rem;
+    gap: 2rem;
+    align-items: center;
+  }
+  .noprogram-img {
+    max-width: 220px;
+  }
+  .noprogram-text {
+    width: 100%;
+    text-align: center;
+  }
 }
 </style>

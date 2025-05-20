@@ -191,7 +191,7 @@ export default defineComponent({
       columns,
       tagTypeMap,
       pagination: {
-        pageSize: 5 
+        pageSize: 5
       },
       isMobile,
       // Popup Jadwal Ulang
@@ -223,7 +223,7 @@ export default defineComponent({
       :bordered="false"
       :columns="columns"
       :data="data"
-      :pagination="false"
+      :pagination="pagination"
     />
 
     <!-- Mobile View as Card List -->

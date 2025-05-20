@@ -162,7 +162,7 @@
   });
   </script>
 
-<style>
+<style scoped>
 .container-table {
     margin-top: 104px;
     padding: 0;

@@ -221,7 +221,6 @@ const schedule = {
 
 .info-row {
     display: flex;
-    margin-bottom: 8px;
 }
 
 .label {

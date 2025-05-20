@@ -4,73 +4,102 @@ import butEditProfile from "../dirButton/butEditProfile.vue";
 import butLogout from "../dirButton/butLogout.vue";
 import tabJadwalProgram from "./JadwalProgram.vue";
 import tabProgram from "./ProgramTerdaftar.vue";
+import bidangAjar from "./BidangAjar.vue";
+import hariAktif from "./hariAktif.vue";
 import Footer from "@/components/footer.vue"
+
+// Import data user
+import { auth, USER_ROLES } from '../Absen/auth.js'
+
+// Cari user yang aktif
+const user = auth.users.find(u => u.isActive)
 </script>
 
 <template>
   <navbarProfile/>
   <div class="profile-container padding-components">
     <div class="space-profile">
-        <div class="identitas">
-            <h4 class="headerb2">Arell Saverro</h4>
-            <p class="bodyr2">SMA</p>
-        </div>
-        <div class="butAct">
-            <butEditProfile />
-            <butLogout />
-        </div>
+      <div class="identitas">
+        <h4 class="headerb2">{{ user.nama }}</h4>
+        <p class="bodyr2" v-if="user.role === USER_ROLES.SISWA">{{ user.jenjang }}</p>
+        <p class="bodyr2" v-else-if="user.role === USER_ROLES.TUTOR">{{ user.gelar }}</p>
+      </div>
+      <div class="butAct">
+        <butEditProfile />
+        <butLogout />
+      </div>
     </div>
+    
     <n-divider/>
     <div class="space-profile">
-        <n-space vertical>
-            <div class="detail-separator">
-                <div class="detail-profile">
-                    <img src="@/assets/icons/mail.svg" alt="">
-                    <p>
-                        Alamat E-mail
-                    </p>
-                </div>
-                <p>: namaemail@gmail.com</p>
-            </div>
-            <div class="detail-separator">
-                <div class="detail-profile">
-                    <img src="@/assets/icons/whatsapp.svg" alt="">
-                    <p>
-                        No. WhatsApp
-                    </p>
-                </div>
-                <p>: 085786234264</p>
-            </div>
-            <div class="detail-separator">
-                <div class="detail-profile">
-                    <img src="@/assets/icons/phone.svg" alt="">
-                    <p>
-                        No. Telp Wali
-                    </p>
-                </div>
-                <p>: 085786234263</p>
-            </div>
-        </n-space>
-        <n-space vertical>
-            <div class="detail-separator">
-                <div class="detail-profile">
-                    <img src="@/assets/icons/building.svg" alt="">
-                    <p>
-                        Sekolah
-                    </p>
-                </div>
-                <p>: SMA Negeri 10 Semarang</p>
-            </div>
-            <div class="detail-separator">
-                <div class="detail-profile">
-                    <img src="@/assets/icons/home.svg" alt="">
-                    <p>
-                        Alamat rumah
-                    </p>
-                </div>
-                <p>: Jl Sekaran No.05 RT05/04, Gunung Pati, Kota Semarang</p>
-            </div>
-        </n-space>
+      <n-space vertical>
+        <div class="detail-separator">
+          <div class="detail-profile">
+            <img src="@/assets/icons/mail.svg" alt="">
+            <p>Alamat E-mail</p>
+          </div>
+          <p>: {{ user.email }}</p>
+        </div>
+        <div class="detail-separator">
+          <div class="detail-profile">
+            <img src="@/assets/icons/whatsapp.svg" alt="">
+            <p>No. WhatsApp</p>
+          </div>
+          <p>: {{ user.noWhatsapp }}</p>
+        </div>
+        <div class="detail-separator" v-if="user.role === USER_ROLES.SISWA">
+          <div class="detail-profile">
+            <img src="@/assets/icons/phone.svg" alt="">
+            <p>No. Telp Wali</p>
+          </div>
+          <p>: {{ user.noTelpWali }}</p>
+        </div>
+        <div class="detail-separator" v-else-if="user.role === USER_ROLES.TUTOR">
+          <div class="detail-profile">
+            <img src="@/assets/icons/home.svg" alt="Gender">
+            <p>Gender</p>
+          </div>
+          <p>: {{ user.gender }}</p>
+        </div>
+      </n-space>
+      <n-space vertical>
+        <div class="detail-separator" v-if="user.role === USER_ROLES.SISWA">
+          <div class="detail-profile">
+            <img src="@/assets/icons/building.svg" alt="">
+            <p>Sekolah</p>
+          </div>
+          <p>: {{ user.sekolah }}</p>
+        </div>
+        <div class="detail-separator" v-if="user.role === USER_ROLES.TUTOR">
+          <div class="detail-profile">
+            <img src="@/assets/icons/building.svg" alt="">
+            <p>Asal Kampus</p>
+          </div>
+          <p>: {{ user.asalKampus }}</p>
+        </div>
+        <div class="detail-separator">
+          <div class="detail-profile">
+            <img src="@/assets/icons/home.svg" alt="">
+            <p>Alamat rumah</p>
+          </div>
+          <p>: {{ user.alamat }}</p>
+        </div>
+        <div class="detail-separator" v-if="user.role === USER_ROLES.TUTOR">
+          <div class="detail-profile">
+            <img src="@/assets/icons/home.svg" alt="">
+            <p>Prodi</p>
+          </div>
+          <p>: {{ user.prodi }}</p>
+        </div>
+      </n-space>
+    </div>
+    <n-divider/>
+    <div v-if="user.role === USER_ROLES.TUTOR">
+      <bidangAjar/>
+    </div>
+    <n-divider/>
+    <div v-if="user.role === USER_ROLES.TUTOR">
+      <hariAktif/>
     </div>
     <n-divider />
     <tabJadwalProgram/>

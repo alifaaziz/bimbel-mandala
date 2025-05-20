@@ -39,6 +39,43 @@ export const paketBimbel = [
     ],
     days: ["Sabtu", "Minggu"]
   },
+  // Paket Dendy Wan tambahan 1
+  {
+    id: "dendywan-2",
+    name: "Bahasa Inggris Intensif",
+    level: "SMA",
+    totalMeetings: 18,
+    time: "2025-02-01T15:00:00.000Z",
+    duration: 90,
+    area: "Semarang",
+    isActive: true,
+    tutorName: "Dendy Wan, S.Pd",
+    photo: "/public/tutor/1.png",
+    groupType: [
+      { type: "privat", price: "1800000", discPrice: "1600000" },
+      { type: "grup2", price: "3200000", discPrice: "3000000" },
+      { type: "grup3", price: "4500000", discPrice: null }
+    ],
+    days: ["Selasa", "Kamis"]
+  },
+  // Paket Dendy Wan tambahan 2
+  {
+    id: "dendywan-3",
+    name: "Bahasa Inggris Persiapan UTBK",
+    level: "SMA",
+    totalMeetings: 20,
+    time: "2025-03-01T15:00:00.000Z",
+    duration: 90,
+    area: "Semarang",
+    isActive: true,
+    tutorName: "Dendy Wan, S.Pd",
+    photo: "/public/tutor/1.png",
+    groupType: [
+      { type: "privat", price: "2000000", discPrice: "1800000" },
+      { type: "grup2", price: "3500000", discPrice: null }
+    ],
+    days: ["Senin", "Jumat"]
+  },
   {
     id: "f0a6ff3f-3c59-4c85-bf7d-3b69f60cb3c6",
     name: "Biologi",

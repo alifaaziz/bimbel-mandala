@@ -3,8 +3,18 @@ import { NCard } from 'naive-ui';
 import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js';
 import ButtonProgram from '../dirButton/butprogram.vue';
 import { defineEmits } from 'vue';
+import { auth, USER_ROLES } from './auth.js'; // pastikan path sesuai
 
-const limitedPrograms = paketBimbel.slice(0, 2);
+// Ambil user tutor yang sedang aktif
+const currentTutor = auth.users.find(
+  user => user.role === USER_ROLES.TUTOR && user.isActive
+);
+
+// Filter program sesuai nama tutor aktif
+const filteredPrograms = paketBimbel.filter(
+  program => program.tutorName === (currentTutor ? currentTutor.nama : '')
+);
+const limitedPrograms = filteredPrograms.slice(0, 2);
 
 const emit = defineEmits(['refreshPage']);
 
@@ -17,12 +27,15 @@ function formatTime(dateTime) {
 function truncateName(name) {
   return name.length > 16 ? name.slice(0, 16) + '...' : name;
 }
+
+// currentTutor.nama akan berisi nama tutor aktif, misal: 'Dendy Wan, S.Pd'
 </script>
 
 <template>
-  <div class="padding-components">
+  <div>
     <h1 class="headerr2 title1">Program</h1>
     <h2 class="headerb1 title2">Unggulan</h2>
+    
     <div class="card-container">
       <n-card 
         v-for="program in limitedPrograms" 
@@ -45,22 +58,10 @@ function truncateName(name) {
               </div>
               <div class="badge">{{ program.level }}</div>
             </div>
-            <div class="info-row">
-                <span class="label"><strong>Area</strong></span>
-                <span class="value">: {{ program.area }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Hari</strong></span>
-                <span class="value">: {{ program.days.join(', ') }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Pukul</strong></span>
-                <span class="value">: {{ formatTime(program.time) }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Durasi</strong></span>
-                <span class="value">: {{ program.duration }} menit</span>
-            </div>
+            <p><span class="card-tag">Area</span>: {{ program.area }}</p>
+            <p><span class="card-tag">Hari</span>: {{ program.days.join(', ') }}</p>
+            <p><span class="card-tag">Pukul</span>: {{ formatTime(program.time) }}</p>
+            <p><span class="card-tag">Durasi</span>: {{ program.duration }} menit</p>
             <div class="Action">
               <button class="btn-daftar" @click="$router.push(`/detailProgram/${program.id}`)">Daftar Program</button>
             </div>
@@ -97,7 +98,9 @@ function truncateName(name) {
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
+.card-tag{
+  width: 200px;
+}
 .card-content {
   display: flex;
   flex-direction: column;
@@ -114,15 +117,6 @@ function truncateName(name) {
   object-fit: cover;
   border-radius: 16px;
 }
-
-.info-row {
-    display: flex;
-}
-.label {
-    text-align: left;
-    width: 60px;
-}
-
 
 .privat {
   color: white;

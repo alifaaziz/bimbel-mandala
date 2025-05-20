@@ -76,7 +76,7 @@ import buttonProfile from '../dirButton/butProfile.vue'
 }
 </style>
 
-<style>
+<style scoped>
 .title1 {
     color: #FDC998 !important;
     text-align: center;
