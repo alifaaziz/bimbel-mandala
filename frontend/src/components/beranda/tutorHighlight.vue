@@ -1,10 +1,19 @@
 <script setup>
-import { tutors } from '@/assets/dataSementara/tutor.js';
+import { ref, onMounted } from 'vue';
 import { NCard } from 'naive-ui';
 import butProfile from '../dirButton/butProfile.vue';
 
-// Batasi hanya 4 tutor yang ditampilkan
-const displayedTutors = tutors.value.slice(0, 4);
+const displayedTutors = ref([]);
+
+onMounted(async () => {
+  try {
+    const res = await fetch('http://localhost:3000/users/tutors/');
+    const json = await res.json();
+    displayedTutors.value = json.data.slice(0, 4);
+  } catch (e) {
+    displayedTutors.value = [];
+  }
+});
 </script>
 
 <template>
@@ -13,21 +22,24 @@ const displayedTutors = tutors.value.slice(0, 4);
     <h2 class="headerb1 title2">Tutor Profesional</h2>
     <div class="card-container">
       <n-card
-        v-for="(item, index) in displayedTutors"
+        v-for="(item) in displayedTutors"
         :key="item.id"
         :id="item.id"
       >
         <template #header>
           <div class="headersb3 name">
-            {{ item.title }}
-            <div class="bodyr4 caption">{{ item.caption }}</div>
+            {{ item.name }}
+            <div class="bodyr4 caption">{{ item.subject }} {{ item.teachLevel }}</div>
           </div>
         </template>
         <template #cover>
-          <img :src="item.image" alt="Card Image">
+          <img
+            :src="item.photo ? `http://localhost:3000${item.photo}` : 'https://via.placeholder.com/400x300?text=No+Photo'"
+            alt="Card Image"
+          >
         </template>
         <div class="bodyr3 content">
-          {{ item.content }}
+          {{ item.description }}
         </div>
       </n-card>
     </div>

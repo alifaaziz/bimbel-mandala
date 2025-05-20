@@ -114,5 +114,4 @@ async function verifyTutor(applicationId) {
 export const TutorApplicationService = {
   applyTutor,
   verifyTutor,
-  saveApplicantPhoto,
 };
