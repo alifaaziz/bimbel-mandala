@@ -18,6 +18,7 @@ const isDesktop = ref(window.innerWidth >= 981);
 const drawerVisible = ref(false);
 const currentRoute = ref(route.name);
 const showNotificationPopup = ref(false);
+const isLoggedIn = ref(!!localStorage.getItem('token'))
 
 // Notification data
 const notifications = ref([
@@ -94,7 +95,7 @@ const menuTheme = {
 };
 
 const filteredMenuOptions = computed(() => {
-  if (auth.isLoggedIn) {
+  if (isLoggedIn.value) {
     return menuOptionsLoggedIn;
   }
 
@@ -144,8 +145,9 @@ const closeNotifications = (event) => {
 };
 
 const logout = () => {
-  auth.logout();
-  router.push('/');
+  localStorage.removeItem('token')
+  isLoggedIn.value = false
+  router.push('/')
 };
 
 // Watchers and lifecycle hooks
@@ -165,6 +167,11 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
   document.removeEventListener('click', closeNotifications);
 });
+
+// Jika ingin auto-update saat token berubah:
+window.addEventListener('storage', () => {
+  isLoggedIn.value = !!localStorage.getItem('token')
+})
 </script>
 
 <template>
@@ -198,7 +205,7 @@ onBeforeUnmount(() => {
 
             <div class="menu-divider"></div>
 
-            <template v-if="!auth.isLoggedIn">
+            <template v-if="!isLoggedIn">
               <butDaftar />
               <butMasuk />
             </template>
@@ -314,7 +321,7 @@ onBeforeUnmount(() => {
             placement="right"
             :width="260"
           >            
-            <div class="mobile-auth-actions" v-if="auth.isLoggedIn">
+            <div class="mobile-auth-actions" v-if="isLoggedIn">
               <div class="user-actions">
                 <div class="notification-wrapper">
                   <button 

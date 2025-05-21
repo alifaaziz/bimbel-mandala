@@ -1,21 +1,38 @@
 <script setup>
-import { NCard } from 'naive-ui';
-import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js';
-import ButtonProgram from '../dirButton/butprogram.vue';
-import { defineEmits } from 'vue';
+import { ref, onMounted } from 'vue'
+import { NCard } from 'naive-ui'
+import ButtonProgram from '../dirButton/butprogram.vue'
+import { defineEmits } from 'vue'
 
-const limitedPrograms = paketBimbel.slice(0, 2);
+const limitedPrograms = ref([])
 
-const emit = defineEmits(['refreshPage']);
+const emit = defineEmits(['refreshPage'])
+
+onMounted(async () => {
+  try {
+    const res = await fetch('http://localhost:3000/packages/populer')
+    const data = await res.json()
+    limitedPrograms.value = data.slice(0, 2) // hanya 2 data teratas
+  } catch (err) {
+    console.error('Gagal fetch data:', err)
+  }
+})
 
 function formatTime(dateTime) {
-  const time = dateTime.split('T')[1];
-  const [hour, minute] = time.split(':');
-  return `${hour}:${minute} WIB`;
+  const time = dateTime.split('T')[1]
+  const [hour, minute] = time.split(':')
+  return `${hour}:${minute} WIB`
 }
 
 function truncateName(name) {
-  return name.length > 16 ? name.slice(0, 16) + '...' : name;
+  return name.length > 16 ? name.slice(0, 16) + '...' : name
+}
+
+function groupTypeLabel(groupTypeArr) {
+  if (!Array.isArray(groupTypeArr)) return '';
+  return groupTypeArr.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))
+    ? 'Kelas'
+    : 'Privat/Kelompok';
 }
 </script>
 
@@ -35,7 +52,8 @@ function truncateName(name) {
               :src="program.photo || '/public/tutor/3.png'" 
               :alt="`Image of ${program.name}`" 
             />
-            <p class="headersb3 privat">{{ program.groupType[0].type }}</p>
+            <!-- Ganti baris ini -->
+            <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
           </div>
           <div class="card-text">
             <div class="header">

@@ -1,12 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { NInput, NButton } from 'naive-ui'
 
+const router = useRouter()
 const email = ref('')
 const password = ref('')
 const emailError = ref('')
 const passwordError = ref('')
 const isLoading = ref(false)
+const isLoggedIn = ref(!!localStorage.getItem('token'))
 
 function validateEmail() {
   if (!email.value) {
@@ -37,22 +40,23 @@ async function handleLogin() {
     try {
       const response = await fetch('http://localhost:3000/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.value,
-          password: password.value,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.value, password: password.value }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Login gagal. Periksa kembali data Anda.')
+        throw new Error(
+          (data.error && data.error.message) ||
+          data.error ||
+          'Login gagal. Periksa kembali data Anda.'
+        )
       }
 
-      const data = await response.json()
-      alert(`Login berhasil: ${data.message}`)
+      localStorage.setItem('token', data.data.token)
+      isLoggedIn.value = true
+      router.push('/')
     } catch (error) {
       alert(error.message)
     } finally {
