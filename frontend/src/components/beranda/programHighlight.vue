@@ -49,7 +49,7 @@ function groupTypeLabel(groupTypeArr) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo || '/public/tutor/3.png'" 
+              :src="program.photo ? `http://localhost:3000${program.photo}` : '/public/tutor/3.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <!-- Ganti baris ini -->

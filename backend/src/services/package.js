@@ -2,52 +2,65 @@ import { get } from 'http';
 import { prisma } from '../utils/db.js';
 
 /**
- * Retrieves all bimbel packages.
+ * Retrieves all active bimbel packages with pagination.
  *
  * @async
  * @function getActiveBimbelPackages
- * @returns {Promise<Array>} The list of bimbel packages.
+ * @param {Object} [options] - Pagination options.
+ * @param {number} [options.page=1] - Page number (1-based).
+ * @param {number} [options.pageSize=10] - Number of items per page.
+ * @returns {Promise<Object>} The paginated list of active bimbel packages and total count.
  */
-async function getActiveBimbelPackages() {
-  const packages = await prisma.bimbelPackage.findMany({
-    where: {
-      isActive: true
-    },
-    include: {
-      user: {
-        select: {
-          name: true,
-          tutors: {
-            select: {
-              photo: true
+async function getActiveBimbelPackages({ page = 1, pageSize = 10 } = {}) {
+  const skip = (page - 1) * pageSize;
+  const [packages, total] = await Promise.all([
+    prisma.bimbelPackage.findMany({
+      where: {
+        isActive: true
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            tutors: {
+              select: {
+                photo: true
+              }
             }
           }
-        }
-      },
-      groupType: {
-        select: {
-          type: true,
-          price: true,
-          discPrice: true
-        }
-      },
-      packageDay: {
-        select: {
-          day: {
-            select: {
-              daysName: true
+        },
+        groupType: {
+          select: {
+            type: true,
+            price: true,
+            discPrice: true
+          }
+        },
+        packageDay: {
+          select: {
+            day: {
+              select: {
+                daysName: true
+              }
             }
           }
-        }
+        },
       },
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
+      orderBy: {
+        createdAt: 'desc'
+      },
+      skip,
+      take: pageSize
+    }),
+    prisma.bimbelPackage.count({
+      where: {
+        isActive: true
+      }
+    })
+  ]);
 
-  return packages.map(pkg => {
-    return {
+  return {
+    data: packages.map(pkg => ({
       name: pkg.name,
       level: pkg.level,
       totalMeetings: pkg.totalMeetings,
@@ -63,8 +76,11 @@ async function getActiveBimbelPackages() {
         discPrice: gt.discPrice
       })),
       days: pkg.packageDay.map(day => day.day.daysName)
-    };
-  });
+    })),
+    total,
+    page,
+    pageSize
+  };
 }
 
 /**
@@ -635,6 +651,16 @@ async function getBimbelPackagesByPopularity() {
       }
     },
     include: {
+      user: {
+        select: {
+          name: true,
+          tutors: {
+            select: {
+              photo: true
+            }
+          }
+        }
+      },
       groupType: {
         select: {
           type: true,
@@ -669,6 +695,8 @@ async function getBimbelPackagesByPopularity() {
       duration: pkg.duration,
       area: pkg.area,
       isActive: pkg.isActive,
+      tutorName: pkg.user.name,
+      photo: pkg.user.tutors[0]?.photo,
       groupType: pkg.groupType.map(gt => ({
         type: gt.type,
         price: gt.price,

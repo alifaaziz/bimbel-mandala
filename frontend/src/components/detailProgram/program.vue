@@ -1,13 +1,26 @@
 <script setup lang="ts">
-import { defineComponent, h, ref } from 'vue';
+import { defineComponent, h, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js';
 
 const route = useRoute();
-const programId = route.params.id;
-const programData = ref(paketBimbel.find((program) => program.id === programId));
+const programId = route.params.id as string;
+const programData = ref<any>(null);
+
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/packages/${programId}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    if (!res.ok) throw new Error('Gagal mengambil data program');
+    programData.value = await res.json();
+  } catch (err) {
+    programData.value = null;
+  }
+});
 
 function formatTime(isoString: string): string {
+  if (!isoString) return '';
   const time = isoString.split('T')[1];
   const [hour, minute] = time.split(':');
   return `${hour}:${minute} WIB`;
@@ -56,7 +69,7 @@ function submitToWhatsApp() {
     - *Pukul*: ${formatTime(programData.value.time)}\n
     - *Durasi*: ${programData.value.duration} Menit\n
     - *Area*: ${programData.value.area}\n
-    - *Tipe Program*: ${programData.value.groupType.map((group) => group.type).join(" / ")}\n
+    - *Tipe Program*: ${programData.value.groupType.map((group: any) => group.type).join(" / ")}\n
     - *Harga*: ${formatCurrency(Number(programData.value.groupType[0].price))} - ${formatCurrency(Number(programData.value.groupType[programData.value.groupType.length - 1].price))}\n
     Mohon untuk segera memproses pesanan ini. Terima kasih.
   `;
@@ -65,6 +78,13 @@ function submitToWhatsApp() {
   const whatsappNumber = "6285855852485";
   window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
 }
+
+function groupTypeLabel(groupTypeArr: any[]): string {
+  if (!Array.isArray(groupTypeArr)) return '';
+  return groupTypeArr.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))
+    ? 'Kelas'
+    : 'Privat/Kelompok';
+}
 </script>
 
 <template>
@@ -72,7 +92,7 @@ function submitToWhatsApp() {
     <div>
       <img
         class="program-photo"
-        :src="programData.photo || '/public/tutor/3.png'"
+        :src="programData.photo ? `http://localhost:3000${programData.photo}` : '/public/tutor/3.png'"
         alt="Program Photo"
       />
     </div>
@@ -105,7 +125,7 @@ function submitToWhatsApp() {
       </div>
       <div class="space-detail">
         <p class="bodyb1 type-program">
-          {{ programData.groupType.map((group) => group.type).join(' / ') }}
+          {{ groupTypeLabel(programData.groupType) }}
         </p>
         <p class="bodyb1 price">
           {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
