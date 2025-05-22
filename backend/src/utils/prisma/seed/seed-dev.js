@@ -358,6 +358,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMP',
             description: 'Experienced tutor in Mathematics, once guided a math competition at the rt level in mijen sub-district. hardworking and responsive.',
+            photo: '/public/1.png'
         },
         {
             id: "019618a1-68a4-76ba-97fe-accd364715e8",
@@ -371,6 +372,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in English, once guided an English competition at the rt level in tembalang sub-district. hardworking and responsive.',
+            photo: '/public/2.png'
         },
         {
             id: "0196b294-4791-7688-b84e-d445b3c179a7",
@@ -384,6 +386,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Chemistry, once guided a chemistry competition at the rt level in tembalang sub-district. hardworking and responsive.',
+            photo: '/public/4.png'
         },
         {
             id: "0196b294-4791-7159-8bfe-a78b6cb6d210",
@@ -397,6 +400,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Physics, once guided a physics competition at the rt level in tembalang sub-district. hardworking and responsive.',
+            photo: '/public/3.png'
         },
         {
             id: "0196b294-4791-7793-9e50-871941b175a0",

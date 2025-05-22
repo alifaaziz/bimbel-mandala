@@ -235,74 +235,53 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
  */
 async function getClosestSchedules() {
   const schedules = await prisma.schedule.findMany({
-    where: {
-      date: {
-        gte: new Date()
-      }
-    },
+    where: { date: { gte: new Date() } },
     include: {
       class: {
-        select: {
-          code: true,
-          tutorId: true
+        include: {
+          order: {
+            include: {
+              bimbelPackage: {
+                include: {
+                  user: true,
+                  groupType: true
+                }
+              },
+              groupType: true
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
         }
       }
     },
-    orderBy: {
-      date: 'asc'
-    }
+    orderBy: { date: 'asc' }
   });
 
   if (!schedules || schedules.length === 0) {
     throw new Error('No schedules found');
   }
 
-  const tutorIds = [
-    ...new Set(
-      schedules
-        .map(s => s.class?.tutorId)
-        .filter(Boolean)
-    )
-  ];
-
-  const tutors = await prisma.user.findMany({
-    where: { id: { in: tutorIds } },
-    select: {
-      id: true,
-      name: true,
-      tutors: {
-        select: {
-          gender: true
-        }
-      }
-    }
-  });
-
-  const tutorMap = {};
-  tutors.forEach(t => {
-    const gender = Array.isArray(t.tutors) && t.tutors.length > 0 ? t.tutors[0].gender : undefined;
-    tutorMap[t.id] = {
-      name: t.name,
-      gender: gender
-    };
-  });
-
   return schedules.map(schedule => {
-    const tutorId = schedule.class?.tutorId;
-    const tutor = tutorMap[tutorId] || {};
-    let tutorName = tutor.name || null;
-    if (tutor.gender && tutorName) {
-      tutorName = getTutorName({ gender: tutor.gender, user: { name: tutorName } });
-    }
+    const classData = schedule.class;
+    const order = classData?.order;
+    const bimbelPackage = order?.bimbelPackage;
+    const groupType = order?.groupType;
+    const tutor = classData?.tutor;
+    const tutorGender = tutor?.tutors?.[0]?.gender;
+    const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+
     return {
       id: schedule.id,
-      classId: schedule.classId,
-      date: schedule.date,
+      classCode: classData.code,
+      packageName: bimbelPackage?.name || null,
+      tutorName: tutorName,
+      groupType: groupType?.type || null,
       meet: schedule.meet,
-      status: schedule.status,
-      information: schedule.information,
-      classCode: schedule.class?.code || null,
-      tutorName
+      date: schedule.date,
+      duration: bimbelPackage?.duration || null,
+      status: schedule.status
     };
   });
 }
@@ -328,14 +307,31 @@ async function getSchedulesForStudent(userId) {
   }
 
   const schedules = await prisma.schedule.findMany({
-    where: { classId: { in: classIds } },
+    where: {
+      classId: { in: classIds }
+    },
     include: {
-      class: true,
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: {
+                include: {
+                  user: true,
+                  groupType: true
+                }
+              },
+              groupType: true
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
+        }
+      },
       attendances: { 
         where: { userId },
-        select: {
-          status: true
-        }
+        select: { status: true }
       }
     },
     orderBy: { date: 'asc' }
@@ -345,21 +341,38 @@ async function getSchedulesForStudent(userId) {
     throw new Error('No schedules found for this student');
   }
 
-  return schedules.map(schedule => {
-    const attendance = schedule.attendances[0]; 
+  const filtered = schedules.filter(schedule => schedule.class?.status !== 'selesai');
+
+  const now = new Date();
+  filtered.sort((a, b) => {
+    const aFuture = new Date(a.date) >= now;
+    const bFuture = new Date(b.date) >= now;
+    if (aFuture === bFuture) {
+      return new Date(a.date) - new Date(b.date);
+    }
+    return aFuture ? -1 : 1;
+  });
+
+  return filtered.map(schedule => {
+    const classData = schedule.class;
+    const order = classData?.order;
+    const bimbelPackage = order?.bimbelPackage;
+    const groupType = order?.groupType;
+    const tutor = classData?.tutor;
+    const tutorGender = tutor?.tutors?.[0]?.gender;
+    const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+    const attendance = schedule.attendances[0];
+
     return {
       id: schedule.id,
-      classId: schedule.classId,
-      date: schedule.date,
+      classCode: classData.code,
+      packageName: bimbelPackage?.name || null,
+      tutorName: tutorName,
+      groupType: groupType?.type || null,
       meet: schedule.meet,
-      status: attendance ? attendance.status : schedule.status,
-      information: schedule.information,
-      class: {
-        id: schedule.class.id,
-        code: schedule.class.code,
-        orderId: schedule.class.orderId,
-        tutorId: schedule.class.tutorId
-      }
+      date: schedule.date,
+      duration: bimbelPackage?.duration || null,
+      status: attendance ? attendance.status : schedule.status
     };
   });
 }
@@ -375,43 +388,71 @@ async function getSchedulesForStudent(userId) {
 async function getSchedulesForTutor(userId) {
   const schedules = await prisma.schedule.findMany({
     where: {
-      class: {
-        tutorId: userId 
-      }
+      class: { tutorId: userId }
     },
     include: {
-      class: true,
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: {
+                include: {
+                  user: true,
+                  groupType: true
+                }
+              },
+              groupType: true
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
+        }
+      },
       attendances: { 
         where: { userId }, 
-        select: {
-          status: true
-        }
+        select: { status: true }
       }
     },
-    orderBy: {
-      date: 'asc'
-    }
+    orderBy: { date: 'asc' }
   });
 
   if (!schedules || schedules.length === 0) {
     throw new Error('No schedules found for this tutor');
   }
 
-  return schedules.map(schedule => {
-    const attendance = schedule.attendances[0]; 
+  const filtered = schedules.filter(schedule => schedule.class?.status !== 'selesai');
+
+  const now = new Date();
+  filtered.sort((a, b) => {
+    const aFuture = new Date(a.date) >= now;
+    const bFuture = new Date(b.date) >= now;
+    if (aFuture === bFuture) {
+      return new Date(a.date) - new Date(b.date);
+    }
+    return aFuture ? -1 : 1;
+  });
+
+  return filtered.map(schedule => {
+    const classData = schedule.class;
+    const order = classData?.order;
+    const bimbelPackage = order?.bimbelPackage;
+    const groupType = order?.groupType;
+    const tutor = classData?.tutor;
+    const tutorGender = tutor?.tutors?.[0]?.gender;
+    const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+    const attendance = schedule.attendances[0];
+
     return {
       id: schedule.id,
-      classId: schedule.classId,
-      date: schedule.date,
+      classCode: classData.code,
+      packageName: bimbelPackage?.name || null,
+      tutorName: tutorName,
+      groupType: groupType?.type || null,
       meet: schedule.meet,
-      status: attendance ? attendance.status : schedule.status, 
-      information: schedule.information,
-      class: {
-        id: schedule.class.id,
-        code: schedule.class.code,
-        orderId: schedule.class.orderId,
-        tutorId: schedule.class.tutorId // Ambil tutorId langsung dari tabel Class
-      }
+      date: schedule.date,
+      duration: bimbelPackage?.duration || null,
+      status: attendance ? attendance.status : schedule.status
     };
   });
 }
@@ -442,6 +483,7 @@ async function getSchedulesByRole(userId) {
     return await getSchedulesForTutor(userId);
   }
 }
+
 
 export const ScheduleService = {
   createSchedules,

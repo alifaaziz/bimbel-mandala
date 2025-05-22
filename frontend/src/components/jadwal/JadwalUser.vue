@@ -21,8 +21,7 @@
   
   <script>
   import { NTag, useMessage } from "naive-ui";
-  import { defineComponent, h } from "vue";
-  
+  import { defineComponent, h, ref, onMounted } from "vue";
   
   function createColumns({}) {
     return [
@@ -87,74 +86,82 @@
     ];
   }
   
-  function createData() {
-    return [
-      {
-        key: 1,
-        jadwal: "Fokus UTBK",
-        guru: "Pak Wendy S.Pd, M.Pd",
-        jenis: "Kelas",
-        pertemuan: 3,
-        tanggal: "Senin, 17 Maret 2025",
-        jam: "15:00",
-        durasi: "120 Menit",
-        status: ["Terjadwal"]
-      },
-      {
-        key: 2,
-        jadwal: "Fisika SMA",
-        guru: "Pak Venita S.Pd",
-        jenis: "Kelompok 5 Peserta",
-        pertemuan: 7,
-        tanggal: "Kamis, 13 Maret 2025",
-        jam: "15:00",
-        durasi: "120 Menit",
-        status: ["Jadwal Ulang"]
-      },
-      {
-        key: 3,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Kelompok 3 Orang",
-        pertemuan: 12,
-        tanggal: "Rabu, 12 Maret 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: ["Masuk"]
-      },
-      {
-        key: 4,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Kelompok 3 Orang",
-        pertemuan: 13,
-        tanggal: "Sabtu, 8 Maret 2025",
-        jam: "10:00",
-        durasi: "90 Menit",
-        status: ["Izin"]
-      }
-    ];
+  function formatTanggal(dateStr) {
+    const date = new Date(dateStr);
+    const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
+    const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+    return `${hari}, ${tanggal}`;
+  }
+  
+  function formatJam(dateStr) {
+    return dateStr.slice(11, 16).replace(':', '.');
+  }
+  
+  function statusLabel(status) {
+    switch (status) {
+      case "masuk": return "Masuk";
+      case "terjadwal": return "Terjadwal";
+      case "jadwal_ulang": return "Jadwal Ulang";
+      case "izin": return "Izin";
+      default: return status;
+    }
+  }
+  
+  function groupTypeLabel(type) {
+    switch (type) {
+      case "privat": return "Privat";
+      case "grup2": return "Kelompok 2 Peserta";
+      case "grup3": return "Kelompok 3 Peserta";
+      case "grup4": return "Kelompok 4 Peserta";
+      case "grup5": return "Kelompok 5 Peserta";
+      case "kelas": return "Kelas";
+      default: return type;
+    }
   }
   
   export default defineComponent({
     setup() {
       const message = useMessage();
-
+      const data = ref([]);
+  
       const rowProps = (row) => {
-            return {
-                style: { cursor: 'pointer' },
-                onClick: () => {
-                    window.location.href = '/DetailJadwal';
-                }
-            };
+        return {
+          style: { cursor: 'pointer' },
+          onClick: () => {
+            window.location.href = '/DetailJadwal';
+          }
         };
-
+      };
+  
+      onMounted(async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const res = await fetch('http://localhost:3000/schedules', {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+          });
+          const result = await res.json();
+          data.value = (result.data || []).map(item => ({
+            key: item.id,
+            jadwal: item.packageName,
+            guru: item.tutorName,
+            jenis: groupTypeLabel(item.groupType),
+            pertemuan: item.meet,
+            tanggal: formatTanggal(item.date),
+            jam: formatJam(item.date),
+            durasi: `${item.duration} Menit`,
+            status: [statusLabel(item.status)]
+          }));
+        } catch (err) {
+          data.value = [];
+        }
+      });
+  
       return {
-        data: createData(),
+        data,
         columns: createColumns({
         }),
         pagination: {
-          pageSize: 10
+          pageSize: 5
         },
         rowProps
       };
