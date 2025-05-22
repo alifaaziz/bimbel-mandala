@@ -1,16 +1,18 @@
 <script>
 import { defineComponent, h, ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router"; // Tambahkan ini
+import { useRouter } from "vue-router"; 
 import { NTag, NCard } from "naive-ui";
 import butJadwalUlang from "../dirButton/butJadwalUlang.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
+import butJadwal from "../dirButton/butJadwal.vue";
 
 export default defineComponent({
   components: {
     butJadwalUlang, 
     butBatal,
-    butSumJadwalUlang
+    butSumJadwalUlang,
+    butJadwal
   },
   setup() {  
 
@@ -317,9 +319,13 @@ export default defineComponent({
       </div>
     </div>
   </div>
+  <butJadwal/>
 </template>
 
 <style scoped>
+.n-space {
+  padding: 1rem 0;
+}
 .mobile-card-list {
     display: flex;
   flex-direction: column;
@@ -327,7 +333,6 @@ export default defineComponent({
   max-width: 500px;  
   margin: 0 auto;    
   width: 360px;        
-  padding: 0;
 }
 .mobile-card {
   padding: 16px;

@@ -1,4 +1,5 @@
 <template>
+  <h1 class="headersb2 judul-rekap">Rekap Program Siswa</h1>
   <n-collapse accordion>
     <n-collapse-item 
       class="tabel-rekap"
@@ -126,6 +127,10 @@ const rekap = [
 </script>
 
 <style scoped>
+.judul-rekap{
+  color: #154484;
+  margin-bottom: 1rem;
+}
 .judul-container{
   display: flex;
   flex-direction: row;
@@ -145,6 +150,7 @@ const rekap = [
   background-color: white;
   padding: 2rem 4rem;
   border-radius: 1rem;
+  gap: 1rem;
 }
 .data-tabelrekap .headersb3{
   color: #154484;

@@ -11,9 +11,9 @@ import Footer from './components/footer.vue';
     <div class="component-detail">
       <programBelajar />
     </div>
-    <div class="other-program">
+    <!-- <div class="other-program">
       <programHighlight />
-    </div>
+    </div> -->
   </div>
   <Footer />
 </template>

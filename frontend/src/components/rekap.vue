@@ -1,7 +1,12 @@
 <script setup>
 import StatisticProgram from '@/components/rekap/StatisticProgram.vue'
 import RekapDetail from '@/components/rekap/RekapDetail.vue'
+import RekapDetailTutor from '@/components/rekap/RekapDetailTutor.vue'
 import Footer from '@/components/footer.vue'
+import { auth, USER_ROLES } from '@/components/Absen/auth.js'
+
+const currentUser = auth.users.find(user => user.isActive);
+const isTutor = currentUser && currentUser.role === USER_ROLES.TUTOR;
 </script>
 
 <template>
@@ -9,7 +14,8 @@ import Footer from '@/components/footer.vue'
         <StatisticProgram />
     </div>
     <div class="rekap-container padding-components">
-        <RekapDetail />
+        <RekapDetailTutor v-if="isTutor" />
+        <RekapDetail v-else />
     </div>
     <Footer />
 </template>
