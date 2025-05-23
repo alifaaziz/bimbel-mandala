@@ -1,18 +1,16 @@
 <script>
 import { defineComponent, h, ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router"; 
+import { useRouter } from "vue-router"; // Tambahkan ini
 import { NTag, NCard } from "naive-ui";
 import butJadwalUlang from "../dirButton/butJadwalUlang.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
-import butJadwal from "../dirButton/butJadwal.vue";
 
 export default defineComponent({
   components: {
     butJadwalUlang, 
     butBatal,
-    butSumJadwalUlang,
-    butJadwal
+    butSumJadwalUlang
   },
   setup() {  
 
@@ -93,6 +91,13 @@ export default defineComponent({
     const rescheduleDate = ref("");
     const rescheduleTime = ref("");
 
+    // Tambahkan ini
+    const lastRescheduleDate = ref("");
+    const lastRescheduleTime = ref("");
+
+    // Tambahkan state untuk pop up sukses
+    const showSuccessModal = ref(false);
+
     function openRescheduleModal(row) {
       selectedSchedule.value = row;
       showRescheduleModal.value = true;
@@ -112,11 +117,15 @@ export default defineComponent({
         alert("Silakan pilih tanggal dan jam baru.");
         return;
       }
-      // Aksi jadwal ulang di sini
-      alert(
-        `Permintaan jadwal ulang berhasil dikirim!\nTanggal: ${rescheduleDate.value}\nJam: ${rescheduleTime.value}`
-      );
+      // Simpan nilai sebelum reset
+      lastRescheduleDate.value = rescheduleDate.value;
+      lastRescheduleTime.value = rescheduleTime.value;
       closeRescheduleModal();
+      showSuccessModal.value = true; // Tampilkan pop up sukses
+    }
+
+    function closeSuccessModal() {
+      showSuccessModal.value = false;
     }
 
     const tagTypeMap = {
@@ -177,7 +186,7 @@ export default defineComponent({
 
     // Pagination untuk mobile
     const mobilePage = ref(1);
-    const mobilePageSize = 1;
+    const mobilePageSize = 3;
     const mobileTotalPage = computed(() =>
       Math.ceil(data.value.length / mobilePageSize)
     );
@@ -193,7 +202,7 @@ export default defineComponent({
       columns,
       tagTypeMap,
       pagination: {
-        pageSize: 5 
+        pageSize: 5
       },
       isMobile,
       // Popup Jadwal Ulang
@@ -204,11 +213,16 @@ export default defineComponent({
       confirmReschedule,
       rescheduleDate,
       rescheduleTime,
+      lastRescheduleDate, // tambahkan
+      lastRescheduleTime, // tambahkan
       // Pagination mobile
       mobilePage,
       mobileTotalPage,
       pagedMobileData,
-      mobilePageSize
+      mobilePageSize,
+      // Popup Sukses
+      showSuccessModal,
+      closeSuccessModal
     };
   }
 });
@@ -225,7 +239,7 @@ export default defineComponent({
       :bordered="false"
       :columns="columns"
       :data="data"
-      :pagination="false"
+      :pagination="pagination"
     />
 
     <!-- Mobile View as Card List -->
@@ -319,12 +333,32 @@ export default defineComponent({
       </div>
     </div>
   </div>
-  <butJadwal/>
+
+  <!-- Popup Sukses Jadwal Ulang -->
+  <div v-if="showSuccessModal" class="modal-overlay" @click.self="closeSuccessModal">
+    <div class="modal-content success-modal">
+      <div class="popup-content" style="text-align:center;">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" style="margin-bottom:12px;">
+          <circle cx="28" cy="28" r="28" fill="#DEE4EE"/>
+          <path d="M18 29.5L25 36.5L38 23.5" stroke="#154484" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h3 class="headersb2" style="color:#154484;">Jadwal Ulang Berhasil!</h3>
+        <p class="bodyr3" style="margin: 12px 0 20px 0;">
+          Permintaan jadwal ulang telah dikirim.<br>
+          Tanggal: <strong>{{ lastRescheduleDate }}</strong><br>
+          Jam: <strong>{{ lastRescheduleTime }}</strong>
+        </p>
+        <button class="buttonm1" style="background:#154484; color:#fff; border-radius: 20px;" @click="closeSuccessModal">
+          Kembali
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 .n-space {
-  padding: 1rem 0;
+  margin: 80px 0;
 }
 .mobile-card-list {
     display: flex;
@@ -333,6 +367,7 @@ export default defineComponent({
   max-width: 500px;  
   margin: 0 auto;    
   width: 360px;        
+  padding: 0;
 }
 .mobile-card {
   padding: 16px;
@@ -433,4 +468,18 @@ export default defineComponent({
 .clickable-card:hover {
   box-shadow: 0 2px 12px rgba(21,68,132,0.12);
 }
+.success-modal .headersb2 {
+  color: #2DC96B;
+}
+.success-modal svg {
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .n-space {
+    margin: 40px 0;
+  }
+}
+
 </style>

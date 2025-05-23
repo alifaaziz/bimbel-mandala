@@ -34,7 +34,7 @@ function truncateName(name) {
 <template>
   <div>
     <h1 class="headerr2 title1">Program</h1>
-    <h2 class="headerb1 title2">Unggulan</h2>
+    <h2 class="headerb1 title2">Terbuka</h2>
     
     <div class="card-container">
       <n-card 

@@ -5,7 +5,7 @@ import butLogout from "../dirButton/butLogout.vue";
 import tabJadwalProgram from "./JadwalProgram.vue";
 import tabProgram from "./ProgramTerdaftar.vue";
 import bidangAjar from "./BidangAjar.vue";
-import hariAktif from "./hariAktif.vue";
+import hariAktif from "./HariAktif.vue";
 import Footer from "@/components/footer.vue"
 
 // Import data user
