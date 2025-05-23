@@ -56,7 +56,7 @@ async function handleLogin() {
 
       localStorage.setItem('token', data.data.token)
       isLoggedIn.value = true
-      router.push('/')
+      router.push('/absen')
     } catch (error) {
       alert(error.message)
     } finally {

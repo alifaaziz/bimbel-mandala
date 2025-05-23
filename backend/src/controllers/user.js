@@ -95,11 +95,26 @@ async function getNewStudents(req, res) {
     res.status(200).json({ data: newStudents });
 }
 
+/**
+ * Retrieves statistics.
+ * 
+ * @async
+ * @function getStatistics
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the statistics data.
+ */
+export async function getStatistics(req, res) {
+  const stats = await UserService.getStatistics();
+  res.status(200).json({ data: stats });
+}
+
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
     updateCurrentUser: asyncWrapper(updateCurrentUser),
     getTutorsSortedByClassCount: asyncWrapper(getTutorsSortedByClassCount),
     getTopStudents: asyncWrapper(getTopStudents),
-    getNewStudents: asyncWrapper(getNewStudents)
+    getNewStudents: asyncWrapper(getNewStudents),
+    getStatistics: asyncWrapper(getStatistics)
 };

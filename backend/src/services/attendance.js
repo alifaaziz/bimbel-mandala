@@ -111,6 +111,41 @@ async function getTutorStats({ schedules, order, user }) {
  * @returns {Promise<Object>} The created attendance record.
  */
 async function createAttendance({ scheduleId, userId, status, reason = null }) {
+  const existing = await prisma.attendance.findFirst({
+    where: {
+      scheduleId,
+      userId
+    }
+  });
+
+  if (existing) {
+    throw new Error('attendance can only be done once');
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (user.role === 'siswa' && status === 'masuk') {
+    const schedule = await prisma.schedule.findUnique({
+      where: { id: scheduleId },
+      include: {
+        class: { include: { tutor: true } }
+      }
+    });
+    const tutorId = schedule.class.tutor?.id;
+    if (tutorId) {
+      const tutorAttendance = await prisma.attendance.findFirst({
+        where: {
+          scheduleId,
+          userId: tutorId,
+          status: 'masuk'
+        }
+      });
+      if (!tutorAttendance) {
+        throw new Error('tutors must take attendance first');
+      }
+    }
+  }
+
   const attendance = await prisma.attendance.create({
     data: {
       scheduleId,
@@ -483,9 +518,9 @@ async function getRekapKelasById(classId) {
     const stats = calculateAttendanceStats(allAttendances, sc.user.id);
     return {
       name: sc.user.name,
-      hadir: stats.masuk,   // <-- harus 'hadir'
+      hadir: stats.masuk,
       izin: stats.izin,
-      absen: stats.alpha    // <-- harus 'absen'
+      absen: stats.alpha
     };
   });
 
@@ -505,11 +540,142 @@ async function getRekapKelasById(classId) {
   };
 }
 
-// Tambahkan ke export
+/**
+ * Creates an izin notification.
+ *
+ * @async
+ * @function createIzinNotification
+ * @param {Object} data - The notification data.
+ * @param {string} data.scheduleId - The schedule ID.
+ * @param {string} data.userId - The user ID.
+ * @param {string} data.reason - The reason for izin.
+ * @returns {Promise<void>}
+ */
+async function createIzinNotification({ scheduleId, userId, reason }) {
+  const schedule = await prisma.schedule.findUnique({
+    where: { id: scheduleId },
+    include: {
+      class: {
+        include: {
+          order: { include: { bimbelPackage: true } },
+          tutor: { include: { tutors: true } },
+          studentClasses: { include: { user: true } }
+        }
+      }
+    }
+  });
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const tutor = schedule.class.tutor;
+  const bimbelPackage = schedule.class.order.bimbelPackage;
+  const classCode = schedule.class.code;
+  const siswaList = schedule.class.studentClasses.map(sc => sc.user);
+  const tutorPhoto = schedule.class.tutor?.tutors?.[0]?.photo || null;
+
+  if (tutor && userId === tutor.id) {
+    for (const siswa of siswaList) {
+      await prisma.notification.create({
+        data: {
+          userId: siswa.id,
+          type: "Izin",
+          description: `<strong>${tutor.name}</strong> (tutor) melakukan izin pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong>`,
+          reason,
+          photo: tutorPhoto
+        }
+      });
+    }
+  } else if (tutor) {
+    await prisma.notification.create({
+      data: {
+        userId: tutor.id,
+        type: "Izin",
+        description: `<strong>${user.name}</strong> melakukan izin pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong>`,
+        reason,
+        photo: tutorPhoto
+      }
+    });
+  }
+}
+
+/**
+ * Creates a "masuk" (present) notification.
+ *
+ * @async
+ * @function createMasukNotification
+ * @param {Object} data - The notification data.
+ * @param {string} data.scheduleId - The schedule ID.
+ * @param {string} data.userId - The user ID.
+ * @returns {Promise<void>}
+ */
+async function createMasukNotification({ scheduleId, userId }) {
+  const schedule = await prisma.schedule.findUnique({
+    where: { id: scheduleId },
+    include: {
+      class: {
+        include: {
+          order: { include: { bimbelPackage: true } },
+          tutor: { include: { tutors: true } },
+          studentClasses: { include: { user: true } }
+        }
+      }
+    }
+  });
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const tutor = schedule.class.tutor;
+  const bimbelPackage = schedule.class.order.bimbelPackage;
+  const classCode = schedule.class.code;
+  const siswaList = schedule.class.studentClasses.map(sc => sc.user);
+  const tutorPhoto = schedule.class.tutor?.tutors?.[0]?.photo || null;
+
+  if (tutor && userId !== tutor.id) {
+    await prisma.notification.create({
+      data: {
+        userId: tutor.id,
+        type: "Absensi",
+        description: `<strong>${user.name}</strong> melakukan absen masuk pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong>`,
+        photo: tutorPhoto
+      }
+    });
+    await prisma.notification.create({
+      data: {
+        userId: user.id,
+        type: "Absensi",
+        description: `<strong>Anda</strong> melakukan absen masuk pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong>`,
+        photo: tutorPhoto
+      }
+    });
+  }
+
+  else if (tutor && userId === tutor.id) {
+    for (const siswa of siswaList) {
+
+      await prisma.notification.create({
+        data: {
+          userId: siswa.id,
+          type: "Absensi",
+          description: `<strong>${tutor.name}</strong> (tutor) memulai pembelajaran <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong>`,
+          photo: tutorPhoto
+        }
+      });
+    }
+    await prisma.notification.create({
+      data: {
+        userId: tutor.id,
+        type: "Absensi",
+        description: `<strong>Anda</strong> melakukan absen masuk pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong>`,
+        photo: tutorPhoto
+      }
+    });
+  }
+}
+
 export const AttendanceService = {
   createAttendance,
   markAlphaForMissedSchedules,
   getAttendanceStatistics,
   getMyAttendanceStatistics,
-  getRekapKelasById
+  getRekapKelasById,
+  createIzinNotification,
+  createMasukNotification
 };

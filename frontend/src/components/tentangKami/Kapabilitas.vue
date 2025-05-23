@@ -1,11 +1,33 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const dataKababilitas = ref({
-    jumlahTutor: 122,
-    jumlahProgram: 240,
-    programAktif: 100,
-    siswa: 100,
+    jumlahTutor: 0,
+    jumlahProgram: 0,
+    programAktif: 0,
+    siswa: 0,
+});
+
+onMounted(async () => {
+    try {
+        const res = await fetch('http://localhost:3000/users/statistics');
+        const result = await res.json();
+        const stats = result.data || {};
+        dataKababilitas.value = {
+            jumlahTutor: stats.tutorCount || 0,
+            jumlahProgram: stats.packageCount || 0,
+            programAktif: stats.activePackageCount || 0,
+            siswa: stats.studentCount || 0,
+        };
+    } catch (err) {
+        console.error('Gagal mengambil data:', err);
+        dataKababilitas.value = {
+            jumlahTutor: 0,
+            jumlahProgram: 0,
+            programAktif: 0,
+            siswa: 0,
+        };
+    }
 });
 </script>
 

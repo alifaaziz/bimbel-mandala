@@ -191,6 +191,7 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
     where: { userId: bimbelPackage.userId },
     include: { user: true }
   });
+  const tutorPhoto = tutor?.photo || null;
 
   const loggedInUser = res.locals.user;
 
@@ -209,7 +210,8 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
     data: {
       userId: student.id,
       type: 'Perubahan Jadwal',
-      description: studentDescription
+      description: studentDescription,
+      photo: tutorPhoto
     }
   });
 
@@ -218,7 +220,8 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
     data: {
       userId: tutor.userId,
       type: 'Perubahan Jadwal',
-      description: tutorDescription
+      description: tutorDescription,
+      photo: tutorPhoto
     }
   });
 

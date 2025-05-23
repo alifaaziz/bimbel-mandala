@@ -73,10 +73,12 @@ async function updateOrderStatus(orderId, status) {
     await ScheduleService.createSchedules(newClass.id);
 
     const { name: packageName, level, userId } = order.bimbelPackage;
+
     const tutor = await prisma.tutor.findUnique({
       where: { userId },
       include: { user: true }
     });
+    const tutorPhoto = tutor?.photo || null;
 
     const tutorDisplayName = getTutorDisplayName(tutor);
 
@@ -85,7 +87,8 @@ async function updateOrderStatus(orderId, status) {
       data: {
         userId: order.userId,
         type: 'Program',
-        description: studentDescription
+        description: studentDescription,
+        photo: tutorPhoto
       }
     });
 
@@ -94,7 +97,8 @@ async function updateOrderStatus(orderId, status) {
       data: {
         userId: tutor.userId,
         type: 'Program',
-        description: tutorDescription
+        description: tutorDescription,
+        photo: tutorPhoto
       }
     });
   } else {
@@ -102,7 +106,8 @@ async function updateOrderStatus(orderId, status) {
       data: {
         userId: order.userId,
         type: 'Program',
-        description: `The order status has been updated to <strong>${status}</strong>`
+        description: `The order status has been updated to <strong>${status}</strong>`,
+        photo: order.bimbelPackage.user?.tutor?.photo
       }
     });
   }

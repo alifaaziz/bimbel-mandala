@@ -10,7 +10,7 @@ import { prisma } from "../utils/db.js";
  */
 async function getNotifications(userId) {
   return prisma.notification.findMany({
-    where: { userId },
+    where: { userId, viewed: false },
     orderBy: { createdAt: 'desc' }
   });
 }

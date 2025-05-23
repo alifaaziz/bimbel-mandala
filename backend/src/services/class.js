@@ -32,7 +32,8 @@ async function createClass(data) {
         data: {
             code,
             orderId,
-            tutorId
+            tutorId,
+            status: 'berjalan',
         }
     });
 
@@ -57,7 +58,19 @@ async function joinClass(data) {
     const { code, userId } = data;
   
     const classData = await prisma.class.findUnique({
-      where: { code }
+      where: { code },
+      include: {
+        order: {
+          include: {
+            bimbelPackage: true
+          }
+        },
+        tutor: {
+          include: {
+            tutors: true
+          }
+        }
+      }
     });
   
     if (!classData) {
@@ -81,7 +94,24 @@ async function joinClass(data) {
         classId: classData.id
       }
     });
-  
+
+    const bimbelPackage = classData.order?.bimbelPackage;
+    const tutorName = getTutorName(classData.tutor);
+    const programName = bimbelPackage
+      ? `${bimbelPackage.name} ${bimbelPackage.level}`
+      : null;
+
+    const studentDescription = `Selamat, Anda telah bergabung pada bimbingan belajar <strong>${programName} #${classData.code}</strong> bersama <strong>${tutorName}</strong>.`;
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: 'Program',
+        description: studentDescription,
+        photo: classData.tutor?.photo
+      }
+    });
+
     return studentClass;
 }
 

@@ -6,8 +6,13 @@ import { upload } from '../middlewares/upload.js';
 
 export default (app) => {
     const router = Router();
-
+    
     app.use('/users', router);
+    
+    router.get(
+        '/statistics',
+        UserController.getStatistics
+    );
 
     router.get(
         '/me',
@@ -22,7 +27,7 @@ export default (app) => {
         UserValidation.isValidUserUpdatePayload,
         UserController.updateCurrentUser
     );
-
+    
     router.get(
         '/tutors',
         UserController.getTutorsSortedByClassCount

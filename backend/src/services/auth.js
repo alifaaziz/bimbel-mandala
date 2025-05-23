@@ -354,7 +354,8 @@ async function changePassword({ userId, oldPassword, newPassword }) {
     data: {
       userId,
       type: 'Perubahan Akun',
-      description: 'Password akun Anda berhasil diubah, jika Anda tidak merasa melakukan perubahan ini, segera hubungi kami.'
+      description: 'Password akun Anda berhasil diubah, jika Anda tidak merasa melakukan perubahan ini, segera hubungi kami.',
+      photo: '/public/mandala.png'
     }
   });
 }

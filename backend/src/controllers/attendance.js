@@ -24,6 +24,8 @@ async function absenMasuk(req, res) {
         status: "masuk",
     });
 
+    await AttendanceService.createMasukNotification({ scheduleId, userId,});
+
     res.status(201).json({
         message: "Attendance recorded successfully",
         data: attendance,
@@ -53,6 +55,8 @@ async function absenIzin(req, res) {
         status: "izin",
         reason,
     });
+
+    await AttendanceService.createIzinNotification({ scheduleId, userId, reason });
 
     res.status(201).json({
         message: "Attendance recorded successfully",

@@ -128,7 +128,8 @@ async function createUserWithRole(payload) {
             data: {
                 userId: user.id,
                 type: 'Pendaftaran Akun',
-                description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.'
+                description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
+                photo: '/public/mandala.png'
             }
         });
     }
@@ -400,6 +401,29 @@ async function getNewStudents({ page = 1, pageSize = 10 } = {}) {
     };
 }
 
+/**
+ * Retrieves statistics about tutors, students, and packages.
+ *
+ * @async
+ * @function getStatistics
+ * @returns {Promise<Object>} The statistics object.
+ */
+async function getStatistics() {
+  const [tutorCount, studentCount, packageCount, activePackageCount] = await Promise.all([
+    prisma.user.count({ where: { role: 'tutor' } }),
+    prisma.user.count({ where: { role: 'siswa' } }),
+    prisma.bimbelPackage.count(),
+    prisma.bimbelPackage.count({ where: { isActive: true } })
+  ]);
+
+  return {
+    tutorCount,
+    studentCount,
+    packageCount,
+    activePackageCount
+  };
+}
+
 export const UserService = { 
     createStudent,
     createUserWithRole, 
@@ -408,4 +432,5 @@ export const UserService = {
     getUserById,
     getTopStudents,
     getNewStudents,
+    getStatistics,
 };

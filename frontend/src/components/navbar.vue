@@ -4,11 +4,8 @@ import butMasuk from './dirButton/butMasuk.vue';
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NLayout, NLayoutHeader, NMenu, NButton, NDrawer } from 'naive-ui';
-import { auth } from './Absen/auth.js';
 
-const props = defineProps({
-  // You can add props here if needed
-});
+const props = defineProps({});
 
 const router = useRouter();
 const route = useRoute();
@@ -20,53 +17,18 @@ const currentRoute = ref(route.name);
 const showNotificationPopup = ref(false);
 const isLoggedIn = ref(!!localStorage.getItem('token'))
 
-// Notification data
-const notifications = ref([
-  { 
-    id: 1, 
-    type: 'Program', 
-    message: 'Selamat, Bimbingan belajar Matematika SMA #11234 bersama Pak Dendy Wan S.Pd telah selesai dilakukan.', 
-    read: false, 
-    time: '10 menit lalu',
-    photo: './tutor/3.png'
-  },
-  { 
-    id: 2, 
-    type: 'Absensi', 
-    message: 'Anda telah melakukan absensi pada bimbingan belajar Matematika SMA #11234.', 
-    read: false, 
-    time: '1 jam lalu',
-    photo: './tutor/3.png'
-  },
-  { 
-    id: 3, 
-    type: 'Absensi', 
-    message: 'Pak Dendy Wan S.Pd telah melakukan absensi pada bimbingan belajar Matematika SMA #11234.', 
-    read: true, 
-    time: '2 hari lalu',
-    photo: './tutor/3.png'
-  },
-  { 
-    id: 4, 
-    type: 'Jadwal', 
-    message: 'Pak Dendy Wan S.Pd melakukan perubahan jadwal pada Matematika SMA #11234.', 
-    read: true, 
-    time: '1 minggu lalu',
-    photo: './tutor/3.png',
-    scheduleId: '11234'
-  },
-  { 
-    id: 5, 
-    type: 'Izin', 
-    message: 'Pak Dendy Wan S.Pd melakukan izin pada Matematika SMA #11234.', 
-    read: true, 
-    time: '1 minggu lalu',
-    photo: './tutor/3.png',
-    reason: 'Sakit flu berat, tidak memungkinkan untuk mengajar'
-  }
-]);
+const notifications = ref([]);
 
-// Computed properties
+function formatNotifTime(dateStr) {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diff = now - date;
+  if (diff < 86400000) {
+    return dateStr.slice(11, 16);
+  }
+  return date.toLocaleDateString('id-ID');
+}
+
 const unreadCount = computed(() => notifications.value.filter(n => !n.read).length);
 
 const menuOptionsLoggedOut = [
@@ -98,17 +60,14 @@ const filteredMenuOptions = computed(() => {
   if (isLoggedIn.value) {
     return menuOptionsLoggedIn;
   }
-
   if (isDesktop.value) {
     return menuOptionsLoggedOut.filter(option => 
       option.key !== 'Daftar' && option.key !== 'Masuk'
     );
   }
-
   return menuOptionsLoggedOut;
 });
 
-// Methods
 const goToSchedule = (scheduleId) => {
   showNotificationPopup.value = false;
   router.push(`/jadwal/${scheduleId}`);
@@ -132,7 +91,9 @@ const handleMenuClick = (key) => {
 
 const toggleNotifications = () => {
   showNotificationPopup.value = !showNotificationPopup.value;
-  if (showNotificationPopup.value) {
+  if (!showNotificationPopup.value) {
+    fetchNotifications();
+  } else {
     notifications.value.forEach(n => n.read = true);
   }
 };
@@ -141,6 +102,7 @@ const closeNotifications = (event) => {
   if (!event.target.closest('.notification-popup') && 
       !event.target.closest('.notification-wrapper')) {
     showNotificationPopup.value = false;
+    markAllNotificationsRead();
   }
 };
 
@@ -150,7 +112,20 @@ const logout = () => {
   router.push('/')
 };
 
-// Watchers and lifecycle hooks
+const markAllNotificationsRead = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    await fetch('http://localhost:3000/notification', {
+      method: 'POST',
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+    await fetchNotifications();
+  } catch (err) {}
+};
+
 watch(
   () => route.name,
   (newRoute) => {
@@ -158,20 +133,50 @@ watch(
   }
 );
 
-onMounted(() => {
+let timeInterval = null;
+
+onMounted(async () => {
   window.addEventListener('resize', handleResize);
   document.addEventListener('click', closeNotifications);
+  await fetchNotifications();
 });
 
 onBeforeUnmount(() => {
+  if (timeInterval) clearInterval(timeInterval);
   window.removeEventListener('resize', handleResize);
   document.removeEventListener('click', closeNotifications);
 });
 
-// Jika ingin auto-update saat token berubah:
-window.addEventListener('storage', () => {
-  isLoggedIn.value = !!localStorage.getItem('token')
-})
+async function fetchNotifications() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:3000/notification', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    const result = await res.json();
+    notifications.value = (result.data || []).map(item => ({
+      id: item.id,
+      type: item.type === 'Perubahan Jadwal' ? 'Jadwal' : item.type,
+      message: item.description,
+      read: item.viewed,
+      createdAt: item.createdAt,
+      photo: item.photo
+        ? (item.photo.startsWith('http') ? item.photo : `http://localhost:3000${item.photo}`)
+        : 'http://localhost:3000/public/mandala.png',
+      reason: item.reason,
+      scheduleId: item.scheduleId
+    }));
+  } catch (err) {
+    notifications.value = [];
+  }
+}
+
+const notificationsWithTime = computed(() =>
+  notifications.value.map(item => ({
+    ...item,
+    time: formatNotifTime(item.createdAt)
+  }))
+);
 </script>
 
 <template>
@@ -183,7 +188,6 @@ window.addEventListener('storage', () => {
         </router-link>
 
         <div class="menu-container">
-          <!-- Mobile menu button -->
           <n-button
             v-if="!isDesktop"
             class="menu-button"
@@ -193,7 +197,6 @@ window.addEventListener('storage', () => {
             ☰
           </n-button>
 
-          <!-- Desktop menu -->
           <template v-else>
             <n-menu
               mode="horizontal"
@@ -237,7 +240,7 @@ window.addEventListener('storage', () => {
                     
                     <div class="notification-list">
                       <div 
-                        v-for="notification in notifications" 
+                        v-for="notification in notificationsWithTime" 
                         :key="notification.id"
                         class="notification-item"
                         :class="{ 'unread': !notification.read }"
@@ -252,7 +255,7 @@ window.addEventListener('storage', () => {
                         
                         <div class="notification-content">
                           <h4 class="bodyb2">{{ notification.type }}</h4>
-                          <p class="bodyr3">{{ notification.message }}</p>
+                          <p class="bodyr3" v-html="notification.message"></p>
                           <div v-if="notification.type === 'Izin' && notification.reason" class="reason-box">
                             <div class="reason-label">Alasan Izin:</div>
                             <div class="reason-text bodyr3">{{ notification.reason }}</div>
@@ -314,7 +317,6 @@ window.addEventListener('storage', () => {
             </template>
           </template>
 
-          <!-- Mobile drawer menu -->
           <n-drawer
             v-if="!isDesktop"
             v-model:show="drawerVisible"
@@ -322,6 +324,15 @@ window.addEventListener('storage', () => {
             :width="260"
           >            
             <div class="mobile-auth-actions" v-if="isLoggedIn">
+              <n-button
+                block
+                size="small"
+                class="mark-all-read-btn"
+                @click="markAllNotificationsRead"
+                style="margin-bottom: 1rem;"
+              >
+                Tandai semua sudah dibaca
+              </n-button>
               <div class="user-actions">
                 <div class="notification-wrapper">
                   <button 
@@ -348,7 +359,7 @@ window.addEventListener('storage', () => {
                     
                     <div class="notification-list">
                       <div 
-                        v-for="notification in notifications" 
+                        v-for="notification in notificationsWithTime" 
                         :key="notification.id"
                         class="notification-item"
                         :class="{ 'unread': !notification.read }"
@@ -362,7 +373,7 @@ window.addEventListener('storage', () => {
                         
                         <div class="notification-content">
                           <h4 class="bodyb2">{{ notification.type }}</h4>
-                          <p class="bodyr3">{{ notification.message }}</p>
+                          <p class="bodyr3" v-html="notification.message"></p>
                           <div v-if="notification.type === 'Izin' && notification.reason" class="reason-box">
                             <div class="reason-label">Alasan Izin:</div>
                             <div class="reason-text bodyr3">{{ notification.reason }}</div>
