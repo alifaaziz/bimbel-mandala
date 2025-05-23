@@ -2,6 +2,7 @@ import { prisma } from '../utils/db.js';
 import { HttpError } from '../utils/error.js';
 import { AuthService } from './auth.js';
 import { OtpService } from './otp.js';
+import { savePhoto } from '../utils/helper.js';
 
 /**
  * Creates a new user.
@@ -127,7 +128,8 @@ async function createUserWithRole(payload) {
             data: {
                 userId: user.id,
                 type: 'Pendaftaran Akun',
-                description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.'
+                description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
+                photo: '/public/mandala.png'
             }
         });
     }
@@ -151,9 +153,21 @@ async function createUserWithRole(payload) {
  * @returns {Promise<Object>} The updated user object.
  * @throws {Error} Throws an error if the update fails.
  */
-async function updateUser(payload) {
+async function updateUser(payload, file) {
     const { id, password, role, ...additionalData } = payload;
     const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
+
+    // Gunakan id jika name tidak ada
+    if (file) {
+        // Ambil nama user dari database jika ada
+        let userName = additionalData.name;
+        if (!userName) {
+            const userDb = await prisma.user.findUnique({ where: { id } });
+            userName = userDb?.name || id || 'tutor';
+        }
+        const photoPath = await savePhoto(file, userName);
+        additionalData.photo = photoPath;
+    }
 
     const parsedUserWithEncryptedPassword = {
         ...additionalData,
@@ -188,7 +202,7 @@ async function updateUser(payload) {
     } else if (role === 'tutor') {
         await prisma.tutor.update({
             where: { userId: id },
-            data: additionalUserData
+            data: additionalUserData // photo akan ikut terupdate jika ada
         });
     }
 
@@ -262,4 +276,161 @@ async function getTutorsSortedByClassCount() {
     }));
 }
 
-export const UserService = { createStudent, createUserWithRole, updateUser, getTutorsSortedByClassCount };
+/**
+ * Get details of a user by ID.
+ *
+ * @async
+ * @function getUserById
+ * @param {string} id - The user's ID.
+ * @returns {Promise<Object>} The user object.
+*/
+async function getUserById(id) {
+    const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+            students: true,
+            tutors: true
+        }
+    });
+
+    if (!user) {
+        throw new HttpError(404, { message: 'User not found' });
+    }
+
+    return user;
+}
+
+/**
+ * Retrieves students ordered by their creation date.
+ *
+ * @async
+ * @function getTopStudents
+ * @returns {Promise<Array>} The list of students ordered by creation date, including level and class count.
+ */
+async function getTopStudents() {
+    const students = await prisma.user.findMany({
+        where: {
+            role: 'siswa'
+        },
+        select: {
+            id: true,
+            name: true,
+            students: {
+                select: {
+                    level: true
+                }
+            },
+            _count: {
+                select: {
+                    studentClass: true
+                }
+            }
+        },
+        orderBy: {
+            studentClass: {
+                _count: 'desc'
+            }
+        },
+        take: 5
+    });
+
+    return students.map(student => ({
+        id: student.id,
+        name: student.name,
+        level: student.students?.[0]?.level || null,
+        classCount: student._count?.studentClass || 0,
+    }));
+}
+
+/**
+ * Retrieves the newest students ordered by their creation date, with pagination.
+ *
+ * @async
+ * @function getNewStudents
+ * @param {Object} [options] - Pagination options.
+ * @param {number} [options.page=1] - Page number (1-based).
+ * @param {number} [options.pageSize=10] - Number of items per page.
+ * @returns {Promise<Object>} The paginated list of newest students and total count.
+ */
+async function getNewStudents({ page = 1, pageSize = 10 } = {}) {
+    const skip = (page - 1) * pageSize;
+    const [students, total] = await Promise.all([
+        prisma.user.findMany({
+            where: {
+                role: 'siswa'
+            },
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                students: {
+                    select: {
+                        level: true
+                    }
+                },
+                _count: {
+                    select: {
+                        studentClass: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            skip,
+            take: pageSize
+        }),
+        prisma.user.count({
+            where: {
+                role: 'siswa'
+            }
+        })
+    ]);
+
+    return {
+        data: students.map(student => ({
+            id: student.id,
+            name: student.name,
+            createdAt: student.createdAt,
+            level: student.students?.[0]?.level || null,
+            classCount: student._count?.studentClass || 0,
+        })),
+        total,
+        page,
+        pageSize
+    };
+}
+
+/**
+ * Retrieves statistics about tutors, students, and packages.
+ *
+ * @async
+ * @function getStatistics
+ * @returns {Promise<Object>} The statistics object.
+ */
+async function getStatistics() {
+  const [tutorCount, studentCount, packageCount, activePackageCount] = await Promise.all([
+    prisma.user.count({ where: { role: 'tutor' } }),
+    prisma.user.count({ where: { role: 'siswa' } }),
+    prisma.bimbelPackage.count(),
+    prisma.bimbelPackage.count({ where: { isActive: true } })
+  ]);
+
+  return {
+    tutorCount,
+    studentCount,
+    packageCount,
+    activePackageCount
+  };
+}
+
+export const UserService = { 
+    createStudent,
+    createUserWithRole, 
+    updateUser, 
+    getTutorsSortedByClassCount,
+    getUserById,
+    getTopStudents,
+    getNewStudents,
+    getStatistics,
+};

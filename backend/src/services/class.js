@@ -32,7 +32,8 @@ async function createClass(data) {
         data: {
             code,
             orderId,
-            tutorId
+            tutorId,
+            status: 'berjalan',
         }
     });
 
@@ -57,7 +58,19 @@ async function joinClass(data) {
     const { code, userId } = data;
   
     const classData = await prisma.class.findUnique({
-      where: { code }
+      where: { code },
+      include: {
+        order: {
+          include: {
+            bimbelPackage: true
+          }
+        },
+        tutor: {
+          include: {
+            tutors: true
+          }
+        }
+      }
     });
   
     if (!classData) {
@@ -75,18 +88,122 @@ async function joinClass(data) {
       throw new Error('User is already in the class');
     }
   
-    // Add the user to the student_class table
     const studentClass = await prisma.studentClass.create({
       data: {
         userId,
         classId: classData.id
       }
     });
-  
+
+    const bimbelPackage = classData.order?.bimbelPackage;
+    const tutorName = getTutorName(classData.tutor);
+    const programName = bimbelPackage
+      ? `${bimbelPackage.name} ${bimbelPackage.level}`
+      : null;
+
+    const studentDescription = `Selamat, Anda telah bergabung pada bimbingan belajar <strong>${programName} #${classData.code}</strong> bersama <strong>${tutorName}</strong>.`;
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: 'Program',
+        description: studentDescription,
+        photo: classData.tutor?.photo
+      }
+    });
+
     return studentClass;
-  }
-  
-  export const ClassService = {
+}
+
+function getTutorName(tutor) {
+    const gender = tutor.tutors?.[0]?.gender;
+    const prefix = gender === 'Male' ? 'Pak' : 'Bu';
+    return `${prefix} ${tutor.name}`;
+}
+
+/**
+ * Retrieves the classes for the logged-in user.
+ *
+ * @async
+ * @function getMyClass
+ * @param {string} userId - The ID of the logged-in user.
+ * @returns {Promise<Array>} The list of classes with detailed information.
+ */
+async function getMyClass(userId) {
+    const studentClasses = await prisma.studentClass.findMany({
+        where: {
+            userId
+        },
+        include: {
+            class: {
+                include: {
+                    order: {
+                        include: {
+                            groupType:{
+                                select: {
+                                    type: true
+                                }
+                            },
+                            bimbelPackage: {
+                                include: {
+                                    packageDay: {
+                                        select: {
+                                            day: {
+                                                select: {
+                                                    daysName: true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tutor: {
+                        select: {
+                            name: true,
+                            tutors: {
+                                select: {
+                                    gender: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    return studentClasses.map(studentClass => {
+        const cls = studentClass.class;
+        const bimbelPackage = cls.order?.bimbelPackage;
+        const groupType = cls.order?.groupType;
+        const packageDays = bimbelPackage?.packageDay;
+
+        const tutorName = getTutorName(cls.tutor);
+
+        const programName = bimbelPackage
+            ? `${bimbelPackage.name} ${bimbelPackage.level}`
+            : null;
+
+        const days = packageDays
+            ? packageDays.map(day => day.day.daysName).join(', ')
+            : null;
+
+        return {
+            status: cls.status,
+            tutorName,
+            programName,
+            groupType: groupType?.type || null,
+            days,
+            time: bimbelPackage?.time || null,
+            duration: bimbelPackage?.duration || null
+        };
+    });
+}
+
+export const ClassService = {
     createClass,
-    joinClass
-  };
+    joinClass,
+    getMyClass
+};

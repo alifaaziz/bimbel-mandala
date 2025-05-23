@@ -5,6 +5,24 @@ import { HttpError } from '../utils/error.js';
 import { AuthService } from './auth.js'; 
 
 /**
+ * Checks if the user has exceeded OTP request limit in the last 10 minutes.
+ * @param {string} userId
+ * @param {number} maxRequests
+ * @param {number} windowMinutes
+ * @returns {Promise<boolean>}
+ */
+async function isOtpRateLimited(userId, maxRequests = 3, windowMinutes = 10) {
+  const since = new Date(Date.now() - windowMinutes * 60 * 1000);
+  const count = await prisma.otp.count({
+    where: {
+      userId,
+      createdAt: { gte: since }
+    }
+  });
+  return count >= maxRequests;
+}
+
+/**
  * Sends an OTP to the user's email for verification.
  * 
  * @async
@@ -15,6 +33,11 @@ import { AuthService } from './auth.js';
  * @returns {Promise<void>} A promise that resolves when the OTP is sent.
  */
 async function sendUserVerificationOtp(name, email, userId) {
+  // Rate limit: max 3 requests per 10 minutes
+  if (await isOtpRateLimited(userId)) {
+    throw new HttpError(429, { message: 'Terlalu banyak permintaan OTP, silakan coba lagi beberapa menit lagi.' });
+  }
+
   await prisma.$transaction(async (tx) => {
     await invalidateAllUserOtps(tx, userId);
 
@@ -101,4 +124,8 @@ function invalidateAllUserOtps(tx, userId) {
   });
 }
 
-export const OtpService = { sendUserVerificationOtp, verifyOtp, invalidateAllUserOtps };
+export const OtpService = { 
+  sendUserVerificationOtp, 
+  verifyOtp, 
+  invalidateAllUserOtps, 
+  isOtpRateLimited };

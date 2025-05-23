@@ -16,6 +16,20 @@ async function getAllBimbelPackages(_req, res) {
 }
 
 /**
+ * Handles only active bimbel packages.
+ * 
+ * @async
+ * @function getActiveBimbelPackages
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of active bimbel packages. 
+ */
+async function getActiveBimbelPackages(_req, res) {
+    const packages = await BimbelPackageService.getActiveBimbelPackages();
+    res.status(200).json(packages);
+}
+
+/**
  * Handles the request to get a bimbel package by ID.
  *
  * @async
@@ -180,8 +194,87 @@ async function getBimbelPackagesByPopularity(_req, res) {
   res.status(200).json(packages);
 }
 
+/**
+ * Handles the request to get running programs with incomplete schedules.
+ *
+ * @async
+ * @function getRunningPrograms
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of running programs.
+ */
+async function getRunningPrograms(_req, res) {
+  const runningPrograms = await BimbelPackageService.getRunningPrograms();
+  res.status(200).json(runningPrograms);
+}
+
+/**
+ * Handles the request to get bimbel packages associated with the logged-in tutor.
+ *
+ * @async
+ * @function getMyPackages
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of bimbel packages for the tutor.
+ */
+async function getMyPackages(req, res) {
+  const user = res.locals.user;
+  const packages = await BimbelPackageService.getMyPackages(user);
+  res.status(200).json(packages);
+}
+
+/**
+ * Handles the request to get a bimbel package by ID associated with the logged-in user.
+ *
+ * @async
+ * @function getMyPackageById
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the bimbel package or an error if not found.
+ */
+async function getMyPackageById(req, res) {
+  const { id } = req.params; // Retrieve ID from URL parameters
+  const user = res.locals.user; // Retrieve user from auth middleware
+  const pkg = await BimbelPackageService.getMyPackageById(id, user);
+
+  if (!pkg) {
+    return res.status(404).json({ error: 'Bimbel package not found or not associated with the user' });
+  }
+
+  res.status(200).json(pkg);
+}
+
+/**
+ * Handles the request to get statistics for bimbel packages.
+ *
+ * @async
+ * @function getBimbelPackageStatistics
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the statistics data.
+ */
+async function getBimbelPackageStatistics(_req, res) {
+  const statistics = await BimbelPackageService.getBimbelPackageStatistics();
+  res.status(200).json(statistics);
+}
+
+/**
+ * Handles the request to get statistics for logged-in user.
+ * 
+ * @async
+ * @function getMyProgramsStatistics
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+async function getMyProgramsStatistics(req, res) {
+  const user = res.locals.user; // Retrieve user from auth middleware
+  const statistics = await BimbelPackageService.getMyProgramsStatistics(user);
+  res.status(200).json(statistics);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
+    getActiveBimbelPackages: asyncWrapper(getActiveBimbelPackages),
     getBimbelPackageById: asyncWrapper(getBimbelPackageById),
     createBimbelPackage: asyncWrapper(createBimbelPackage),
     createClassBimbelPackage: asyncWrapper(createClassBimbelPackage),
@@ -190,4 +283,9 @@ export const BimbelPackageController = {
     deleteBimbelPackage: asyncWrapper(deleteBimbelPackage),
     updateBimbelPackageStatus: asyncWrapper(updateBimbelPackageStatus),
     getBimbelPackagesByPopularity: asyncWrapper(getBimbelPackagesByPopularity),
+    getRunningPrograms: asyncWrapper(getRunningPrograms),
+    getMyPackages: asyncWrapper(getMyPackages),
+    getMyPackageById: asyncWrapper(getMyPackageById),
+    getBimbelPackageStatistics: asyncWrapper(getBimbelPackageStatistics),
+    getMyProgramsStatistics: asyncWrapper(getMyProgramsStatistics)
 };

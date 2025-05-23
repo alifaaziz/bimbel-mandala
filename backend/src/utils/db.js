@@ -11,6 +11,12 @@ const omitConfig = {
     ...omittedTimestampFields,
     password: true
   },
+  student: {
+    ...omittedTimestampFields
+  },
+  tutor: {
+    ...omittedTimestampFields
+  },
   notification: {
     updatedAt: true,
   },

@@ -116,6 +116,17 @@ function getNextDate(currentDate, dayIndex) {
 }
 
 /**
+ * Helper to get tutor name with prefix Pak/Bu.
+ * @param {Object} tutor - Tutor object (with gender and user).
+ * @returns {string|null} Tutor name with prefix or null.
+ */
+function getTutorName(tutor) {
+  if (!tutor || !tutor.user) return null;
+  const prefix = tutor.gender === 'Male' ? 'Pak' : 'Bu';
+  return `${prefix} ${tutor.user.name}`;
+}
+
+/**
  * Reschedules a specific schedule.
  *
  * @async
@@ -180,34 +191,37 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
     where: { userId: bimbelPackage.userId },
     include: { user: true }
   });
+  const tutorPhoto = tutor?.photo || null;
 
   const loggedInUser = res.locals.user;
 
   const actorForStudent = isAdmin
     ? 'Admin'
-    : `${tutor.gender === 'Male' ? 'Pak' : 'Bu'} ${tutor.user.name}`;
+    : getTutorName(tutor);
 
   const actorForTutor = isAdmin
     ? 'Admin'
     : loggedInUser.id === tutor.userId
     ? 'Anda'
-    : `${tutor.gender === 'Male' ? 'Pak' : 'Bu'} ${tutor.user.name}`;
+    : getTutorName(tutor);
 
-  const studentDescription = `<b>${actorForStudent}</b> melakukan perubahan jadwal pada <b>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</b>.`;
+  const studentDescription = `<strong>${actorForStudent}</strong> melakukan perubahan jadwal pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</strong>.`;
   await prisma.notification.create({
     data: {
       userId: student.id,
       type: 'Perubahan Jadwal',
-      description: studentDescription
+      description: studentDescription,
+      photo: tutorPhoto
     }
   });
 
-  const tutorDescription = `<b>${actorForTutor}</b> melakukan perubahan jadwal pada <b>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</b>.`;
+  const tutorDescription = `<strong>${actorForTutor}</strong> melakukan perubahan jadwal pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classData.code}</strong>.`;
   await prisma.notification.create({
     data: {
       userId: tutor.userId,
       type: 'Perubahan Jadwal',
-      description: tutorDescription
+      description: tutorDescription,
+      photo: tutorPhoto
     }
   });
 
@@ -218,28 +232,61 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
  * Get closest schedule from today
  * 
  * @async
- * @function getClosestSchedule
- * @param {String} classId - The ID of the class.
- * @returns {Promise<Object>} The closest schedule.
- * @throws {Error} If the class is not found or there are no schedules.
+ * @function getClosestSchedules
+ * @returns {Promise<Array>} The closest schedules, each with class code and tutor name included.
+ * @throws {Error} If there are no schedules.
  */
 async function getClosestSchedules() {
   const schedules = await prisma.schedule.findMany({
-    where: {
-      date: {
-        gte: new Date()
+    where: { date: { gte: new Date() } },
+    include: {
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: {
+                include: {
+                  user: true,
+                  groupType: true
+                }
+              },
+              groupType: true
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
+        }
       }
     },
-    orderBy: {
-      date: 'asc'
-    }
+    orderBy: { date: 'asc' }
   });
 
   if (!schedules || schedules.length === 0) {
     throw new Error('No schedules found');
   }
 
-  return schedules;
+  return schedules.map(schedule => {
+    const classData = schedule.class;
+    const order = classData?.order;
+    const bimbelPackage = order?.bimbelPackage;
+    const groupType = order?.groupType;
+    const tutor = classData?.tutor;
+    const tutorGender = tutor?.tutors?.[0]?.gender;
+    const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+
+    return {
+      id: schedule.id,
+      classCode: classData.code,
+      packageName: bimbelPackage?.name || null,
+      tutorName: tutorName,
+      groupType: groupType?.type || null,
+      meet: schedule.meet,
+      date: schedule.date,
+      duration: bimbelPackage?.duration || null,
+      status: schedule.status
+    };
+  });
 }
 
 /**
@@ -263,14 +310,31 @@ async function getSchedulesForStudent(userId) {
   }
 
   const schedules = await prisma.schedule.findMany({
-    where: { classId: { in: classIds } },
+    where: {
+      classId: { in: classIds }
+    },
     include: {
-      class: true, // Sertakan data lengkap dari relasi `class`
-      attendances: { // Gunakan relasi `attendances`
-        where: { userId }, // Ambil attendance hanya untuk user yang sedang login
-        select: {
-          status: true // Ambil status attendance
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: {
+                include: {
+                  user: true,
+                  groupType: true
+                }
+              },
+              groupType: true
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
         }
+      },
+      attendances: { 
+        where: { userId },
+        select: { status: true }
       }
     },
     orderBy: { date: 'asc' }
@@ -280,22 +344,38 @@ async function getSchedulesForStudent(userId) {
     throw new Error('No schedules found for this student');
   }
 
-  // Map data untuk menampilkan status attendance jika ada
-  return schedules.map(schedule => {
-    const attendance = schedule.attendances[0]; // Ambil attendance pertama (jika ada)
+  const filtered = schedules.filter(schedule => schedule.class?.status !== 'selesai');
+
+  const now = new Date();
+  filtered.sort((a, b) => {
+    const aFuture = new Date(a.date) >= now;
+    const bFuture = new Date(b.date) >= now;
+    if (aFuture === bFuture) {
+      return new Date(a.date) - new Date(b.date);
+    }
+    return aFuture ? -1 : 1;
+  });
+
+  return filtered.map(schedule => {
+    const classData = schedule.class;
+    const order = classData?.order;
+    const bimbelPackage = order?.bimbelPackage;
+    const groupType = order?.groupType;
+    const tutor = classData?.tutor;
+    const tutorGender = tutor?.tutors?.[0]?.gender;
+    const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+    const attendance = schedule.attendances[0];
+
     return {
       id: schedule.id,
-      classId: schedule.classId,
-      date: schedule.date,
+      classCode: classData.code,
+      packageName: bimbelPackage?.name || null,
+      tutorName: tutorName,
+      groupType: groupType?.type || null,
       meet: schedule.meet,
-      status: attendance ? attendance.status : schedule.status, // Tampilkan status attendance jika ada, jika tidak tampilkan status schedule
-      information: schedule.information,
-      class: {
-        id: schedule.class.id,
-        code: schedule.class.code,
-        orderId: schedule.class.orderId,
-        tutorId: schedule.class.tutorId
-      }
+      date: schedule.date,
+      duration: bimbelPackage?.duration || null,
+      status: attendance ? attendance.status : schedule.status
     };
   });
 }
@@ -311,44 +391,71 @@ async function getSchedulesForStudent(userId) {
 async function getSchedulesForTutor(userId) {
   const schedules = await prisma.schedule.findMany({
     where: {
-      class: {
-        tutorId: userId // Filter langsung berdasarkan tutorId di tabel Class
-      }
+      class: { tutorId: userId }
     },
     include: {
-      class: true, // Sertakan data lengkap dari relasi `class`
-      attendances: { // Gunakan relasi `attendances`
-        where: { userId }, // Ambil attendance hanya untuk user yang sedang login
-        select: {
-          status: true // Ambil status attendance
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: {
+                include: {
+                  user: true,
+                  groupType: true
+                }
+              },
+              groupType: true
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
         }
+      },
+      attendances: { 
+        where: { userId }, 
+        select: { status: true }
       }
     },
-    orderBy: {
-      date: 'asc'
-    }
+    orderBy: { date: 'asc' }
   });
 
   if (!schedules || schedules.length === 0) {
     throw new Error('No schedules found for this tutor');
   }
 
-  // Map data untuk menampilkan status attendance jika ada
-  return schedules.map(schedule => {
-    const attendance = schedule.attendances[0]; // Ambil attendance pertama (jika ada)
+  const filtered = schedules.filter(schedule => schedule.class?.status !== 'selesai');
+
+  const now = new Date();
+  filtered.sort((a, b) => {
+    const aFuture = new Date(a.date) >= now;
+    const bFuture = new Date(b.date) >= now;
+    if (aFuture === bFuture) {
+      return new Date(a.date) - new Date(b.date);
+    }
+    return aFuture ? -1 : 1;
+  });
+
+  return filtered.map(schedule => {
+    const classData = schedule.class;
+    const order = classData?.order;
+    const bimbelPackage = order?.bimbelPackage;
+    const groupType = order?.groupType;
+    const tutor = classData?.tutor;
+    const tutorGender = tutor?.tutors?.[0]?.gender;
+    const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+    const attendance = schedule.attendances[0];
+
     return {
       id: schedule.id,
-      classId: schedule.classId,
-      date: schedule.date,
+      classCode: classData.code,
+      packageName: bimbelPackage?.name || null,
+      tutorName: tutorName,
+      groupType: groupType?.type || null,
       meet: schedule.meet,
-      status: attendance ? attendance.status : schedule.status, // Tampilkan status attendance jika ada, jika tidak tampilkan status schedule
-      information: schedule.information,
-      class: {
-        id: schedule.class.id,
-        code: schedule.class.code,
-        orderId: schedule.class.orderId,
-        tutorId: schedule.class.tutorId // Ambil tutorId langsung dari tabel Class
-      }
+      date: schedule.date,
+      duration: bimbelPackage?.duration || null,
+      status: attendance ? attendance.status : schedule.status
     };
   });
 }
@@ -380,11 +487,14 @@ async function getSchedulesByRole(userId) {
   }
 }
 
+
 export const ScheduleService = {
   createSchedules,
   reschedule,
   getClosestSchedules,
   getSchedulesForStudent,
   getSchedulesForTutor,
-  getSchedulesByRole
+  getSchedulesByRole,
+  getNextDate,
+  getTutorName
 };
