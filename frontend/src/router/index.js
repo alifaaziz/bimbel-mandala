@@ -15,6 +15,7 @@ import DetailJadwal from '@/components/jadwal/DetailJadwal.vue'
 import ProfileUser from '@/components/ProfileUser.vue'
 import User from '@/components/Profile/User.vue'
 import EditProfile from '@/components/Profile/EditProfile.vue'
+import EditProfileTutor from '@/components/Profile/EditProfileTutor.vue'
 import Rekap from '@/components/rekap.vue'
 
 const routes = [
@@ -86,6 +87,11 @@ const routes = [
         path: 'editprofile', 
         name: 'EditProfile', 
         component: EditProfile 
+      },
+      { 
+        path: 'editprofiletutor', 
+        name: 'EditProfileTutor', 
+        component: EditProfileTutor
       },
     ]
   },

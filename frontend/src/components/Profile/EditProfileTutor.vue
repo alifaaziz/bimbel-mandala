@@ -5,29 +5,55 @@ import Footer from '../footer.vue'
 import butSimpan from '../dirButton/butSimpan.vue'
 
 const nama = ref('')
-const jenjang = ref(null)
+const status = ref(null)
 const sekolah = ref('')
 const noWa = ref('')
 const noWali = ref('')
 const alamat = ref('')
+const jenjang = ref('')
+const pelajaran = ref('')
 
 
 // Opsi untuk dropdown `n-select`
 const options = [
-  { label: "SMA", value: "SMA" },
-  { label: "SMP", value: "SMP" },
-  { label: "SD", value: "SD" },
+  { label: "Semester 1-2", value: "tahun1" },
+  { label: "Semester 3-4", value: "tahun2" },
+  { label: "Semester 5-6", value: "tahun3" },
+  { label: "Semester 7-8", value: "tahun4" },
+  { label: "Semester 8<", value: "tahunakhir" },
+  { label: "S1", value: "Sarjana" },
+  { label: "S2", value: "Magister" },
+  { label: "S3", value: "Doktor" },
 ]
 
-const submitForm = () => {
-  console.log('Data yang dikirim:')
-  console.log('Nama:', nama.value)
-  console.log('Jenjang:', jenjang.value)
-  console.log('Sekolah:', sekolah.value)
-  console.log('No WA:', noWa.value)
-  console.log('No Wali:', noWali.value)
-  console.log('Alamat:', alamat.value)
+import { defineEmits, defineProps, watch } from 'vue'
+
+// Props (optional: receive default selected days from parent)
+const props = defineProps({
+  modelValue: {
+    type: Array,
+    default: () => []
+  }
+})
+
+// Emit untuk v-model
+const emit = defineEmits(['update:modelValue'])
+
+const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
+const selectedDays = ref([...props.modelValue])
+
+watch(selectedDays, (val) => {
+  emit('update:modelValue', val)
+})
+
+const toggleDay = (day) => {
+  if (selectedDays.value.includes(day)) {
+    selectedDays.value = selectedDays.value.filter(d => d !== day)
+  } else {
+    selectedDays.value.push(day)
+  }
 }
+
 </script>
 
 <template>
@@ -40,20 +66,13 @@ const submitForm = () => {
           <p class="input-judul">Nama</p>
           <n-input v-model:value="nama" type="text" placeholder="Ganti nama kamu" />
         </div>
-        <div class="input-jenjang">
-          <p class="input-judul">Jenjang</p>
+        <div class="input-status">
+          <p class="input-judul">Status</p>
           <n-select 
-            v-model:value="jenjang" 
+            v-model:value="status" 
             :options="options" 
-            placeholder="Pilih jenjang" 
+            placeholder="Pilih status" 
           />
-        </div>
-      </div>
-
-      <div class="input-line">
-        <div class="input-sekolah">
-          <p class="input-judul">Sekolah</p>
-          <n-input v-model:value="sekolah" type="text" placeholder="Ganti nama sekolah baru kamu" />
         </div>
       </div>
 
@@ -61,10 +80,6 @@ const submitForm = () => {
         <div class="input-wa">
           <p class="input-judul">No. Whatsapp</p>
           <n-input v-model:value="noWa" type="text" placeholder="Ganti nomor Whatsapp" />
-        </div>
-        <div class="input-nowali">
-          <p class="input-judul">No Telp Wali</p>
-          <n-input v-model:value="noWali" type="text" placeholder="Ganti nomor telp wali" />
         </div>
       </div>
 
@@ -74,8 +89,37 @@ const submitForm = () => {
           <n-input v-model:value="alamat" type="text" placeholder="Ganti alamat kamu" />
         </div>
       </div>
+
+      <div class="input-line">
+        <div class="input-jenjang">
+          <p class="input-judul">Jenjang diajar</p>
+          <n-input v-model:value="jenjang" type="text" placeholder="masukkan jenjang yang bisa anda ajar" />
+        </div>
+      </div>
+      
+      <div class="input-line">
+        <div class="input-pelajaran">
+          <p class="input-judul">Mata Pelajaran</p>
+          <n-input v-model:value="pelajaran" type="text" placeholder="masukkan jenjang yang bisa anda ajar" />
+        </div>
+      </div>
+
+      <div class="hari-mengajar">
+        <p class="input-judul">Hari aktif</p>
+        <div class="days">
+          <button
+            v-for="(day, index) in days"
+            :key="index"
+            :class="['day-button', { active: selectedDays.includes(day) }]"
+            @click="toggleDay(day)"
+          >
+            {{ day }}
+          </button>
+        </div>
+      </div>
+
     </n-space>
-    <butSimpan @click="submitForm"/>
+    <butSimpan @click=""/>
   </div>
   <Footer/> 
 </template>
@@ -105,15 +149,50 @@ const submitForm = () => {
 .input-line .input-nama {
   grid-column: span 9;
 }
-.input-line .input-jenjang {
+.input-line .input-status {
   grid-column: span 3;
 }
 .input-line .input-sekolah,
-.input-alamat {
+.input-alamat, .input-wa, 
+.input-jenjang, .input-pelajaran{
   grid-column: span 12;
 }
-.input-line .input-wa,
-.input-nowali {
-  grid-column: span 6;
+
+.hari-mengajar {
+  font-family: 'Poppins', sans-serif;
+}
+
+.days {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
+}
+
+.day-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #154484;
+  border-radius: 20px;
+  background-color: white;
+  color: #154484;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.day-button.active,
+.day-button:hover {
+  background-color: #154484;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .input-line {
+    grid-template-columns: 1fr !important;
+  }
+  .input-line .input-nama,
+  .input-line .input-status {
+    grid-column: span 1 !important;
+  }
 }
 </style>

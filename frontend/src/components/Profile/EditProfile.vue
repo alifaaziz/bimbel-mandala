@@ -116,4 +116,15 @@ const submitForm = () => {
 .input-nowali {
   grid-column: span 6;
 }
+
+@media (max-width: 768px) {
+  .input-line {
+    grid-template-columns: 1fr !important;
+  }
+  .input-line .input-nama,
+  .input-line .input-jenjang {
+    grid-column: span 1 !important;
+  }
+}
+
 </style>

@@ -11,7 +11,7 @@ import NoProgramTutor from './Absen/NoProgramTutor.vue';
 
 import { ref, computed } from 'vue';
 
-const hasProgram = ref(false);
+const hasProgram = ref(true);
 
 // Ambil user yang aktif
 const activeUser = computed(() => auth.users.find(u => u.isActive));

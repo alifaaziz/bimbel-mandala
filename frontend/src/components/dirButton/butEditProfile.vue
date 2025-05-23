@@ -3,13 +3,31 @@
         <n-button
           class="custom-button buttonm3"
           round
-          @click="$router.push('/profileuser/editprofile')"
+          @click="goToEditProfile"
         >
           <img src="@/assets/icons/edit.svg" alt="">
           Edit Profile
         </n-button>
     </div>
 </template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+import { auth } from '../Absen/auth' // Ganti dengan path yang benar ke file auth.js
+
+// Cari user yang sedang aktif
+const activeUser = auth.users.find(user => user.isActive)
+const userRole = activeUser?.role || 'siswa' // fallback ke 'siswa' jika tidak ada user aktif
+
+const router = useRouter()
+const goToEditProfile = () => {
+  if (userRole === 'tutor') {
+    router.push('/profileuser/editprofiletutor')
+  } else {
+    router.push('/profileuser/editprofile')
+  }
+}
+</script>
 
 <style scoped>
 .button-container {
