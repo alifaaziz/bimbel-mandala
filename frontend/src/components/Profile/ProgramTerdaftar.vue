@@ -6,14 +6,14 @@
           <tbody>
             <tr v-for="(program, index) in programs" :key="index">
               <td data-label="Program">
-                <span class="bodysb3">{{ program.nama }}</span><br />
-                <span class="bodyr3">{{ program.pengajar }}</span>
+                <span class="bodysb3">{{ program.programName }}</span><br />
+                <span class="bodyr3">{{ program.tutorName }}</span>
               </td>
-              <td class="bodyr3" data-label="Status">{{ program.status }}</td>
-              <td class="bodyr3" data-label="Jenis">{{ program.jenis }}</td>
-              <td class="bodyr3" data-label="Hari">{{ program.hari }}</td>
-              <td class="bodyr3" data-label="Jam">{{ program.jam }}</td>
-              <td class="bodyr3" data-label="Durasi">{{ program.durasi }}</td>
+              <td class="bodyr3" data-label="Status">{{ formatStatus(program.status) }}</td>
+              <td class="bodyr3" data-label="Jenis">{{ formatGroupType(program.groupType) }}</td>
+              <td class="bodyr3" data-label="Hari">{{ program.days }}</td>
+              <td class="bodyr3" data-label="Jam">{{ formatTime(program.time) }}</td>
+              <td class="bodyr3" data-label="Durasi">{{ program.duration }} Menit</td>
               <td data-label="Aksi">
                 <n-button ghost color="#154484" class="but-table">
                   <n-icon>
@@ -21,46 +21,48 @@
                   </n-icon>
                 </n-button>
               </td>
-
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-  </template>
+</template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { NButton, NIcon } from 'naive-ui'
 
-const programs = [
-  {
-    nama: 'Matematika SMA',
-    pengajar: 'Pak Dendy Wan S.Pd',
-    status: 'Berjalan',
-    jenis: 'Privat',
-    hari: 'Senin, Rabu, Sabtu',
-    jam: '15:00',
-    durasi: '90 Menit'
-  },
-  {
-    nama: 'Fisika SMA',
-    pengajar: 'Pak Venita S.Pd',
-    status: 'Berjalan',
-    jenis: 'Kelompok 5 Peserta',
-    hari: 'Selasa, Kamis',
-    jam: '15:00',
-    durasi: '120 Menit'
-  },
-  {
-    nama: 'Fokus UTBK',
-    pengajar: 'Pak Wendy S.Pd, M.Pd',
-    status: 'Berjalan',
-    jenis: 'Kelas',
-    hari: 'Senin',
-    jam: '15:00',
-    durasi: '120 Menit'
+const programs = ref([])
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  const res = await fetch('http://localhost:3000/classes/my', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  const data = await res.json()
+  programs.value = data.data || []
+})
+
+function formatTime(timeStr) {
+  if (!timeStr) return '-'
+  return timeStr.slice(11, 16)
+}
+
+function formatStatus(status) {
+  if (status === 'berjalan') return 'Berjalan'
+  if (status === 'selesai') return 'Selesai'
+  return status
+}
+
+function formatGroupType(type) {
+  if (type === 'privat') return 'Privat'
+  if (type === 'kelas') return 'Kelas'
+  if (type?.startsWith('grup')) {
+    const jumlah = type.replace('grup', '')
+    return `Kelompok ${jumlah} Peserta`
   }
-]
+  return type
+}
 </script>
   
 <style scoped>

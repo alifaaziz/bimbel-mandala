@@ -19,14 +19,38 @@ const options = [
   { label: "SD", value: "SD" },
 ]
 
-const submitForm = () => {
-  console.log('Data yang dikirim:')
-  console.log('Nama:', nama.value)
-  console.log('Jenjang:', jenjang.value)
-  console.log('Sekolah:', sekolah.value)
-  console.log('No WA:', noWa.value)
-  console.log('No Wali:', noWali.value)
-  console.log('Alamat:', alamat.value)
+const submitForm = async () => {
+  const token = localStorage.getItem('token')
+  const rawPayload = {
+    name: nama.value,
+    level: jenjang.value,
+    schoolName: sekolah.value,
+    phone: noWa.value,
+    parentPhone: noWali.value,
+    address: alamat.value
+  }
+  // Filter field yang null, undefined, atau string kosong/whitespace
+  const payload = Object.fromEntries(
+    Object.entries(rawPayload).filter(
+      ([_, v]) =>
+        v !== null &&
+        v !== undefined &&
+        !(typeof v === 'string' && v.trim() === '')
+    )
+  )
+  try {
+    const res = await fetch('http://localhost:3000/users/me', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    })
+    window.location.href = '/profileuser'
+  } catch (err) {
+    console.error('Update gagal:', err)
+  }
 }
 </script>
 

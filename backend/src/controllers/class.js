@@ -43,7 +43,8 @@ async function joinClass(req, res) {
  */
 async function getMyClass(req, res) {
   const userId = res.locals.user.id;
-  const classes = await ClassService.getMyClass(userId);
+  const role = res.locals.user.role; 
+  const classes = await ClassService.getMyClass(userId, role);
   res.status(200).json({ data: classes });
 }
 

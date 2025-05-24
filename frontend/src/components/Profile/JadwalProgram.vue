@@ -1,6 +1,6 @@
 <template>
   <div class="program-card">
-    <div class="card-header headerb3">Program Terdaftar</div>
+    <div class="card-header headerb3">Jadwal Program</div>
     <div class="card-body">
       <!-- DESKTOP TABLE -->
       <div class="table-wrapper" v-if="!isMobile">
@@ -53,15 +53,64 @@ import { defineComponent, h, ref, onMounted } from "vue";
 export default defineComponent({
   setup() {
     const isMobile = ref(false);
+    const data = ref([]);
 
     const updateIsMobile = () => {
       isMobile.value = window.innerWidth <= 600;
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       updateIsMobile();
       window.addEventListener("resize", updateIsMobile);
+
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/schedules', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const result = await res.json();
+      const sorted = (result.data || []).sort((a, b) => new Date(a.date) - new Date(b.date));
+      data.value = sorted.slice(0, 5).map((item, idx) => ({
+        key: item.id || idx + 1,
+        jadwal: item.packageName || '-',
+        guru: item.tutorName || '-',
+        jenis: formatGroupType(item.groupType),
+        pertemuan: item.meet ? `Pertemuan ${item.meet}` : '-',
+        tanggal: item.date ? formatDate(item.date) : '-',
+        jam: item.date ? formatTime(item.date) : '-',
+        durasi: item.duration ? `${item.duration} Menit` : '-',
+        status: [formatStatus(item.status)]
+      }));
     });
+
+    function formatTime(dateStr) {
+      if (!dateStr) return '-'
+      return dateStr.slice(11, 16)
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-'
+      const date = new Date(dateStr)
+      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+    }
+
+    function formatStatus(status) {
+      if (!status) return '-'
+      if (status.toLowerCase() === 'terjadwal') return 'Terjadwal'
+      if (status.toLowerCase() === 'jadwal ulang') return 'Jadwal Ulang'
+      if (status.toLowerCase() === 'masuk') return 'Masuk'
+      if (status.toLowerCase() === 'izin') return 'Izin'
+      return status
+    }
+
+    function formatGroupType(type) {
+      if (type === 'privat') return 'Privat'
+      if (type === 'kelas') return 'Kelas'
+      if (type?.startsWith('grup')) {
+        const jumlah = type.replace('grup', '')
+        return `Kelompok ${jumlah} Peserta`
+      }
+      return type
+    }
 
     const tagTypeMap = {
       "Terjadwal": "success",
@@ -110,53 +159,6 @@ export default defineComponent({
             );
           });
         }
-      }
-    ];
-
-    const data = [
-      {
-        key: 1,
-        jadwal: "Fokus UTBK",
-        guru: "Pak Wendy S.Pd, M.Pd",
-        jenis: "Kelas",
-        pertemuan: 3,
-        tanggal: "Senin, 17 Maret 2025",
-        jam: "15:00",
-        durasi: "120 Menit",
-        status: ["Terjadwal"]
-      },
-      {
-        key: 2,
-        jadwal: "Fisika SMA",
-        guru: "Pak Venita S.Pd",
-        jenis: "Kelompok 5 Peserta",
-        pertemuan: 7,
-        tanggal: "Kamis, 13 Maret 2025",
-        jam: "15:00",
-        durasi: "120 Menit",
-        status: ["Jadwal Ulang"]
-      },
-      {
-        key: 3,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Kelompok 3 Orang",
-        pertemuan: 12,
-        tanggal: "Rabu, 12 Maret 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: ["Masuk"]
-      },
-      {
-        key: 4,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Kelompok 3 Orang",
-        pertemuan: 13,
-        tanggal: "Sabtu, 8 Maret 2025",
-        jam: "10:00",
-        durasi: "90 Menit",
-        status: ["Izin"]
       }
     ];
 

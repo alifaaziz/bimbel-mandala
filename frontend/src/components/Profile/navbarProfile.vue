@@ -4,7 +4,7 @@
         <div class="arrow" @click="goBack">
           <img src="@/assets/arrow-left-circle.svg" alt="arrow" />
         </div>
-        <div class="headlineb1 detail-title">Profile Peserta</div>
+        <div class="headlineb1 detail-title">Profile</div>
       </n-layout-header>
     </n-layout>
 </template>

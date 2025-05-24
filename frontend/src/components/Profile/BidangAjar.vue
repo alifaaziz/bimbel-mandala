@@ -9,18 +9,31 @@
                     <img src="@/assets/icons/mail.svg" alt="">
                     <p>Jenjang</p>
                 </div>
-                <p>: SMP, SMA</p>
+                <p>: {{ jenjang }}</p>
             </div>
             <div class="detail-separator">
                 <div class="detail-profile">
                     <img src="@/assets/icons/mail.svg" alt="">
                     <p>Mata Pelajaran</p>
                 </div>
-                <p>: Matematika, fisika, kimia</p>
+                <p>: {{ subjects }}</p>
             </div>
         </div>
     </div>
 </template>
+
+<script setup>
+defineProps({
+    subjects: {
+        type: String,
+        default: '-'
+    },
+    jenjang: {
+        type: String,
+        default: '-'
+    }
+})
+</script>
 
 <style scoped>
 .title-bidang-ajar {

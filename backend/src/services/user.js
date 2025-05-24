@@ -154,7 +154,7 @@ async function createUserWithRole(payload) {
  * @throws {Error} Throws an error if the update fails.
  */
 async function updateUser(payload, file) {
-    const { id, password, role, ...additionalData } = payload;
+    const { id, password, role, daysName, ...additionalData } = payload;
     const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
 
     // Gunakan id jika name tidak ada
@@ -169,41 +169,61 @@ async function updateUser(payload, file) {
         additionalData.photo = photoPath;
     }
 
-    const parsedUserWithEncryptedPassword = {
-        ...additionalData,
-        password: encryptedPassword
-    };
+    // Pisahkan field user dan tutor
+    const { name, email, googleId, password: userPassword, ...maybeTutorData } = additionalData;
 
-    Object.keys(parsedUserWithEncryptedPassword).forEach(key => {
-        if (parsedUserWithEncryptedPassword[key] === undefined) {
-            delete parsedUserWithEncryptedPassword[key];
-        }
-    });
-
-    const { name, email, googleId, password: userPassword, ...additionalUserData } = parsedUserWithEncryptedPassword;
-
+    // Update user jika ada perubahan
     if (name || email || googleId || userPassword) {
         await prisma.user.update({
             where: { id: id },
             data: {
-                name,
-                email,
-                googleId,
-                password: userPassword
+                ...(name && { name }),
+                ...(email && { email }),
+                ...(googleId && { googleId }),
+                ...(userPassword && { password: userPassword })
             }
         });
     }
 
     if (role === 'siswa') {
+        // Hanya kirim field yang tidak null/undefined
+        const studentData = Object.fromEntries(
+            Object.entries(maybeTutorData).filter(([_, v]) => v !== null && v !== undefined)
+        );
         await prisma.student.update({
             where: { userId: id },
-            data: additionalUserData
+            data: studentData
         });
     } else if (role === 'tutor') {
+        // Hanya kirim field yang tidak null/undefined DAN memang field Tutor
+        const allowedTutorFields = [
+            'status', 'school', 'phone', 'address', 'teachLevel', 'subjects', 'major', 'description', 'photo'
+        ];
+        const tutorData = Object.fromEntries(
+            Object.entries(maybeTutorData)
+                .filter(([k, v]) => allowedTutorFields.includes(k) && v !== null && v !== undefined)
+        );
         await prisma.tutor.update({
             where: { userId: id },
-            data: additionalUserData // photo akan ikut terupdate jika ada
+            data: tutorData
         });
+
+        // Update hari aktif jika ada
+        if (Array.isArray(daysName)) {
+            const tutor = await prisma.tutor.findUnique({ where: { userId: id } });
+            await prisma.tutorDay.deleteMany({ where: { tutorId: tutor.id } });
+            for (const dayName of daysName) {
+                const day = await prisma.day.findFirst({ where: { daysName: dayName } });
+                if (day) {
+                    await prisma.tutorDay.create({
+                        data: {
+                            tutorId: tutor.id,
+                            daysId: day.id
+                        }
+                    });
+                }
+            }
+        }
     }
 
     const user = await prisma.user.findUnique({
@@ -289,12 +309,27 @@ async function getUserById(id) {
         where: { id },
         include: {
             students: true,
-            tutors: true
+            tutors: {
+                include: {
+                    tutorDay: {
+                        include: {
+                            day: true
+                        }
+                    }
+                }
+            }
         }
     });
 
     if (!user) {
         throw new HttpError(404, { message: 'User not found' });
+    }
+
+    if (user.role === 'tutor' && user.tutors?.length) {
+        user.tutors = user.tutors.map(tutor => ({
+            ...tutor,
+            daysName: tutor.tutorDay.map(td => td.day?.daysName).filter(Boolean)
+        }));
     }
 
     return user;

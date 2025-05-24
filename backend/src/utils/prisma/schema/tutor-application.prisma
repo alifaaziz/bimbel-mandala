@@ -5,6 +5,7 @@ model TutorApplication {
   birthDate   DateTime? @map("birth_date")
   gender      Gender?
   phone       String?
+  address     String?
   subjects    String?
   status      StudyStatus?
   major       String?

@@ -13,15 +13,27 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { auth } from '../Absen/auth' // Ganti dengan path yang benar ke file auth.js
-
-// Cari user yang sedang aktif
-const activeUser = auth.users.find(user => user.isActive)
-const userRole = activeUser?.role || 'siswa' // fallback ke 'siswa' jika tidak ada user aktif
+import { ref, onMounted } from 'vue'
 
 const router = useRouter()
+const userRole = ref('siswa')
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  try {
+    const res = await fetch('http://localhost:3000/users/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const data = await res.json()
+    userRole.value = data.data?.role || 'siswa'
+  } catch (err) {
+    userRole.value = 'siswa'
+  }
+})
+
 const goToEditProfile = () => {
-  if (userRole === 'tutor') {
+  if (userRole.value === 'tutor') {
     router.push('/profileuser/editprofiletutor')
   } else {
     router.push('/profileuser/editprofile')

@@ -16,14 +16,14 @@ const pelajaran = ref('')
 
 // Opsi untuk dropdown `n-select`
 const options = [
-  { label: "Semester 1-2", value: "tahun1" },
-  { label: "Semester 3-4", value: "tahun2" },
-  { label: "Semester 5-6", value: "tahun3" },
-  { label: "Semester 7-8", value: "tahun4" },
-  { label: "Semester 8<", value: "tahunakhir" },
-  { label: "S1", value: "Sarjana" },
-  { label: "S2", value: "Magister" },
-  { label: "S3", value: "Doktor" },
+  { label: "Semester 1-2", value: "TH1" },
+  { label: "Semester 3-4", value: "TH2" },
+  { label: "Semester 5-6", value: "TH3" },
+  { label: "Semester 7-8", value: "TH4" },
+  { label: "Semester 8<", value: "TH5" },
+  { label: "S1", value: "S1" },
+  { label: "S2", value: "S2" },
+  { label: "S3", value: "S3" },
 ]
 
 import { defineEmits, defineProps, watch } from 'vue'
@@ -54,6 +54,44 @@ const toggleDay = (day) => {
   }
 }
 
+const submitForm = async () => {
+  const token = localStorage.getItem('token')
+  const rawPayload = {
+    name: nama.value,
+    status: status.value,
+    school: sekolah.value,
+    phone: noWa.value,
+    address: alamat.value,
+    teachLevel: jenjang.value,
+    subjects: pelajaran.value
+  }
+
+  if (selectedDays.value.length > 0) {
+    rawPayload.daysName = selectedDays.value
+  }
+
+  const payload = Object.fromEntries(
+    Object.entries(rawPayload).filter(
+      ([_, v]) =>
+        v !== null &&
+        v !== undefined &&
+        !(typeof v === 'string' && v.trim() === '')
+    )
+  )
+  try {
+    const res = await fetch('http://localhost:3000/users/me', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    })
+    window.location.href = '/profileuser'
+  } catch (err) {
+    console.error('Update gagal:', err)
+  }
+}
 </script>
 
 <template>
@@ -119,7 +157,7 @@ const toggleDay = (day) => {
       </div>
 
     </n-space>
-    <butSimpan @click=""/>
+    <butSimpan @click="submitForm"/>
   </div>
   <Footer/> 
 </template>

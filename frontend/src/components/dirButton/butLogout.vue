@@ -3,13 +3,23 @@
       <n-button
         class="custom-button buttonm3"
         round
-        @click="$emit('click')"
+        @click="handleLogout"
       >
         <img src="@/assets/icons/log-out.svg" alt="">
         Keluar
       </n-button>
   </div>
 </template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+function handleLogout() {
+  localStorage.removeItem('token')
+  router.push('/')
+}
+</script>
 
 <style scoped>
 .button-container {

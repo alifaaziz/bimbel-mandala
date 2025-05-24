@@ -129,77 +129,119 @@ function getTutorName(tutor) {
  * @param {string} userId - The ID of the logged-in user.
  * @returns {Promise<Array>} The list of classes with detailed information.
  */
-async function getMyClass(userId) {
-    const studentClasses = await prisma.studentClass.findMany({
-        where: {
-            userId
-        },
-        include: {
-            class: {
-                include: {
-                    order: {
-                        include: {
-                            groupType:{
-                                select: {
-                                    type: true
+async function getMyClass(userId, role) {
+    if (role === 'tutor') {
+        // Untuk tutor: ambil class di mana tutorId = userId
+        const classes = await prisma.class.findMany({
+            where: { tutorId: userId },
+            include: {
+                order: {
+                    include: {
+                        groupType: { select: { type: true } },
+                        bimbelPackage: {
+                            include: {
+                                packageDay: {
+                                    select: {
+                                        day: { select: { daysName: true } }
+                                    }
                                 }
-                            },
-                            bimbelPackage: {
-                                include: {
-                                    packageDay: {
-                                        select: {
-                                            day: {
-                                                select: {
-                                                    daysName: true
-                                                }
+                            }
+                        }
+                    }
+                },
+                tutor: {
+                    select: {
+                        name: true,
+                        tutors: { select: { gender: true } }
+                    }
+                }
+            }
+        });
+
+        return classes.map(cls => {
+            const bimbelPackage = cls.order?.bimbelPackage;
+            const groupType = cls.order?.groupType;
+            const packageDays = bimbelPackage?.packageDay;
+
+            const tutorName = getTutorName(cls.tutor);
+
+            const programName = bimbelPackage
+                ? `${bimbelPackage.name} ${bimbelPackage.level}`
+                : null;
+
+            const days = packageDays
+                ? packageDays.map(day => day.day.daysName).join(', ')
+                : null;
+
+            return {
+                status: cls.status,
+                tutorName,
+                programName,
+                groupType: groupType?.type || null,
+                days,
+                time: bimbelPackage?.time || null,
+                duration: bimbelPackage?.duration || null
+            };
+        });
+    } else {
+        // Untuk siswa: ambil dari studentClass
+        const studentClasses = await prisma.studentClass.findMany({
+            where: { userId },
+            include: {
+                class: {
+                    include: {
+                        order: {
+                            include: {
+                                groupType: { select: { type: true } },
+                                bimbelPackage: {
+                                    include: {
+                                        packageDay: {
+                                            select: {
+                                                day: { select: { daysName: true } }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
-                    },
-                    tutor: {
-                        select: {
-                            name: true,
-                            tutors: {
-                                select: {
-                                    gender: true
-                                }
+                        },
+                        tutor: {
+                            select: {
+                                name: true,
+                                tutors: { select: { gender: true } }
                             }
                         }
                     }
                 }
             }
-        }
-    });
+        });
 
-    return studentClasses.map(studentClass => {
-        const cls = studentClass.class;
-        const bimbelPackage = cls.order?.bimbelPackage;
-        const groupType = cls.order?.groupType;
-        const packageDays = bimbelPackage?.packageDay;
+        return studentClasses.map(studentClass => {
+            const cls = studentClass.class;
+            const bimbelPackage = cls.order?.bimbelPackage;
+            const groupType = cls.order?.groupType;
+            const packageDays = bimbelPackage?.packageDay;
 
-        const tutorName = getTutorName(cls.tutor);
+            const tutorName = getTutorName(cls.tutor);
 
-        const programName = bimbelPackage
-            ? `${bimbelPackage.name} ${bimbelPackage.level}`
-            : null;
+            const programName = bimbelPackage
+                ? `${bimbelPackage.name} ${bimbelPackage.level}`
+                : null;
 
-        const days = packageDays
-            ? packageDays.map(day => day.day.daysName).join(', ')
-            : null;
+            const days = packageDays
+                ? packageDays.map(day => day.day.daysName).join(', ')
+                : null;
 
-        return {
-            status: cls.status,
-            tutorName,
-            programName,
-            groupType: groupType?.type || null,
-            days,
-            time: bimbelPackage?.time || null,
-            duration: bimbelPackage?.duration || null
-        };
-    });
+            return {
+                status: cls.status,
+                tutorName,
+                programName,
+                groupType: groupType?.type || null,
+                days,
+                time: bimbelPackage?.time || null,
+                duration: bimbelPackage?.duration || null
+            };
+        });
+    }
 }
 
 export const ClassService = {

@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import navbarProfile from "./navbarProfile.vue"
 import butEditProfile from "../dirButton/butEditProfile.vue";
 import butLogout from "../dirButton/butLogout.vue";
@@ -8,28 +9,57 @@ import bidangAjar from "./BidangAjar.vue";
 import hariAktif from "./HariAktif.vue";
 import Footer from "@/components/footer.vue"
 
-// Import data user
-import { auth, USER_ROLES } from '../Absen/auth.js'
+const user = ref(null)
+const siswa = ref(null)
+const tutor = ref(null)
 
-// Cari user yang aktif
-const user = auth.users.find(u => u.isActive)
+function formatGender(gender) {
+  if (gender === 'Male') return 'Laki-laki'
+  if (gender === 'Female') return 'Perempuan'
+  return gender || '-'
+}
+
+function formatTutorStatus(status) {
+  if (status === 'TH1') return 'Mahasiswa Aktif Semester 1-2'
+  if (status === 'TH2') return 'Mahasiswa Aktif Semester 3-4'
+  if (status === 'TH3') return 'Mahasiswa Aktif Semester 5-6'
+  if (status === 'TH4') return 'Mahasiswa Aktif Semester 7-8'
+  if (status === 'TH5') return 'Mahasiswa Aktif Semester 8<'
+  if (status === 'S1') return 'Sarjana (S1)'
+  if (status === 'S2') return 'Magister (S2)'
+  if (status === 'S3') return 'Doktor (S3)'
+  return status || '-'
+}
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  const res = await fetch('http://localhost:3000/users/me', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  const result = await res.json()
+  user.value = result.data
+  if (user.value.role === 'siswa') {
+    siswa.value = user.value.students[0]
+  } else if (user.value.role === 'tutor') {
+    tutor.value = user.value.tutors[0]
+  }
+})
 </script>
 
 <template>
   <navbarProfile/>
-  <div class="profile-container padding-components">
+  <div class="profile-container padding-components" v-if="user">
     <div class="space-profile">
       <div class="identitas">
-        <h4 class="headerb2">{{ user.nama }}</h4>
-        <p class="bodyr2" v-if="user.role === USER_ROLES.SISWA">{{ user.jenjang }}</p>
-        <p class="bodyr2" v-else-if="user.role === USER_ROLES.TUTOR">{{ user.gelar }}</p>
+        <h4 class="headerb2">{{ user.name }}</h4>
+        <p class="bodyr2" v-if="user.role === 'siswa'">{{ siswa?.level }}</p>
+        <p class="bodyr2" v-else-if="user.role === 'tutor'">{{ formatTutorStatus(tutor?.status) }}</p>
       </div>
       <div class="butAct">
         <butEditProfile />
         <butLogout />
       </div>
     </div>
-    
     <n-divider/>
     <div class="space-profile">
       <n-space vertical>
@@ -45,61 +75,61 @@ const user = auth.users.find(u => u.isActive)
             <img src="@/assets/icons/whatsapp.svg" alt="">
             <p>No. WhatsApp</p>
           </div>
-          <p>: {{ user.noWhatsapp }}</p>
+          <p>: {{ siswa?.phone || tutor?.phone }}</p>
         </div>
-        <div class="detail-separator" v-if="user.role === USER_ROLES.SISWA">
+        <div class="detail-separator" v-if="user.role === 'siswa'">
           <div class="detail-profile">
             <img src="@/assets/icons/phone.svg" alt="">
             <p>No. Telp Wali</p>
           </div>
-          <p>: {{ user.noTelpWali }}</p>
+          <p>: {{ siswa?.parentPhone }}</p>
         </div>
-        <div class="detail-separator" v-else-if="user.role === USER_ROLES.TUTOR">
+        <div class="detail-separator" v-else-if="user.role === 'tutor'">
           <div class="detail-profile">
             <img src="@/assets/icons/home.svg" alt="Gender">
             <p>Gender</p>
           </div>
-          <p>: {{ user.gender }}</p>
+          <p>: {{ formatGender(tutor?.gender) }}</p>
         </div>
       </n-space>
       <n-space vertical>
-        <div class="detail-separator" v-if="user.role === USER_ROLES.SISWA">
+        <div class="detail-separator" v-if="user.role === 'siswa'">
           <div class="detail-profile">
             <img src="@/assets/icons/building.svg" alt="">
             <p>Sekolah</p>
           </div>
-          <p>: {{ user.sekolah }}</p>
+          <p>: {{ siswa?.schoolName }}</p>
         </div>
-        <div class="detail-separator" v-if="user.role === USER_ROLES.TUTOR">
+        <div class="detail-separator" v-if="user.role === 'tutor'">
           <div class="detail-profile">
             <img src="@/assets/icons/building.svg" alt="">
             <p>Asal Kampus</p>
           </div>
-          <p>: {{ user.asalKampus }}</p>
+          <p>: {{ tutor?.school }}</p>
         </div>
         <div class="detail-separator">
           <div class="detail-profile">
             <img src="@/assets/icons/home.svg" alt="">
             <p>Alamat rumah</p>
           </div>
-          <p>: {{ user.alamat }}</p>
+          <p>: {{ siswa?.address || tutor?.address }}</p>
         </div>
-        <div class="detail-separator" v-if="user.role === USER_ROLES.TUTOR">
+        <div class="detail-separator" v-if="user.role === 'tutor'">
           <div class="detail-profile">
             <img src="@/assets/icons/home.svg" alt="">
             <p>Prodi</p>
           </div>
-          <p>: {{ user.prodi }}</p>
+          <p>: {{ tutor?.major }}</p>
         </div>
       </n-space>
     </div>
     <n-divider/>
-    <div v-if="user.role === USER_ROLES.TUTOR">
-      <bidangAjar/>
+    <div v-if="user.role === 'tutor'">
+      <bidangAjar :subjects="tutor?.subjects":jenjang="tutor?.teachLevel"/>
     </div>
     <n-divider/>
-    <div v-if="user.role === USER_ROLES.TUTOR">
-      <hariAktif/>
+    <div v-if="user.role === 'tutor'">
+      <hariAktif :daysName="tutor?.daysName"/>
     </div>
     <n-divider />
     <tabJadwalProgram/>

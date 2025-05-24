@@ -1,10 +1,10 @@
 <script setup>
-import { auth } from '../Absen/auth.js'
-
-// Ambil user yang aktif
-const user = auth.users.find(u => u.isActive)
-// Pastikan hariAktif ada, jika tidak tampilkan array kosong
-const hariAktif = user?.hariAktif ?? []
+const props = defineProps({
+  daysName: {
+    type: Array,
+    default: () => []
+  }
+})
 </script>
 
 <template>
@@ -12,8 +12,8 @@ const hariAktif = user?.hariAktif ?? []
     <h3 class="headersb3 title-bidang-ajar">
       Hari Aktif
     </h3>
-    <div v-if="hariAktif.length">
-      <span v-for="(hari, idx) in hariAktif" :key="idx" class="tag-hari">{{ hari }}</span>
+    <div v-if="daysName.length">
+      <span v-for="(hari, idx) in daysName" :key="idx" class="tag-hari">{{ hari }}</span>
     </div>
     <div v-else>
       Tidak ada hari aktif
