@@ -108,4 +108,40 @@ const toggleForm = () => {
   width: 100%;
   max-width: 400px;
 }
+
+@media (max-width: 768px) {
+  .container-auth {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .left-side,
+  .right-side {
+    flex: none;
+    width: 100%;
+    min-height: 300px;
+  }
+
+  .left-side {
+    min-height: 200px;
+    background-position: center center !important;
+  }
+
+  .overlay {
+    gap: 2rem;
+    padding: 1.5rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .logo {
+    width: 150px;
+    margin-bottom: 1rem;
+  }
+
+  .form-container {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+}
 </style>

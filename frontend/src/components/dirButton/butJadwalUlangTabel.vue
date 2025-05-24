@@ -1,10 +1,10 @@
 <template>
     <div>
         <n-button
-          class="custom-button buttonm3"
+          class="custom-button buttonm4"
           tertiary
           round
-          @click="$emit('click')"
+          @click="$emit('click', $event)"
         >
           {{ label }}
         </n-button>
@@ -15,7 +15,7 @@
 defineProps({
   label: {
     type: String,
-    default: 'Submit'
+    default: 'Jadwal Ulang'
   }
 });
 </script>

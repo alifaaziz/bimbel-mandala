@@ -6,7 +6,7 @@ import DetailProgram from '../detailProgram.vue';
 import PendaftaranTutor from '../pendaftaranTutor.vue';
 import AbsenSiswa from '../components/Absen.vue';
 
-import MasukDaftar from '../MasukDaftar.vue'
+import MasukDaftar from '../Auth.vue'
 
 import Jadwal from '@/components/Jadwal.vue';
 import TabelJadwal from '@/components/jadwal/TabelJadwal.vue'

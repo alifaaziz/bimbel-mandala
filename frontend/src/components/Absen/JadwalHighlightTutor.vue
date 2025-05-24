@@ -1,8 +1,8 @@
 <script>
 import { defineComponent, h, ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router"; 
-import { NTag, NCard } from "naive-ui";
-import butJadwalUlang from "../dirButton/butJadwalUlang.vue";
+import { NTag } from "naive-ui";
+import butJadwalUlang from "../dirButton/butJadwalUlangTabel.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
 import butJadwal from "../dirButton/butJadwal.vue";
@@ -366,6 +366,8 @@ export default defineComponent({
   margin-top: 8px;
   width: 100%;
 }
+
+/* overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -381,7 +383,7 @@ export default defineComponent({
 .modal-content {
   background: #fff;
   border-radius: 8px;
-  padding: 24px;
+  padding: 2rem;
   max-width: 400px;
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

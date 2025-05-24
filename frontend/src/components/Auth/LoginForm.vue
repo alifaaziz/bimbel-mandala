@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { NInput, NButton } from 'naive-ui'
+import googleIcon from '../../assets/google.svg'
 
 const router = useRouter()
 const email = ref('')
@@ -69,6 +70,41 @@ const emit = defineEmits(['toggle-form'])
 function goToSignup() {
   emit('toggle-form')
 }
+
+function handleForgotPassword() {
+  // Logic for handling password recovery
+  alert('Fitur ini belum tersedia.')
+}
+
+// Tambahkan fungsi untuk login dengan Google
+async function handleGoogleLogin() {
+  isLoading.value = true
+  try {
+    // Ganti dengan URL endpoint login Google Anda
+    const response = await fetch('http://localhost:3000/auth/google', {
+      method: 'GET',
+      credentials: 'include',
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(
+        (data.error && data.error.message) ||
+        data.error ||
+        'Login dengan Google gagal.'
+      )
+    }
+
+    localStorage.setItem('token', data.data.token)
+    isLoggedIn.value = true
+    router.push('/absen')
+  } catch (error) {
+    alert(error.message)
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -94,7 +130,12 @@ function goToSignup() {
       </div>
 
       <div class="form-input">
-        <p class="bodym2">Password</p>
+        <div class="label-row">
+          <p class="bodym2">Password</p>
+          <button @click="handleForgotPassword" class="forgot-link">
+            Lupa password?
+          </button>
+        </div>
         <n-input
           round
           v-model:value="password"
@@ -113,9 +154,19 @@ function goToSignup() {
         :loading="isLoading"
         class="butSign buttonb2"
       >
-        Login
+        Masuk
       </n-button>
 
+      <!-- Tombol Login dengan Google -->
+      <n-button
+        block
+        class="google-btn"
+        @click="handleGoogleLogin"
+      >
+        <img :src="googleIcon" alt="Google" class="google-icon-img" />
+        Masuk dengan Google
+      </n-button>
+      
       <p>
         Belum punya akun?
         <button @click="goToSignup" class="toggle-link">
@@ -189,6 +240,43 @@ function goToSignup() {
   color: red;
   font-size: 0.75rem;
   margin-top: 0.25rem;
+}
+
+.forgot-link {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+
+.forgot-link:hover {
+  color: #2563eb;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.google-btn {
+  border: 1px solid #154484;
+  color: #154484;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.google-icon-img {
+  width: 28px;
+  height: auto;
+  margin-right: 10px;
+  vertical-align: middle;
 }
 
 @media (max-width: 982px) {

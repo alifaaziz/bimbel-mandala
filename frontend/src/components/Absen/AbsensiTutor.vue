@@ -2,12 +2,12 @@
 import { ref } from 'vue'
 import Scheduled from './Scheduled.vue'
 import butAbsen from '../dirButton/butAbsen.vue'
-import butIzin from '../dirButton/butIzin.vue'
+import butSumJadwalUlang from '../dirButton/butPrimerSmall.vue'
+import butBatal from '../dirButton/butSecondSmall.vue'
+import butJadwalUlang from '../dirButton/butSecondNormal.vue'
 
 const isScheduled = ref(true)
 const showAbsenModal = ref(false)
-const izinReason = ref('')
-
 
 // Absen
 function openAbsenModal() {
@@ -19,32 +19,39 @@ function closeAbsenModal() {
 }
 
 function confirmAbsen() {
-  // Lakukan aksi absen di sini
   alert('Absen berhasil!');
   closeAbsenModal();
 }
 
-// Izin
-const showIzinModal = ref(false)
 
-function openIzinModal() {
-  showIzinModal.value = true
+// Jadwal Ulang
+const showRescheduleModal = ref(false)
+const rescheduleDate = ref('')
+const rescheduleTime = ref('')
+const selectedSchedule = ref({
+  jadwal: 'Matematika SMA',
+  guru: 'Pak Dendy Wan S.Pd',
+  pertemuan: 12,
+})
+
+function openRescheduleModal() {
+  showRescheduleModal.value = true
 }
 
-function closeIzinModal() {
-  showIzinModal.value = false
+function closeRescheduleModal() {
+  showRescheduleModal.value = false
+  rescheduleDate.value = ''
+  rescheduleTime.value = ''
 }
 
-function confirmIzin() {
-  if (!izinReason.value.trim()) {
-    alert('Silakan masukkan alasan izin terlebih dahulu.');
+function confirmReschedule() {
+  if (!rescheduleDate.value || !rescheduleTime.value) {
+    alert('Silakan pilih tanggal dan jam baru terlebih dahulu.');
     return;
   }
-  alert(`Permintaan izin berhasil dikirim:\n"${izinReason.value}"`);
-  closeIzinModal();
-  izinReason.value = '';
+  alert(`Jadwal ulang berhasil:\nTanggal: ${rescheduleDate.value}\nJam: ${rescheduleTime.value}`);
+  closeRescheduleModal();
 }
-
 
 const schedule = {
   subject: 'Matematika SMA',
@@ -108,7 +115,8 @@ const schedule = {
 
       <div class="button-group">
         <butAbsen @click="openAbsenModal"/>
-        <butIzin @click="openIzinModal"/>
+        <!-- Tombol simulasi jadwal ulang -->
+        <butJadwalUlang label="Jadwal Ulang" @click.stop="openRescheduleModal()" />
       </div>
     </div>
   </div>
@@ -127,21 +135,38 @@ const schedule = {
   </div>
 </div>
 
-<!-- Izin -->
-<div v-if="showIzinModal" class="modal-overlay" @click.self="closeIzinModal">
+<!-- Popup Jadwal Ulang -->
+<div v-if="showRescheduleModal" class="modal-overlay" @click.self="closeRescheduleModal">
   <div class="modal-content">
     <div class="popup-content">
-      <h3 class="headersb2">Perizinan</h3>
-      <input
-        v-model="izinReason"
-        type="text"
-        class="izin-input bodyr2"
-        placeholder="Masukkan alasan izin..."
-      />
+      <h3 class="headersb2">Jadwal Ulang</h3>
+      <p class="bodyr3" style="margin-bottom: 16px;">
+        Pilih tanggal dan jam baru untuk:<br>
+        <strong>{{ selectedSchedule?.jadwal }}</strong> bersama {{ selectedSchedule?.guru }}<br>
+        <span>Pertemuan ke-{{ selectedSchedule?.pertemuan }}</span>
+      </p>
+      <div style="margin-bottom: 12px;">
+        <label class="bodym3" for="reschedule-date" style="display:block; margin-bottom:4px;">Tanggal Baru</label>
+        <input
+          id="reschedule-date"
+          type="date"
+          v-model="rescheduleDate"
+          class="inputm1"
+          style="width: 100%; margin-bottom: 8px;"
+        />
+        <label class="bodym3" for="reschedule-time" style="display:block; margin-bottom:4px;">Jam Baru</label>
+        <input
+          id="reschedule-time"
+          type="time"
+          v-model="rescheduleTime"
+          class="inputm1"
+          style="width: 100%;"
+        />
+      </div>
     </div>
-    <div class="modal-actions">
-      <button class="buttonm1" @click="confirmIzin" >Izin</button>
-      <button class="buttonm1" @click="closeIzinModal">Batal</button>
+    <div class="modal-actions-jadwalulang">
+      <butSumJadwalUlang label="Jadwal Ulang" @click.stop.prevent="confirmReschedule" />
+      <butBatal label="Batal" @click="closeRescheduleModal" />
     </div>
   </div>
 </div>
@@ -295,13 +320,27 @@ const schedule = {
   font-size: 0.95rem;
 }
 
-.izin-input {
-  width: 100%;
-  padding: 0.75rem;
-  margin-top: 1rem;
-  border: 1px solid #597AA8;
-  border-radius: 8px;
-  font-size: 1rem;
+.bodyr3 {
+  color: #061222;
+}
+
+.modal-actions-jadwalulang {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.bodym3 {
+  color: #154484;
+}
+
+.inputm1 {
+  padding: 8px 10px;
+  font-size: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  box-sizing: border-box;
 }
 
 /* MOBILE RESPONSIVE */

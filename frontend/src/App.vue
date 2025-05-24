@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import Main from './Main.vue';
-import Auth from './MasukDaftar.vue';
+import Auth from './Auth.vue';
 import Jadwal from './components/Jadwal.vue';
 import ProfileUser from './components/ProfileUser.vue';
 import DetailJadwal from './components/jadwal/DetailJadwal.vue'
