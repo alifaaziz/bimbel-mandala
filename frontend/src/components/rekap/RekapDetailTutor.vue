@@ -24,9 +24,8 @@
             <h2 class="headersb3">Rekap Tutor</h2>
             <p><span>Nama</span> : {{ program.tutor.nama }}</p>
             <p><span>Hadir</span> : {{ program.tutor.hadir }}</p>
-            <p><span>Izin</span> : {{ program.tutor.izin }}</p>
             <p><span>Absen</span> : {{ program.tutor.absen }}</p>
-            <p><span>Kosong</span> : {{ program.tutor.kosong }}</p>
+            <p><span>Kosong</span> : {{ program.tutor.alpha }}</p>
           </div>
   
           <div class="perdata-rekap">
@@ -39,9 +38,9 @@
         </div>
         <n-divider />
         <div class="perdata-rekap">
-          <p><span>Kesesuaian</span> : 99.31%</p>
-          <p><span>Honor</span> : Rp1.078.000</p>
-          <p><span>Diterima</span> : : Rp1.070.514</p>
+            <p><span>Honor</span> : Rp {{ program.honor.toLocaleString('id-ID') }}</p>
+            <p><span>Diterima</span> : Rp {{ program.diterima.toLocaleString('id-ID') }}</p>
+            <p><span>Status</span> : {{ program.status }}</p>
         </div>
       </div>
     </n-collapse-item>
@@ -49,92 +48,67 @@
 </template>
 
 <script setup>
-import { auth, USER_ROLES } from '@/components/Absen/auth.js'
-import ButDownloadSecondSmall from '../dirButton/butDownloadSecondSmall.vue';
+import { ref, onMounted } from 'vue'
+import ButDownloadSecondSmall from '../dirButton/butDownloadSecondSmall.vue'
 
-// Ambil user tutor aktif
-const currentUser = auth.users.find(user => user.isActive && user.role === USER_ROLES.TUTOR);
-const tutorName = currentUser ? currentUser.nama : 'Nama Tutor';
+const rekap = ref([])
 
-// Data rekap, nama tutor diambil dari user aktif
-const rekap = [
-  {
-    judul: 'Fokus UTBK',
-    jenjang: 'SMA',
-    kode: '11204',
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  const res = await fetch('http://localhost:3000/attendance/my', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  const data = await res.json()
+  rekap.value = (data || []).map(item => ({
+    classId: item.classId || '-',
+    judul: item.bimbelPackage?.name || '-',
+    jenjang: item.bimbelPackage?.level || '-',
+    kode: item.classCode || '-',
     tutor: {
-      nama: tutorName,
-      hadir: 140,
-      izin: 1,
-      absen: 0,
-      kosong: 3
-    },
-    siswa: {
-      pertemuan: 144,
-      hadir: 140,
-      izin: 2,
-      absen: 1,
-      kosong: 1
+      nama: item.tutorStats?.name || '-',
+      hadir: item.tutorStats?.masuk ?? '-',
+      absen: item.tutorStats?.alpha ?? '-',
+      alpha: item.tutorStats?.alpha ?? '-'
     },
     program: {
-      pertemuan: '6 Bulan (3x perminggu)',
-      kosong: '4 Pertemuan',
-      progress: '100%',
-      absensi: '97,22%'
-    }
-  },
-  {
-    judul: 'Matematika',
-    jenjang: 'SMA',
-    kode: '11202',
-    tutor: {
-      nama: tutorName,
-      hadir: 138,
-      izin: 2,
-      absen: 0,
-      kosong: 4
+      pertemuan: `${item.tutorStats?.totalSchedules ?? '-'} Pertemuan`,
+      kosong: `${(item.tutorStats?.totalSchedules ?? 0) - (item.tutorStats?.masuk ?? 0) - (item.tutorStats?.izin ?? 0) - (item.tutorStats?.alpha ?? 0)} Pertemuan`,
+      progress: `${item.tutorStats?.scheduleProgress ?? 0}%`,
+      absensi: `${item.tutorStats?.totalAttendance ?? 0}%`
     },
-    siswa: {
-      pertemuan: 144,
-      hadir: 138,
-      izin: 3,
-      absen: 2,
-      kosong: 1
-    },
-    program: {
-      pertemuan: '6 Bulan (3x perminggu)',
-      kosong: '5 Pertemuan',
-      progress: '98%',
-      absensi: '96%'
-    }
-  },
-  {
-    judul: 'Kimia',
-    jenjang: 'SMA',
-    kode: '11201',
-    tutor: {
-      nama: tutorName,
-      hadir: 136,
-      izin: 4,
-      absen: 1,
-      kosong: 3
-    },
-    siswa: {
-      pertemuan: 144,
-      hadir: 136,
-      izin: 5,
-      absen: 2,
-      kosong: 1
-    },
-    program: {
-      pertemuan: '6 Bulan (3x perminggu)',
-      kosong: '6 Pertemuan',
-      progress: '95%',
-      absensi: '94%'
-    }
-  }
-]
+    honor: item.tutorStats?.salary ?? 0,
+    diterima: item.tutorStats?.payroll ?? 0,
+    status: item.tutorStats?.status || '-'
+  }))
+})
 
+function downloadRekap(program) {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  fetch(`http://localhost:3000/attendance/download/${program.classId}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(async res => {
+      if (!res.ok) throw new Error('Gagal download rekap')
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `rekap_${program.kode}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    })
+    .catch(err => {
+      alert('Gagal download rekap')
+      console.error(err)
+    })
+}
 </script>
 
 <style scoped>

@@ -414,13 +414,17 @@ async function getMyAttendanceStatistics(user) {
         schedule.attendances.filter(att => att.userId === user.id)
       );
 
-      const totalAttendanceMasuk = studentAttendance.filter(att => att.status === 'masuk').length;
-      const totalAttendancePercentage = calculateAttendancePercentage(totalAttendanceMasuk, schedules.length);
+      const stats = calculateAttendanceStats(studentAttendance, user.id);
+      const totalSchedules = schedules.length;
+      const scheduleProgress = totalSchedules > 0
+        ? ((stats.masuk + stats.izin + stats.alpha) / totalSchedules) * 100
+        : 0;
+      const totalAttendancePercentage = calculateAttendancePercentage(stats.masuk, totalSchedules);
 
       const studentStats = {
-        ...calculateAttendanceStats(studentAttendance, user.id),
-        totalSchedules: schedules.length,
-        scheduleProgress: totalAttendancePercentage,
+        ...stats,
+        totalSchedules,
+        scheduleProgress,
         totalAttendance: totalAttendancePercentage
       };
 

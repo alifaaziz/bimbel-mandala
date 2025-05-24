@@ -1,20 +1,37 @@
 <script setup>
-import { auth, USER_ROLES } from '@/components/Absen/auth.js';
+import { ref, onMounted } from 'vue'
 
-const currentUser = auth.users.find(user => user.isActive);
-const isTutor = currentUser && currentUser.role === USER_ROLES.TUTOR;
+const stat = ref({
+  terbuka: 0,
+  berjalan: 0,
+  selesai: 0
+})
+const isTutor = ref(false)
 
-// Contoh data stat, silakan ganti dengan data dinamis jika ada
-const stat = {
-  terbuka: 2,
-  berjalan: 1,
-  selesai: 3
-};
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  const res = await fetch('http://localhost:3000/packages/statistics/my', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  const data = await res.json()
+  if ('activePackages' in data) {
+    isTutor.value = true
+    stat.value.terbuka = data.activePackages || 0
+    stat.value.berjalan = data.runningClasses || 0
+    stat.value.selesai = data.completedClasses || 0
+  } else {
+    isTutor.value = false
+    stat.value.berjalan = data.runningClasses || 0
+    stat.value.selesai = data.completedClasses || 0
+  }
+})
 </script>
 
 <template>
   <div class="stats-container">
     <template v-if="isTutor">
+      <!-- Tampilkan statistik tutor -->
       <div class="stat-box">
         <p class="label headersb1">Program Terbuka</p>
         <p class="value hero">{{ stat.terbuka.toString().padStart(2, '0') }}</p>
@@ -31,11 +48,11 @@ const stat = {
     <template v-else>
       <div class="stat-box">
         <p class="label headersb1">Program Berjalan</p>
-        <p class="value hero">01</p>
+        <p class="value hero">{{ stat.berjalan.toString().padStart(2, '0') }}</p>
       </div>
       <div class="stat-box">
         <p class="label headersb1">Program Selesai</p>
-        <p class="value hero">03</p>
+        <p class="value hero">{{ stat.selesai.toString().padStart(2, '0') }}</p>
       </div>
     </template>
   </div>

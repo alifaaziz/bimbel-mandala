@@ -22,7 +22,6 @@
           <p><span>Hadir</span> : {{ program.tutor.hadir }}</p>
           <p><span>Izin</span> : {{ program.tutor.izin }}</p>
           <p><span>Absen</span> : {{ program.tutor.absen }}</p>
-          <p><span>Kosong</span> : {{ program.tutor.kosong }}</p>
         </div>
 
         <div class="perdata-rekap">
@@ -31,7 +30,6 @@
           <p><span>Hadir</span> : {{ program.siswa.hadir }}</p>
           <p><span>Izin</span> : {{ program.siswa.izin }}</p>
           <p><span>Absen</span> : {{ program.siswa.absen }}</p>
-          <p><span>Kosong</span> : {{ program.siswa.kosong }}</p>
         </div>
 
         <div class="perdata-rekap">
@@ -47,83 +45,41 @@
 </template>
 
 <script setup>
-const rekap = [
-  {
-    judul: 'Fokus UTBK',
-    jenjang: 'SMA',
-    kode: '11204',
+import { ref, onMounted } from 'vue'
+
+const rekap = ref([])
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  const res = await fetch('http://localhost:3000/attendance/my', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  const data = await res.json()
+  rekap.value = (data || []).map(item => ({
+    judul: item.bimbelPackage?.name || '-',
+    jenjang: item.bimbelPackage?.level || '-',
+    kode: item.classCode || '-',
     tutor: {
-      nama: 'Pak Wendy S.Pd, M.Pd',
-      hadir: 140,
-      izin: 1,
-      absen: 0,
-      kosong: 3
+      nama: item.tutorStats?.name || '-',
+      hadir: item.tutorStats?.masuk ?? '-',
+      izin: item.tutorStats?.izin ?? '-',
+      absen: item.tutorStats?.alpha ?? '-',
     },
     siswa: {
-      pertemuan: 144,
-      hadir: 140,
-      izin: 2,
-      absen: 1,
-      kosong: 1
+      pertemuan: item.studentStats?.totalSchedules ?? '-',
+      hadir: item.studentStats?.masuk ?? '-',
+      izin: item.studentStats?.izin ?? '-',
+      absen: item.studentStats?.alpha ?? '-',
     },
     program: {
-      pertemuan: '6 Bulan (3x perminggu)',
-      kosong: '4 Pertemuan',
-      progress: '100%',
-      absensi: '97,22%'
+      pertemuan: `${item.studentStats?.totalSchedules ?? '-'} Pertemuan`,
+      kosong: `${(item.studentStats?.totalSchedules ?? 0) - (item.studentStats?.masuk ?? 0) - (item.studentStats?.izin ?? 0) - (item.studentStats?.alpha ?? 0)} Pertemuan`,
+      progress: `${item.studentStats?.scheduleProgress ?? 0}%`,
+      absensi: `${item.studentStats?.totalAttendance ?? 0}%`
     }
-  },
-  {
-    judul: 'Matematika',
-    jenjang: 'SMA',
-    kode: '11202',
-    tutor: {
-      nama: 'Pak Wendy S.Pd, M.Pd',
-      hadir: 138,
-      izin: 2,
-      absen: 0,
-      kosong: 4
-    },
-    siswa: {
-      pertemuan: 144,
-      hadir: 138,
-      izin: 3,
-      absen: 2,
-      kosong: 1
-    },
-    program: {
-      pertemuan: '6 Bulan (3x perminggu)',
-      kosong: '5 Pertemuan',
-      progress: '98%',
-      absensi: '96%'
-    }
-  },
-  {
-    judul: 'Kimia',
-    jenjang: 'SMA',
-    kode: '11201',
-    tutor: {
-      nama: 'Pak Wendy S.Pd, M.Pd',
-      hadir: 136,
-      izin: 4,
-      absen: 1,
-      kosong: 3
-    },
-    siswa: {
-      pertemuan: 144,
-      hadir: 136,
-      izin: 5,
-      absen: 2,
-      kosong: 1
-    },
-    program: {
-      pertemuan: '6 Bulan (3x perminggu)',
-      kosong: '6 Pertemuan',
-      progress: '95%',
-      absensi: '94%'
-    }
-  }
-]
+  }))
+})
 </script>
 
 <style scoped>
