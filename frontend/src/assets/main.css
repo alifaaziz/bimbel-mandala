@@ -19,6 +19,29 @@
   }
 }
 
+/* Tag-Grade */
+.grade-sd {
+  background-color: #DEE4EE;
+  color: #EC3437;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  white-space: nowrap;
+}
+.grade-smp {
+  background-color: #DEE4EE;
+  color: #113A72;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  white-space: nowrap;
+}
+.grade-sma {
+  background-color: #DEE4EE;
+  color: #617592;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  white-space: nowrap;
+}
+
 /* Font Styles */
 
 /* Hero */
@@ -179,8 +202,20 @@
   font-weight: 600;
 }
 
+.buttonr3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+}
+
 .buttonm4 {
   font-family: 'Poppins', sans-serif;
   font-size: 10px;
   font-weight: 600;
+}
+
+.buttonr4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: normal;
 }

@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { NInput, NButton } from 'naive-ui'
 import googleIcon from '../../assets/google.svg'
+import { useRouter } from 'vue-router'
+import router from '@/router'
 
 const name = ref('')
 const email = ref('')
@@ -56,7 +58,7 @@ async function handleSignup() {
       }
 
       const data = await response.json()
-      alert(`Registrasi berhasil: ${data.message}`)
+      router.push('/otp')
     } catch (error) {
       alert(error.message)
     } finally {
@@ -71,13 +73,14 @@ async function handleGoogleLogin() {
 }
 
 const emit = defineEmits(['toggle-form'])
+
 function goToLogin() {
   emit('toggle-form')
 }
 </script>
 
 <template>
-  <div class="form-wrapper">
+  <div class="form-wrapper" @keyup.enter="handleSignup">
     <div class="container">
       <h1 class="headersb1">Daftar Sebagai Siswa</h1>
       <p class="bodyr2">Lorem ipsum dolor sit amet</p>

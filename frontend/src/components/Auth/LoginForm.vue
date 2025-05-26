@@ -67,6 +67,7 @@ async function handleLogin() {
 }
 
 const emit = defineEmits(['toggle-form'])
+
 function goToSignup() {
   emit('toggle-form')
 }
@@ -89,7 +90,7 @@ function handleGoogleLogin() {
       <p class="bodyr2">Lorem ipsum dolor sit amet</p>
     </div>
 
-    <div class="compo">
+    <div class="compo" @keyup.enter="handleLogin">
       <div class="form-input">
         <p class="bodym2">E-mail</p>
         <n-input
