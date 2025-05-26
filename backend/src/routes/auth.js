@@ -6,6 +6,7 @@ import { UserValidation } from '../middlewares/validation/user.js';
 import { CommonValidationMiddleware } from '../middlewares/validation/common.js';
 import { OtpValidationMiddleware } from '../middlewares/validation/otp.js';
 import { AuthMiddleware } from '../middlewares/auth.js';
+import { appEnv } from '../utils/env.js';
 
 export default (app) => {
     const router = Router();
@@ -78,14 +79,18 @@ export default (app) => {
 
     router.get(
         '/google/callback',
-        passport.authenticate('google', 
-        { failureRedirect: '/' }),
+        passport.authenticate('google', { failureRedirect: '/' }),
         (req, res) => {
-            if (req.user.redirect) {
-                res.redirect(req.user.redirect);
+          const { token, isNew } = req.user || {};
+          if (token) {
+            if (isNew) {
+              res.redirect(`${appEnv.FRONTEND_URL}/google/success?token=${token}&new=1`);
             } else {
-                res.redirect('/');
+              res.redirect(`${appEnv.FRONTEND_URL}/google/success?token=${token}`);
             }
+          } else {
+            res.redirect(`${appEnv.FRONTEND_URL}/login?error=google`);
+          }
         }
     );
 };
