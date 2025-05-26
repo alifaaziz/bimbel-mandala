@@ -73,14 +73,15 @@ describe('OrderService', () => {
             mockPrisma.order.update.mockResolvedValueOnce({
                 id: 'order1',
                 userId: 'user1',
-                bimbelPackage: { name: 'Paket', level: 'SMA', userId: 'tutor1' }
+                bimbelPackage: { name: 'Paket', level: 'SMA', userId: 'tutor1', user: {} }
             });
             mockClassService.createClass.mockResolvedValueOnce({ id: 'class1', code: 'C1' });
             mockScheduleService.createSchedules.mockResolvedValueOnce();
             mockPrisma.tutor.findUnique.mockResolvedValueOnce({
                 userId: 'tutor1',
                 gender: 'Male',
-                user: { name: 'Budi' }
+                user: { name: 'Budi' },
+                photo: 'photo.jpg'
             });
             mockPrisma.notification.create.mockResolvedValue({});
 
@@ -88,7 +89,24 @@ describe('OrderService', () => {
             expect(mockPrisma.order.update).toHaveBeenCalled();
             expect(mockClassService.createClass).toHaveBeenCalledWith({ orderId: 'order1' });
             expect(mockScheduleService.createSchedules).toHaveBeenCalledWith('class1');
-            expect(mockPrisma.notification.create).toHaveBeenCalledTimes(2);
+            // Notifikasi untuk student
+            expect(mockPrisma.notification.create).toHaveBeenCalledWith({
+                data: {
+                    userId: 'user1',
+                    type: 'Program',
+                    description: expect.stringContaining('Bimbingan belajar <strong>Paket SMA #C1</strong> bersama <strong>Pak Budi</strong> sudah terkonfirmasi'),
+                    photo: 'photo.jpg'
+                }
+            });
+            // Notifikasi untuk tutor
+            expect(mockPrisma.notification.create).toHaveBeenCalledWith({
+                data: {
+                    userId: 'tutor1',
+                    type: 'Program',
+                    description: expect.stringContaining('Bimbingan belajar <strong>Paket SMA #C1</strong> sudah terkonfirmasi'),
+                    photo: 'photo.jpg'
+                }
+            });
             expect(result).toHaveProperty('id', 'order1');
         });
 
@@ -96,7 +114,7 @@ describe('OrderService', () => {
             mockPrisma.order.update.mockResolvedValueOnce({
                 id: 'order2',
                 userId: 'user2',
-                bimbelPackage: {}
+                bimbelPackage: { user: { tutor: { photo: 'photo2.jpg' } } }
             });
             mockPrisma.notification.create.mockResolvedValueOnce({});
             const result = await OrderService.updateOrderStatus('order2', 'cancel');
@@ -105,7 +123,8 @@ describe('OrderService', () => {
                 data: {
                     userId: 'user2',
                     type: 'Program',
-                    description: expect.stringContaining('cancel')
+                    description: expect.stringContaining('The order status has been updated to <strong>cancel</strong>'),
+                    photo: 'photo2.jpg'
                 }
             });
             expect(result).toHaveProperty('id', 'order2');
@@ -115,14 +134,15 @@ describe('OrderService', () => {
             mockPrisma.order.update.mockResolvedValueOnce({
                 id: 'order4',
                 userId: 'user4',
-                bimbelPackage: { name: 'Paket', level: 'SMA', userId: 'tutor4' }
+                bimbelPackage: { name: 'Paket', level: 'SMA', userId: 'tutor4', user: {} }
             });
             mockClassService.createClass.mockResolvedValueOnce({ id: 'class4', code: 'C4' });
             mockScheduleService.createSchedules.mockResolvedValueOnce();
             mockPrisma.tutor.findUnique.mockResolvedValueOnce({
                 userId: 'tutor4',
                 gender: 'Female',
-                user: {}
+                user: {},
+                photo: null
             });
             mockPrisma.notification.create.mockResolvedValue({});
 
@@ -131,7 +151,8 @@ describe('OrderService', () => {
                 data: {
                     userId: 'user4',
                     type: 'Program',
-                    description: expect.stringContaining('Bu Tutor')
+                    description: expect.stringContaining('Bimbingan belajar <strong>Paket SMA #C4</strong> bersama <strong>Bu Tutor</strong> sudah terkonfirmasi'),
+                    photo: null
                 }
             });
         });

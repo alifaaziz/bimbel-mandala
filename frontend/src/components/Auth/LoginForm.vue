@@ -77,34 +77,8 @@ function handleForgotPassword() {
   alert('Fitur ini belum tersedia.')
 }
 
-// Tambahkan fungsi untuk login dengan Google
-async function handleGoogleLogin() {
-  isLoading.value = true
-  try {
-    // Ganti dengan URL endpoint login Google Anda
-    const response = await fetch('http://localhost:3000/auth/google', {
-      method: 'GET',
-      credentials: 'include',
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(
-        (data.error && data.error.message) ||
-        data.error ||
-        'Login dengan Google gagal.'
-      )
-    }
-
-    localStorage.setItem('token', data.data.token)
-    isLoggedIn.value = true
-    router.push('/absen')
-  } catch (error) {
-    alert(error.message)
-  } finally {
-    isLoading.value = false
-  }
+function handleGoogleLogin() {
+  window.location.href = 'http://localhost:3000/auth/google'
 }
 </script>
 

@@ -55,12 +55,12 @@ describe('ClassController', () => {
       ClassService.getMyClass.mockResolvedValue(myClassesMock);
 
       const { req, res } = setupExpressMock({
-        res: { locals: { user: { id: 123 } } },
+        res: { locals: { user: { id: 123, role: 'siswa' } } },
       });
 
       await ClassController.getMyClass(req, res);
 
-      expect(ClassService.getMyClass).toHaveBeenCalledWith(123);
+      expect(ClassService.getMyClass).toHaveBeenCalledWith(123, 'siswa');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ data: myClassesMock });
     });

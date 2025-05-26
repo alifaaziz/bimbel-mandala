@@ -1,11 +1,13 @@
 import { jest } from '@jest/globals';
 
 const mockPrisma = {
-    attendance: { create: jest.fn() },
+    attendance: { create: jest.fn(), findFirst: jest.fn() },
     schedule: { findUnique: jest.fn(), findMany: jest.fn() },
     class: { findMany: jest.fn(), findUnique: jest.fn() },
     studentClass: { findMany: jest.fn() },
-    salary: { findFirst: jest.fn() }
+    salary: { findFirst: jest.fn() },
+    user: { findUnique: jest.fn() },
+    notification: { create: jest.fn() }
 };
 
 const mockSalaryService = {
@@ -28,6 +30,8 @@ beforeEach(() => {
 describe('AttendanceService', () => {
     describe('createAttendance', () => {
         it('should create attendance and not create salary if not last schedule', async () => {
+            mockPrisma.attendance.findFirst.mockResolvedValueOnce(null);
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'tutor1', role: 'tutor' });
             mockPrisma.attendance.create.mockResolvedValueOnce({ id: 1 });
             mockPrisma.schedule.findUnique.mockResolvedValueOnce({
                 id: 10,
@@ -46,6 +50,8 @@ describe('AttendanceService', () => {
         });
 
         it('should create salary if last schedule and tutor', async () => {
+            mockPrisma.attendance.findFirst.mockResolvedValueOnce(null);
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'tutor2', role: 'tutor' });
             mockPrisma.attendance.create.mockResolvedValueOnce({ id: 2 });
             mockPrisma.schedule.findUnique.mockResolvedValueOnce({
                 id: 20,
@@ -68,6 +74,28 @@ describe('AttendanceService', () => {
                 orderId: 'order2',
                 totalSalary: expect.any(Number)
             });
+        });
+
+        it('should throw error if attendance already exists', async () => {
+            mockPrisma.attendance.findFirst.mockResolvedValueOnce({ id: 99 });
+            await expect(AttendanceService.createAttendance({
+                scheduleId: 1, userId: 'x', status: 'masuk'
+            })).rejects.toThrow('attendance can only be done once');
+        });
+
+        it('should throw error if siswa absen sebelum tutor', async () => {
+            mockPrisma.attendance.findFirst.mockResolvedValueOnce(null);
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'student1', role: 'siswa' });
+            mockPrisma.schedule.findUnique.mockResolvedValueOnce({
+                id: 30,
+                class: {
+                    tutor: { id: 'tutorX' }
+                }
+            });
+            mockPrisma.attendance.findFirst.mockResolvedValueOnce(null); // tutor belum absen
+            await expect(AttendanceService.createAttendance({
+                scheduleId: 30, userId: 'student1', status: 'masuk'
+            })).rejects.toThrow('tutors must take attendance first');
         });
     });
 

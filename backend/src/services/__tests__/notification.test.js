@@ -21,11 +21,11 @@ beforeEach(() => {
 });
 
 describe('NotificationService', () => {
-    it('getNotifications returns user notifications', async () => {
+    it('getNotifications returns user notifications (only not viewed)', async () => {
         mockPrisma.notification.findMany.mockResolvedValueOnce([{ id: 1 }]);
         const result = await NotificationService.getNotifications('user1');
         expect(mockPrisma.notification.findMany).toHaveBeenCalledWith({
-            where: { userId: 'user1' },
+            where: { userId: 'user1', viewed: false },
             orderBy: { createdAt: 'desc' }
         });
         expect(result).toEqual([{ id: 1 }]);

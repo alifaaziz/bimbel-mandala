@@ -17,6 +17,7 @@ import User from '@/components/Profile/User.vue'
 import EditProfile from '@/components/Profile/EditProfile.vue'
 import EditProfileTutor from '@/components/Profile/EditProfileTutor.vue'
 import Rekap from '@/components/rekap.vue'
+import GoogleSuccess from '@/components/Auth/GoogleSuccess.vue';
 
 const routes = [
   { 
@@ -73,6 +74,10 @@ const routes = [
   {
     path: '/detailjadwal', 
     component: DetailJadwal,
+  },
+  {
+    path: '/google/success',
+    component: GoogleSuccess
   },
   { 
     path: '/profileuser', 

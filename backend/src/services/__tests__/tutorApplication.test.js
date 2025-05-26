@@ -24,6 +24,7 @@ const mockBcrypt = {
 };
 
 const mockSendTutorVerificationEmail = jest.fn();
+const mockSavePhoto = jest.fn();
 
 jest.unstable_mockModule('../../utils/db.js', () => ({
   prisma: mockPrisma,
@@ -44,6 +45,9 @@ jest.unstable_mockModule('../../utils/error.js', () => ({
       this.data = data;
     }
   },
+}));
+jest.unstable_mockModule('../../utils/helper.js', () => ({
+  savePhoto: mockSavePhoto,
 }));
 jest.unstable_mockModule('fs/promises', () => ({
   __esModule: true,
@@ -97,7 +101,7 @@ describe('TutorApplicationService', () => {
 
       const result = await TutorApplicationService.applyTutor({ email: 'a@mail.com', name: 'A' });
       expect(mockPrisma.tutorApplication.create).toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining({ email: 'a@mail.com', photo: null }) })
+        expect.objectContaining({ data: expect.objectContaining({ email: 'a@mail.com' }) })
       );
       expect(result).toHaveProperty('id', 3);
     });
@@ -106,10 +110,12 @@ describe('TutorApplicationService', () => {
       mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       mockPrisma.tutorApplication.create.mockResolvedValueOnce({ id: 4, email: 'b@mail.com', photo: '/public/photo.jpg' });
+      mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
 
       const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
 
       const result = await TutorApplicationService.applyTutor({ email: 'b@mail.com', name: 'B' }, file);
+      expect(mockSavePhoto).toHaveBeenCalledWith(file, 'B');
       expect(result).toHaveProperty('photo', '/public/photo.jpg');
     });
   });
@@ -145,7 +151,10 @@ describe('TutorApplicationService', () => {
       mockBcrypt.hash.mockResolvedValueOnce('hashedpw');
       mockPrisma.$transaction.mockImplementationOnce(async (cb) =>
         cb({
-          tutorApplication: { findUnique: jest.fn().mockResolvedValueOnce(fakeApp), delete: jest.fn() },
+          tutorApplication: {
+            findUnique: jest.fn().mockResolvedValueOnce(fakeApp),
+            delete: jest.fn()
+          },
           user: { create: jest.fn().mockResolvedValueOnce(fakeUser) },
           tutor: { create: jest.fn() },
           notification: { create: jest.fn() },
@@ -154,19 +163,12 @@ describe('TutorApplicationService', () => {
 
       const result = await TutorApplicationService.verifyTutor(5);
       expect(result).toHaveProperty('id', 10);
-      expect(mockBcrypt.hash).toHaveBeenCalled();
+      expect(mockBcrypt.hash).toHaveBeenCalledWith('bimbelmandala', 10);
       expect(mockSendTutorVerificationEmail).toHaveBeenCalledWith(
         fakeApp.email,
         fakeApp.name,
         'bimbelmandala'
       );
-    });
-  });
-
-  describe('saveApplicantPhoto', () => {
-    it('should return null if file is not provided', async () => {
-      const result = await TutorApplicationService.saveApplicantPhoto(undefined, 'Test Name');
-      expect(result).toBeNull();
     });
   });
 });
