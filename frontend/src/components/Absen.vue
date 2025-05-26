@@ -1,6 +1,5 @@
 <!-- src/components/HalamanAbsensi.vue -->
 <script setup>
-import { auth, USER_ROLES } from './Absen/auth.js';
 import Footer from './footer.vue';
 import Absensi from './Absen/Absensi.vue';
 import AbsensiTutor from './Absen/AbsensiTutor.vue';
@@ -9,22 +8,43 @@ import JadwalHighlightTutor from './Absen/JadwalHighlightTutor.vue';
 import NoProgram from './Absen/NoProgram.vue';
 import NoProgramTutor from './Absen/NoProgramTutor.vue';
 
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const hasProgram = ref(true);
+const userRole = ref(null);
 
-// Ambil user yang aktif
-const activeUser = computed(() => auth.users.find(u => u.isActive));
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  const resUser = await fetch('http://localhost:3000/users/me', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (resUser.ok) {
+    const data = await resUser.json();
+    userRole.value = data.data?.role || null;
+  }
+
+  const resStat = await fetch('http://localhost:3000/packages/statistics/my', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (resStat.ok) {
+    const stat = await resStat.json();
+    hasProgram.value = (stat.runningClasses || 0) !== 0;
+  } else {
+    hasProgram.value = false;
+  }
+});
 </script>
 
 <template>
   <div class="container-absensi padding-components">
     <template v-if="!hasProgram">
-      <NoProgramTutor v-if="activeUser && activeUser.role === USER_ROLES.TUTOR" />
+      <NoProgramTutor v-if="userRole === 'tutor'" />
       <NoProgram v-else />
     </template>
     <template v-else>
-      <template v-if="activeUser && activeUser.role === USER_ROLES.TUTOR">
+      <template v-if="userRole === 'tutor'">
         <AbsensiTutor />
         <JadwalHighlightTutor />
       </template>

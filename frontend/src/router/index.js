@@ -72,7 +72,7 @@ const routes = [
     ]
   },
   {
-    path: '/detailjadwal', 
+    path: '/detailjadwal/:id', 
     component: DetailJadwal,
   },
   {

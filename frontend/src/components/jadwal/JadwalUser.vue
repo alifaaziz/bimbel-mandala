@@ -128,7 +128,7 @@
         return {
           style: { cursor: 'pointer' },
           onClick: () => {
-            window.location.href = '/DetailJadwal';
+            window.location.href = `/DetailJadwal/${row.key}`;
           }
         };
       };

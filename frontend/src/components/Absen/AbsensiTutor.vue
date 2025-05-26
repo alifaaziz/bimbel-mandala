@@ -1,77 +1,118 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import Scheduled from './Scheduled.vue'
+import { ref, onMounted } from 'vue'
+import { NTag } from 'naive-ui'
 import butAbsen from '../dirButton/butAbsen.vue'
 import butSumJadwalUlang from '../dirButton/butPrimerSmall.vue'
 import butBatal from '../dirButton/butSecondSmall.vue'
 import butJadwalUlang from '../dirButton/butSecondNormal.vue'
 
-const isScheduled = ref(true)
+// State
 const showAbsenModal = ref(false)
+const showRescheduleModal = ref(false)
+const rescheduleDate = ref('')
+const rescheduleTime = ref('')
+const selectedSchedule = ref<any>(null)
+const schedule = ref<any>(null)
+
+// Ambil jadwal dari backend
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+
+  try {
+    const res = await fetch('http://localhost:3000/schedules', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error('Gagal mengambil jadwal')
+    const result = await res.json()
+
+    // Ambil jadwal pertama
+    const item = (result.data || [])[0]
+    if (item) {
+      schedule.value = {
+        subject: item.packageName + ' ' + (item.level || ''),
+        tutor: item.tutorName,
+        date: new Date(item.date).toLocaleDateString('id-ID', {
+          weekday: 'long',
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }),
+        time: item.date ? item.date.slice(11, 16).replace(':', '.') : '',
+        duration: item.duration + ' menit',
+        location: item.address,
+        meetingNumber: item.meet,
+        info: item.info || 'Saat ini belum terdapat informasi apapun. Informasi yang anda masukkan akan ditampilkan di sini.',
+        photo: item.photo,
+        status: item.status
+      }
+    }
+  } catch (err) {
+    console.error(err)
+    schedule.value = null
+  }
+})
+
+// Status
+function statusLabel(status: string) {
+  switch (status) {
+    case "masuk": return "Masuk"
+    case "terjadwal": return "Terjadwal"
+    case "jadwal_ulang": return "Jadwal Ulang"
+    case "izin": return "Izin"
+    default: return status
+  }
+}
+
+const tagTypeMap: Record<string, string> = {
+  "Terjadwal": "success",
+  "Jadwal Ulang": "warning",
+  "Masuk": "info",
+  "Izin": "error"
+}
 
 // Absen
 function openAbsenModal() {
   showAbsenModal.value = true
 }
-
 function closeAbsenModal() {
   showAbsenModal.value = false
 }
-
 function confirmAbsen() {
-  alert('Absen berhasil!');
-  closeAbsenModal();
+  alert('Absen berhasil!')
+  closeAbsenModal()
 }
-
 
 // Jadwal Ulang
-const showRescheduleModal = ref(false)
-const rescheduleDate = ref('')
-const rescheduleTime = ref('')
-const selectedSchedule = ref({
-  jadwal: 'Matematika SMA',
-  guru: 'Pak Dendy Wan S.Pd',
-  pertemuan: 12,
-})
-
 function openRescheduleModal() {
+  if (!schedule.value) return
+  selectedSchedule.value = {
+    jadwal: schedule.value.subject,
+    guru: schedule.value.tutor,
+    pertemuan: schedule.value.meetingNumber
+  }
   showRescheduleModal.value = true
 }
-
 function closeRescheduleModal() {
   showRescheduleModal.value = false
   rescheduleDate.value = ''
   rescheduleTime.value = ''
 }
-
 function confirmReschedule() {
   if (!rescheduleDate.value || !rescheduleTime.value) {
-    alert('Silakan pilih tanggal dan jam baru terlebih dahulu.');
-    return;
+    alert('Silakan pilih tanggal dan jam baru terlebih dahulu.')
+    return
   }
-  alert(`Jadwal ulang berhasil:\nTanggal: ${rescheduleDate.value}\nJam: ${rescheduleTime.value}`);
-  closeRescheduleModal();
-}
-
-const schedule = {
-  subject: 'Matematika SMA',
-  tutor: 'Pak Dendy Wan S.Pd',
-  date: 'Senin, 10 Maret 2025',
-  time: '15:00 WIB',
-  duration: '2 Jam',
-  location: 'Jl. Taman Siswa No.114, Gunung Pati, Kota Semarang',
-  meetingNumber: 12,
-  info: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-  Sapien, est felis, sagittis viverra nulla mattis scelerisque. 
-  Eget cras integer....`,
+  alert(`Jadwal ulang berhasil:\nTanggal: ${rescheduleDate.value}\nJam: ${rescheduleTime.value}`)
+  closeRescheduleModal()
 }
 </script>
 
 <template>
-  <div class="card-container">
+  <div v-if="schedule" class="card-container">
     <img
       class="tutor-photo"
-      src="/public/tutor/3.png"
+      :src="schedule.photo ? `http://localhost:3000${schedule.photo}` : '/tutor/3.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">
@@ -80,37 +121,42 @@ const schedule = {
           <div class="subject headersb1">{{ schedule.subject }}</div>
           <div class="tutor-name bodym2">{{ schedule.tutor }}</div>
         </div>
-        <div v-if="isScheduled">
-          <Scheduled />
+        <div>
+          <n-tag
+            :type="tagTypeMap[statusLabel(schedule.status)]"
+            size="small"
+            class="bodyr2"
+            round
+          >
+            {{ statusLabel(schedule.status) }}
+          </n-tag>
         </div>
       </div>
 
       <div class="info-section bodyr2">
-            <div class="info-row">
-                <span class="label"><strong>Hari</strong></span>
-                <span class="value">: {{ schedule.date }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Pukul</strong></span>
-                <span class="value">: {{ schedule.time }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Durasi</strong></span>
-                <span class="value">: {{ schedule.duration }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Lokasi</strong></span>
-                <span class="value">: {{ schedule.location }}</span>
-            </div>
+        <div class="info-row">
+          <span class="label"><strong>Hari</strong></span>
+          <span class="value">: {{ schedule.date }}</span>
         </div>
+        <div class="info-row">
+          <span class="label"><strong>Pukul</strong></span>
+          <span class="value">: {{ schedule.time }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label"><strong>Durasi</strong></span>
+          <span class="value">: {{ schedule.duration }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label"><strong>Lokasi</strong></span>
+          <span class="value">: {{ schedule.location }}</span>
+        </div>
+      </div>
 
       <div class="meeting-link bodysb1">Pertemuan ke {{ schedule.meetingNumber }}</div>
 
       <div>
-        <p class="bodyb2">
-          Informasi Tutor:
-        </p>
-        <p class="tutor-info bodyr2">{{ schedule.info }}</p>        
+        <p class="bodyb2">Informasi Tutor:</p>
+        <p class="tutor-info bodyr2">{{ schedule.info }}</p>
       </div>
 
       <div class="button-group">
@@ -121,55 +167,55 @@ const schedule = {
     </div>
   </div>
 
-<!-- Absen -->
-<div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
-  <div class="modal-content">
-    <div class="popup-content">
-      <h3 class="headersb2">Absensi</h3>
-      <p class="bodyr2">Silahkan melakukan absesni untuk sesi Bimbingan belajar kali ini.</p>
-    </div>
-    <div class="modal-actions">
-      <button class="buttonm1" @click="confirmAbsen">Masuk</button>
-      <button class="buttonm1" @click="closeAbsenModal">Batal</button>
-    </div>
-  </div>
-</div>
-
-<!-- Popup Jadwal Ulang -->
-<div v-if="showRescheduleModal" class="modal-overlay" @click.self="closeRescheduleModal">
-  <div class="modal-content">
-    <div class="popup-content">
-      <h3 class="headersb2">Jadwal Ulang</h3>
-      <p class="bodyr3" style="margin-bottom: 16px;">
-        Pilih tanggal dan jam baru untuk:<br>
-        <strong>{{ selectedSchedule?.jadwal }}</strong> bersama {{ selectedSchedule?.guru }}<br>
-        <span>Pertemuan ke-{{ selectedSchedule?.pertemuan }}</span>
-      </p>
-      <div style="margin-bottom: 12px;">
-        <label class="bodym3" for="reschedule-date" style="display:block; margin-bottom:4px;">Tanggal Baru</label>
-        <input
-          id="reschedule-date"
-          type="date"
-          v-model="rescheduleDate"
-          class="inputm1"
-          style="width: 100%; margin-bottom: 8px;"
-        />
-        <label class="bodym3" for="reschedule-time" style="display:block; margin-bottom:4px;">Jam Baru</label>
-        <input
-          id="reschedule-time"
-          type="time"
-          v-model="rescheduleTime"
-          class="inputm1"
-          style="width: 100%;"
-        />
+  <!-- Modal Absen -->
+  <div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
+    <div class="modal-content">
+      <div class="popup-content">
+        <h3 class="headersb2">Absensi</h3>
+        <p class="bodyr2">Silahkan melakukan absensi untuk sesi Bimbingan belajar kali ini.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="buttonm1" @click="confirmAbsen">Masuk</button>
+        <button class="buttonm1" @click="closeAbsenModal">Batal</button>
       </div>
     </div>
-    <div class="modal-actions-jadwalulang">
-      <butSumJadwalUlang label="Jadwal Ulang" @click.stop.prevent="confirmReschedule" />
-      <butBatal label="Batal" @click="closeRescheduleModal" />
+  </div>
+
+  <!-- Popup Jadwal Ulang -->
+  <div v-if="showRescheduleModal" class="modal-overlay" @click.self="closeRescheduleModal">
+    <div class="modal-content">
+      <div class="popup-content">
+        <h3 class="headersb2">Jadwal Ulang</h3>
+        <p class="bodyr3" style="margin-bottom: 16px;">
+          Pilih tanggal dan jam baru untuk:<br>
+          <strong>{{ selectedSchedule?.jadwal }}</strong> bersama {{ selectedSchedule?.guru }}<br>
+          <span>Pertemuan ke-{{ selectedSchedule?.pertemuan }}</span>
+        </p>
+        <div style="margin-bottom: 12px;">
+          <label class="bodym3" for="reschedule-date" style="display:block; margin-bottom:4px;">Tanggal Baru</label>
+          <input
+            id="reschedule-date"
+            type="date"
+            v-model="rescheduleDate"
+            class="inputm1"
+            style="width: 100%; margin-bottom: 8px;"
+          />
+          <label class="bodym3" for="reschedule-time" style="display:block; margin-bottom:4px;">Jam Baru</label>
+          <input
+            id="reschedule-time"
+            type="time"
+            v-model="rescheduleTime"
+            class="inputm1"
+            style="width: 100%;"
+          />
+        </div>
+      </div>
+      <div class="modal-actions-jadwalulang">
+        <butSumJadwalUlang label="Jadwal Ulang" @click.stop.prevent="confirmReschedule" />
+        <butBatal label="Batal" @click="closeRescheduleModal" />
+      </div>
     </div>
   </div>
-</div>
 </template>
 
 <style scoped>

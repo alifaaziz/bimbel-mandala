@@ -1,70 +1,111 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { NTag } from 'naive-ui'
 import Scheduled from './Scheduled.vue'
 import butAbsen from '../dirButton/butAbsen.vue'
 import butIzin from '../dirButton/butIzin.vue'
 
+// State
 const isScheduled = ref(true)
 const showAbsenModal = ref(false)
+const showIzinModal = ref(false)
 const izinReason = ref('')
 
+// Jadwal (awalnya kosong)
+const schedule = ref<any>(null)
+
+// onMounted fetch data
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+
+  try {
+    const res = await fetch('http://localhost:3000/schedules', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    if (!res.ok) throw new Error('Gagal mengambil jadwal')
+    const result = await res.json()
+    const item = (result.data || [])[0] // Ambil item pertama
+
+    if (item) {
+      schedule.value = {
+        subject: item.packageName + ' ' + (item.level || ''),
+        tutor: item.tutorName,
+        date: new Date(item.date).toLocaleDateString('id-ID', {
+          weekday: 'long',
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }),
+        time: item.date ? item.date.slice(11, 16).replace(':', '.') : '',
+        duration: item.duration + ' menit',
+        location: item.address,
+        meetingNumber: item.meet,
+        info: item.info || 'Saat ini belum ada informasi dari tutor. Jika sudah tersedia, informasi akan ditampilkan di sini. Mohon cek secara berkala.', 
+        photo: item.photo,
+        status: item.status
+      }
+    }
+  } catch (err) {
+    console.error(err)
+    schedule.value = null
+  }
+})
+
+function statusLabel(status) {
+  switch (status) {
+    case "masuk": return "Masuk";
+    case "terjadwal": return "Terjadwal";
+    case "jadwal_ulang": return "Jadwal Ulang";
+    case "izin": return "Izin";
+    default: return status;
+  }
+}
+
+const tagTypeMap = {
+  "Terjadwal": "success",
+  "Jadwal Ulang": "warning",
+  "Masuk": "info",
+  "Izin": "error"
+};
 
 // Absen
 function openAbsenModal() {
   showAbsenModal.value = true
 }
-
 function closeAbsenModal() {
   showAbsenModal.value = false
 }
-
 function confirmAbsen() {
-  // Lakukan aksi absen di sini
-  alert('Absen berhasil!');
-  closeAbsenModal();
+  alert('Absen berhasil!')
+  closeAbsenModal()
 }
 
 // Izin
-const showIzinModal = ref(false)
-
 function openIzinModal() {
   showIzinModal.value = true
 }
-
 function closeIzinModal() {
   showIzinModal.value = false
 }
-
 function confirmIzin() {
   if (!izinReason.value.trim()) {
-    alert('Silakan masukkan alasan izin terlebih dahulu.');
-    return;
+    alert('Silakan masukkan alasan izin terlebih dahulu.')
+    return
   }
-  alert(`Permintaan izin berhasil dikirim:\n"${izinReason.value}"`);
-  closeIzinModal();
-  izinReason.value = '';
-}
-
-
-const schedule = {
-  subject: 'Matematika SMA',
-  tutor: 'Pak Dendy Wan S.Pd',
-  date: 'Senin, 10 Maret 2025',
-  time: '15:00 WIB',
-  duration: '2 Jam',
-  location: 'Jl. Taman Siswa No.114, Gunung Pati, Kota Semarang',
-  meetingNumber: 12,
-  info: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-  Sapien, est felis, sagittis viverra nulla mattis scelerisque. 
-  Eget cras integer....`,
+  alert(`Permintaan izin berhasil dikirim:\n"${izinReason.value}"`)
+  closeIzinModal()
+  izinReason.value = ''
 }
 </script>
 
 <template>
-  <div class="card-container">
+  <div v-if="schedule" class="card-container">
     <img
       class="tutor-photo"
-      src="/public/tutor/3.png"
+      :src="schedule.photo ? `http://localhost:3000${schedule.photo}` : '/public/tutor/3.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">
@@ -73,37 +114,43 @@ const schedule = {
           <div class="subject headersb1">{{ schedule.subject }}</div>
           <div class="tutor-name bodym2">{{ schedule.tutor }}</div>
         </div>
-        <div v-if="isScheduled">
-          <Scheduled />
+
+        <div>
+          <n-tag
+                :type="tagTypeMap[statusLabel(schedule.status)]"
+                size="small"
+                class="bodyr4"
+                round
+              >
+                {{ statusLabel(schedule.status) }}
+              </n-tag>
         </div>
       </div>
 
       <div class="info-section bodyr2">
-            <div class="info-row">
-                <span class="label"><strong>Hari</strong></span>
-                <span class="value">: {{ schedule.date }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Pukul</strong></span>
-                <span class="value">: {{ schedule.time }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Durasi</strong></span>
-                <span class="value">: {{ schedule.duration }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Lokasi</strong></span>
-                <span class="value">: {{ schedule.location }}</span>
-            </div>
+        <div class="info-row">
+          <span class="label"><strong>Hari</strong></span>
+          <span class="value">: {{ schedule.date }}</span>
         </div>
+        <div class="info-row">
+          <span class="label"><strong>Pukul</strong></span>
+          <span class="value">: {{ schedule.time }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label"><strong>Durasi</strong></span>
+          <span class="value">: {{ schedule.duration }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label"><strong>Lokasi</strong></span>
+          <span class="value">: {{ schedule.location }}</span>
+        </div>
+      </div>
 
       <div class="meeting-link bodysb1">Pertemuan ke {{ schedule.meetingNumber }}</div>
 
       <div>
-        <p class="bodyb2">
-          Informasi Tutor:
-        </p>
-        <p class="tutor-info bodyr2">{{ schedule.info }}</p>        
+        <p class="bodyb2">Informasi Tutor:</p>
+        <p class="tutor-info bodyr2">{{ schedule.info }}</p>
       </div>
 
       <div class="button-group">
@@ -113,38 +160,38 @@ const schedule = {
     </div>
   </div>
 
-<!-- Absen -->
-<div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
-  <div class="modal-content">
-    <div class="popup-content">
-      <h3 class="headersb2">Absensi</h3>
-      <p class="bodyr2">Silahkan melakukan absesni untuk sesi Bimbingan belajar kali ini.</p>
-    </div>
-    <div class="modal-actions">
-      <button class="buttonm1" @click="confirmAbsen">Masuk</button>
-      <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+  <!-- Modal Absen -->
+  <div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
+    <div class="modal-content">
+      <div class="popup-content">
+        <h3 class="headersb2">Absensi</h3>
+        <p class="bodyr2">Silahkan melakukan absensi untuk sesi ini.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="buttonm1" @click="confirmAbsen">Masuk</button>
+        <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Izin -->
-<div v-if="showIzinModal" class="modal-overlay" @click.self="closeIzinModal">
-  <div class="modal-content">
-    <div class="popup-content">
-      <h3 class="headersb2">Perizinan</h3>
-      <input
-        v-model="izinReason"
-        type="text"
-        class="izin-input bodyr2"
-        placeholder="Masukkan alasan izin..."
-      />
-    </div>
-    <div class="modal-actions">
-      <button class="buttonm1" @click="confirmIzin" >Izin</button>
-      <button class="buttonm1" @click="closeIzinModal">Batal</button>
+  <!-- Modal Izin -->
+  <div v-if="showIzinModal" class="modal-overlay" @click.self="closeIzinModal">
+    <div class="modal-content">
+      <div class="popup-content">
+        <h3 class="headersb2">Perizinan</h3>
+        <input
+          v-model="izinReason"
+          type="text"
+          class="izin-input bodyr2"
+          placeholder="Masukkan alasan izin..."
+        />
+      </div>
+      <div class="modal-actions">
+        <button class="buttonm1" @click="confirmIzin">Izin</button>
+        <button class="buttonm1" @click="closeIzinModal">Batal</button>
+      </div>
     </div>
   </div>
-</div>
 </template>
 
 <style scoped>

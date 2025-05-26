@@ -1,12 +1,68 @@
 <script setup>
-import { tutors } from '@/assets/dataSementara/tutor.js';
-import { NCard } from 'naive-ui';
+import { ref, onMounted } from 'vue';
+import { NCard, NTag } from 'naive-ui';
 import butJadwal from '../dirButton/butJadwal.vue';
 import Scheduled from './Scheduled.vue';
 import butDetailJadwal from '../dirButton/butDetailJadwal.vue';
+import { useRouter } from 'vue-router';
 
-// Batasi hanya 4 tutor yang ditampilkan
-const displayedJadwal = tutors.value.slice(0, 4);
+const jadwalList = ref([]);
+const router = useRouter();
+
+const tagTypeMap = {
+  "Terjadwal": "success",
+  "Jadwal Ulang": "warning",
+  "Masuk": "info",
+  "Izin": "error"
+};
+
+function statusLabel(status) {
+  switch (status) {
+    case "masuk": return "Masuk";
+    case "terjadwal": return "Terjadwal";
+    case "jadwal_ulang": return "Jadwal Ulang";
+    case "izin": return "Izin";
+    default: return status;
+  }
+}
+
+function formatTanggal(dateStr) {
+  const date = new Date(dateStr);
+  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
+  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+  return `${hari}, ${tanggal}`;
+}
+
+function formatJam(dateStr) {
+  return dateStr.slice(11, 16).replace(':', '.');
+}
+
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  const res = await fetch('http://localhost:3000/schedules', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (res.ok) {
+    const result = await res.json();
+    jadwalList.value = (result.data || [])
+      .slice(0, 5)
+      .map(item => ({
+        id: item.id,
+        packageName: item.packageName,
+        level: item.level,
+        tutorName: item.tutorName,
+        tanggal: formatTanggal(item.date),
+        jam: formatJam(item.date),
+        status: statusLabel(item.status),
+        photo: item.photo
+      }));
+  }
+});
+
+function goToDetail(item) {
+  router.push(`/DetailJadwal/${item.id}`);
+}
 </script>
 
 <template>
@@ -15,28 +71,38 @@ const displayedJadwal = tutors.value.slice(0, 4);
     <h2 class="headerb1 title2">Terdekat</h2>
     <div class="card-container">
       <n-card
-        v-for="(item, index) in displayedJadwal"
+        v-for="item in jadwalList"
         :key="item.id"
         :id="item.id"
-         style="border: 1px solid #154484; border-radius: 20px;"
+        style="border: 1px solid #154484; border-radius: 20px; cursor:pointer;"
+        @click="goToDetail(item)"
       >
         <template #cover>
-            <img src="/tutor/3.png">
+          <img 
+            :src="`http://localhost:3000${item.photo}`" 
+          />
         </template>
         <template #header>
           <div class="headerr3 jadwal_title">
-            Matematika, SMA
-            <Scheduled />
+            {{ item.packageName }}, {{ item.level }}
+            <n-tag
+                :type="tagTypeMap[item.status]"
+                size="small"
+                class="bodyr4"
+                round
+              >
+                {{ item.status }}
+              </n-tag>
           </div>
         </template>
         <div class="bodyr3 content">
           <div class="info-row">
-              <span class="label"><strong>Hari</strong></span>
-              <span class="value">: Rabu, 12 Maret 2025</span>
+            <span class="label"><strong>Hari</strong></span>
+            <span class="value">: {{ item.tanggal }}</span>
           </div>
           <div class="info-row">
-              <span class="label"><strong>Pukul</strong></span>
-              <span class="value">: 15:00 WIB</span>
+            <span class="label"><strong>Pukul</strong></span>
+            <span class="value">: {{ item.jam }}</span>
           </div>
         </div>
         <butDetailJadwal />

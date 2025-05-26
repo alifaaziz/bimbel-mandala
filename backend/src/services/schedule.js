@@ -1,3 +1,4 @@
+import { levels } from 'pino';
 import { prisma } from '../utils/db.js';
 
 /**
@@ -344,16 +345,16 @@ async function getSchedulesForStudent(userId) {
     throw new Error('No schedules found for this student');
   }
 
-  const filtered = schedules.filter(schedule => schedule.class?.status !== 'selesai');
-
+  const filtered = schedules.filter(s => s.class?.status !== 'selesai');
   const now = new Date();
+
   filtered.sort((a, b) => {
-    const aFuture = new Date(a.date) >= now;
-    const bFuture = new Date(b.date) >= now;
-    if (aFuture === bFuture) {
+    const isAFuture = new Date(a.date) >= now;
+    const isBFuture = new Date(b.date) >= now;
+    if (isAFuture === isBFuture) {
       return new Date(a.date) - new Date(b.date);
     }
-    return aFuture ? -1 : 1;
+    return isAFuture ? -1 : 1;
   });
 
   return filtered.map(schedule => {
@@ -370,12 +371,16 @@ async function getSchedulesForStudent(userId) {
       id: schedule.id,
       classCode: classData.code,
       packageName: bimbelPackage?.name || null,
+      level: bimbelPackage?.level || null,
       tutorName: tutorName,
       groupType: groupType?.type || null,
       meet: schedule.meet,
       date: schedule.date,
       duration: bimbelPackage?.duration || null,
-      status: attendance ? attendance.status : schedule.status
+      address: order?.address || null,
+      info: schedule.info || null,
+      status: attendance ? attendance.status : schedule.status,
+      photo: tutor?.tutors?.[0]?.photo || null
     };
   });
 }
@@ -424,16 +429,16 @@ async function getSchedulesForTutor(userId) {
     throw new Error('No schedules found for this tutor');
   }
 
-  const filtered = schedules.filter(schedule => schedule.class?.status !== 'selesai');
-
+  const filtered = schedules.filter(s => s.class?.status !== 'selesai');
   const now = new Date();
+
   filtered.sort((a, b) => {
-    const aFuture = new Date(a.date) >= now;
-    const bFuture = new Date(b.date) >= now;
-    if (aFuture === bFuture) {
+    const isAFuture = new Date(a.date) >= now;
+    const isBFuture = new Date(b.date) >= now;
+    if (isAFuture === isBFuture) {
       return new Date(a.date) - new Date(b.date);
     }
-    return aFuture ? -1 : 1;
+    return isAFuture ? -1 : 1;
   });
 
   return filtered.map(schedule => {
@@ -450,14 +455,18 @@ async function getSchedulesForTutor(userId) {
       id: schedule.id,
       classCode: classData.code,
       packageName: bimbelPackage?.name || null,
+      level: bimbelPackage?.level || null,
       tutorName: tutorName,
       groupType: groupType?.type || null,
       meet: schedule.meet,
       date: schedule.date,
       duration: bimbelPackage?.duration || null,
-      status: attendance ? attendance.status : schedule.status
+      address: order?.address || null,
+      info: schedule.info || null,
+      status: attendance ? attendance.status : schedule.status,
+      photo: tutor?.tutors?.[0]?.photo || null,
     };
-  });
+  }); 
 }
 
 /**
@@ -487,6 +496,73 @@ async function getSchedulesByRole(userId) {
   }
 }
 
+/**
+ * Get schedule detail by schedule ID.
+ *
+ * @async
+ * @function getScheduleById
+ * @param {String} scheduleId - The ID of the schedule.
+ * @returns {Promise<Object>} The schedule detail.
+ * @throws {Error} If the schedule is not found.
+ */
+async function getScheduleById(scheduleId) {
+  const schedule = await prisma.schedule.findUnique({
+    where: { id: scheduleId },
+    include: {
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: {
+                include: {
+                  user: true,
+                  groupType: true
+                }
+              },
+              groupType: true
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
+        }
+      },
+      attendances: true
+    }
+  });
+
+  if (!schedule) {
+    throw new Error('Schedule not found');
+  }
+
+  const classData = schedule.class;
+  const order = classData?.order;
+  const bimbelPackage = order?.bimbelPackage;
+  const groupType = order?.groupType;
+  const tutor = classData?.tutor;
+  const tutorGender = tutor?.tutors?.[0]?.gender;
+  const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+
+  return {
+    id: schedule.id,
+    classCode: classData.code,
+    packageName: bimbelPackage?.name || null,
+    level: bimbelPackage?.level || null,
+    tutorName: tutorName,
+    groupType: groupType?.type || null,
+    meet: schedule.meet,
+    date: schedule.date,
+    duration: bimbelPackage?.duration || null,
+    status: schedule.status,
+    attendances: schedule.attendances,
+    address: order?.address || null,
+    photo: tutor?.tutors?.[0]?.photo || null,
+    info: schedule.info || null,
+    tutorPhone: tutor?.tutors?.[0]?.phone,
+    tutorEmail: tutor?.email,
+  };
+}
+
 
 export const ScheduleService = {
   createSchedules,
@@ -495,6 +571,7 @@ export const ScheduleService = {
   getSchedulesForStudent,
   getSchedulesForTutor,
   getSchedulesByRole,
+  getScheduleById,
   getNextDate,
   getTutorName
 };
