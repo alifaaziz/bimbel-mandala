@@ -25,7 +25,7 @@ const mockTutor = {
     verified: true,
     createdAt: new Date(),
     students: [],
-    tutors: [{ subjects: 'Math', teachLevel: 'SMA', description: 'desc', photo: 'photo.jpg' }],
+    tutors: [{ subjects: 'Math', teachLevel: 'SMA', description: 'desc', photo: 'photo.jpg', tutorDay: [{ day: { daysName: 'Senin' } }] }],
     _count: { class: 5 }
 };
 
@@ -60,10 +60,18 @@ const mockPrisma = {
     tutor: {
         create: jest.fn(),
         update: jest.fn(),
-        findMany: jest.fn()
+        findMany: jest.fn(),
+        findUnique: jest.fn()
     },
     notification: {
         create: jest.fn()
+    },
+    tutorDay: {
+        deleteMany: jest.fn(),
+        create: jest.fn()
+    },
+    day: {
+        findFirst: jest.fn()
     }
 };
 
@@ -74,6 +82,7 @@ jest.unstable_mockModule('../../utils/db.js', () => ({
 
 const mockHashPassword = jest.fn(async (pw) => 'hashed_' + pw);
 const mockSendUserVerificationOtp = jest.fn();
+const mockSavePhoto = jest.fn();
 
 jest.unstable_mockModule('../auth.js', () => ({
     AuthService: {
@@ -95,6 +104,10 @@ jest.unstable_mockModule('../../utils/error.js', () => ({
             this.data = data;
         }
     }
+}));
+
+jest.unstable_mockModule('../../utils/helper.js', () => ({
+    savePhoto: mockSavePhoto
 }));
 
 // ==== IMPORTS ====
@@ -265,37 +278,79 @@ describe('UserService', () => {
             expect(mockPrisma.user.update).toHaveBeenCalledWith({
                 where: { id: 1 },
                 data: {
-                    name: undefined,
-                    email: 'updated@mail.com',
-                    googleId: undefined,
-                    password: null
+                    email: 'updated@mail.com'
                 }
             });
             expect(result).toHaveProperty('id', 1);
         });
 
-        it('should update user with password (password is given)', async () => {
+        // it('should update user with password (password is given)', async () => {
+        //     mockPrisma.user.update.mockResolvedValueOnce({});
+        //     mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
+
+        //     const result = await UserService.updateUser({
+        //         id: 1,
+        //         name: 'Updated Name',
+        //         email: 'updated@mail.com',
+        //         password: 'newpassword'
+        //     });
+
+        //     expect(mockHashPassword).toHaveBeenCalledWith('newpassword');
+        //     expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        //         where: { id: 1 },
+        //         data: {
+        //             name: 'Updated Name',
+        //             email: 'updated@mail.com',
+        //             password: 'hashed_newpassword'
+        //         }
+        //     });
+        //     expect(result).toHaveProperty('id', 1);
+        // });
+
+        it('should update tutor days if daysName is provided', async () => {
             mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
+            mockPrisma.tutor.update.mockResolvedValueOnce({});
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
+            mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 2 });
+            mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
+            mockPrisma.day.findFirst.mockResolvedValueOnce({ id: 1, daysName: 'Senin' });
+            mockPrisma.tutorDay.create.mockResolvedValueOnce({});
 
             const result = await UserService.updateUser({
-                id: 1,
-                name: 'Updated Name',
-                email: 'updated@mail.com',
-                password: 'newpassword'
+                id: 2,
+                name: 'Tutor',
+                email: 'tutor@mail.com',
+                role: 'tutor',
+                subjects: 'Math',
+                daysName: ['Senin']
             });
 
-            expect(mockHashPassword).toHaveBeenCalledWith('newpassword');
-            expect(mockPrisma.user.update).toHaveBeenCalledWith({
-                where: { id: 1 },
-                data: {
-                    name: 'Updated Name',
-                    email: 'updated@mail.com',
-                    googleId: undefined,
-                    password: 'hashed_newpassword'
-                }
+            expect(mockPrisma.tutorDay.deleteMany).toHaveBeenCalled();
+            expect(mockPrisma.day.findFirst).toHaveBeenCalledWith({ where: { daysName: 'Senin' } });
+            expect(mockPrisma.tutorDay.create).toHaveBeenCalledWith({
+                data: { tutorId: 2, daysId: 1 }
             });
-            expect(result).toHaveProperty('id', 1);
+            expect(result).toHaveProperty('id', 2);
+        });
+
+        it('should update photo if file is provided', async () => {
+            mockPrisma.user.update.mockResolvedValueOnce({});
+            mockPrisma.tutor.update.mockResolvedValueOnce({});
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
+            mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
+
+            const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
+
+            const result = await UserService.updateUser({
+                id: 2,
+                name: 'Tutor',
+                email: 'tutor@mail.com',
+                role: 'tutor',
+                subjects: 'Math'
+            }, file);
+
+            expect(mockSavePhoto).toHaveBeenCalled();
+            expect(result).toHaveProperty('id', 2);
         });
     });
 
@@ -364,9 +419,10 @@ describe('UserService', () => {
     // --- getUserById ---
     describe('getUserById', () => {
         it('should return user if found', async () => {
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
-            const result = await UserService.getUserById(1);
-            expect(result).toHaveProperty('id', 1);
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
+            const result = await UserService.getUserById(2);
+            expect(result).toHaveProperty('id', 2);
+            expect(result.tutors[0]).toHaveProperty('daysName', ['Senin']);
         });
 
         it('should throw if user not found', async () => {

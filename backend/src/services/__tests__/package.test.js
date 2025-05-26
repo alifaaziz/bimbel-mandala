@@ -47,9 +47,9 @@ describe('BimbelPackageService', () => {
                 }
             ]);
             const result = await BimbelPackageService.getActiveBimbelPackages();
-            expect(Array.isArray(result)).toBe(true);
-            expect(result.length).toBe(1);
-            expect(result[0]).toMatchObject({
+            expect(Array.isArray(result.data)).toBe(true);
+            expect(result.data.length).toBe(1);
+            expect(result.data[0]).toMatchObject({
                 name: 'Paket A',
                 level: 'SMA',
                 totalMeetings: 10,
@@ -62,7 +62,7 @@ describe('BimbelPackageService', () => {
                 groupType: [expect.objectContaining({ type: 'privat', price: 100000, discPrice: 90000 })],
                 days: ['Senin']
             });
-            Object.values(result[0]).forEach(val => {
+            Object.values(result.data[0]).forEach(val => {
                 if (Array.isArray(val)) return;
                 expect(val).not.toBeNull();
             });
@@ -71,8 +71,8 @@ describe('BimbelPackageService', () => {
         it('returns empty array if no active packages', async () => {
             mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([]);
             const result = await BimbelPackageService.getActiveBimbelPackages();
-            expect(Array.isArray(result)).toBe(true);
-            expect(result.length).toBe(0);
+            expect(Array.isArray(result.data)).toBe(true);
+            expect(result.data.length).toBe(0);
         });
     });
 
@@ -485,6 +485,7 @@ describe('BimbelPackageService', () => {
                     duration: 90,
                     area: 'Jakarta',
                     isActive: true,
+                    user: { name: 'Tutor Populer', tutors: [{ photo: 'photo1.jpg' }] },
                     groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
                     packageDay: [{ day: { daysName: 'Senin' } }]
                 },
@@ -497,6 +498,7 @@ describe('BimbelPackageService', () => {
                     duration: 60,
                     area: 'Bandung',
                     isActive: true,
+                    user: { name: 'Tutor Biasa', tutors: [{ photo: 'photo2.jpg' }] },
                     groupType: [{ type: 'grup2', price: 80000, discPrice: 70000 }],
                     packageDay: [{ day: { daysName: 'Selasa' } }]
                 }

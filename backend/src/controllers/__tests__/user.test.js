@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { setupExpressMock } from '../../utils/jest.js';
 
 // Mock UserService sesuai dengan fungsi yang ada di service
-const userMock = { id: 123, name: 'Test User' };
+const userMock = { id: 123, name: 'Test User', role: 'siswa' };
 
 jest.unstable_mockModule('../../services/user.js', () => ({
   UserService: {
@@ -53,20 +53,20 @@ describe('UserController', () => {
       UserService.updateUser.mockResolvedValue();
 
       const { req, res } = setupExpressMock({
-        req: { body: { name: 'Updated User', email: 'updated@example.com' } },
-        res: { locals: { user: { id: 123 } } },
+        req: { body: { name: 'Updated User', email: 'updated@example.com' }, file: undefined },
+        res: { locals: { user: { id: 123, role: 'siswa' } } },
       });
 
       await UserController.updateCurrentUser(req, res);
 
-      // Cek hanya field yang penting, field lain boleh ada
       expect(UserService.updateUser).toHaveBeenCalledWith(
-        ({
+        {
+          id: 123,
+          role: 'siswa',
           name: 'Updated User',
-          email: 'updated@example.com',
-          id: 123,        
-          role: undefined, 
-        })
+          email: 'updated@example.com'
+        },
+        undefined
       );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({

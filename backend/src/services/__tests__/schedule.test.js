@@ -133,9 +133,12 @@ describe('ScheduleService', () => {
             }
             MockDate.now = () => sunday.getTime();
             global.Date = MockDate;
-            const result = await ScheduleService.createSchedules('class1');
-            expect(result.length).toBe(1);
-            global.Date = realDate;
+            try {
+                const result = await ScheduleService.createSchedules('class1');
+                expect(result.length).toBe(1);
+            } finally {
+                global.Date = realDate;
+            }
         });
     });
 
@@ -486,4 +489,8 @@ describe('ScheduleService', () => {
             expect(ScheduleService.getTutorName({ gender: 'Female', user: { name: 'Siti' } })).toBe('Bu Siti');
         });
     });
+});
+
+afterAll(() => {
+  jest.clearAllTimers();
 });
