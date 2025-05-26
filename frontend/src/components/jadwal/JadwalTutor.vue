@@ -229,9 +229,6 @@ export default defineComponent({
 </script>
 
 <template>
-  <h1 class="headerr2">Jadwal Program</h1>
-  <h2 class="headerb1">Terdekat</h2>
-  
   <n-space vertical :size="12">
     <!-- Desktop Table -->
     <n-data-table
@@ -358,7 +355,8 @@ export default defineComponent({
 
 <style scoped>
 .n-space {
-  margin: 80px 0;
+  margin-top: 104px;
+  padding: 2rem 0;
 }
 .mobile-card-list {
     display: flex;

@@ -85,6 +85,18 @@ function groupTypeLabel(groupTypeArr: any[]): string {
     ? 'Kelas'
     : 'Privat/Kelompok';
 }
+
+const badgeClass = (level: string) => {
+  switch (level.toLowerCase()) {
+    case 'sd':
+      return 'grade-sd'
+    case 'smp':
+      return 'grade-smp'
+    case 'sma':
+      return 'grade-sma'
+  }
+}
+
 </script>
 
 <template>
@@ -103,7 +115,10 @@ function groupTypeLabel(groupTypeArr: any[]): string {
           <div class="bodym2">{{ programData.tutorName }}</div>
         </div>
         <div>
-          <div class="headerb1 grade">
+          <div
+            class="headerb1"
+            :class="badgeClass(programData.level)"
+          >
             {{ programData.level }}
           </div>
         </div>
@@ -149,6 +164,7 @@ function groupTypeLabel(groupTypeArr: any[]): string {
 <style scoped>
 .container-detail {
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 4rem;
   width: 100%;
@@ -178,14 +194,6 @@ function groupTypeLabel(groupTypeArr: any[]): string {
   color: #154484;
   width: 100%;
   max-width: 320px;
-}
-
-.grade {
-  background-color: darkgray;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  white-space: nowrap;
 }
 
 .space-detail {

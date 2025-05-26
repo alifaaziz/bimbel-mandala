@@ -127,11 +127,11 @@ onMounted(async () => {
     <div v-if="user.role === 'tutor'">
       <bidangAjar :subjects="tutor?.subjects":jenjang="tutor?.teachLevel"/>
     </div>
-    <n-divider/>
+    <n-divider v-if="user.role === 'tutor'"/>
     <div v-if="user.role === 'tutor'">
       <hariAktif :daysName="tutor?.daysName"/>
     </div>
-    <n-divider />
+    <n-divider v-if="user.role === 'tutor'" />
     <tabJadwalProgram/>
     <n-divider />
     <tabProgram/>

@@ -1,13 +1,23 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import LoginForm from './components/Auth/LoginForm.vue';
 import SignupForm from './components/Auth/SignupForm.vue';
 
 const showLogin = ref(true);
+const route = useRoute();
 
 const toggleForm = () => {
   showLogin.value = !showLogin.value;
 };
+
+// Cek query tab saat komponen dimount & saat berubah
+const checkTab = () => {
+  showLogin.value = route.query.tab !== 'signup';
+};
+
+onMounted(checkTab);
+watch(() => route.query.tab, checkTab);
 </script>
 
 <template>

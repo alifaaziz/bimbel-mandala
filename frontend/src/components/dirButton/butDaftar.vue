@@ -8,7 +8,7 @@
           class="custom-button buttonb2"
           tertiary
           round
-          @click="$router.push('/#')"
+          @click="$router.push({ path: '/auth', query: { tab: 'signup' } })"
         >
           Daftar
         </n-button>
