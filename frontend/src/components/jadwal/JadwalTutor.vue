@@ -2,7 +2,7 @@
 import { defineComponent, h, ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router"; // Tambahkan ini
 import { NTag, NCard } from "naive-ui";
-import butJadwalUlang from "../dirButton/butJadwalUlang.vue";
+import butJadwalUlang from "../dirButton/butJadwalUlangTabel.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
 

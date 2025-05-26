@@ -4,7 +4,7 @@
           class="custom-button buttonm3"
           tertiary
           round
-          @click="$emit('click', $event)"
+          @click="$emit('click')"
         >
           {{ label }}
         </n-button>
@@ -15,7 +15,7 @@
 defineProps({
   label: {
     type: String,
-    default: 'Jadwal Ulang'
+    default: 'Submit'
   }
 });
 </script>
@@ -23,6 +23,7 @@ defineProps({
 <style scoped>
 .button-container {
   display: flex;
+  height: 2.5rem; 
 }
 
 .custom-button {

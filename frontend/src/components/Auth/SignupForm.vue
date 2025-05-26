@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { NInput, NButton } from 'naive-ui'
+import googleIcon from '../../assets/google.svg'
 
 const name = ref('')
 const email = ref('')
@@ -64,6 +65,36 @@ async function handleSignup() {
   }
 }
 
+// Tambahkan fungsi untuk login dengan Google
+async function handleGoogleLogin() {
+  isLoading.value = true
+  try {
+    // Ganti dengan URL endpoint login Google Anda
+    const response = await fetch('http://localhost:3000/auth/google', {
+      method: 'GET',
+      credentials: 'include',
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(
+        (data.error && data.error.message) ||
+        data.error ||
+        'Login dengan Google gagal.'
+      )
+    }
+
+    localStorage.setItem('token', data.data.token)
+    isLoggedIn.value = true
+    router.push('/absen')
+  } catch (error) {
+    alert(error.message)
+  } finally {
+    isLoading.value = false
+  }
+}
+
 const emit = defineEmits(['toggle-form'])
 function goToLogin() {
   emit('toggle-form')
@@ -123,6 +154,16 @@ function goToLogin() {
         class="butSign buttonb2"
       >
         Daftar
+      </n-button>
+
+      <!-- Tombol Login dengan Google -->
+      <n-button
+        block
+        class="google-btn"
+        @click="handleGoogleLogin"
+      >
+        <img :src="googleIcon" alt="Google" class="google-icon-img" />
+        Lanjutkan dengan Google
       </n-button>
 
       <p>
@@ -202,6 +243,23 @@ function goToLogin() {
   color: red;
   font-size: 0.75rem;
   margin-top: 0.25rem;
+}
+
+.google-btn {
+  border: 1px solid #154484;
+  color: #154484;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.google-icon-img {
+  width: 28px;
+  height: auto;
+  margin-right: 10px;
+  vertical-align: middle;
 }
 
 @media (max-width: 982px) {
