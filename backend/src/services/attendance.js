@@ -119,18 +119,33 @@ async function createAttendance({ scheduleId, userId, status, reason = null }) {
   });
 
   if (existing) {
-    throw new Error('attendance can only be done once');
+    throw new Error('Attendance can only be done once');
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
+  const schedule = await prisma.schedule.findUnique({
+    where: { id: scheduleId },
+    include: {
+      class: { include: { tutor: true } }
+    }
+  });
+
+  if (!schedule) {
+    throw new Error('Schedule not found');
+  }
+
+  const today = new Date();
+  const scheduleDate = new Date(schedule.date);
+  if (
+    scheduleDate.getFullYear() !== today.getFullYear() ||
+    scheduleDate.getMonth() !== today.getMonth() ||
+    scheduleDate.getDate() !== today.getDate()
+  ) {
+    throw new Error('Attendance can only be done on the schedule date');
+  }
+
   if (user.role === 'siswa' && status === 'masuk') {
-    const schedule = await prisma.schedule.findUnique({
-      where: { id: scheduleId },
-      include: {
-        class: { include: { tutor: true } }
-      }
-    });
     const tutorId = schedule.class.tutor?.id;
     if (tutorId) {
       const tutorAttendance = await prisma.attendance.findFirst({
@@ -141,7 +156,7 @@ async function createAttendance({ scheduleId, userId, status, reason = null }) {
         }
       });
       if (!tutorAttendance) {
-        throw new Error('tutors must take attendance first');
+        throw new Error('Tutors must take attendance first');
       }
     }
   }
@@ -154,47 +169,6 @@ async function createAttendance({ scheduleId, userId, status, reason = null }) {
       reason
     }
   });
-
-  const schedule = await prisma.schedule.findUnique({
-    where: { id: scheduleId },
-    include: {
-      class: {
-        include: {
-          tutor: true,
-          order: {
-            include: {
-              groupType: {
-                select: {
-                  price: true
-                }
-              }
-            }
-          },
-          schedules: {
-            include: {
-              attendances: true
-            }
-          }
-        }
-      }
-    }
-  });
-
-  const { class: classData } = schedule;
-  const { schedules, order, tutor } = classData;
-
-  if (isLastSchedule(schedule, schedules) && tutor?.id === userId) {
-    const tutorAttendance = schedules.flatMap(s => s.attendances.filter(att => att.userId === userId));
-    const totalAttendanceMasuk = tutorAttendance.filter(att => att.status === 'masuk').length;
-
-    const payroll = calculatePayroll(order, totalAttendanceMasuk, schedules.length);
-
-    await SalaryService.createSalary({
-      tutorId: userId,
-      orderId: order?.id,
-      totalSalary: payroll
-    });
-  }
 
   return attendance;
 }

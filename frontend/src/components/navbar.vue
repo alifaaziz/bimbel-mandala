@@ -68,9 +68,9 @@ const filteredMenuOptions = computed(() => {
   return menuOptionsLoggedOut;
 });
 
-const goToSchedule = (scheduleId) => {
+const goToSchedule = () => {
   showNotificationPopup.value = false;
-  router.push(`/jadwal/${scheduleId}`);
+  router.push('/jadwal');
 };
 
 const handleResize = () => {
@@ -270,7 +270,7 @@ const notificationsWithTime = computed(() =>
                           >
                             <n-button 
                               size="small"
-                              @click.stop="goToSchedule(notification.scheduleId)"
+                                @click.stop="goToSchedule()"
                               class="schedule-button buttonm4"
                               round
                             >
@@ -388,7 +388,7 @@ const notificationsWithTime = computed(() =>
                           >
                             <n-button 
                               size="small" 
-                              @click.stop="goToSchedule(notification.scheduleId)"
+                              @click.stop="goToSchedule()"
                               class="schedule-button"
                             >
                               Lihat Jadwal

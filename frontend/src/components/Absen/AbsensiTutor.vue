@@ -30,6 +30,7 @@ onMounted(async () => {
     const item = (result.data || [])[0]
     if (item) {
       schedule.value = {
+        id: item.id,
         subject: item.packageName + ' ' + (item.level || ''),
         tutor: item.tutorName,
         date: new Date(item.date).toLocaleDateString('id-ID', {
@@ -64,7 +65,7 @@ function statusLabel(status: string) {
   }
 }
 
-const tagTypeMap: Record<string, string> = {
+const tagTypeMap: Record<string, "default" | "error" | "success" | "warning" | "info" | "primary"> = {
   "Terjadwal": "success",
   "Jadwal Ulang": "warning",
   "Masuk": "info",
@@ -79,8 +80,40 @@ function closeAbsenModal() {
   showAbsenModal.value = false
 }
 function confirmAbsen() {
-  alert('Absen berhasil!')
-  closeAbsenModal()
+  const token = localStorage.getItem('token')
+  if (!token) {
+    alert('Token tidak ditemukan, silakan login ulang.')
+    return
+  }
+  if (!schedule.value?.id) {
+    alert('Jadwal tidak ditemukan.')
+    return
+  }
+
+  fetch('http://localhost:3000/attendance/masuk', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ scheduleId: schedule.value.id })
+  })
+    .then(async res => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(
+          data.message ||
+          (data.error && data.error.message) ||
+          data.error ||
+          'Gagal melakukan absensi.'
+        )
+      }
+      alert('Absensi berhasil!')
+      closeAbsenModal()
+    })
+    .catch(err => {
+      alert(err.message)
+    })
 }
 
 // Jadwal Ulang
@@ -99,12 +132,47 @@ function closeRescheduleModal() {
   rescheduleTime.value = ''
 }
 function confirmReschedule() {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    alert('Token tidak ditemukan, silakan login ulang.')
+    return
+  }
+  if (!schedule.value?.id) {
+    alert('Jadwal tidak ditemukan.')
+    return
+  }
   if (!rescheduleDate.value || !rescheduleTime.value) {
     alert('Silakan pilih tanggal dan jam baru terlebih dahulu.')
     return
   }
-  alert(`Jadwal ulang berhasil:\nTanggal: ${rescheduleDate.value}\nJam: ${rescheduleTime.value}`)
-  closeRescheduleModal()
+
+  // Gabungkan tanggal dan waktu menjadi format ISO
+  const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00.000Z`).toISOString()
+
+  fetch(`http://localhost:3000/schedules/reschedule/${schedule.value.id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ newDate })
+  })
+    .then(async res => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(
+          data.message ||
+          (data.error && data.error.message) ||
+          data.error ||
+          'Gagal melakukan jadwal ulang.'
+        )
+      }
+      alert('Jadwal ulang berhasil!')
+      closeRescheduleModal()
+    })
+    .catch(err => {
+      alert(err.message)
+    })
 }
 </script>
 

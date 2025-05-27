@@ -87,14 +87,46 @@ export default defineComponent({
     }
 
     function confirmReschedule() {
-      if (!rescheduleDate.value || !rescheduleTime.value) {
-        alert("Silakan pilih tanggal dan jam baru.");
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Token tidak ditemukan, silakan login ulang.');
         return;
       }
-      lastRescheduleDate.value = rescheduleDate.value;
-      lastRescheduleTime.value = rescheduleTime.value;
-      closeRescheduleModal();
-      showSuccessModal.value = true;
+      if (!selectedSchedule.value?.key) {
+        alert('Jadwal tidak ditemukan.');
+        return;
+      }
+      if (!rescheduleDate.value || !rescheduleTime.value) {
+        alert('Silakan pilih tanggal dan jam baru terlebih dahulu.');
+        return;
+      }
+
+      const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00.000Z`).toISOString();
+
+      fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ newDate })
+      })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(
+              data.message ||
+              (data.error && data.error.message) ||
+              data.error ||
+              'Gagal melakukan jadwal ulang.'
+            );
+          }
+          alert('Jadwal ulang berhasil!');
+          closeRescheduleModal();
+        })
+        .catch(err => {
+          alert(err.message);
+        });
     }
 
     function closeSuccessModal() {
@@ -107,11 +139,14 @@ export default defineComponent({
       "Jadwal Ulang": "warning"
     };
 
-    // Tambahkan rowProps untuk klik baris tabel
     const rowProps = (row) => {
       return {
         style: { cursor: 'pointer' },
-        onClick: () => {
+        onClick: (event) => {
+          if (event.target.closest('.reschedule-btn')) {
+            event.stopPropagation();
+            return;
+          }
           router.push(`/DetailJadwal/${row.key}`);
         }
       };
@@ -166,6 +201,7 @@ export default defineComponent({
           return h(
             butJadwalUlang,
             {
+              class: "reschedule-btn",
               label: "Jadwal Ulang",
               onClick: () => openRescheduleModal(row)
             }

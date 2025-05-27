@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue';
 import { NCard, NTag } from 'naive-ui';
 import butJadwal from '../dirButton/butJadwal.vue';
-import Scheduled from './Scheduled.vue';
 import butDetailJadwal from '../dirButton/butDetailJadwal.vue';
 import { useRouter } from 'vue-router';
 

@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { NTag } from 'naive-ui'
-import Scheduled from './Scheduled.vue'
 import butAbsen from '../dirButton/butAbsen.vue'
 import butIzin from '../dirButton/butIzin.vue'
 
 // State
-const isScheduled = ref(true)
 const showAbsenModal = ref(false)
 const showIzinModal = ref(false)
 const izinReason = ref('')
@@ -31,6 +29,7 @@ onMounted(async () => {
 
     if (item) {
       schedule.value = {
+        id: item.id,
         subject: item.packageName + ' ' + (item.level || ''),
         tutor: item.tutorName,
         date: new Date(item.date).toLocaleDateString('id-ID', {
@@ -79,8 +78,40 @@ function closeAbsenModal() {
   showAbsenModal.value = false
 }
 function confirmAbsen() {
-  alert('Absen berhasil!')
-  closeAbsenModal()
+  const token = localStorage.getItem('token')
+  if (!token) {
+    alert('Token tidak ditemukan, silakan login ulang.')
+    return
+  }
+  if (!schedule.value?.id) {
+    alert('Jadwal tidak ditemukan.')
+    return
+  }
+
+  fetch('http://localhost:3000/attendance/masuk', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ scheduleId: schedule.value.id })
+  })
+    .then(async res => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(
+          data.message ||
+          (data.error && data.error.message) ||
+          data.error ||
+          'Gagal absen.'
+        )
+      }
+      alert('Absen berhasil!')
+      closeAbsenModal()
+    })
+    .catch(err => {
+      alert(err.message)
+    })
 }
 
 // Izin
@@ -91,13 +122,48 @@ function closeIzinModal() {
   showIzinModal.value = false
 }
 function confirmIzin() {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    alert('Token tidak ditemukan, silakan login ulang.')
+    return
+  }
+  if (!schedule.value?.id) {
+    alert('Jadwal tidak ditemukan.')
+    return
+  }
   if (!izinReason.value.trim()) {
     alert('Silakan masukkan alasan izin terlebih dahulu.')
     return
   }
-  alert(`Permintaan izin berhasil dikirim:\n"${izinReason.value}"`)
-  closeIzinModal()
-  izinReason.value = ''
+
+  fetch('http://localhost:3000/attendance/izin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      scheduleId: schedule.value.id,
+      reason: izinReason.value
+    })
+  })
+    .then(async res => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(
+          data.message ||
+          (data.error && data.error.message) ||
+          data.error ||
+          'Gagal mengirim izin.'
+        )
+      }
+      alert('Permintaan izin berhasil dikirim!')
+      closeIzinModal()
+      izinReason.value = ''
+    })
+    .catch(err => {
+      alert(err.message)
+    })
 }
 </script>
 
