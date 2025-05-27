@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { NCard } from 'naive-ui'
 import ButtonProgram from '../dirButton/butprogram.vue'
 import butSecondSmall from '../dirButton/butSecondSmall.vue'
 
 const limitedPrograms = ref([])
 const isTutor = ref(false)
+const router = useRouter()
 
 onMounted(async () => {
   // Ambil role user dari API
@@ -44,6 +46,15 @@ function groupTypeLabel(groupTypeArr) {
   return groupTypeArr.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))
     ? 'Kelas'
     : 'Privat/Kelompok';
+}
+
+// Handler tombol
+function handleButton(programId) {
+  if (isTutor.value) {
+    router.push(`/detailprogram/${programId}`)
+  } else {
+    router.push(`/detailProgram/${programId}`)
+  }
 }
 </script>
 
@@ -93,7 +104,7 @@ function groupTypeLabel(groupTypeArr) {
               <butSecondSmall
                 class="butPesan"
                 :label="isTutor ? 'Detail Program' : 'Daftar Program'"
-                @click="$router.push(`/detailProgram/${program.id}`)"
+                @click="handleButton(program.id)"
               />
             </div>
           </div>
@@ -118,6 +129,7 @@ function groupTypeLabel(groupTypeArr) {
 .card-container {
   display: flex;
   flex-direction: column;
+  margin-bottom: 1rem;
   gap: 1rem;
   width: 100%;
 }

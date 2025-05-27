@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { defineComponent, h, ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import butPrimerNormal from '../dirButton/butPrimerNormal.vue';
+import HonorTutor from './HonorTutor.vue';
 
 const route = useRoute();
+const router = useRouter();
 const programId = route.params.id as string;
 const programData = ref<any>(null);
+const isTutor = ref(false);
 
 onMounted(async () => {
   try {
@@ -14,6 +18,15 @@ onMounted(async () => {
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
     programData.value = await res.json();
+
+    // Cek role user
+    const userRes = await fetch('http://localhost:3000/users/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (userRes.ok) {
+      const data = await userRes.json();
+      isTutor.value = data.data?.role === 'tutor';
+    }
   } catch (err) {
     programData.value = null;
   }
@@ -59,24 +72,28 @@ const InfoRow = defineComponent({
 function submitToWhatsApp() {
   if (!programData.value) return;
 
-  const message = `
-    *Detail Program Bimbel Mandala*\n
-    Berikut adalah detail program yang ingin dipesan:\n
-    - *Nama Program*: ${programData.value.name}\n
-    - *Tutor*: ${programData.value.tutorName}\n
-    - *Jenjang*: ${programData.value.level}\n
-    - *Hari*: ${programData.value.days.join(", ")}\n
-    - *Pukul*: ${formatTime(programData.value.time)}\n
-    - *Durasi*: ${programData.value.duration} Menit\n
-    - *Area*: ${programData.value.area}\n
-    - *Tipe Program*: ${programData.value.groupType.map((group: any) => group.type).join(" / ")}\n
-    - *Harga*: ${formatCurrency(Number(programData.value.groupType[0].price))} - ${formatCurrency(Number(programData.value.groupType[programData.value.groupType.length - 1].price))}\n
-    Mohon untuk segera memproses pesanan ini. Terima kasih.
-  `;
+  // Nomor WA admin
+  const whatsappAdmin = "6285855852485";
 
-  const encodedMessage = encodeURIComponent(message);
-  const whatsappNumber = "6285855852485";
-  window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
+  if (isTutor.value) {
+    const message = `
+*Detail Program*
+- *Nama Program*: ${programData.value.name}
+- *Tutor*: ${programData.value.tutorName}
+- *Jenjang*: ${programData.value.level}
+- *Hari*: ${programData.value.days.join(", ")}
+- *Pukul*: ${formatTime(programData.value.time)}
+- *Durasi*: ${programData.value.duration} Menit
+- *Area*: ${programData.value.area}
+- *Tipe Program*: ${programData.value.groupType.map((group: any) => group.type).join(" / ")}
+`
+    ;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${whatsappAdmin}?text=${encodedMessage}`, "_blank");
+  } else {
+    // Jika siswa, redirect ke halaman pemesanan
+    router.push('/pemesanan');
+  }
 }
 
 function groupTypeLabel(groupTypeArr: any[]): string {
@@ -96,6 +113,8 @@ const badgeClass = (level: string) => {
       return 'grade-sma'
   }
 }
+
+const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
 </script>
 
@@ -124,40 +143,46 @@ const badgeClass = (level: string) => {
         </div>
       </div>
       <div class="space-detail">
-        <n-space class="bodyr2">
-          <n-tag class="tag" v-for="(day, index) in programData.days" :key="index">
-            {{ day }}
-          </n-tag>
-        </n-space>
-      </div>
-      <div class="space-detail">
-        <n-space vertical size="medium" class="space-detail bodyr2">
-          <InfoRow label="Area" :value="programData.area" />
-          <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
-          <InfoRow label="Pukul" :value="formatTime(programData.time)" />
-          <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
-        </n-space>
-      </div>
-      <div class="space-detail">
-        <p class="bodyb1 type-program">
-          {{ groupTypeLabel(programData.groupType) }}
-        </p>
-        <p class="bodyb1 price">
-          {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
-          {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
-        </p>
-      </div>
-      <div class="space-detail">
-        <n-button
-          class="submit-button"
-          type="primary"
-          size="large"
-          @click="submitToWhatsApp"
-        >
-          Pesan Program
-        </n-button>
+        <div>
+          <n-space class="bodyr2">
+            <n-tag
+              v-for="(day, index) in allDays"
+              :key="index"
+              class="tag"
+              :class="{ 'tag-unselected': !programData.days.includes(day) }"
+            >
+              {{ day }}
+            </n-tag>
+          </n-space>
+        </div>
+        <div>
+          <n-space vertical size="medium" class="space-detail bodyr2">
+            <InfoRow label="Area" :value="programData.area" />
+            <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
+            <InfoRow label="Pukul" :value="formatTime(programData.time)" />
+            <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
+          </n-space>
+        </div>
+        <div>
+          <p class="bodyb1 type-program">
+            {{ groupTypeLabel(programData.groupType) }}
+          </p>
+          <p v-if="!isTutor" class="bodyb1 price">
+            {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
+            {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
+          </p>
+        </div>
+        <div>
+          <butPrimerNormal 
+            :label="isTutor ? 'Hubungi Admin' : 'Pesan Program'"
+            @click="submitToWhatsApp"
+          />
+        </div>
       </div>
     </div>
+  </div>
+  <div v-if="isTutor" class="padding-components">
+    <HonorTutor />
   </div>
 </template>
 
@@ -186,7 +211,7 @@ const badgeClass = (level: string) => {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
@@ -197,7 +222,9 @@ const badgeClass = (level: string) => {
 }
 
 .space-detail {
-  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .tag {
@@ -205,6 +232,12 @@ const badgeClass = (level: string) => {
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 2rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tag-unselected {
+  background-color: #e0e0e0;
+  color: #888;
 }
 
 .type-program {
