@@ -19,17 +19,29 @@ export default {
       }
       this.loading = true;
       try {
-        // Ganti URL di bawah dengan endpoint API Anda
-        // await axios.post('/api/auth/request-reset-password', { email: this.email });
-        // Simulasi sukses:
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const response = await fetch('http://localhost:3000/auth/password-reset', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: this.email }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.message || 
+            errorData.error?.message || 
+            "Gagal mengirim token. Pastikan email terdaftar."
+          );
+        }
+
         this.success = "Token reset password telah dikirim ke email Anda.";
-        // Redirect ke halaman reset password baru setelah sukses
         setTimeout(() => {
-          this.$router.push("/resetpassword/passwordbaru");
-        }, 1200); // beri jeda agar pesan sukses sempat tampil
+          this.$router.push("/auth");
+        }, 1200);
       } catch (e) {
-        this.error = "Gagal mengirim token. Pastikan email terdaftar.";
+        this.error = e.message;
       } finally {
         this.loading = false;
       }

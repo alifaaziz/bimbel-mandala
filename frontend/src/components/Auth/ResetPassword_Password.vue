@@ -1,14 +1,14 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import butSecondNormal from '../dirButton/butSecondNormal.vue'
+import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import butSecondNormal from '../dirButton/butSecondNormal.vue';
 
-const password = ref('')
-const confirmPassword = ref('')
-const error = ref('')
-const success = ref('')
-const loading = ref(false)
-const router = useRouter()
+const password = ref('');
+const error = ref('');
+const success = ref('');
+const loading = ref(false);
+const router = useRouter();
+const route = useRoute(); // Ambil token dari URL
 
 const submitPassword = async () => {
   error.value = ''
@@ -21,24 +21,49 @@ const submitPassword = async () => {
     error.value = "Konfirmasi password tidak cocok."
     return
   }
-  loading.value = true
-  try {
-    // Ganti dengan API reset password Anda
-    // await axios.post('/api/auth/reset-password', { password: password.value });
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    success.value = "Password berhasil direset. Silakan login dengan password baru."
-    password.value = ""
-    confirmPassword.value = ""
-  } catch (e) {
-    error.value = "Gagal mereset password. Silakan coba lagi."
-  } finally {
-    loading.value = false
+
+  const token = route.query.token;
+  if (!token) {
+    error.value = 'Token tidak ditemukan. Silakan coba lagi.';
+    return;
   }
-}
+
+  loading.value = true;
+  try {
+    const response = await fetch('http://localhost:3000/auth/password-reset/confirm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token,
+        password: password.value,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+        errorData.error?.message ||
+        'Gagal mereset password. Silakan coba lagi.'
+      );
+    }
+
+    success.value = 'Password berhasil direset. Silakan login dengan password baru.';
+    setTimeout(() => {
+      router.push('/auth');
+    }, 1500);
+  } catch (e) {
+    error.value = e.message;
+  } finally {
+    loading.value = false;
+  }
+};
 
 const goToLogin = () => {
-  router.push('/auth')
-}
+  router.push('/auth');
+};
 </script>
 
 <template>
@@ -54,6 +79,15 @@ const goToLogin = () => {
           v-model="password"
           required
           placeholder="Masukkan password baru"
+        />
+        <label class="bodyr2" for="confirmPassword">Konfirmasi Password:</label>
+        <input
+          class="bodyr2"
+          type="password"
+          id="confirmPassword"
+          v-model="confirmPassword"
+          required
+          placeholder="Ulangi password baru"
         />
         <span v-if="error" class="error">{{ error }}</span>
         <button type="submit" :disabled="loading">
@@ -72,7 +106,6 @@ const goToLogin = () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .reset-password-page-center {
