@@ -1,10 +1,43 @@
 <script>
 import { defineComponent, h, ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router"; // Tambahkan ini
+import { useRouter } from "vue-router";
 import { NTag, NCard } from "naive-ui";
 import butJadwalUlang from "../dirButton/butJadwalUlangTabel.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
+
+function formatTanggal(dateStr) {
+  const date = new Date(dateStr);
+  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
+  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+  return `${hari}, ${tanggal}`;
+}
+
+function formatJam(dateStr) {
+  return dateStr.slice(11, 16).replace(':', '.');
+}
+
+function statusLabel(status) {
+  switch (status) {
+    case "masuk": return "Masuk";
+    case "terjadwal": return "Terjadwal";
+    case "jadwal_ulang": return "Jadwal Ulang";
+    case "izin": return "Izin";
+    default: return status;
+  }
+}
+
+function groupTypeLabel(type) {
+  switch (type) {
+    case "privat": return "Privat";
+    case "grup2": return "Kelompok 2 Peserta";
+    case "grup3": return "Kelompok 3 Peserta";
+    case "grup4": return "Kelompok 4 Peserta";
+    case "grup5": return "Kelompok 5 Peserta";
+    case "kelas": return "Kelas";
+    default: return type;
+  }
+}
 
 export default defineComponent({
   components: {
@@ -13,66 +46,9 @@ export default defineComponent({
     butSumJadwalUlang
   },
   setup() {  
-
-    const data = ref([
-      {
-        key: 1,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Kelompok 3 Orang",
-        pertemuan: 12,
-        tanggal: "Rabu, 12 Maret 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: ["Masuk"]
-      },
-      {
-        key: 2,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Kelompok 3 Orang",
-        pertemuan: 13,
-        tanggal: "Sabtu, 15 Maret 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: ["Terjadwal"]
-      },
-      {
-        key: 3,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Kelompok 3 Orang",
-        pertemuan: 14,
-        tanggal: "Senin, 17 Maret 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: ["Jadwal Ulang"]
-      },
-      {
-        key: 4,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Privat",
-        pertemuan: 2,
-        tanggal: "Selasa, 18 Maret 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: ["Terjadwal"]
-      },
-      {
-        key: 5,
-        jadwal: "Matematika SMA",
-        guru: "Pak Dendy Wan S.Pd",
-        jenis: "Kelompok 3 Orang",
-        pertemuan: 15,
-        tanggal: "Rabu, 19 Maret 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: ["Terjadwal"]
-      }
-    ]);
-
+    const data = ref([]);
     const isMobile = ref(false);
+    const router = useRouter();
 
     const checkIsMobile = () => {
       isMobile.value = window.innerWidth < 768;
@@ -87,16 +63,14 @@ export default defineComponent({
     const showRescheduleModal = ref(false);
     const selectedSchedule = ref(null);
 
-    // Tambahkan state untuk tanggal dan jam baru
+    // State untuk tanggal dan jam baru
     const rescheduleDate = ref("");
     const rescheduleTime = ref("");
 
-    // Tambahkan ini
+    // State untuk pop up sukses
+    const showSuccessModal = ref(false);
     const lastRescheduleDate = ref("");
     const lastRescheduleTime = ref("");
-
-    // Tambahkan state untuk pop up sukses
-    const showSuccessModal = ref(false);
 
     function openRescheduleModal(row) {
       selectedSchedule.value = row;
@@ -113,15 +87,46 @@ export default defineComponent({
     }
 
     function confirmReschedule() {
-      if (!rescheduleDate.value || !rescheduleTime.value) {
-        alert("Silakan pilih tanggal dan jam baru.");
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Token tidak ditemukan, silakan login ulang.');
         return;
       }
-      // Simpan nilai sebelum reset
-      lastRescheduleDate.value = rescheduleDate.value;
-      lastRescheduleTime.value = rescheduleTime.value;
-      closeRescheduleModal();
-      showSuccessModal.value = true; // Tampilkan pop up sukses
+      if (!selectedSchedule.value?.key) {
+        alert('Jadwal tidak ditemukan.');
+        return;
+      }
+      if (!rescheduleDate.value || !rescheduleTime.value) {
+        alert('Silakan pilih tanggal dan jam baru terlebih dahulu.');
+        return;
+      }
+
+      const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00.000Z`).toISOString();
+
+      fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ newDate })
+      })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(
+              data.message ||
+              (data.error && data.error.message) ||
+              data.error ||
+              'Gagal melakukan jadwal ulang.'
+            );
+          }
+          alert('Jadwal ulang berhasil!');
+          closeRescheduleModal();
+        })
+        .catch(err => {
+          alert(err.message);
+        });
     }
 
     function closeSuccessModal() {
@@ -134,15 +139,35 @@ export default defineComponent({
       "Jadwal Ulang": "warning"
     };
 
+    const rowProps = (row) => {
+      return {
+        style: { cursor: 'pointer' },
+        onClick: (event) => {
+          if (event.target.closest('.reschedule-btn')) {
+            event.stopPropagation();
+            return;
+          }
+          router.push(`/DetailJadwal/${row.key}`);
+        }
+      };
+    };
+
     const columns = [
       {
         title: "Jadwal",
         key: "jadwal",
         render(row) {
-          return h("div", {}, [
-            h("div", { style: "font-weight: 600;" }, row.jadwal),
-            h("div", { style: "font-size: 12px; color: #666;" }, row.guru)
-          ]);
+          return h(
+            "div",
+            {
+              style: "font-weight: 600; cursor:pointer; color:#154484;",
+              onClick: () => goToDetailJadwal(row)
+            },
+            [
+              h("div", {}, row.jadwal),
+              h("div", { style: "font-size: 12px; color: #666;" }, row.guru)
+            ]
+          );
         }
       },
       { title: "Jenis", key: "jenis" },
@@ -176,6 +201,7 @@ export default defineComponent({
           return h(
             butJadwalUlang,
             {
+              class: "reschedule-btn",
               label: "Jadwal Ulang",
               onClick: () => openRescheduleModal(row)
             }
@@ -195,7 +221,28 @@ export default defineComponent({
       return data.value.slice(start, start + mobilePageSize);
     });
 
-    const router = useRouter(); // Tambahkan ini
+    onMounted(async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:3000/schedules', {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        const result = await res.json();
+        data.value = (result.data || []).map(item => ({
+          key: item.id,
+          jadwal: item.packageName,
+          guru: item.tutorName,
+          jenis: groupTypeLabel(item.groupType),
+          pertemuan: item.meet,
+          tanggal: formatTanggal(item.date),
+          jam: formatJam(item.date),
+          durasi: `${item.duration} Menit`,
+          status: [statusLabel(item.status)]
+        }));
+      } catch (err) {
+        data.value = [];
+      }
+    });
 
     return {
       data,
@@ -213,8 +260,8 @@ export default defineComponent({
       confirmReschedule,
       rescheduleDate,
       rescheduleTime,
-      lastRescheduleDate, // tambahkan
-      lastRescheduleTime, // tambahkan
+      lastRescheduleDate,
+      lastRescheduleTime,
       // Pagination mobile
       mobilePage,
       mobileTotalPage,
@@ -222,7 +269,9 @@ export default defineComponent({
       mobilePageSize,
       // Popup Sukses
       showSuccessModal,
-      closeSuccessModal
+      closeSuccessModal,
+      // Tambahkan rowProps untuk klik baris tabel
+      rowProps
     };
   }
 });
@@ -237,6 +286,7 @@ export default defineComponent({
       :columns="columns"
       :data="data"
       :pagination="pagination"
+      :row-props="rowProps"
     />
 
     <!-- Mobile View as Card List -->
@@ -246,6 +296,7 @@ export default defineComponent({
         :key="item.key"
         size="small"
         class="mobile-card clickable-card"
+        @click="goToDetailJadwal(item)"
       >
         <div class="card-section">
           <div class="headersb3">{{ item.jadwal }}</div>

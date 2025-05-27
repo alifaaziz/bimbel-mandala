@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import Scheduled from '../Absen/Scheduled.vue'
 import butAbsen from '../dirButton/butAbsen.vue'
 import butIzin from '../dirButton/butIzin.vue'
@@ -7,7 +8,25 @@ import butIzin from '../dirButton/butIzin.vue'
 const isScheduled = ref(true)
 const showAbsenModal = ref(false)
 const izinReason = ref('')
+const schedule = ref<any>(null)
 
+const route = useRoute()
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+
+  const id = route.params.id
+  const res = await fetch(`http://localhost:3000/schedules/${id}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  if (res.ok) {
+    const data = await res.json()
+    schedule.value = data.data
+  }
+})
 
 // Absen
 function openAbsenModal() {
@@ -19,9 +38,40 @@ function closeAbsenModal() {
 }
 
 function confirmAbsen() {
-  // Lakukan aksi absen di sini
-  alert('Absen berhasil!');
-  closeAbsenModal();
+  const token = localStorage.getItem('token')
+  if (!token) {
+    alert('Token tidak ditemukan, silakan login ulang.')
+    return
+  }
+  if (!schedule.value?.id) {
+    alert('Jadwal tidak ditemukan.')
+    return
+  }
+
+  fetch('http://localhost:3000/attendance/masuk', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ scheduleId: schedule.value.id })
+  })
+    .then(async res => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(
+          data.message ||
+          (data.error && data.error.message) ||
+          data.error ||
+          'Gagal absen.'
+        )
+      }
+      alert('Absen berhasil!')
+      closeAbsenModal()
+    })
+    .catch(err => {
+      alert(err.message)
+    })
 }
 
 // Izin
@@ -36,133 +86,181 @@ function closeIzinModal() {
 }
 
 function confirmIzin() {
-  if (!izinReason.value.trim()) {
-    alert('Silakan masukkan alasan izin terlebih dahulu.');
-    return;
+  const token = localStorage.getItem('token')
+  if (!token) {
+    alert('Token tidak ditemukan, silakan login ulang.')
+    return
   }
-  alert(`Permintaan izin berhasil dikirim:\n"${izinReason.value}"`);
-  closeIzinModal();
-  izinReason.value = '';
+  if (!schedule.value?.id) {
+    alert('Jadwal tidak ditemukan.')
+    return
+  }
+  if (!izinReason.value.trim()) {
+    alert('Silakan masukkan alasan izin terlebih dahulu.')
+    return
+  }
+
+  fetch('http://localhost:3000/attendance/izin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      scheduleId: schedule.value.id,
+      reason: izinReason.value
+    })
+  })
+    .then(async res => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(
+          data.message ||
+          (data.error && data.error.message) ||
+          data.error ||
+          'Gagal mengirim izin.'
+        )
+      }
+      alert('Permintaan izin berhasil dikirim!')
+      closeIzinModal()
+      izinReason.value = ''
+    })
+    .catch(err => {
+      alert(err.message)
+    })
 }
 
+function formatTanggal(dateStr: string) {
+  const date = new Date(dateStr);
+  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
+  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+  return `${hari}, ${tanggal}`;
+}
 
-const schedule = {
-  subject: 'Matematika SMA',
-  tutor: 'Pak Dendy Wan S.Pd',
-  date: 'Senin, 10 Maret 2025',
-  time: '15:00 WIB',
-  duration: '2 Jam',
-  location: 'Jl. Taman Siswa No.114, Gunung Pati, Kota Semarang',
-  meetingNumber: 12,
-  info: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-  Sapien, est felis, sagittis viverra nulla mattis scelerisque. 
-  Eget cras integer....`,
+function formatJam(dateStr: string) {
+  return dateStr.slice(11, 16).replace(':', '.');
+}
+
+const tagTypeMap = {
+  "terjadwal": "success",
+  "jadwal_ulang": "warning",
+};
+
+function statusLabel(status: string) {
+  switch (status) {
+    case "terjadwal": return "Terjadwal";
+    case "jadwal_ulang": return "Jadwal Ulang";
+    default: return status;
+  }
 }
 </script>
 
 <template>
-  <div class="card-container">
+  <div class="card-container" v-if="schedule">
     <img
       class="tutor-photo"
-      src="/public/tutor/3.png"
+      :src="`http://localhost:3000${schedule.photo}`"
       alt="Tutor Photo"
     />
     <div class="card-content">
-        <div class="header-section">
-            <div>
-            <div class="subject headersb1">{{ schedule.subject }}</div>
-            <div class="tutor-name bodym2">{{ schedule.tutor }}</div>
-            </div>
-            <div v-if="isScheduled">
-            <Scheduled />
-            </div>
+      <div class="header-section">
+        <div>
+          <div class="subject headersb1">{{ schedule.packageName }} {{ schedule.level }}</div>
+          <div class="tutor-name bodym2">{{ schedule.tutorName }}</div>
         </div>
-
-        <div class="info-section bodyr2">
-            <div class="info-row">
-                <span class="label"><strong>Hari</strong></span>
-                <span class="value">: {{ schedule.date }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Pukul</strong></span>
-                <span class="value">: {{ schedule.time }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Durasi</strong></span>
-                <span class="value">: {{ schedule.duration }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Lokasi</strong></span>
-                <span class="value">: {{ schedule.location }}</span>
-            </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <n-tag
+            :type="tagTypeMap[schedule.status]"
+            size="small"
+            class="bodyr4"
+            round
+          >
+            {{ statusLabel(schedule.status) }}
+          </n-tag>
         </div>
+      </div>
 
-        <div class="meeting-link bodysb1">Pertemuan ke {{ schedule.meetingNumber }}</div>
-
-        <div class="button-group">
-            <butAbsen @click="openAbsenModal"/>
-            <butIzin @click="openIzinModal"/>
+      <div class="info-section bodyr2">
+        <div class="info-row">
+          <span class="label"><strong>Hari</strong></span>
+          <span class="value">: {{ formatTanggal(schedule.date) }}</span>
         </div>
+        <div class="info-row">
+          <span class="label"><strong>Pukul</strong></span>
+          <span class="value">: {{ formatJam(schedule.date) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label"><strong>Durasi</strong></span>
+          <span class="value">: {{ schedule.duration }} menit</span>
+        </div>
+        <div class="info-row">
+          <span class="label"><strong>Lokasi</strong></span>
+          <span class="value">: {{ schedule.address }}</span>
+        </div>
+      </div>
+
+      <div class="meeting-link bodysb1">Pertemuan ke {{ schedule.meet }}</div>
+
+      <div class="button-group">
+        <butAbsen @click="openAbsenModal"/>
+        <butIzin @click="openIzinModal"/>
+      </div>
     </div>
     <div class="detail-jadwal">
-        <div class="info-tutor">
-            <p class="bodyb2">
-                Informasi Tutor:
-            </p>
-            <p class="tutor-info bodyr2">{{ schedule.info }}</p>        
+      <div class="info-tutor">
+        <p class="bodyb2">Informasi Tutor:</p>
+        <p class="tutor-info bodyr2">{{ schedule.info || 'Saat ini belum ada informasi dari tutor. Jika sudah tersedia, informasi akan ditampilkan di sini. Mohon cek secara berkala.' }}</p>
+      </div>
+      <div class="kontak-tutor bodyr2">
+        <p class="bodyb2">Kontak:</p>
+        <div class="info-row">
+          <span class="label">No. WhatsApp Tutor</span>
+          <span class="value">: {{ schedule.tutorPhone }}</span>
         </div>
-        <div class="kontak-tutor bodyr2">
-            <p class="bodyb2">
-                Kontak:
-            </p>
-            <div class="info-row">
-                <span class="label">No. WhatsApp Tutor</span>
-                <span class="value">: 08xxxxxxxxx</span>
-            </div>
-            <div class="info-row">
-                <span class="label">E-mail Tutor</span>
-                <span class="value">: dendywan@gmail.com</span>
-            </div>
-            <div class="info-row">
-                <span class="label">No. WhatsApp Admin</span>
-                <span class="value">: 08xxxxxxxxx</span>
-            </div>
+        <div class="info-row">
+          <span class="label">E-mail Tutor</span>
+          <span class="value">: {{ schedule.tutorEmail }}</span>
         </div>
-    </div>
-</div>
-
-<!-- Absen -->
-<div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
-  <div class="modal-content">
-    <div class="popup-content">
-      <h3 class="headersb2">Absensi</h3>
-      <p class="bodyr2">Silahkan melakukan absesni untuk sesi Bimbingan belajar kali ini.</p>
-    </div>
-    <div class="modal-actions">
-      <button class="buttonm1" @click="confirmAbsen">Masuk</button>
-      <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        <div class="info-row">
+          <span class="label">No. WhatsApp Admin</span>
+          <span class="value">: 08xxxxxxxxx</span>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Izin -->
-<div v-if="showIzinModal" class="modal-overlay" @click.self="closeIzinModal">
-  <div class="modal-content">
-    <div class="popup-content">
-      <h3 class="headersb2">Perizinan</h3>
-      <input
-        v-model="izinReason"
-        type="text"
-        class="izin-input bodyr2"
-        placeholder="Masukkan alasan izin..."
-      />
-    </div>
-    <div class="modal-actions">
-      <button class="buttonm1" @click="confirmIzin" >Izin</button>
-      <button class="buttonm1" @click="closeIzinModal">Batal</button>
+  <!-- Absen -->
+  <div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
+    <div class="modal-content">
+      <div class="popup-content">
+        <h3 class="headersb2">Absensi</h3>
+        <p class="bodyr2">Silahkan melakukan absesni untuk sesi Bimbingan belajar kali ini.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="buttonm1" @click="confirmAbsen">Masuk</button>
+        <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Izin -->
+  <div v-if="showIzinModal" class="modal-overlay" @click.self="closeIzinModal">
+    <div class="modal-content">
+      <div class="popup-content">
+        <h3 class="headersb2">Perizinan</h3>
+        <input
+          v-model="izinReason"
+          type="text"
+          class="izin-input bodyr2"
+          placeholder="Masukkan alasan izin..."
+        />
+      </div>
+      <div class="modal-actions">
+        <button class="buttonm1" @click="confirmIzin" >Izin</button>
+        <button class="buttonm1" @click="closeIzinModal">Batal</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>

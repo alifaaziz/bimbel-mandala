@@ -1,19 +1,32 @@
 <script setup>
-import navbarJadwal from './navbarJadwal.vue';
-import JadwalUser from './JadwalUser.vue';
-import JadwalTutor from './JadwalTutor.vue';
-import Footer from '../footer.vue';
-import { auth, USER_ROLES } from '@/components/Absen/auth.js'; 
+import { ref, onMounted } from 'vue'
+import navbarJadwal from './navbarJadwal.vue'
+import JadwalUser from './JadwalUser.vue'
+import JadwalTutor from './JadwalTutor.vue'
+import Footer from '../footer.vue'
 
-const currentUser = auth.users.find(user => user.isActive);
-const isTutor = currentUser && currentUser.role === USER_ROLES.TUTOR;
+const isTutor = ref(false)
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  const res = await fetch('http://localhost:3000/users/me', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  if (res.ok) {
+    const data = await res.json()
+    isTutor.value = data.data?.role === 'tutor'
+  }
+})
 </script>
 
 <template>
-    <navbarJadwal />
-    <div class="padding-components">
-        <JadwalTutor v-if="isTutor" />
-        <JadwalUser v-else />
-    </div>
-    <Footer />
+  <navbarJadwal />
+  <div class="padding-components">
+    <JadwalTutor v-if="isTutor" />
+    <JadwalUser v-else />
+  </div>
+  <Footer />
 </template>

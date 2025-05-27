@@ -56,14 +56,15 @@ async function handleSignup() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Registrasi gagal. Periksa kembali data Anda.')
+        const errorData = await response.json();
+        const errorMessage = errorData.error?.message || 'Registrasi gagal. Periksa kembali data Anda.';
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json()
-      router.push('/otp')
+      localStorage.setItem('email', email.value);
+      router.replace('/otp')
     } catch (error) {
-      alert(error.message)
+      alert(`${error.message}`)
     } finally {
       isLoading.value = false
     }

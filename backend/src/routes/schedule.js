@@ -14,4 +14,6 @@ export default (app) => {
   router.get('/closest', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ScheduleController.getClosestSchedules);
 
   router.get('/', AuthMiddleware.isAuthorized, ScheduleController.getSchedules);
+
+  router.get('/:id', AuthMiddleware.isAuthorized, ScheduleController.getScheduleById);
 };
