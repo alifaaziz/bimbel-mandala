@@ -55,15 +55,6 @@ const goToLogin = () => {
           required
           placeholder="Masukkan password baru"
         />
-        <label class="bodyr2" for="confirmPassword">Konfirmasi Password:</label>
-        <input
-          class="bodyr2"
-          type="password"
-          id="confirmPassword"
-          v-model="confirmPassword"
-          required
-          placeholder="Ulangi password baru"
-        />
         <span v-if="error" class="error">{{ error }}</span>
         <button type="submit" :disabled="loading">
           {{ loading ? 'Menyimpan...' : 'Simpan Password Baru' }}
