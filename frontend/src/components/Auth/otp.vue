@@ -24,9 +24,52 @@ function focusPrev(idx, event) {
 }
 
 function verifyOtp() {
-  const code = otp.value.join('')
-  verifiedCode.value = code
-  showModal.value = true
+  const code = otp.value.join('');
+  if (code.length !== otpLength) {
+    alert('Kode OTP harus terdiri dari 6 digit.');
+    return;
+  }
+
+  const email = localStorage.getItem('email');
+  if (!email) {
+    alert('Email tidak ditemukan. Silakan daftar ulang.');
+    return;
+  }
+
+  fetch('http://localhost:3000/auth/otp/verify', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email,
+      otp: code
+    })
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          data.message ||
+          (data.error && data.error.message) ||
+          data.error ||
+          'Gagal memverifikasi OTP.'
+        );
+      }
+      return res.json();
+    })
+    .then((data) => {
+      if (data.data?.token) {
+        localStorage.setItem('token', data.data.token);
+        localStorage.removeItem('email');
+        router.push('/');
+      } else {
+        throw new Error('Token tidak ditemukan dalam respons.');
+      }
+    })
+    .catch((err) => {
+      alert(err.message);
+    });
 }
 
 function goToLogin() {
@@ -34,8 +77,34 @@ function goToLogin() {
 }
 
 function resendOtp() {
-  // Lakukan request kirim ulang OTP di sini
-  alert('Kode OTP telah dikirim ulang.')
+  const email = localStorage.getItem('email');
+  if (!email) {
+    alert('Email tidak ditemukan. Silakan daftar ulang.');
+    return;
+  }
+
+  fetch('http://localhost:3000/auth/otp', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          data.message ||
+          (data.error && data.error.message) ||
+          data.error ||
+          'Gagal mengirim ulang OTP.'
+        );
+      }
+      alert('Kode OTP telah dikirim ulang ke email Anda.');
+    })
+    .catch((err) => {
+      alert(`Error: ${err.message}`);
+    });
 }
 </script>
 
