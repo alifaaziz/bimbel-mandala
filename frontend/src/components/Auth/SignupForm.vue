@@ -12,6 +12,9 @@ const emailError = ref('')
 const passwordError = ref('')
 const isLoading = ref(false)
 
+// Tambahkan state untuk toggle password visibility
+const showPassword = ref(false)
+
 function validateEmail() {
   if (!email.value) {
     emailError.value = 'E-mail wajib diisi.'
@@ -77,6 +80,11 @@ const emit = defineEmits(['toggle-form'])
 function goToLogin() {
   emit('toggle-form')
 }
+
+// Tambahkan fungsi toggle
+function toggleShowPassword() {
+  showPassword.value = !showPassword.value
+}
 </script>
 
 <template>
@@ -112,14 +120,24 @@ function goToLogin() {
 
       <div class="form-input">
         <p class="bodym2">Password</p>
-        <n-input
-          round
-          v-model:value="password"
-          placeholder="Password"
-          type="password"
-          class="input-custom mb-2 bodym2"
-          @blur="validatePassword"
-        />
+        <div style="position: relative;">
+          <n-input
+            round
+            v-model:value="password"
+            placeholder="Password"
+            :type="showPassword ? 'text' : 'password'"
+            class="input-custom mb-2 bodym2"
+            @blur="validatePassword"
+          />
+          <button
+            type="button"
+            @click="toggleShowPassword"
+            class="toggle-password-btn"
+            :aria-label="showPassword ? 'Sembunyikan password' : 'Lihat password'"
+          >
+            {{ showPassword ? '👁️' : '🙈' }}
+          </button>
+        </div>
         <p class="bodyr4">Password harus lebih dari 8 karakter</p>
         <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
       </div>
@@ -153,7 +171,6 @@ function goToLogin() {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .form-wrapper {
@@ -238,6 +255,19 @@ function goToLogin() {
   height: auto;
   margin-right: 10px;
   vertical-align: middle;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  color: #154484;
 }
 
 @media (max-width: 982px) {

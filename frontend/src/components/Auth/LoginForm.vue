@@ -12,6 +12,9 @@ const passwordError = ref('')
 const isLoading = ref(false)
 const isLoggedIn = ref(!!localStorage.getItem('token'))
 
+// Tambahkan state untuk toggle password visibility
+const showPassword = ref(false)
+
 function validateEmail() {
   if (!email.value) {
     emailError.value = 'E-mail wajib diisi.'
@@ -73,12 +76,16 @@ function goToSignup() {
 }
 
 function handleForgotPassword() {
-  // Logic for handling password recovery
-  alert('Fitur ini belum tersedia.')
+  router.push('/resetpassword')
 }
 
 function handleGoogleLogin() {
   window.location.href = 'http://localhost:3000/auth/google'
+}
+
+// Tambahkan fungsi toggle
+function toggleShowPassword() {
+  showPassword.value = !showPassword.value
 }
 </script>
 
@@ -111,14 +118,24 @@ function handleGoogleLogin() {
             Lupa password?
           </button>
         </div>
-        <n-input
-          round
-          v-model:value="password"
-          placeholder="Password"
-          type="password"
-          class="input-custom mb-2 bodym2"
-          @blur="validatePassword"
-        />
+        <div style="position: relative;">
+          <n-input
+            round
+            v-model:value="password"
+            :type="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+            class="input-custom mb-2 bodym2"
+            @blur="validatePassword"
+          />
+          <button
+            type="button"
+            @click="toggleShowPassword"
+            class="toggle-password-btn"
+            :aria-label="showPassword ? 'Sembunyikan password' : 'Lihat password'"
+          >
+            {{ showPassword ? '👁️' : '🙈' }}
+          </button>
+        </div>
         <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
       </div>
 
@@ -151,7 +168,6 @@ function handleGoogleLogin() {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .form-wrapper {
@@ -252,6 +268,19 @@ function handleGoogleLogin() {
   height: auto;
   margin-right: 10px;
   vertical-align: middle;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  color: #154484;
 }
 
 @media (max-width: 982px) {

@@ -4,7 +4,10 @@ import { useRoute } from 'vue-router';
 import Main from './Main.vue';
 import Auth from './Auth.vue';
 import Jadwal from './components/Jadwal.vue';
+
 import Otp from './components/Auth/otp.vue';
+import ResetPassword from './components/Auth/ResetPassword.vue';
+
 import ProfileUser from './components/ProfileUser.vue';
 import DetailJadwal from './components/jadwal/DetailJadwal.vue'
 import { NConfigProvider, NMessageProvider } from 'naive-ui';
@@ -17,6 +20,9 @@ const layout = computed(() => {
   } 
   else if (route.path.startsWith('/otp')) {
     return Otp;
+  } 
+  else if (route.path.startsWith('/resetpassword')) {
+    return ResetPassword;
   } 
   else if (route.path.startsWith('/jadwal')) {
     return Jadwal;

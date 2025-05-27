@@ -66,6 +66,16 @@ import { NCard } from 'naive-ui';
   color: #9BAFCB;
 }
 
+.title1 {
+    color: #FDC998 !important;
+    text-align: center;
+}
+.title2 {
+    color: #154484;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
 /* Media query untuk layar di bawah 961px */
 @media (max-width: 960px) {
   .card-container {

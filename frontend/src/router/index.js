@@ -7,6 +7,9 @@ import PendaftaranTutor from '../pendaftaranTutor.vue';
 import AbsenSiswa from '../components/Absen.vue';
 
 import Otp from '@/components/Auth/otp.vue';
+import ResetPassword from '@/components/Auth/ResetPassword.vue';
+import ResetPasswordEmail from '@/components/Auth/ResetPassword_Email.vue';
+import ResetPasswordPass from '@/components/Auth/ResetPassword_Password.vue';
 
 import Jadwal from '@/components/Jadwal.vue';
 import TabelJadwal from '@/components/jadwal/TabelJadwal.vue'
@@ -59,6 +62,22 @@ const routes = [
   {
     path: '/otp', 
     component: Otp,
+  },
+  {
+    path: '/resetpassword', 
+    component: ResetPassword,
+    children: [
+      {
+        path: '',
+        name: 'ResetPasswordEmail', 
+        component: ResetPasswordEmail
+      },
+      {
+        path: 'passwordbaru',
+        name: 'ResetPasswordPass', 
+        component: ResetPasswordPass
+      }
+    ]
   },
   {
     path: '/jadwal', 
