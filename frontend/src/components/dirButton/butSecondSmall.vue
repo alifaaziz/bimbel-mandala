@@ -26,6 +26,7 @@ defineProps({
 }
 
 .custom-button {
+  background-color: #DEE4EE;
   color: #154484;
   border: 1px solid #154484;
   padding: 10px 2rem;

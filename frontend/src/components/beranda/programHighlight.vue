@@ -2,13 +2,24 @@
 import { ref, onMounted } from 'vue'
 import { NCard } from 'naive-ui'
 import ButtonProgram from '../dirButton/butprogram.vue'
-import { defineEmits } from 'vue'
+import butSecondSmall from '../dirButton/butSecondSmall.vue'
 
 const limitedPrograms = ref([])
-
-const emit = defineEmits(['refreshPage'])
+const isTutor = ref(false)
 
 onMounted(async () => {
+  // Ambil role user dari API
+  const token = localStorage.getItem('token')
+  if (token) {
+    const res = await fetch('http://localhost:3000/users/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      isTutor.value = data.data?.role === 'tutor'
+    }
+  }
+  // Fetch program populer
   try {
     const res = await fetch('http://localhost:3000/packages/populer')
     const data = await res.json()
@@ -52,7 +63,6 @@ function groupTypeLabel(groupTypeArr) {
               :src="program.photo ? `http://localhost:3000${program.photo}` : '/public/tutor/3.png'" 
               :alt="`Image of ${program.name}`" 
             />
-            <!-- Ganti baris ini -->
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
           </div>
           <div class="card-text">
@@ -80,7 +90,11 @@ function groupTypeLabel(groupTypeArr) {
                 <span class="value">: {{ program.duration }} menit</span>
             </div>
             <div class="Action">
-              <button class="btn-daftar" @click="$router.push(`/detailProgram/${program.id}`)">Daftar Program</button>
+              <butSecondSmall
+                class="butPesan"
+                :label="isTutor ? 'Detail Program' : 'Daftar Program'"
+                @click="$router.push(`/detailProgram/${program.id}`)"
+              />
             </div>
           </div>
         </div>
@@ -178,21 +192,8 @@ function groupTypeLabel(groupTypeArr) {
   color: white;
 }
 
-.btn-daftar {
-  width: 100%;
-  padding: 10px;
-  margin-top: 1rem;
-  background-color: #9bafcb;
-  color: #154484;
-  border: none;
-  border-radius: 90px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.button {
+.butPesan {
   margin-top: 2rem;
-  width: 100%;
 }
 
 /* Tablet (768px and up) */
