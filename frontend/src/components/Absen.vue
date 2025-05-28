@@ -40,7 +40,9 @@ onMounted(async () => {
 <template>
   <div class="container-absensi padding-components">
     <template v-if="!hasProgram">
-      <NoProgramTutor v-if="userRole === 'tutor'" />
+      <div v-if="userRole === 'tutor'">
+        <NoProgramTutor />
+      </div>
       <NoProgram v-else />
     </template>
     <template v-else>

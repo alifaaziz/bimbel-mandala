@@ -79,7 +79,7 @@ function handleButton(programId) {
 </script>
 
 <template>
-  <div class="padding-components">
+  <div>
     <h1 class="headerr2 title1">Program</h1>
     <h2 class="headerb1 title2">{{ title }}</h2>
     <div class="card-container">
@@ -293,19 +293,4 @@ function handleButton(programId) {
   }
 }
 
-/* Small Mobile Adjustments (below 400px) */
-@media (max-width: 400px) {
-  .card-image img {
-    height: 150px;
-  }
-
-  .card-text p {
-    font-size: 0.8rem;
-  }
-
-  .btn-daftar {
-    padding: 8px;
-    font-size: 0.9rem;
-  }
-}
 </style>

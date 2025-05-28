@@ -20,7 +20,7 @@ import Footer from './components/footer.vue';
         <cta />
       </div>
     </div>
-    <div class="part">
+    <div class="part padding-components">
       <programHighlight />
     </div>
     <div class="part">
@@ -49,7 +49,8 @@ header {
 }
 
 .part {
-  padding: 2rem 0 ;
+  padding-top: 2rem ;
+  padding-bottom: 2rem ;
 }
 
 

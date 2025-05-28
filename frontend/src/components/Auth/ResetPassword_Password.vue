@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import butSecondNormal from '../dirButton/butSecondNormal.vue';
 
 const password = ref('');
+const confirmPassword = ref('');
 const error = ref('');
 const success = ref('');
 const loading = ref(false);
@@ -23,6 +24,7 @@ const submitPassword = async () => {
   }
 
   const token = route.query.token;
+  console.log('Token:', token); // Tambahkan ini untuk debug
   if (!token) {
     error.value = 'Token tidak ditemukan. Silakan coba lagi.';
     return;
@@ -72,23 +74,26 @@ const goToLogin = () => {
       <h2 class="headersb1">Reset Password Baru</h2>
       <form @submit.prevent="submitPassword">
         <label class="bodyr2" for="password">Password Baru:</label>
-        <input
+        <n-input
           class="bodyr2"
-          type="password"
           id="password"
-          v-model="password"
-          required
+          v-model:value="password"
+          type="password"
+          show-password-on="mousedown"
           placeholder="Masukkan password baru"
+          required
         />
         <label class="bodyr2" for="confirmPassword">Konfirmasi Password:</label>
-        <input
-          class="bodyr2"
-          type="password"
+        <n-input
           id="confirmPassword"
-          v-model="confirmPassword"
-          required
+          v-model:value="confirmPassword"
+          type="password"
+          show-password-on="mousedown"
           placeholder="Ulangi password baru"
+          required
         />
+
+
         <span v-if="error" class="error">{{ error }}</span>
         <button type="submit" :disabled="loading">
           {{ loading ? 'Menyimpan...' : 'Simpan Password Baru' }}

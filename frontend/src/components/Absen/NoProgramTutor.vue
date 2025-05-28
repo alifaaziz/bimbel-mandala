@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import programTerbukaTutor from './programTerbukaTutor.vue';
+import programHighlight from '../beranda/programHighlight.vue';
 
 const userName = ref('User');
 const loading = ref(true);
@@ -46,11 +46,12 @@ onMounted(async () => {
             </p>
         </div>
     </div>
-    <programTerbukaTutor />
+    <programHighlight />
 </template>
 
 
-<style>
+<style scoped>
+
 .noprogram-container {
     display: flex;
     flex-direction: row;
