@@ -81,10 +81,27 @@ async function getScheduleById(req, res) {
   res.status(200).json({ data: schedule });
 }
 
+/**
+ * Handles the request to update the information of a specific schedule.
+ *
+ * @function updateScheduleInformation
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the updated schedule.
+ */
+async function updateScheduleInformation(req, res) {
+  const { id: scheduleId } = req.params;
+  const { information } = req.body;
+  const updatedSchedule = await ScheduleService.updateScheduleInformation(scheduleId, information);
+  res.status(200).json({ data: updatedSchedule });
+}
+
 export const ScheduleController = {
   createSchedules: asyncWrapper(createSchedules),
   reschedule: asyncWrapper(reschedule),
   getClosestSchedules: asyncWrapper(getClosestSchedules),
   getSchedules: asyncWrapper(getSchedules),
-  getScheduleById: asyncWrapper(getScheduleById)
+  getScheduleById: asyncWrapper(getScheduleById),
+  updateScheduleInformation: asyncWrapper(updateScheduleInformation)
 };

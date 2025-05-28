@@ -16,4 +16,6 @@ export default (app) => {
   router.get('/', AuthMiddleware.isAuthorized, ScheduleController.getSchedules);
 
   router.get('/:id', AuthMiddleware.isAuthorized, ScheduleController.getScheduleById);
+
+  router.patch('/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin', 'tutor']), ScheduleController.updateScheduleInformation);
 };

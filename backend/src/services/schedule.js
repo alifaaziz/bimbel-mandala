@@ -230,6 +230,37 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
 }
 
 /**
+ * Update schedule information.
+ *
+ * @async
+ * @function updateScheduleInformation
+ * @param {String} scheduleId - The ID of the schedule to update.
+ * @param {String} information - The new information for the schedule.
+ * @returns {Promise<Object>} The updated schedule.
+ * @throws {Error} If the schedule is not found or the update fails.
+ */
+async function updateScheduleInformation(scheduleId, information) {
+  if (!information || typeof information !== 'string') {
+    throw new Error('Invalid information provided');
+  }
+
+  const schedule = await prisma.schedule.findUnique({
+    where: { id: scheduleId },
+  });
+
+  if (!schedule) {
+    throw new Error('Schedule not found');
+  }
+
+  const updatedSchedule = await prisma.schedule.update({
+    where: { id: scheduleId },
+    data: { information },
+  });
+
+  return updatedSchedule;
+}
+
+/**
  * Get closest schedule from today
  * 
  * @async
@@ -378,7 +409,7 @@ async function getSchedulesForStudent(userId) {
       date: schedule.date,
       duration: bimbelPackage?.duration || null,
       address: order?.address || null,
-      info: schedule.info || null,
+      info: schedule.information || null,
       status: attendance ? attendance.status : schedule.status,
       photo: tutor?.tutors?.[0]?.photo || null
     };
@@ -462,7 +493,7 @@ async function getSchedulesForTutor(userId) {
       date: schedule.date,
       duration: bimbelPackage?.duration || null,
       address: order?.address || null,
-      info: schedule.info || null,
+      info: schedule.information || null,
       status: attendance ? attendance.status : schedule.status,
       photo: tutor?.tutors?.[0]?.photo || null,
     };
@@ -557,7 +588,7 @@ async function getScheduleById(scheduleId) {
     attendances: schedule.attendances,
     address: order?.address || null,
     photo: tutor?.tutors?.[0]?.photo || null,
-    info: schedule.info || null,
+    info: schedule.information || null,
     tutorPhone: tutor?.tutors?.[0]?.phone,
     tutorEmail: tutor?.email,
   };
@@ -567,6 +598,7 @@ async function getScheduleById(scheduleId) {
 export const ScheduleService = {
   createSchedules,
   reschedule,
+  updateScheduleInformation,
   getClosestSchedules,
   getSchedulesForStudent,
   getSchedulesForTutor,
