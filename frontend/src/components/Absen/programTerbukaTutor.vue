@@ -1,22 +1,39 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import { NCard } from 'naive-ui';
-import { paketBimbel } from '@/assets/dataSementara/paketBimbel.js';
 import ButtonProgram from '../dirButton/butprogram.vue';
 import { defineEmits } from 'vue';
-import { auth, USER_ROLES } from './auth.js'; // pastikan path sesuai
 
-// Ambil user tutor yang sedang aktif
-const currentTutor = auth.users.find(
-  user => user.role === USER_ROLES.TUTOR && user.isActive
-);
+const emit = defineEmits(['refreshPage']); // Tetap dipertahankan
 
-// Filter program sesuai nama tutor aktif
-const filteredPrograms = paketBimbel.filter(
-  program => program.tutorName === (currentTutor ? currentTutor.nama : '')
-);
-const limitedPrograms = filteredPrograms.slice(0, 2);
+const limitedPrograms = ref([]); // Data program yang akan ditampilkan
+const error = ref(null); // Status error
 
-const emit = defineEmits(['refreshPage']);
+onMounted(async () => {
+  const token = localStorage.getItem('token'); // Ambil token dari localStorage
+  if (!token) {
+    error.value = 'Token tidak ditemukan. Silakan login ulang.';
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:3000/packages/my', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Gagal mengambil data program.');
+    }
+
+    const data = await response.json();
+    limitedPrograms.value = data.slice(0, 2); // Ambil maksimal 2 program
+  } catch (err) {
+    error.value = err.message;
+  }
+});
 
 function formatTime(dateTime) {
   const time = dateTime.split('T')[1];
@@ -27,8 +44,6 @@ function formatTime(dateTime) {
 function truncateName(name) {
   return name.length > 16 ? name.slice(0, 16) + '...' : name;
 }
-
-// currentTutor.nama akan berisi nama tutor aktif, misal: 'Dendy Wan, S.Pd'
 </script>
 
 <template>
@@ -45,7 +60,7 @@ function truncateName(name) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo || '/public/tutor/3.png'" 
+              :src="`http://localhost:3000${program.photo}` || '/public/tutor/3.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ program.groupType[0].type }}</p>

@@ -193,7 +193,9 @@ async function sendPasswordResetEmail(email) {
     }
   });
 
-  if (!user) return null;
+  if (!user) {
+    throw new HttpError(404, { message: 'Your email is not registered, please sign up' });
+  }
 
   await prisma.$transaction(async (tx) => {
     await tx.passwordReset.updateMany({

@@ -771,6 +771,15 @@ async function getMyPackages(user) {
       isActive: true
     },
     include: {
+      user: {
+        select: {
+          tutors: {
+            select: {
+              photo: true
+            }
+          }
+        }
+      },
       groupType: {
         select: {
           type: true,
@@ -799,6 +808,7 @@ async function getMyPackages(user) {
     duration: pkg.duration,
     area: pkg.area,
     isActive: pkg.isActive,
+    photo: pkg.user.tutors[0]?.photo || null,
     groupType: pkg.groupType.map(gt => ({
       type: gt.type,
       price: gt.price * 0.9,

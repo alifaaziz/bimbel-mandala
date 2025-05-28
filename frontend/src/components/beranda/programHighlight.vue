@@ -1,49 +1,69 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { NCard } from 'naive-ui'
-import ButtonProgram from '../dirButton/butprogram.vue'
-import butSecondSmall from '../dirButton/butSecondSmall.vue'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { NCard } from 'naive-ui';
+import ButtonProgram from '../dirButton/butprogram.vue';
+import butSecondSmall from '../dirButton/butSecondSmall.vue';
 
-const limitedPrograms = ref([])
-const isTutor = ref(false)
-const router = useRouter()
+const limitedPrograms = ref([]);
+const isTutor = ref(false);
+const title = ref('Unggulan'); // Default title
+const router = useRouter();
 
 onMounted(async () => {
   // Ambil role user dari API
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token');
   if (token) {
     const res = await fetch('http://localhost:3000/users/me', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+      headers: { Authorization: `Bearer ${token}` },
+    });
     if (res.ok) {
-      const data = await res.json()
-      isTutor.value = data.data?.role === 'tutor'
+      const data = await res.json();
+      isTutor.value = data.data?.role === 'tutor';
+      if (isTutor.value) {
+        title.value = 'Terbuka';
+        try {
+          const myProgramsRes = await fetch('http://localhost:3000/packages/my', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (myProgramsRes.ok) {
+            const myProgramsData = await myProgramsRes.json();
+            limitedPrograms.value = myProgramsData.slice(0, 2);
+          } else {
+            console.error('Gagal fetch data dari /packages/my');
+          }
+        } catch (err) {
+          console.error('Gagal fetch data:', err);
+        }
+      }
     }
   }
-  // Fetch program populer
-  try {
-    const res = await fetch('http://localhost:3000/packages/populer')
-    const data = await res.json()
-    limitedPrograms.value = data.slice(0, 2) // hanya 2 data teratas
-  } catch (err) {
-    console.error('Gagal fetch data:', err)
+
+  // Fetch program populer jika bukan tutor
+  if (!isTutor.value) {
+    try {
+      const res = await fetch('http://localhost:3000/packages/populer');
+      const data = await res.json();
+      limitedPrograms.value = data.slice(0, 2);
+    } catch (err) {
+      console.error('Gagal fetch data:', err);
+    }
   }
-})
+});
 
 function formatTime(dateTime) {
-  const time = dateTime.split('T')[1]
-  const [hour, minute] = time.split(':')
-  return `${hour}:${minute} WIB`
+  const time = dateTime.split('T')[1];
+  const [hour, minute] = time.split(':');
+  return `${hour}:${minute} WIB`;
 }
 
 function truncateName(name) {
-  return name.length > 16 ? name.slice(0, 16) + '...' : name
+  return name.length > 16 ? name.slice(0, 16) + '...' : name;
 }
 
 function groupTypeLabel(groupTypeArr) {
   if (!Array.isArray(groupTypeArr)) return '';
-  return groupTypeArr.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))
+  return groupTypeArr.some((gt) => gt.type && gt.type.toLowerCase().includes('kelas'))
     ? 'Kelas'
     : 'Privat/Kelompok';
 }
@@ -51,9 +71,9 @@ function groupTypeLabel(groupTypeArr) {
 // Handler tombol
 function handleButton(programId) {
   if (isTutor.value) {
-    router.push(`/detailprogram/${programId}`)
+    router.push(`/detailprogram/${programId}`);
   } else {
-    router.push(`/detailProgram/${programId}`)
+    router.push(`/detailProgram/${programId}`);
   }
 }
 </script>
@@ -61,7 +81,7 @@ function handleButton(programId) {
 <template>
   <div class="padding-components">
     <h1 class="headerr2 title1">Program</h1>
-    <h2 class="headerb1 title2">Unggulan</h2>
+    <h2 class="headerb1 title2">{{ title }}</h2>
     <div class="card-container">
       <n-card 
         v-for="program in limitedPrograms" 

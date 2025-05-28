@@ -1,14 +1,38 @@
 <script setup>
-import { computed } from 'vue'
-import { auth } from '@/components/Absen/auth.js'
+import { ref, onMounted } from 'vue';
 import programTerbukaTutor from './programTerbukaTutor.vue';
 
-// Ambil user tutor yang aktif
-const userTutor = computed(() => 
-  auth.users.find(user => user.role === 'tutor' && user.isActive)
-)
+const userName = ref('User');
+const loading = ref(true);
+const error = ref(null);
 
-const userName = computed(() => userTutor.value ? userTutor.value.nama : 'User')
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    error.value = 'Token tidak ditemukan. Silakan login ulang.';
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:3000/users/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Gagal mengambil data pengguna.');
+    }
+
+    const data = await response.json();
+    userName.value = data.data?.name || 'User';
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
 
 <template>
