@@ -69,11 +69,11 @@ function groupTypeLabel(groupTypeArr) {
 }
 
 // Handler tombol
-function handleButton(programId) {
+function handleButton(slug) {
   if (isTutor.value) {
-    router.push(`/detailprogram/${programId}`);
+    router.push(`/detailprogram/${slug}`);
   } else {
-    router.push(`/detailProgram/${programId}`);
+    router.push(`/detailProgram/${slug}`);
   }
 }
 </script>
@@ -124,7 +124,7 @@ function handleButton(programId) {
               <butSecondSmall
                 class="butPesan"
                 :label="isTutor ? 'Detail Program' : 'Daftar Program'"
-                @click="handleButton(program.id)"
+                @click="handleButton(program.slug)"
               />
             </div>
           </div>

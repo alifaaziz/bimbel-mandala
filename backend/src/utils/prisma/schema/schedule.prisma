@@ -5,6 +5,7 @@ model Schedule {
   meet     Int
   status   SchedulesStatus
   information String?
+  slug     String           @unique
 
   class    Class            @relation(fields: [classId], references: [id])
   attendances Attendance[]

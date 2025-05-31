@@ -22,10 +22,12 @@ CREATE TABLE `bimbel_packages` (
     `area` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
     `discount` DECIMAL(10, 2) NULL,
+    `slug` VARCHAR(191) NOT NULL,
     `is_active` BOOLEAN NOT NULL DEFAULT true,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
+    UNIQUE INDEX `bimbel_packages_slug_key`(`slug`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -69,6 +71,8 @@ CREATE TABLE `notifications` (
     `type` VARCHAR(191) NOT NULL,
     `viewed` BOOLEAN NOT NULL DEFAULT false,
     `description` VARCHAR(191) NULL,
+    `reason` VARCHAR(191) NULL,
+    `photo` VARCHAR(191) NULL,
     `user_id` VARCHAR(191) NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -146,9 +150,11 @@ CREATE TABLE `schedules` (
     `meet` INTEGER NOT NULL,
     `status` ENUM('jadwal_ulang', 'terjadwal', 'masuk', 'izin', 'alpha') NOT NULL,
     `information` VARCHAR(191) NULL,
+    `slug` VARCHAR(191) NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
+    UNIQUE INDEX `schedules_slug_key`(`slug`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -185,6 +191,7 @@ CREATE TABLE `tutor_application` (
     `birth_date` DATETIME(3) NULL,
     `gender` ENUM('Male', 'Female') NULL,
     `phone` VARCHAR(191) NULL,
+    `address` VARCHAR(191) NULL,
     `subjects` VARCHAR(191) NULL,
     `status` ENUM('TH1', 'TH2', 'TH3', 'TH4', 'TH5', 'S1', 'S2', 'S3') NULL,
     `major` VARCHAR(191) NULL,
@@ -215,6 +222,7 @@ CREATE TABLE `tutors` (
     `birth_date` DATETIME(3) NULL,
     `gender` ENUM('Male', 'Female') NULL,
     `phone` VARCHAR(191) NULL,
+    `address` VARCHAR(191) NULL,
     `subjects` VARCHAR(191) NULL,
     `status` ENUM('TH1', 'TH2', 'TH3', 'TH4', 'TH5', 'S1', 'S2', 'S3') NULL,
     `major` VARCHAR(191) NULL,

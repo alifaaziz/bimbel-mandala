@@ -17,13 +17,13 @@ export default (app) => {
     
     router.get('/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackages);
     
-    router.get('/my/:id', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackageById);
+    router.get('/my/:slug', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackageBySlug);
     
     router.get('/statistics', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.getBimbelPackageStatistics);
     
     router.get('/statistics/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyProgramsStatistics);
     
-    router.get('/:id', AuthMiddleware.isAuthorized, BimbelPackageController.getBimbelPackageById);
+    router.get('/:slug', AuthMiddleware.isAuthorized, BimbelPackageController.getBimbelPackageBySlug);
     
     router.post('/', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.createBimbelPackage);
     

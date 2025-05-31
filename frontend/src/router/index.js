@@ -91,7 +91,7 @@ const routes = [
     ]
   },
   {
-    path: '/detailjadwal/:id', 
+    path: '/detailjadwal/:slug', 
     component: DetailJadwal,
   },
   {

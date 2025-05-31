@@ -6,14 +6,14 @@ import HonorTutor from './HonorTutor.vue';
 
 const route = useRoute();
 const router = useRouter();
-const programId = route.params.id as string;
+const slug = route.params.id as string;
 const programData = ref<any>(null);
 const isTutor = ref(false);
 
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/packages/${programId}`, {
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');

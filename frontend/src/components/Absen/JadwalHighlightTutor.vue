@@ -173,7 +173,8 @@ export default defineComponent({
           tanggal: formatTanggal(item.date),
           jam: formatJam(item.date),
           durasi: `${item.duration} Menit`,
-          status: [statusLabel(item.status)]
+          status: [statusLabel(item.status)],
+          slug: item.slug
         }));
       } catch (e) {
         data.value = [];
