@@ -54,13 +54,14 @@ onMounted(async () => {
         tanggal: formatTanggal(item.date),
         jam: formatJam(item.date),
         status: statusLabel(item.status),
-        photo: item.photo
+        photo: item.photo,
+        slug: item.slug
       }));
   }
 });
 
 function goToDetail(item) {
-  router.push(`/DetailJadwal/${item.id}`);
+  router.push(`/detailjadwal/${item.slug}`);
 }
 </script>
 

@@ -33,14 +33,14 @@ async function getActiveBimbelPackages(_req, res) {
  * Handles the request to get a bimbel package by ID.
  *
  * @async
- * @function getBimbelPackageById
+ * @function getBimbelPackageBySlug
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  * @returns {Promise<void>} Resolves with the bimbel package.
  */
-async function getBimbelPackageById(req, res) {
-    const { id } = req.params;
-    const packages = await BimbelPackageService.getBimbelPackageById(id);
+async function getBimbelPackageBySlug(req, res) {
+    const { slug } = req.params;
+    const packages = await BimbelPackageService.getBimbelPackageBySlug(slug);
     res.status(200).json(packages);
 }
 
@@ -227,15 +227,15 @@ async function getMyPackages(req, res) {
  * Handles the request to get a bimbel package by ID associated with the logged-in user.
  *
  * @async
- * @function getMyPackageById
+ * @function getMyPackageBySlug
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  * @returns {Promise<void>} Resolves with the bimbel package or an error if not found.
  */
-async function getMyPackageById(req, res) {
-  const { id } = req.params; // Retrieve ID from URL parameters
-  const user = res.locals.user; // Retrieve user from auth middleware
-  const pkg = await BimbelPackageService.getMyPackageById(id, user);
+async function getMyPackageBySlug(req, res) {
+  const { slug } = req.params;
+  const user = res.locals.user;
+  const pkg = await BimbelPackageService.getMyPackageBySlug(slug, user);
 
   if (!pkg) {
     return res.status(404).json({ error: 'Bimbel package not found or not associated with the user' });
@@ -275,7 +275,7 @@ async function getMyProgramsStatistics(req, res) {
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getActiveBimbelPackages: asyncWrapper(getActiveBimbelPackages),
-    getBimbelPackageById: asyncWrapper(getBimbelPackageById),
+    getBimbelPackageBySlug: asyncWrapper(getBimbelPackageBySlug),
     createBimbelPackage: asyncWrapper(createBimbelPackage),
     createClassBimbelPackage: asyncWrapper(createClassBimbelPackage),
     updateBimbelPackage: asyncWrapper(updateBimbelPackage),
@@ -285,7 +285,7 @@ export const BimbelPackageController = {
     getBimbelPackagesByPopularity: asyncWrapper(getBimbelPackagesByPopularity),
     getRunningPrograms: asyncWrapper(getRunningPrograms),
     getMyPackages: asyncWrapper(getMyPackages),
-    getMyPackageById: asyncWrapper(getMyPackageById),
+    getMyPackageBySlug: asyncWrapper(getMyPackageBySlug),
     getBimbelPackageStatistics: asyncWrapper(getBimbelPackageStatistics),
     getMyProgramsStatistics: asyncWrapper(getMyProgramsStatistics)
 };

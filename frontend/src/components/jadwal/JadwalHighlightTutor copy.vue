@@ -5,6 +5,7 @@ import { NTag, NCard } from "naive-ui";
 import butJadwalUlang from "../dirButton/butJadwalUlangTabel.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
+import { SlowBuffer } from "buffer";
 
 export default defineComponent({
   components: {
@@ -65,7 +66,8 @@ export default defineComponent({
           tanggal: formatTanggal(item.date),
           jam: formatJam(item.date),
           durasi: `${item.duration} Menit`,
-          status: [statusLabel(item.status)]
+          status: [statusLabel(item.status)],
+          slug: item.slug
         }));
       } catch (err) {
         data.value = [];

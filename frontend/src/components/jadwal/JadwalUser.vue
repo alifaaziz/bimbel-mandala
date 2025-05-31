@@ -128,7 +128,7 @@
         return {
           style: { cursor: 'pointer' },
           onClick: () => {
-            window.location.href = `/DetailJadwal/${row.key}`;
+            window.location.href = `/detailjadwal/${row.slug}`;
           }
         };
       };
@@ -149,7 +149,8 @@
             tanggal: formatTanggal(item.date),
             jam: formatJam(item.date),
             durasi: `${item.duration} Menit`,
-            status: [statusLabel(item.status)]
+            status: [statusLabel(item.status)],
+            slug: item.slug
           }));
         } catch (err) {
           data.value = [];

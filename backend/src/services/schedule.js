@@ -1,4 +1,3 @@
-import { levels } from 'pino';
 import { prisma } from '../utils/db.js';
 
 /**
@@ -35,7 +34,7 @@ async function createSchedules(classId) {
 
   const { order } = classData;
   const { bimbelPackage } = order;
-  const { packageDay, totalMeetings, time } = bimbelPackage;
+  const { packageDay, totalMeetings, time, name, level } = bimbelPackage;
 
   if (!totalMeetings || totalMeetings <= 0) {
     throw new Error('Invalid totalMeetings in bimbelPackage');
@@ -64,11 +63,19 @@ async function createSchedules(classId) {
         const timeDate = new Date(time);
         scheduleWithTime.setHours(timeDate.getHours(), timeDate.getMinutes(), 0, 0);
 
+        const slugBase = `${name.toLowerCase().replace(/\s+/g, '-')}-${level.toLowerCase().replace(/\s+/g, '-')}-${classData.code}`;
+        let slug;
+        do {
+          const randomString = Math.random().toString(36).substring(2, 8);
+          slug = `${slugBase}-${randomString}`;
+        } while (await prisma.schedule.findUnique({ where: { slug } }));
+
         schedules.push({
           classId,
           date: scheduleWithTime,
           meet: meet++,
-          status: 'terjadwal'
+          status: 'terjadwal',
+          slug
         });
 
         currentDate = new Date(scheduleWithTime);
@@ -230,6 +237,37 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
 }
 
 /**
+ * Update schedule information.
+ *
+ * @async
+ * @function updateScheduleInformation
+ * @param {String} scheduleId - The ID of the schedule to update.
+ * @param {String} information - The new information for the schedule.
+ * @returns {Promise<Object>} The updated schedule.
+ * @throws {Error} If the schedule is not found or the update fails.
+ */
+async function updateScheduleInformation(scheduleId, information) {
+  if (!information || typeof information !== 'string') {
+    throw new Error('Invalid information provided');
+  }
+
+  const schedule = await prisma.schedule.findUnique({
+    where: { id: scheduleId },
+  });
+
+  if (!schedule) {
+    throw new Error('Schedule not found');
+  }
+
+  const updatedSchedule = await prisma.schedule.update({
+    where: { id: scheduleId },
+    data: { information },
+  });
+
+  return updatedSchedule;
+}
+
+/**
  * Get closest schedule from today
  * 
  * @async
@@ -285,7 +323,8 @@ async function getClosestSchedules() {
       meet: schedule.meet,
       date: schedule.date,
       duration: bimbelPackage?.duration || null,
-      status: schedule.status
+      status: schedule.status,
+      slug: schedule.slug || null,
     };
   });
 }
@@ -378,9 +417,10 @@ async function getSchedulesForStudent(userId) {
       date: schedule.date,
       duration: bimbelPackage?.duration || null,
       address: order?.address || null,
-      info: schedule.info || null,
+      info: schedule.information || null,
       status: attendance ? attendance.status : schedule.status,
-      photo: tutor?.tutors?.[0]?.photo || null
+      photo: tutor?.tutors?.[0]?.photo || null,
+      slug: schedule.slug || null,
     };
   });
 }
@@ -462,9 +502,10 @@ async function getSchedulesForTutor(userId) {
       date: schedule.date,
       duration: bimbelPackage?.duration || null,
       address: order?.address || null,
-      info: schedule.info || null,
+      info: schedule.information || null,
       status: attendance ? attendance.status : schedule.status,
       photo: tutor?.tutors?.[0]?.photo || null,
+      slug: schedule.slug || null,
     };
   }); 
 }
@@ -497,17 +538,17 @@ async function getSchedulesByRole(userId) {
 }
 
 /**
- * Get schedule detail by schedule ID.
+ * Get schedule detail by schedule slug.
  *
  * @async
- * @function getScheduleById
- * @param {String} scheduleId - The ID of the schedule.
+ * @function getScheduleBySlug
+ * @param {String} slug - The slug of the schedule.
  * @returns {Promise<Object>} The schedule detail.
  * @throws {Error} If the schedule is not found.
  */
-async function getScheduleById(scheduleId) {
+async function getScheduleBySlug(slug) {
   const schedule = await prisma.schedule.findUnique({
-    where: { id: scheduleId },
+    where: { slug }, // Cari berdasarkan slug
     include: {
       class: {
         include: {
@@ -557,9 +598,10 @@ async function getScheduleById(scheduleId) {
     attendances: schedule.attendances,
     address: order?.address || null,
     photo: tutor?.tutors?.[0]?.photo || null,
-    info: schedule.info || null,
+    info: schedule.information || null,
     tutorPhone: tutor?.tutors?.[0]?.phone,
     tutorEmail: tutor?.email,
+    slug: schedule.slug || null,
   };
 }
 
@@ -567,11 +609,12 @@ async function getScheduleById(scheduleId) {
 export const ScheduleService = {
   createSchedules,
   reschedule,
+  updateScheduleInformation,
   getClosestSchedules,
   getSchedulesForStudent,
   getSchedulesForTutor,
   getSchedulesByRole,
-  getScheduleById,
+  getScheduleBySlug,
   getNextDate,
   getTutorName
 };

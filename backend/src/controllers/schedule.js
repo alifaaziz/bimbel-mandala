@@ -75,10 +75,26 @@ async function getSchedules(req, res) {
  * @param {Object} res - Express response object.
  * @returns {Promise<void>} Resolves with the schedule detail.
  */
-async function getScheduleById(req, res) {
-  const { id } = req.params;
-  const schedule = await ScheduleService.getScheduleById(id);
+async function getScheduleBySlug(req, res) {
+  const { slug } = req.params;
+  const schedule = await ScheduleService.getScheduleBySlug(slug);
   res.status(200).json({ data: schedule });
+}
+
+/**
+ * Handles the request to update the information of a specific schedule.
+ *
+ * @function updateScheduleInformation
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the updated schedule.
+ */
+async function updateScheduleInformation(req, res) {
+  const { id: scheduleId } = req.params;
+  const { information } = req.body;
+  const updatedSchedule = await ScheduleService.updateScheduleInformation(scheduleId, information);
+  res.status(200).json({ data: updatedSchedule });
 }
 
 export const ScheduleController = {
@@ -86,5 +102,6 @@ export const ScheduleController = {
   reschedule: asyncWrapper(reschedule),
   getClosestSchedules: asyncWrapper(getClosestSchedules),
   getSchedules: asyncWrapper(getSchedules),
-  getScheduleById: asyncWrapper(getScheduleById)
+  getScheduleBySlug: asyncWrapper(getScheduleBySlug),
+  updateScheduleInformation: asyncWrapper(updateScheduleInformation)
 };

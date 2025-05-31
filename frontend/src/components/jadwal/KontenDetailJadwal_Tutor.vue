@@ -25,8 +25,8 @@ onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return
 
-  const id = route.params.id
-  const res = await fetch(`http://localhost:3000/schedules/${id}`, {
+  const slug = route.params.slug
+  const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -176,26 +176,27 @@ function closeEditInfo() {
 }
 
 async function saveEditInfo() {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token');
   if (!token || !schedule.value?.id) {
-    alert('Gagal menyimpan. Silakan login ulang.')
-    return
+    alert('Gagal menyimpan. Silakan login ulang.');
+    return;
   }
-  // Simpan ke backend (ganti endpoint sesuai kebutuhan)
-  const res = await fetch(`http://localhost:3000/schedules/${schedule.value.id}/info`, {
+
+  const res = await fetch(`http://localhost:3000/schedules/${schedule.value.id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify({ info: editInfoText.value })
-  })
+    body: JSON.stringify({ information: editInfoText.value }),
+  });
+
   if (res.ok) {
-    schedule.value.info = editInfoText.value
-    showEditInfoModal.value = false
-    alert('Informasi tutor berhasil diperbarui.')
+    schedule.value.info = editInfoText.value;
+    showEditInfoModal.value = false;
   } else {
-    alert('Gagal memperbarui informasi tutor.')
+    const errorData = await res.json().catch(() => ({}));
+    alert(errorData.message || 'Gagal memperbarui informasi tutor.');
   }
 }
 </script>
@@ -283,7 +284,7 @@ async function saveEditInfo() {
     <div class="modal-content">
       <div class="popup-content">
         <h3 class="headersb2">Absensi</h3>
-        <p class="bodyr2">Silahkan melakukan absesni untuk sesi Bimbingan belajar kali ini.</p>
+        <p class="bodyr2">Silahkan melakukan absensi untuk sesi Bimbingan belajar kali ini.</p>
       </div>
       <div class="modal-actions">
         <button class="buttonm1" @click="confirmAbsen">Masuk</button>

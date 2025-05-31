@@ -8,6 +8,7 @@ model BimbelPackage {
     area          String
     userId        String     @map("user_id")
     discount      Decimal?   @db.Decimal(10, 2)
+    slug          String     @unique
     isActive      Boolean    @default(true) @map("is_active")
 
     user User @relation(fields: [userId], references: [id])

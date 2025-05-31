@@ -151,7 +151,7 @@ export default defineComponent({
             event.stopPropagation();
             return;
           }
-          router.push(`/DetailJadwal/${row.key}`);
+          router.push(`/detailjadwal/${row.slug}`);
         }
       };
     };
@@ -241,7 +241,8 @@ export default defineComponent({
           tanggal: formatTanggal(item.date),
           jam: formatJam(item.date),
           durasi: `${item.duration} Menit`,
-          status: [statusLabel(item.status)]
+          status: [statusLabel(item.status)],
+          slug: item.slug
         }));
       } catch (err) {
         data.value = [];

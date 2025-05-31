@@ -668,6 +668,7 @@ async function main() {
             time: new Date('1970-01-01T15:00:00Z'),
             duration: 90,
             area: 'Semarang',
+            slug: 'matematika-smp-12lkop',
             userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2',
             discount: 10,
             isActive: false,
@@ -680,6 +681,7 @@ async function main() {
             time: new Date('1970-01-01T15:00:00Z'),
             duration: 120,
             area: 'Semarang',
+            slug: 'bahasa-inggris-sma-14klui',
             userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa',
         },
         {
@@ -690,6 +692,7 @@ async function main() {
             time: new Date("1970-01-01T15:00:00Z"),
             duration: 90,
             area: "Semarang",
+            slug: "kimia-sma-dg67ty",
             userId: "0196b294-4791-7972-912a-33627d5b14a7", // Ratna Dewi M.Pd
             discount: 10,
         },
@@ -701,6 +704,7 @@ async function main() {
             time: new Date("1970-01-01T15:00:00Z"),
             duration: 90,
             area: "Semarang",
+            slug: "fisika-sma-0ki8er",
             userId: "0196b294-4791-7972-912a-33627d5b14a8", // Fajar Nugroho, S.T
             discount: 10,
         },
@@ -712,6 +716,7 @@ async function main() {
             time: new Date("1970-01-01T15:00:00Z"),
             duration: 90,
             area: "Semarang",
+            slug: "biologi-sma-l4l4qw",
             userId: "0196b294-4791-7972-912a-33627d5b14a9", // Intan Lestari, S.Si
             discount: 10,
         },
@@ -1088,6 +1093,7 @@ async function main() {
             date: new Date('2025-04-08T15:00:00Z'),
             meet: 1,
             status: 'terjadwal',
+            slug: 'bahasa-inggris-sma-ABC123-qwert11',
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000002",
@@ -1095,6 +1101,7 @@ async function main() {
             date: new Date('2025-04-11T15:00:00Z'),
             meet: 2,
             status: 'terjadwal',
+            slug: 'bahasa-inggris-sma-ABC123-yuia11',
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000003",
@@ -1102,6 +1109,7 @@ async function main() {
             date: new Date('2025-04-15T15:00:00Z'),
             meet: 3,
             status: 'terjadwal',
+            slug: 'bahasa-inggris-sma-ABC123-kslo11',
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000004",
@@ -1109,6 +1117,7 @@ async function main() {
             date: new Date('2025-04-18T15:00:00Z'),
             meet: 4,
             status: 'terjadwal',
+            slug: 'bahasa-inggris-sma-ABC123-ynki23',
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000005",
@@ -1116,6 +1125,7 @@ async function main() {
             date: new Date('2025-04-22T15:00:00Z'),
             meet: 5,
             status: 'terjadwal',
+            slug: 'bahasa-inggris-sma-ABC123-pal311',
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000006",
@@ -1123,6 +1133,7 @@ async function main() {
             date: new Date('2025-04-25T15:00:00Z'),
             meet: 6,
             status: 'terjadwal',
+            slug: 'bahasa-inggris-sma-ABC123-3nam11',
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000007",
@@ -1130,6 +1141,7 @@ async function main() {
             date: new Date('2025-04-28T15:00:00Z'),
             meet: 7,
             status: 'jadwal_ulang',
+            slug: 'bahasa-inggris-sma-ABC123-7uju11',
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000008",
@@ -1137,6 +1149,7 @@ async function main() {
             date: new Date('2025-05-02T15:00:00Z'),
             meet: 8,
             status: 'terjadwal',
+            slug: 'bahasa-inggris-sma-ABC123-l4pa11',
         },
     ];
     for (const schedule of schedulesClass) {

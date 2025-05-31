@@ -1,4 +1,3 @@
-import { get } from 'http';
 import { prisma } from '../utils/db.js';
 
 /**
@@ -67,6 +66,7 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 10 } = {}) {
       time: pkg.time,
       duration: pkg.duration,
       area: pkg.area,
+      slug: pkg.slug,
       isActive: pkg.isActive,
       tutorName: pkg.user.name,
       photo: pkg.user.tutors[0]?.photo,
@@ -142,6 +142,7 @@ async function getAllBimbelPackages({ page = 1, pageSize = 10 } = {}) {
       time: pkg.time,
       duration: pkg.duration,
       area: pkg.area,
+      slug: pkg.slug,
       isActive: pkg.isActive,
       tutorName: pkg.user.name,
       photo: pkg.user.tutors[0]?.photo,
@@ -159,17 +160,17 @@ async function getAllBimbelPackages({ page = 1, pageSize = 10 } = {}) {
 }
 
 /**
- * Retrieves a bimbel package by ID.
+ * Retrieves a bimbel package by slug.
  * 
  * @async
- * @function getBimbelPackageById
- * @param {string} id - The package ID.
+ * @function getBimbelPackageBySlug
+ * @param {string} slug - The package slug.
  * @returns {Promise<Object|null>} The bimbel package or null if not found.
  */
-async function getBimbelPackageById(id) {
+async function getBimbelPackageBySlug(slug) {
   const pkg = await prisma.bimbelPackage.findUnique({
     where: {
-      id: id
+      slug: slug
     },
     include: {
       user: {
@@ -213,6 +214,7 @@ async function getBimbelPackageById(id) {
     time: pkg.time,
     duration: pkg.duration,
     area: pkg.area,
+    slug: pkg.slug,
     tutorName: pkg.user.name,
     photo: pkg.user.tutors[0]?.photo,
     groupType: pkg.groupType.map(gt => ({
@@ -255,6 +257,13 @@ async function createBimbelPackage(data) {
     throw new Error('Invalid days provided');
   }
 
+  const slugBase = `${name.toLowerCase().replace(/\s+/g, '-')}-${level.toLowerCase().replace(/\s+/g, '-')}`;
+  let slug;
+  do {
+    const randomString = Math.random().toString(36).substring(2, 8);
+    slug = `${slugBase}-${randomString}`;
+  } while (await prisma.schedule.findUnique({ where: { slug } }));
+
   const calculatedGroupType = groupType.map(gt => ({
     ...gt,
     discPrice: Math.round(gt.price * (1 - discount / 100)),
@@ -276,6 +285,7 @@ async function createBimbelPackage(data) {
       area,
       userId: tutorId,
       discount,
+      slug,
       groupType: {
         create: calculatedGroupType.map(gt => ({
           type: gt.type,
@@ -694,6 +704,7 @@ async function getBimbelPackagesByPopularity() {
       time: pkg.time,
       duration: pkg.duration,
       area: pkg.area,
+      slug: pkg.slug,
       isActive: pkg.isActive,
       tutorName: pkg.user.name,
       photo: pkg.user.tutors[0]?.photo,
@@ -807,6 +818,7 @@ async function getMyPackages(user) {
     time: pkg.time,
     duration: pkg.duration,
     area: pkg.area,
+    slug: pkg.slug,
     isActive: pkg.isActive,
     photo: pkg.user.tutors[0]?.photo || null,
     groupType: pkg.groupType.map(gt => ({
@@ -818,23 +830,24 @@ async function getMyPackages(user) {
   }));
 }
 
+
 /**
- * Retrieves a bimbel package by ID associated with the logged-in user.
+ * Retrieves a bimbel package by slug associated with the logged-in user.
  *
  * @async
- * @function getMyPackageById
- * @param {string} id - The package ID.
+ * @function getMyPackageBySlug
+ * @param {string} slug - The package slug.
  * @param {Object} user - The logged-in user object.
  * @returns {Promise<Object|null>} The bimbel package or null if not found or not associated with the user.
  */
-async function getMyPackageById(id, user) {
+async function getMyPackageBySlug(slug, user) {
   if (user.role !== 'tutor') {
     throw new Error('Only tutors can access this resource');
   }
   
   const pkg = await prisma.bimbelPackage.findFirst({
     where: {
-      id: id,
+      slug: slug,
       userId: user.id 
     },
     include: {
@@ -869,7 +882,7 @@ async function getMyPackageById(id, user) {
     time: pkg.time,
     duration: pkg.duration,
     area: pkg.area,
-    isActive: pkg.isActive,
+    slug: pkg.slug,
     groupType: pkg.groupType.map(gt => ({
       type: gt.type,
       price: gt.price * 0.9,
@@ -962,7 +975,7 @@ async function getMyProgramsStatistics(user) {
 export const BimbelPackageService = {
   getActiveBimbelPackages,
   getAllBimbelPackages,
-  getBimbelPackageById,
+  getBimbelPackageBySlug,
   createBimbelPackage,
   createClassBimbelPackage,
   updateBimbelPackage,
@@ -972,7 +985,7 @@ export const BimbelPackageService = {
   getBimbelPackagesByPopularity,
   getRunningPrograms,
   getMyPackages,
-  getMyPackageById,
+  getMyPackageBySlug,
   getBimbelPackageStatistics,
   getMyProgramsStatistics
 };

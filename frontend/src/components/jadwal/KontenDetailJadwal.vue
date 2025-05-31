@@ -16,8 +16,8 @@ onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return
 
-  const id = route.params.id
-  const res = await fetch(`http://localhost:3000/schedules/${id}`, {
+  const slug = route.params.slug
+  const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
