@@ -6,6 +6,7 @@ import butJadwalUlang from "../dirButton/butJadwalUlangTabel.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
 import butJadwal from "../dirButton/butJadwal.vue";
+import butJadwalUlangSuccess from "../dirButton/butPrimerSmall.vue";
 
 function formatTanggal(dateStr) {
   const date = new Date(dateStr);
@@ -45,12 +46,19 @@ export default defineComponent({
     butJadwalUlang,
     butBatal,
     butSumJadwalUlang,
-    butJadwal
+    butJadwal,
+    butJadwalUlangSuccess,
+    
   },
   setup() {
     const data = ref([]);
     const isMobile = ref(false);
     const router = useRouter();
+
+    // Tambahkan state untuk modal sukses & data terakhir reschedule
+    const showSuccessModal = ref(false);
+    const lastRescheduleDate = ref("");
+    const lastRescheduleTime = ref("");
 
     const checkIsMobile = () => {
       isMobile.value = window.innerWidth < 768;
@@ -79,15 +87,57 @@ export default defineComponent({
       rescheduleDate.value = "";
       rescheduleTime.value = "";
     }
+
+    // Hapus fungsi confirmReschedule yang lama (alert saja)
+    // Gunakan yang ini:
     function confirmReschedule() {
-      if (!rescheduleDate.value || !rescheduleTime.value) {
-        alert("Silakan pilih tanggal dan jam baru.");
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Token tidak ditemukan, silakan login ulang.');
         return;
       }
-      alert(
-        `Permintaan jadwal ulang berhasil dikirim!\nTanggal: ${rescheduleDate.value}\nJam: ${rescheduleTime.value}`
-      );
-      closeRescheduleModal();
+      if (!selectedSchedule.value?.key) {
+        alert('Jadwal tidak ditemukan.');
+        return;
+      }
+      if (!rescheduleDate.value || !rescheduleTime.value) {
+        alert('Silakan pilih tanggal dan jam baru terlebih dahulu.');
+        return;
+      }
+
+      const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00.000Z`).toISOString();
+
+      fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ newDate })
+      })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(
+              data.message ||
+              (data.error && data.error.message) ||
+              data.error ||
+              'Gagal melakukan jadwal ulang.'
+            );
+          }
+          // Simpan tanggal & jam baru untuk modal sukses
+          lastRescheduleDate.value = rescheduleDate.value;
+          lastRescheduleTime.value = rescheduleTime.value;
+          showSuccessModal.value = true;
+          closeRescheduleModal();
+        })
+        .catch(err => {
+          alert(err.message);
+        });
+    }
+
+    function closeSuccessModal() {
+      showSuccessModal.value = false;
     }
 
     const tagTypeMap = {
@@ -196,7 +246,12 @@ export default defineComponent({
       mobilePage,
       mobileTotalPage,
       pagedMobileData,
-      mobilePageSize
+      mobilePageSize,
+      // Tambahkan ini
+      showSuccessModal,
+      lastRescheduleDate,
+      lastRescheduleTime,
+      closeSuccessModal
     };
   }
 });
@@ -314,6 +369,27 @@ export default defineComponent({
       </div>
     </div>
   </div>
+
+  <!-- Popup Sukses Jadwal Ulang (letakkan di luar modal reschedule) -->
+  <div v-if="showSuccessModal" class="modal-overlay" @click.self="closeSuccessModal">
+    <div class="modal-content success-modal">
+      <div class="popup-content" style="text-align:center;">
+        <h3 class="headersb2" style="color:#154484;">Jadwal Ulang Berhasil!</h3>
+        <img src="@/assets/success/success.png" alt="success">
+        <p class="bodyr2" style="margin: 12px 0 20px 0;">
+          Penjadwalan ulang berhasil dilakukan.<br>
+          Silahkan untuk memberi kabar ke siswa dan tutor.<br>
+          Tanggal: <strong>{{ lastRescheduleDate }}</strong><br>
+          Jam: <strong>{{ lastRescheduleTime }}</strong>
+        </p>
+        <butJadwalUlangSuccess 
+          label="Kembali ke Jadwal"
+          @click="closeSuccessModal"
+          style="width: 100%;"
+        />
+      </div>
+    </div>
+  </div>
   
   <butJadwal/>
 </template>
@@ -379,18 +455,15 @@ export default defineComponent({
 .modal-content {
   background: #fff;
   border-radius: 8px;
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   max-width: 400px;
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-.popup-content {
-  margin-bottom: 16px;
-}
 .popup-content .headersb2, label {
   color: #154484;
 }
-.bodyr3 {
+.bodyr3, .bodyr2 {
   color: #061222;
 }
 .modal-actions {
@@ -430,5 +503,14 @@ export default defineComponent({
 }
 .clickable-card:hover {
   box-shadow: 0 2px 12px rgba(21,68,132,0.12);
+}
+
+/* Tambahkan di <style scoped> */
+.success-modal .headersb2 {
+  color: #154484;
+  margin-bottom: 8px;
+}
+.success-modal .bodyr2 {
+  text-align: left;
 }
 </style>

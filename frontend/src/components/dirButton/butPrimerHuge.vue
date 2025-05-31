@@ -1,32 +1,38 @@
-<script setup>
-
-</script>
-
 <template>
-    <div class="button-container">
+    <div>
         <n-button
-          class="custom-button buttonb2"
+          class="custom-button buttonm1"
           tertiary
           round
-          @click="$router.push({ path: '/auth', query: { tab: 'signup' } })"
+          @click="$emit('click')"
         >
-          Daftar
+          {{ label }}
         </n-button>
     </div>
 </template>
 
+<script setup>
+defineProps({
+  label: {
+    type: String,
+    default: 'Primer Huge'
+  }
+});
+</script>
+
 <style scoped>
 .button-container {
   display: flex;
-  height: 2.5rem; 
 }
 
 .custom-button {
-  background-color: white;
-  color: #154484;
-  padding: 10px 20px;
-  transition: all 0.3s ease;
+  background-color: #154484;
+  color: #DEE4EE;
   border: 1px solid #154484;
+  border-radius: 2rem;
+  height: 48px;
+  padding: 0 2rem;
+  transition: all 0.3s ease;
   border-radius: 25px;
 }
 

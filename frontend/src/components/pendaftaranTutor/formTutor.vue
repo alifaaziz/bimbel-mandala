@@ -1,3 +1,54 @@
+<script>
+import { NButton } from 'naive-ui';
+import butPrimerHuge from '../dirButton/butPrimerHuge.vue';
+import butSecondHuge from '../dirButton/butSecondHuge.vue';
+
+export default {
+  components: {
+    NButton,
+    butPrimerHuge,
+    butSecondHuge,
+  },
+  data() {
+    return {
+      days: ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"],
+      selectedDays: [],
+      formData: {
+        nama: "",
+        tanggalLahir: "",
+        jenisKelamin: "",
+        foto: null,
+        email: "",
+        whatsapp: "",
+        universitas: "",
+        prodi: "",
+        status: "",
+        jenjang: "",
+        mapel: "",
+      },
+    };
+  },
+  methods: {
+    toggleDay(day) {
+      if (this.selectedDays.includes(day)) {
+        this.selectedDays = this.selectedDays.filter((d) => d !== day);
+      } else {
+        this.selectedDays.push(day);
+      }
+    },
+    submitForm() {
+      // Proses validasi/simpan data jika perlu
+
+      // Redirect ke halaman sukses
+      this.$router.push('/registersuccess');
+    },
+    cancelForm() {
+      this.$router.push('/');
+    },
+  },
+};
+</script>
+
 <template>
   <div class="container-form">
     <!-- sfc2: Header Tutor -->
@@ -30,7 +81,7 @@
 
         <div class="form-group third-width">
           <label for="jenis-kelamin">Jenis Kelamin</label>
-          <select id="jenis-kelamin" v-model="formData.jenisKelamin">
+          <select id="jenis-kelamin" class="gender-select" v-model="formData.jenisKelamin">
             <option>Laki-Laki</option>
             <option>Perempuan</option>
           </select>
@@ -114,88 +165,21 @@
         </button>
       </div>
     </div>
-    <!-- Tombol Submit -->
-    <n-button
-      class="submit-button"
-      type="primary"
-      size="large"
+    <div class="button-action">
+      <!-- Tombol Submit -->
+      <butPrimerHuge 
+      label="Daftar Sebagai Tutor" 
       @click="submitForm"
-    >
-      Submit
-    </n-button>
+      />
+      <!-- Tombol batal -->
+      <butSecondHuge 
+      label="Batal" 
+      @click="cancelForm"
+      />
+    </div>
   </div>
 </template>
 
-<script>
-import { NButton } from 'naive-ui';
-
-export default {
-  components: {
-    NButton,
-  },
-  data() {
-    return {
-      days: ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"],
-      selectedDays: [],
-      formData: {
-        nama: "",
-        tanggalLahir: "",
-        jenisKelamin: "",
-        foto: null,
-        email: "",
-        whatsapp: "",
-        universitas: "",
-        prodi: "",
-        status: "",
-        jenjang: "",
-        mapel: "",
-      },
-    };
-  },
-  methods: {
-    toggleDay(day) {
-      if (this.selectedDays.includes(day)) {
-        this.selectedDays = this.selectedDays.filter((d) => d !== day);
-      } else {
-        this.selectedDays.push(day);
-      }
-    },
-    submitForm() {
-      const data = {
-        ...this.formData,
-        hariAktif: this.selectedDays,
-      };
-
-      // Format pesan untuk WhatsApp
-      const message = `
-        *Pendaftaran Tutor Bimbel Mandala*\n\n
-        Berikut adalah data pendaftaran calon tutor:\n
-        - *Nama Lengkap*: ${data.nama}\n
-        - *Tanggal Lahir*: ${data.tanggalLahir}\n
-        - *Jenis Kelamin*: ${data.jenisKelamin}\n
-        - *Email*: ${data.email}\n
-        - *Nomor WhatsApp*: ${data.whatsapp}\n
-        - *Asal Universitas*: ${data.universitas}\n
-        - *Program Studi*: ${data.prodi}\n
-        - *Status Pendidikan*: ${data.status}\n
-        - *Jenjang yang Diajarkan*: ${data.jenjang}\n
-        - *Mata Pelajaran*: ${data.mapel}\n
-        - *Hari Aktif Mengajar*: ${data.hariAktif.join(", ")}\n\n
-        Mohon untuk segera memproses data ini. Terima kasih.
-      `;
-
-      // Encode pesan untuk URL
-      const encodedMessage = encodeURIComponent(message);
-
-      // Nomor WhatsApp tujuan (ganti dengan nomor yang sesuai)
-      const whatsappNumber = "6285855852485";
-
-      // Redirect ke WhatsApp
-      window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
-    },
-  },
-};
-</script>
 
 <style scoped>
 /* Global */
@@ -222,6 +206,21 @@ form {
   font-size: 4rem;
   line-height: 1.2;
   text-align: center;
+}
+
+.gender-select {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.button-action {
+  display: flex;
+  justify-content: left;
+  gap: 0.5rem;
+  margin-top: 2rem;
 }
 
 @media (max-width: 768px) {
@@ -290,6 +289,7 @@ select {
   border: 1px solid #d1d5db;
   border-radius: 8px;
   width: 100%;
+  height: 100%;
 }
 
 input::placeholder {
@@ -298,10 +298,6 @@ input::placeholder {
 
 .input-with-icon {
   position: relative;
-}
-
-.input-with-icon input {
-  padding-right: 3rem;
 }
 
 .calendar-button,
@@ -340,22 +336,6 @@ input::placeholder {
 .day-button:hover {
   background-color: #154484;
   color: white;
-}
-
-/* Tambahkan styling untuk tombol submit */
-.submit-button {
-  font-family: 'Poppins', sans-serif;
-  background-color: #154484 !important;
-  color: white;
-  border-radius: 2rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.submit-button:hover {
-  background-color: #123a6d;
 }
 
 /* Responsive */

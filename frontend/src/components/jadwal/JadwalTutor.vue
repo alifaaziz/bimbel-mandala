@@ -5,6 +5,7 @@ import { NTag, NCard } from "naive-ui";
 import butJadwalUlang from "../dirButton/butJadwalUlangTabel.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
+import butJadwalUlangSuccess from "../dirButton/butPrimerSmall.vue";
 
 function formatTanggal(dateStr) {
   const date = new Date(dateStr);
@@ -43,7 +44,8 @@ export default defineComponent({
   components: {
     butJadwalUlang, 
     butBatal,
-    butSumJadwalUlang
+    butSumJadwalUlang,
+    butJadwalUlangSuccess,
   },
   setup() {  
     const data = ref([]);
@@ -121,7 +123,9 @@ export default defineComponent({
               'Gagal melakukan jadwal ulang.'
             );
           }
-          alert('Jadwal ulang berhasil!');
+          lastRescheduleDate.value = rescheduleDate.value;
+          lastRescheduleTime.value = rescheduleTime.value;
+          showSuccessModal.value = true;
           closeRescheduleModal();
         })
         .catch(err => {
@@ -386,19 +390,19 @@ export default defineComponent({
   <div v-if="showSuccessModal" class="modal-overlay" @click.self="closeSuccessModal">
     <div class="modal-content success-modal">
       <div class="popup-content" style="text-align:center;">
-        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" style="margin-bottom:12px;">
-          <circle cx="28" cy="28" r="28" fill="#DEE4EE"/>
-          <path d="M18 29.5L25 36.5L38 23.5" stroke="#154484" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
         <h3 class="headersb2" style="color:#154484;">Jadwal Ulang Berhasil!</h3>
-        <p class="bodyr3" style="margin: 12px 0 20px 0;">
-          Permintaan jadwal ulang telah dikirim.<br>
+        <img src="@/assets/success/success.png" alt="">
+        <p class="bodyr2" style="margin: 12px 0 20px 0;">
+          Penjadwalan ulang berhasil dilakukan. Silahkan untuk memberi kabar ke siswa dan tutor.<br>
           Tanggal: <strong>{{ lastRescheduleDate }}</strong><br>
           Jam: <strong>{{ lastRescheduleTime }}</strong>
         </p>
-        <button class="buttonm1" style="background:#154484; color:#fff; border-radius: 20px;" @click="closeSuccessModal">
-          Kembali
-        </button>
+
+        <butJadwalUlangSuccess 
+          label="Kembali ke Jadwal"
+          @click="closeSuccessModal"
+          style="width: 100%;"
+        />
       </div>
     </div>
   </div>
@@ -465,19 +469,19 @@ export default defineComponent({
 .modal-content {
   background: #fff;
   border-radius: 8px;
-  padding: 24px;
-  max-width: 400px;
+  padding: 1.5rem 2rem;
+  max-width: 360px;
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-.popup-content {
-  margin-bottom: 16px;
-}
+
 .popup-content .headersb2, label {
   color: #154484;
 }
-.bodyr3 {
+
+.bodyr2, .bodyr3 {
   color: #061222;
+  text-align: left;
 }
 .modal-actions {
   display: flex;

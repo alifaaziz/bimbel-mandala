@@ -5,12 +5,16 @@ import butAbsen from '../dirButton/butAbsen.vue'
 import butSumJadwalUlang from '../dirButton/butPrimerSmall.vue'
 import butBatal from '../dirButton/butSecondSmall.vue'
 import butJadwalUlang from '../dirButton/butSecondNormal.vue'
+import butSucJadwalUlang from '../dirButton/butPrimerNormal.vue'
 
 // State
 const showAbsenModal = ref(false)
 const showRescheduleModal = ref(false)
+const showSuccessModal = ref(false)
 const rescheduleDate = ref('')
 const rescheduleTime = ref('')
+const lastRescheduleDate = ref('')
+const lastRescheduleTime = ref('')
 const selectedSchedule = ref<any>(null)
 const schedule = ref<any>(null)
 
@@ -146,7 +150,6 @@ function confirmReschedule() {
     return
   }
 
-  // Gabungkan tanggal dan waktu menjadi format ISO
   const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00.000Z`).toISOString()
 
   fetch(`http://localhost:3000/schedules/reschedule/${schedule.value.id}`, {
@@ -167,12 +170,19 @@ function confirmReschedule() {
           'Gagal melakukan jadwal ulang.'
         )
       }
-      alert('Jadwal ulang berhasil!')
+      // Set data sukses
+      lastRescheduleDate.value = rescheduleDate.value
+      lastRescheduleTime.value = rescheduleTime.value
+      showSuccessModal.value = true
       closeRescheduleModal()
     })
     .catch(err => {
       alert(err.message)
     })
+}
+
+function closeSuccessModal() {
+  showSuccessModal.value = false
 }
 </script>
 
@@ -193,7 +203,7 @@ function confirmReschedule() {
           <n-tag
             :type="tagTypeMap[statusLabel(schedule.status)]"
             size="small"
-            class="bodyr2"
+            class="bodym3"
             round
           >
             {{ statusLabel(schedule.status) }}
@@ -281,6 +291,33 @@ function confirmReschedule() {
       <div class="modal-actions-jadwalulang">
         <butSumJadwalUlang label="Jadwal Ulang" @click.stop.prevent="confirmReschedule" />
         <butBatal label="Batal" @click="closeRescheduleModal" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Sukses -->
+  <div v-if="showSuccessModal" class="modal-overlay" @click.self="closeSuccessModal">
+    <div class="modal-content success-modal">
+      <div class="popup-content" style="text-align:center;">
+        <h3 class="headersb2" style="color:#154484; margin-bottom: 8px;">Jadwal Ulang Berhasil!</h3>
+        <img 
+          src="@/assets/success/success.png" 
+          alt="Success" 
+          style="width:160px; margin: 0 auto;"
+        >
+        <p class="bodyr2">
+          Penjadwalan ulang berhasil dilakukan.<br>
+          Silahkan untuk memberi kabar ke siswa dan tutor.<br>
+          <span style="display:inline-block; margin-top:10px;">
+            Tanggal: <strong>{{ lastRescheduleDate }}</strong><br>
+            Jam: <strong>{{ lastRescheduleTime }}</strong>
+          </span>
+        </p>
+        <butSucJadwalUlang 
+          label="Kembali ke Jadwal"
+          @click="closeSuccessModal"
+          style="width: 100%;"
+        />
       </div>
     </div>
   </div>
@@ -425,16 +462,10 @@ function confirmReschedule() {
   display: flex;
   flex-direction: column;
   text-align: left;
-  padding-bottom: 2rem;
   gap: 1rem;
 }
 
-.popup-content .bodyr2 {
-  color: #597AA8;
-  font-size: 0.95rem;
-}
-
-.bodyr3 {
+.bodyr3, .success-modal .bodyr2 {
   color: #061222;
 }
 
@@ -444,7 +475,7 @@ function confirmReschedule() {
   gap: 12px;
 }
 
-.bodym3 {
+.popup-content .bodym3 {
   color: #154484;
 }
 
@@ -491,5 +522,11 @@ function confirmReschedule() {
   }
 }
 
-
+.success-modal .headersb2 {
+  color: #154484;
+  margin-bottom: 8px;
+}
+.success-modal .bodyr2 {
+  text-align: left;
+}
 </style>

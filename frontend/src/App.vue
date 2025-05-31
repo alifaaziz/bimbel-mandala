@@ -12,6 +12,8 @@ import ProfileUser from './components/ProfileUser.vue';
 import DetailJadwal from './components/jadwal/DetailJadwal.vue'
 import { NConfigProvider, NMessageProvider } from 'naive-ui';
 
+import RegisterSuccess from './components/successPage/MenjadiTutor.vue';
+
 const route = useRoute();
 
 const layout = computed(() => {
@@ -32,6 +34,9 @@ const layout = computed(() => {
   } 
   else if (route.path.startsWith('/profileuser')) {
     return ProfileUser;
+  } 
+  else if (route.path.startsWith('/registersuccess')) {
+    return RegisterSuccess;
   } 
   else {
     return Main;
