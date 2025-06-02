@@ -79,7 +79,7 @@ function goToDetail(item) {
       >
         <template #cover>
           <img 
-            :src="`http://localhost:3000${item.photo}`" 
+            :src="item.photo ? `http://localhost:3000${item.photo}` : '/tutor/Tutor_Default.png'"
           />
         </template>
         <template #header>
