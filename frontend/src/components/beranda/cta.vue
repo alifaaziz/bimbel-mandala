@@ -18,19 +18,18 @@
     </div>
 </template>
 
-<style setup>
+<style scoped>
     .copy-cta {
         color: #ffffff;
         font-size: 12px;
-        width: 60%;
         text-align: left;
         margin: 2rem 0;
-        width: 40%;
-        letter-spacing: 0.08em; /* Menambahkan jarak per huruf */
+        letter-spacing: 0.08em;
+        width: 100%;
     }
 
     .cta-content {
-        max-width: 100%;
+        max-width: 50%;
     }
 
     .cta-section {
@@ -44,15 +43,7 @@
         text-align: left;
     }
 
-    @media (max-width: 768px) {
-        .copy-cta {
-            width: 80%; 
-        } 
-    }
     @media (max-width: 576px) {
-        .copy-cta {
-            width: 80%; 
-        }
         .hero-title {
             font-size: 3rem;
         }

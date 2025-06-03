@@ -201,7 +201,7 @@ function handleButton(slug) {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.5rem;
+  margin-bottom: 2rem;
 }
 
 .title-group h3 {

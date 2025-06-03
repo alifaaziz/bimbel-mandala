@@ -326,7 +326,7 @@ function closeSuccessModal() {
 <style scoped>
 .card-container {
   display: flex;
-  gap: 2rem;
+  gap: 4rem;
   padding: 1rem;
   background-color: white;
   border-radius: 16px;

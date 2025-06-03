@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { NInput, NButton } from 'naive-ui'
 import googleIcon from '../../assets/google.svg'
@@ -94,7 +94,7 @@ function toggleShowPassword() {
   <div class="form-wrapper">
     <div class="container">
       <h1 class="headersb1">Selamat datang kembali!</h1>
-      <p class="bodyr2">Lorem ipsum dolor sit amet</p>
+      <p class="bodyr3">Masuk dan melanjutkan perjalanan belajarmu</p>
     </div>
 
     <div class="compo" @keyup.enter="handleLogin">
@@ -103,9 +103,9 @@ function toggleShowPassword() {
         <n-input
           round
           v-model:value="email"
-          placeholder="E-mail"
+          placeholder="Ketik email terdaftar kamu disini"
           type="email"
-          class="input-custom mb-2 bodym2"
+          class="input-custom mb-2 bodyr2"
           @blur="validateEmail"
         />
         <p v-if="emailError" class="error-message">{{ emailError }}</p>
@@ -124,7 +124,7 @@ function toggleShowPassword() {
             v-model:value="password"
             :type="showPassword ? 'text' : 'password'"
             placeholder="Password"
-            class="input-custom mb-2 bodym2"
+            class="input-custom mb-2 bodyr2"
             @blur="validatePassword"
           />
           <button
@@ -149,6 +149,11 @@ function toggleShowPassword() {
         Masuk
       </n-button>
 
+      <!-- Divider -->
+      <div class="divider">
+        <span class="divider-text">atau</span>
+      </div>
+
       <!-- Tombol Login dengan Google -->
       <n-button
         block
@@ -159,7 +164,7 @@ function toggleShowPassword() {
         Masuk dengan Google
       </n-button>
       
-      <p>
+      <p class="bodym3">
         Belum punya akun?
         <button @click="goToSignup" class="toggle-link">
           Daftar disini
@@ -186,9 +191,15 @@ function toggleShowPassword() {
   color: #154484;
 }
 
-.container .bodyr2, .form-input .bodym2, .compo p {
+.container .bodyr2, .form-input .bodyr2 {
   color: #061222;
 }
+
+.bodym3 {
+  color: #777E90;
+  text-align: center;
+}
+
 
 .input-custom {
   text-align: left;
@@ -228,7 +239,7 @@ function toggleShowPassword() {
 }
 
 .error-message {
-  color: red;
+  color: red !important;
   font-size: 0.75rem;
   margin-top: 0.25rem;
 }
@@ -260,14 +271,18 @@ function toggleShowPassword() {
   text-decoration: none;
   cursor: pointer;
   border-radius: 1.5rem;
-  margin: 1.5rem 0;
+  margin: 1.5rem auto;
+  width: fit-content;
+  height: fit-content;
+  padding: 0 0.5rem 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .google-icon-img {
-  width: 28px;
+  width: 40px;
   height: auto;
-  margin-right: 10px;
-  vertical-align: middle;
 }
 
 .toggle-password-btn {
@@ -281,6 +296,24 @@ function toggleShowPassword() {
   cursor: pointer;
   padding: 0 4px;
   color: #154484;
+}
+
+.divider {
+  width: 100%;
+  border-bottom: 1px solid #777E90;
+  margin: 16px 0;
+  position: relative;
+}
+
+.divider-text {
+  position: absolute;
+  top: -0.6em;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 0 1rem;
+  color: #6b7280;
+  font-size: 12px;
 }
 
 @media (max-width: 982px) {

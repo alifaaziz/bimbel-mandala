@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { NInput, NButton } from 'naive-ui'
 import googleIcon from '../../assets/google.svg'
-import { useRouter } from 'vue-router'
 import router from '@/router'
 
 const name = ref('')
@@ -92,7 +91,7 @@ function toggleShowPassword() {
   <div class="form-wrapper" @keyup.enter="handleSignup">
     <div class="container">
       <h1 class="headersb1">Daftar Sebagai Siswa</h1>
-      <p class="bodyr2">Lorem ipsum dolor sit amet</p>
+      <p class="bodyr3">Ayo mulai belajar dan raih impianmu</p>
     </div>
 
     <div class="compo">
@@ -102,7 +101,7 @@ function toggleShowPassword() {
           round
           v-model:value="name"
           placeholder="Nama Lengkap"
-          class="input-custom mb-2 bodym2"
+          class="input-custom mb-2 bodyr2"
         />
         <p v-if="emailError" class="error-message">{{ emailError }}</p>
       </div>
@@ -113,7 +112,7 @@ function toggleShowPassword() {
           v-model:value="email"
           placeholder="E-mail"
           type="email"
-          class="input-custom mb-2 bodym2"
+          class="input-custom mb-2 bodyr2"
           @blur="validateEmail"
         />
         <p v-if="emailError" class="error-message">{{ emailError }}</p>
@@ -127,7 +126,7 @@ function toggleShowPassword() {
             v-model:value="password"
             placeholder="Password"
             :type="showPassword ? 'text' : 'password'"
-            class="input-custom mb-2 bodym2"
+            class="input-custom mb-2 bodyr2"
             @blur="validatePassword"
           />
           <button
@@ -153,6 +152,11 @@ function toggleShowPassword() {
         Daftar
       </n-button>
 
+      <!-- Divider -->
+      <div class="divider">
+        <span class="divider-text">atau</span>
+      </div>
+
       <!-- Tombol Login dengan Google -->
       <n-button
         block
@@ -163,7 +167,7 @@ function toggleShowPassword() {
         Lanjutkan dengan Google
       </n-button>
 
-      <p>
+      <p class="bodym3">
         Sudah punya akun?
         <button @click="goToLogin" class="toggle-link">
           Masuk disini
@@ -190,7 +194,7 @@ function toggleShowPassword() {
   color: #154484;
 }
 
-.container .bodyr2, .form-input .bodym2, .compo p {
+.container .bodyr2, .form-input {
   color: #061222;
 }
 
@@ -236,7 +240,7 @@ function toggleShowPassword() {
 }
 
 .error-message {
-  color: red;
+  color: red !important;
   font-size: 0.75rem;
   margin-top: 0.25rem;
 }
@@ -248,14 +252,18 @@ function toggleShowPassword() {
   text-decoration: none;
   cursor: pointer;
   border-radius: 1.5rem;
-  margin: 1.5rem 0;
+  margin: 1.5rem auto;
+  width: fit-content;
+  height: fit-content;
+  padding: 0 0.5rem 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .google-icon-img {
-  width: 28px;
+  width: 40px;
   height: auto;
-  margin-right: 10px;
-  vertical-align: middle;
 }
 
 .toggle-password-btn {
@@ -269,6 +277,39 @@ function toggleShowPassword() {
   cursor: pointer;
   padding: 0 4px;
   color: #154484;
+}
+
+.divider {
+  width: 100%;
+  text-align: center;
+  border: none;
+  position: relative;
+  margin: 16px 0;
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #777E90;
+  margin: 0 8px;
+}
+
+.divider-text {
+  color: #6b7280;
+  font-size: 12px;
+  background: #fff;
+  padding: 0 12px;
+  z-index: 1;
+}
+
+.bodym3 {
+  color: #777E90;
+  text-align: center;
 }
 
 @media (max-width: 982px) {

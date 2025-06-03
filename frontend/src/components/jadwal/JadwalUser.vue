@@ -185,7 +185,7 @@
 .tabel-jadwal {
     width: 100%;
     min-width: 700px;
-    padding: 1rem 0;
+    padding: 2rem 0;
     border-radius: 1rem;
 }
 @media (max-width: 768px) {

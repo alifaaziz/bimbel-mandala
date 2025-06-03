@@ -231,7 +231,7 @@ function confirmIzin() {
     <div class="modal-content">
       <div class="popup-content">
         <h3 class="headersb2">Absensi</h3>
-        <p class="bodyr2">Silahkan melakukan absensi untuk sesi ini.</p>
+        <p class="bodyr2">Silahkan melakukan absensi untuk sesi ini Bimbingan belajar kali ini.</p>
       </div>
       <div class="modal-actions">
         <button class="buttonm1" @click="confirmAbsen">Masuk</button>
@@ -245,12 +245,15 @@ function confirmIzin() {
     <div class="modal-content">
       <div class="popup-content">
         <h3 class="headersb2">Perizinan</h3>
-        <input
-          v-model="izinReason"
-          type="text"
-          class="izin-input bodyr2"
-          placeholder="Masukkan alasan izin..."
-        />
+        <div>
+          <p class="bodyr2">Alasan:</p>
+          <input
+            v-model="izinReason"
+            type="text"
+            class="izin-input bodyr2"
+            placeholder="Masukkan alasan izin..."
+          />
+        </div>
       </div>
       <div class="modal-actions">
         <button class="buttonm1" @click="confirmIzin">Izin</button>
@@ -263,7 +266,7 @@ function confirmIzin() {
 <style scoped>
 .card-container {
   display: flex;
-  gap: 2rem;
+  gap: 4rem;
   padding: 1rem;
   background-color: white;
   border-radius: 16px;
@@ -405,13 +408,12 @@ function confirmIzin() {
 
 .popup-content .bodyr2 {
   color: #597AA8;
-  font-size: 0.95rem;
 }
 
 .izin-input {
   width: 100%;
   padding: 0.75rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   border: 1px solid #597AA8;
   border-radius: 8px;
   font-size: 1rem;

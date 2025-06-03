@@ -45,7 +45,7 @@ onMounted(async () => {
   if (res.ok) {
     const result = await res.json();
     jadwalList.value = (result.data || [])
-      .slice(0, 5)
+      .slice(0, 4)
       .map(item => ({
         id: item.id,
         packageName: item.packageName,
@@ -97,11 +97,11 @@ function goToDetail(item) {
         </template>
         <div class="bodyr3 content">
           <div class="info-row">
-            <span class="label"><strong>Hari</strong></span>
+            <span class="label">Hari</span>
             <span class="value">: {{ item.tanggal }}</span>
           </div>
           <div class="info-row">
-            <span class="label"><strong>Pukul</strong></span>
+            <span class="label">Pukul</span>
             <span class="value">: {{ item.jam }}</span>
           </div>
         </div>
@@ -144,7 +144,7 @@ function goToDetail(item) {
 
 .jadwal_title {
   display: flex;
-  gap: 1rem;
+  justify-content: space-between;
   align-items: baseline;
 }
 .caption {
