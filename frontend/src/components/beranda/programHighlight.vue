@@ -70,7 +70,11 @@ function groupTypeLabel(groupTypeArr) {
 
 // Handler tombol
 function handleButton(slug) {
-  router.push(`/detailprogram/${slug}`);
+  if (isTutor.value) {
+    router.push(`/detailprogram/${slug}`);
+  } else {
+    router.push(`/detailProgram/${slug}`);
+  }
 }
 </script>
 
