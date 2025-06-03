@@ -123,7 +123,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     <div>
       <img
         class="program-photo"
-        :src="programData.photo ? `http://localhost:3000${programData.photo}` : '/public/tutor/3.png'"
+        :src="programData.photo ? `http://localhost:3000${programData.photo}` : '/tutor/Tutor_Default.png'"
         alt="Program Photo"
       />
     </div>

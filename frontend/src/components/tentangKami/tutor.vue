@@ -1,7 +1,23 @@
 <script setup>
-import { tutors } from '@/assets/dataSementara/tutor.js';
+import { ref, onMounted } from 'vue';
 import { NCard } from 'naive-ui';
-</script> 
+
+const tutors = ref([]);
+
+const fetchTutors = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/users/tutors'); 
+    const data = await response.json();
+    tutors.value = data.data;
+  } catch (error) {
+    console.error('Error fetching tutors:', error);
+  }
+};
+
+onMounted(() => {
+  fetchTutors();
+});
+</script>
 
 <template>
   <div class="header-container">
@@ -16,15 +32,15 @@ import { NCard } from 'naive-ui';
     >
       <template #header>
         <div class="headersb3 name">
-          {{ item.title }}
-          <div class="bodyr4 caption">{{ item.caption }}</div>
+          {{ item.name }}
+          <div class="bodyr4 caption">{{ item.subject }} - {{ item.teachLevel }}</div>
         </div>
       </template>
       <template #cover>
-        <img :src="item.image" alt="Card Image">
+        <img :src="item.photo ? `http://localhost:3000${item.photo}` : 'tutor/Tutor_Default.png'" alt="Card Image">
       </template>
       <div class="bodyr3 content">
-        {{ item.content }}
+        {{ item.description }}
       </div>
     </n-card>
   </div>
@@ -36,22 +52,22 @@ import { NCard } from 'naive-ui';
   margin-bottom: 2rem;
 }
 .card-container {
-  display: grid; /* Ubah menjadi grid layout */
-  grid-template-columns: repeat(4, 1fr); /* Maksimal 4 kolom */
-  gap: 24px; /* Jarak antar kartu */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
   padding: 0 8rem;
 }
 
 .n-card {
-  max-width: 100%; /* Kartu menyesuaikan lebar kolom */
+  max-width: 100%;
   border-radius: 20px;
 }
 
 .n-card img {
-  width: 100%; /* Membuat gambar menyesuaikan lebar kartu */
-  aspect-ratio: 4 / 3; /* Menetapkan rasio 4:3 */
-  object-fit: cover; /* Memastikan gambar tidak terdistorsi */
-  border-radius: 20px; /* Opsional: Menambahkan sudut melengkung */
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 20px;
 }
 
 .name {
@@ -67,20 +83,19 @@ import { NCard } from 'naive-ui';
 }
 
 .title1 {
-    color: #FDC998 !important;
-    text-align: center;
+  color: #FDC998 !important;
+  text-align: center;
 }
 .title2 {
-    color: #154484;
-    text-align: center;
-    margin-bottom: 12px;
+  color: #154484;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
-/* Media query untuk layar di bawah 961px */
 @media (max-width: 960px) {
   .card-container {
-    grid-template-columns: repeat(2, 1fr); /* Dua kolom dengan lebar yang sama */
-    padding: 0 2rem
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 2rem;
   }
 }
 </style>

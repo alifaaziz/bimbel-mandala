@@ -171,7 +171,7 @@ function confirmIzin() {
   <div v-if="schedule" class="card-container">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `http://localhost:3000${schedule.photo}` : '/public/tutor/3.png'"
+      :src="schedule.photo ? `http://localhost:3000${schedule.photo}` : '/tutor/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">
