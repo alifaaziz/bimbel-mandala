@@ -1,7 +1,5 @@
 <script setup>
 import navbarDetail from './components/detailProgram/navbarDetail.vue'
-import programBelajar from './components/detailProgram/program.vue'
-import programHighlight from './components/beranda/programHighlight.vue'
 import Footer from './components/footer.vue';
 </script>
 
@@ -9,11 +7,8 @@ import Footer from './components/footer.vue';
   <div>
     <navbarDetail />
     <div class="component-detail">
-      <programBelajar />
+      <router-view />
     </div>
-    <!-- <div class="other-program">
-      <programHighlight />
-    </div> -->
   </div>
   <Footer />
 </template>

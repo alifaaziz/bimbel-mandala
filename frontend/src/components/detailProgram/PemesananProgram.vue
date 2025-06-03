@@ -1,0 +1,380 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import ButPrimerNormal from '../dirButton/butPrimerNormal.vue';
+
+const route = useRoute();
+const slug = route.params.id as string;
+const programData = ref<any>(null);
+const isTutor = ref(false);
+
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    if (!res.ok) throw new Error('Gagal mengambil data program');
+    programData.value = await res.json();
+
+    // Cek role user
+    const userRes = await fetch('http://localhost:3000/users/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (userRes.ok) {
+      const data = await userRes.json();
+      isTutor.value = data.data?.role === 'tutor';
+    }
+  } catch (err) {
+    programData.value = null;
+    console.error('Error:', err);
+  }
+});
+
+function formatTime(isoString: string): string {
+  if (!isoString) return '';
+  const time = isoString.split('T')[1];
+  const [hour, minute] = time.split(':');
+  return `${hour}:${minute} WIB`;
+}
+
+function formatCurrency(amount: number): string {
+  return `Rp${amount.toLocaleString('id-ID')}`;
+}
+
+function groupTypeLabel(groupTypeArr: any[]): string {
+  if (!Array.isArray(groupTypeArr)) return '';
+  return groupTypeArr.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))
+    ? 'Kelas'
+    : 'Privat/Kelompok';
+}
+
+const badgeClass = (level: string) => {
+  switch (level?.toLowerCase()) {
+    case 'sd': return 'grade-sd';
+    case 'smp': return 'grade-smp';
+    case 'sma': return 'grade-sma';
+    default: return '';
+  }
+};
+
+const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+// Data peserta (contoh, bisa diganti dengan data dinamis)
+const value = ref(null);
+const options = [
+  { label: "Privat", value: "privat" },
+  { label: "Kelompok 2 Siswa", value: "kelompok2" },
+  { label: "Kelompok 3 Siswa", value: "kelompok3" },
+  { label: "Kelompok 4 Siswa", value: "kelompok4" },
+  { label: "Kelompok 5 Siswa", value: "kelompok5" },
+  { label: "Kelas", value: "kelas", disabled: true },
+];
+
+</script>
+
+<template>
+    <div class="padding-components">
+        <div class="container-detail" v-if="programData">
+            <div>
+                <img
+                    class="program-photo"
+                    :src="programData.photo ? `http://localhost:3000${programData.photo}` : '/tutor/Tutor_Default.png'"
+                    alt="Program Photo"
+                />
+                </div>
+                <div>
+                <div class="head-detail">
+                    <div>
+                    <div class="headersb1 head-program">{{ programData.name }}</div>
+                    <div class="bodym2">{{ programData.tutorName }}</div>
+                    </div>
+                    <div>
+                    <div
+                        class="headerb1"
+                        :class="badgeClass(programData.level)"
+                    >
+                        {{ programData.level }}
+                    </div>
+                    </div>
+                </div>
+                <div class="space-detail">
+                    <div>
+                    <n-space class="bodyr2">
+                        <n-tag
+                        v-for="(day, index) in allDays"
+                        :key="index"
+                        class="tag"
+                        :class="{ 'tag-unselected': !programData.days.includes(day) }"
+                        >
+                        {{ day }}
+                        </n-tag>
+                    </n-space>
+                    </div>
+                    <div>
+                    <n-space vertical size="medium" class="space-detail bodyr2">
+                        <InfoRow label="Area" :value="programData.area" />
+                        <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
+                        <InfoRow label="Pukul" :value="formatTime(programData.time)" />
+                        <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
+                    </n-space>
+                    </div>
+                    <div>
+                    <p class="bodyb1 type-program">
+                        {{ groupTypeLabel(programData.groupType) }}
+                    </p>
+                    <p v-if="!isTutor" class="bodyb1 price">
+                        {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
+                        {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
+                    </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-pemesanan">
+            <h3 class="headerb2">
+                Lengkapi Data
+            </h3>
+            <div class="input-pemesanan">
+                <p class="bodym2">Lokasi Bimbingan Belajar</p>
+                <n-input
+                round
+                placeholder="Alamat Lokasi Bimbing"
+                class="input-custom mb-2 bodyr2"
+                />
+            </div>
+            <div class="input-pemesanan">
+                <p class="bodym2">Peserta</p>
+                <n-space vertical>
+                    <n-select 
+                    round 
+                    v-model:value="value" 
+                    :options="options"
+                    class="select-rounded"
+                    />
+                </n-space>
+            </div>
+            <div class="input-pemesanan">
+                <p class="bodym2">Total Biaya</p>
+                <p>
+                    <span class="bodyb2 price">
+                        Rp1.000.000
+                        <!-- HARGA DISESUAIKAN PAKET -->
+                    </span>
+                </p>
+            </div>
+        </div>
+        <n-divider class="divider" />
+        <div class="form-pemesanan">
+            <h3 class="headerb2">
+                Pembayaran
+            </h3>
+            <div class="metode-pembayaran bodym3">
+                <p>List Rakening</p>
+                <p>Transfer</p>
+            </div>
+            <div class="bank-pembayaran">
+                <n-image
+                    width="24"
+                    src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                />
+                <p class=" bodyr2 no-rek">
+                    xxx-xxx-xxx
+                </p>
+            </div>
+            <div class="bank-pembayaran">
+                <n-image
+                    width="24"
+                    src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                />
+                <p class=" bodyr2 no-rek">
+                    xxx-xxx-xxx
+                </p>
+            </div>
+            <div class="bank-pembayaran">
+                <n-image
+                    width="24"
+                    src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                />
+                <p class=" bodyr2 no-rek">
+                    xxx-xxx-xxx
+                </p>
+            </div>
+        </div>
+        <ButPrimerNormal label="Konfirmasi" class="but-konfirmasi"/>
+    </div>
+</template>
+
+<style scoped>
+.container-detail {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 4rem;
+  width: 100%;
+  max-width: 1440px;
+  margin: 2rem auto;
+  height: auto;
+}
+
+.program-photo {
+  width: 541px;
+  height: auto;
+  max-height: 496px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.head-detail {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.head-program {
+  color: #154484;
+  width: 100%;
+  max-width: 320px;
+}
+
+.space-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tag {
+  background-color: #154484;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tag-unselected {
+  background-color: #e0e0e0;
+  color: #888;
+}
+
+.type-program {
+  color: #FB8312;
+}
+
+.price {
+  color: #154484;
+}
+
+.submit-button {
+  font-family: 'Poppins', sans-serif;
+  background-color: #154484 !important;
+  color: white;
+  border-radius: 2rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+}
+
+.submit-button:hover {
+  background-color: #123a6d;
+}
+
+.head-detail .bodym2, .space-detail, .no-rek {
+  color: #061222;
+}
+
+.form-pemesanan {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.input-custom {
+  text-align: left;
+}
+
+.input-pemesanan {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: #061222;
+}
+
+::v-deep(.select-rounded .n-base-selection) {
+  border-radius: 2rem !important;
+}
+
+.divider {
+  border-top: 1px solid #FEEBD9 !important;
+}
+
+.metode-pembayaran {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.bank-pembayaran {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.bodym3 {
+  color: #B1B5C3;
+}
+
+/* Breakpoint 1200px */
+@media (max-width: 1200px) {
+  .container-detail {
+    padding: 0 4rem;
+  }
+
+  .program-photo {
+    width: 100%;
+    max-height: 400px;
+  }
+}
+
+.but-konfirmasi {
+  margin-top: 2rem;
+}
+
+/* Breakpoint 960px */
+@media (max-width: 960px) {
+  .container-detail {
+    flex-direction: column;
+    padding: 0 2rem;
+  }
+
+  .program-photo {
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+
+  .head-program {
+    width: 100%;
+  }
+}
+
+.headerb2 {
+  color: #154484;
+}
+
+/* Breakpoint 576px */
+@media (max-width: 576px) {
+  .container-detail {
+    padding: 0 1rem;
+  }
+
+  .submit-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+</style>

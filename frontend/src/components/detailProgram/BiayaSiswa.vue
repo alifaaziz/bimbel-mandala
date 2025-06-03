@@ -56,7 +56,7 @@ onMounted(async () => {
 
 <template>
   <div class="program-card">
-    <div class="card-header headerb3">Skema Honor Tutor</div>
+    <div class="card-header headerb3">Skema Harga Program</div>
     <div class="card-body">
       <div class="col-skema" v-for="group in groupTypes" :key="group.type">
         <h3 class="headersb4">{{ formatGroupType(group.type) }}</h3>

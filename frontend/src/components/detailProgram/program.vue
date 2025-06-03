@@ -2,7 +2,11 @@
 import { defineComponent, h, ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import butPrimerNormal from '../dirButton/butPrimerNormal.vue';
+import DetailProgram from './DetailProgram.vue';
 import HonorTutor from './HonorTutor.vue';
+import BiayaSiswa from './BiayaSiswa.vue';
+import InfoProgram from './InfoProgram.vue';
+import CaraPendaftaran from './CaraPendaftaran.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -31,158 +35,19 @@ onMounted(async () => {
     programData.value = null;
   }
 });
-
-function formatTime(isoString: string): string {
-  if (!isoString) return '';
-  const time = isoString.split('T')[1];
-  const [hour, minute] = time.split(':');
-  return `${hour}:${minute} WIB`;
-}
-
-function formatCurrency(amount: number): string {
-  return `Rp${amount.toLocaleString('id-ID')}`;
-}
-
-interface InfoRowProps {
-  label: string;
-  value: string;
-}
-
-const InfoRow = defineComponent({
-  name: 'InfoRow',
-  props: {
-    label: {
-      type: String,
-      required: true,
-    },
-    value: {
-      type: String,
-      required: true,
-    },
-  },
-  setup(props: InfoRowProps) {
-    return () =>
-      h('div', { style: { display: 'flex', gap: '12px' } }, [
-        h('span', { style: { fontWeight: 'bold', width: '100px' } }, props.label),
-        h('span', null, `: ${props.value}`),
-      ]);
-  },
-});
-
-function submitToWhatsApp() {
-  if (!programData.value) return;
-
-  // Nomor WA admin
-  const whatsappAdmin = "6285855852485";
-
-  if (isTutor.value) {
-    const message = `
-*Detail Program*
-- *Nama Program*: ${programData.value.name}
-- *Tutor*: ${programData.value.tutorName}
-- *Jenjang*: ${programData.value.level}
-- *Hari*: ${programData.value.days.join(", ")}
-- *Pukul*: ${formatTime(programData.value.time)}
-- *Durasi*: ${programData.value.duration} Menit
-- *Area*: ${programData.value.area}
-- *Tipe Program*: ${programData.value.groupType.map((group: any) => group.type).join(" / ")}
-`
-    ;
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${whatsappAdmin}?text=${encodedMessage}`, "_blank");
-  } else {
-    // Jika siswa, redirect ke halaman pemesanan
-    router.push('/pemesanan');
-  }
-}
-
-function groupTypeLabel(groupTypeArr: any[]): string {
-  if (!Array.isArray(groupTypeArr)) return '';
-  return groupTypeArr.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))
-    ? 'Kelas'
-    : 'Privat/Kelompok';
-}
-
-const badgeClass = (level: string) => {
-  switch (level.toLowerCase()) {
-    case 'sd':
-      return 'grade-sd'
-    case 'smp':
-      return 'grade-smp'
-    case 'sma':
-      return 'grade-sma'
-  }
-}
-
-const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-
 </script>
 
 <template>
-  <div class="container-detail" v-if="programData">
-    <div>
-      <img
-        class="program-photo"
-        :src="programData.photo ? `http://localhost:3000${programData.photo}` : '/tutor/Tutor_Default.png'"
-        alt="Program Photo"
-      />
+  <DetailProgram />
+  <div class="padding-components detail-siswa">
+    <div v-if="isTutor">
+      <HonorTutor />
     </div>
-    <div>
-      <div class="head-detail">
-        <div>
-          <div class="headersb1 head-program">{{ programData.name }}</div>
-          <div class="bodym2">{{ programData.tutorName }}</div>
-        </div>
-        <div>
-          <div
-            class="headerb1"
-            :class="badgeClass(programData.level)"
-          >
-            {{ programData.level }}
-          </div>
-        </div>
-      </div>
-      <div class="space-detail">
-        <div>
-          <n-space class="bodyr2">
-            <n-tag
-              v-for="(day, index) in allDays"
-              :key="index"
-              class="tag"
-              :class="{ 'tag-unselected': !programData.days.includes(day) }"
-            >
-              {{ day }}
-            </n-tag>
-          </n-space>
-        </div>
-        <div>
-          <n-space vertical size="medium" class="space-detail bodyr2">
-            <InfoRow label="Area" :value="programData.area" />
-            <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
-            <InfoRow label="Pukul" :value="formatTime(programData.time)" />
-            <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
-          </n-space>
-        </div>
-        <div>
-          <p class="bodyb1 type-program">
-            {{ groupTypeLabel(programData.groupType) }}
-          </p>
-          <p v-if="!isTutor" class="bodyb1 price">
-            {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
-            {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
-          </p>
-        </div>
-        <div>
-          <butPrimerNormal 
-            :label="isTutor ? 'Hubungi Admin' : 'Pesan Program'"
-            @click="submitToWhatsApp"
-          />
-        </div>
-      </div>
+    <div v-else>
+      <BiayaSiswa />
     </div>
-  </div>
-  <div v-if="isTutor" class="padding-components">
-    <HonorTutor />
+    <InfoProgram />
+    <CaraPendaftaran />
   </div>
 </template>
 
@@ -266,6 +131,12 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
 .head-detail .bodym2, .space-detail {
   color: #061222;
+}
+
+.detail-siswa {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 /* Breakpoint 1200px */

@@ -3,6 +3,9 @@ import Main from '../Main.vue';
 import Home from '../Home.vue'; 
 import TentangKami from '../TentangKami.vue';
 import DetailProgram from '../detailProgram.vue';
+import programBelajar from '../components/detailProgram/program.vue'
+import PemesananProgram from '../components/detailProgram/PemesananProgram.vue';
+
 import PendaftaranTutor from '../pendaftaranTutor.vue';
 import AbsenSiswa from '../components/Absen.vue';
 
@@ -34,11 +37,23 @@ const routes = [
       },
       { 
         path: 'detailprogram/:id', 
-        name: 'Detail Program', 
-        component: DetailProgram 
+        name: 'DetailProgram', 
+        component: DetailProgram,
+        children: [
+          {
+            path: '',
+            name: 'ProgramBelaajar',
+            component: programBelajar
+          },
+          {
+            path: 'pemesananprogram',
+            name: 'PemesananProgram',
+            component: PemesananProgram
+          }
+        ]
       },
       { path: 'tentangkami', 
-        name: 'Tentang Kami', 
+        name: 'TentangKami', 
         component: TentangKami 
       },
       { path: 'pendaftarantutor', 
