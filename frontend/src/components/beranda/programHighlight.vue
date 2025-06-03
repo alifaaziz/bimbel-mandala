@@ -70,6 +70,11 @@ function groupTypeLabel(groupTypeArr) {
 
 // Handler tombol
 function handleButton(slug) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/auth');
+    return;
+  }
   if (isTutor.value) {
     router.push(`/detailprogram/${slug}`);
   } else {
