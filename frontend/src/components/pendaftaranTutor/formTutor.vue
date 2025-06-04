@@ -25,7 +25,9 @@ export default {
         status: "",
         jenjang: "",
         mapel: "",
+        deskripsi: "",
       },
+      isSubmitting: false, // Untuk mencegah pengiriman ganda
     };
   },
   methods: {
@@ -36,14 +38,77 @@ export default {
         this.selectedDays.push(day);
       }
     },
-    submitForm() {
-      // Proses validasi/simpan data jika perlu
+    async submitForm() {
+      if (this.isSubmitting) return; // Cegah pengiriman ganda
+      this.isSubmitting = true;
 
-      // Redirect ke halaman sukses
-      this.$router.push('/registersuccess');
+      try {
+        // Validasi data
+        if (!this.formData.nama || !this.formData.email || !this.formData.tanggalLahir || !this.formData.jenisKelamin || !this.formData.foto) {
+          alert("Harap lengkapi semua data yang wajib diisi.");
+          this.isSubmitting = false;
+          return;
+        }
+
+        // Buat payload
+        const payload = new FormData();
+        payload.append("name", this.formData.nama);
+        payload.append("email", this.formData.email);
+        payload.append("birthDate", new Date(this.formData.tanggalLahir).toISOString());
+        payload.append("gender", this.formData.jenisKelamin === "Laki-Laki" ? "Male" : "Female");
+        payload.append("phone", this.formData.whatsapp);
+        payload.append("subjects", this.formData.mapel);
+        payload.append("status", this.mapStatusToEnum(this.formData.status));
+        payload.append("major", this.formData.prodi);
+        payload.append("school", this.formData.universitas);
+        payload.append("teachLevel", this.formData.jenjang);
+        payload.append("description", this.formData.deskripsi);
+        payload.append("photo", this.formData.foto);
+
+        // Kirim data ke server
+        const res = await fetch("http://localhost:3000/apply", {
+          method: "POST",
+          body: payload,
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Gagal mendaftar sebagai tutor.");
+        }
+
+        alert("Pendaftaran berhasil! Kami akan menghubungi Anda segera.");
+        this.$router.push("/registersuccess");
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Terjadi kesalahan saat mendaftar. Silakan coba lagi.");
+      } finally {
+        this.isSubmitting = false;
+      }
     },
     cancelForm() {
-      this.$router.push('/');
+      this.$router.push("/");
+    },
+    mapStatusToEnum(status) {
+      switch (status) {
+        case "Mahasiswa Semester 1-2":
+          return "TH1";
+        case "Mahasiswa Semester 3-4":
+          return "TH2";
+        case "Mahasiswa Semester 5-6":
+          return "TH3";
+        case "Mahasiswa Semester 7-8":
+          return "TH4";
+        case "Mahasiswa Semester >8":
+          return "TH5";
+        case "Sarjana S1":
+          return "S1";
+        case "Magister S2":
+          return "S2";
+        case "Doktor S3":
+          return "S3";
+        default:
+          return "";
+      }
     },
   },
 };
@@ -71,17 +136,12 @@ export default {
 
         <div class="form-group third-width">
           <label for="tanggal-lahir">Tanggal Lahir</label>
-          <div class="input-with-icon">
-            <input type="date" id="tanggal-lahir" v-model="formData.tanggalLahir" />
-            <button type="button" class="calendar-button">
-              <i class="icon-calendar"></i>
-            </button>
-          </div>
+          <input type="date" id="tanggal-lahir" v-model="formData.tanggalLahir" />
         </div>
 
         <div class="form-group third-width">
           <label for="jenis-kelamin">Jenis Kelamin</label>
-          <select id="jenis-kelamin" class="gender-select" v-model="formData.jenisKelamin">
+          <select id="jenis-kelamin" v-model="formData.jenisKelamin">
             <option>Laki-Laki</option>
             <option>Perempuan</option>
           </select>
@@ -89,12 +149,7 @@ export default {
 
         <div class="form-group third-width">
           <label for="foto">Upload Foto</label>
-          <div class="input-with-icon">
-            <input type="file" id="foto" @change="e => formData.foto = e.target.files[0]" />
-            <button type="button" class="upload-button">
-              <i class="icon-upload"></i>
-            </button>
-          </div>
+          <input type="file" id="foto" @change="e => formData.foto = e.target.files[0]" />
         </div>
 
         <div class="form-group half-width">
@@ -126,8 +181,12 @@ export default {
         <div class="form-group half-width">
           <label for="status">Status</label>
           <select id="status" v-model="formData.status">
+            <option>Mahasiswa Semester 1-2</option>
+            <option>Mahasiswa Semester 3-4</option>
+            <option>Mahasiswa Semester 5-6</option>
+            <option>Mahasiswa Semester 7-8</option>
+            <option>Mahasiswa Semester >8</option>
             <option>Sarjana S1</option>
-            <option>Diploma D3</option>
             <option>Magister S2</option>
             <option>Doktor S3</option>
           </select>
@@ -147,6 +206,11 @@ export default {
         <div class="form-group half-width">
           <label for="mapel">Mata Pelajaran</label>
           <input type="text" id="mapel" placeholder="Matematika, Fisika, Kimia" v-model="formData.mapel" />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="deskripsi">Deskripsi</label>
+          <input type="text" id="deskripsi" placeholder="Tuliskan pengalaman mengajar Anda" v-model="formData.deskripsi"></input>
         </div>
       </form>
     </div>
