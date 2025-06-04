@@ -83,10 +83,6 @@ function handleGoogleLogin() {
   window.location.href = 'http://localhost:3000/auth/google'
 }
 
-// Tambahkan fungsi toggle
-function toggleShowPassword() {
-  showPassword.value = !showPassword.value
-}
 </script>
 
 <template>
@@ -122,19 +118,12 @@ function toggleShowPassword() {
           <n-input
             round
             v-model:value="password"
+            show-password-on="mousedown"
             :type="showPassword ? 'text' : 'password'"
             placeholder="Password"
             class="input-custom mb-2 bodyr2"
             @blur="validatePassword"
           />
-          <button
-            type="button"
-            @click="toggleShowPassword"
-            class="toggle-password-btn"
-            :aria-label="showPassword ? 'Sembunyikan password' : 'Lihat password'"
-          >
-            {{ showPassword ? '👁️' : '🙈' }}
-          </button>
         </div>
         <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
       </div>
