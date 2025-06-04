@@ -1,34 +1,51 @@
 <script setup>
-import butPrimerHuge from '@/components/dirButton/butPrimerHuge.vue';
+import butPrimerNormal from '../dirButton/butPrimerNormal.vue';
+import butSecondNormal from '../dirButton/butSecondNormal.vue';
 import Footer from '@/components/footer.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
+function waAdmin() {
+  const phoneNumber = '6285855852485'; // Ganti dengan nomor WhatsApp admin
+  const message = 'Halo, saya ingin mengonfirmasi pendaftaran Bimbingan Belajar Mandala.';
+  const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+}
+
 function goHome() {
   router.push('/');
 }
 </script>
 
 <template>
-    <div class="actInfor-container">
+    <div class="info-text actInfor-container">
         <div class="info-container">
-            <img src="@/assets/success/MenjadiTutorSuccess.png" alt="Menjadi Tutor Success" />
-            <div>
+            <img src="@/assets/success/PemesananProgram.png" alt="Menjadi Tutor Success" />
+            <div class="info-text">
                 <p class="bodyb3">
-                    Pendaftaran Tutor
+                    Pendaftaran Program
                 </p>
                 <h1 class="headlineb1">
-                    Terimakasih Telah Mendaftar <br/>
-                    Sebagai <span>Tutor</span> di Mandala
+                    Terimakasih Telah Mendaftar
                 </h1>
+                <div class="program-info">
+                    <p class="bodyr1">
+                        Program: 
+                    </p>
+                    <p class="bodyb1">
+                        <span>(Program Terdaftar){{ $route.query.program }}</span>
+                    </p>
+                </div>
                 <p class="bodyr3">
-                    Silahkan menunggu informasi melalu WhatsApp  Admin 
-                    <br />
-                    Karir Bimbel Mandala untuk melanjutkan proses lamaran.
+                    Silahkan konfirmasi ke admin dan lakukan cek berkala pada jadwal
                 </p>
             </div>
         </div>
-        <butPrimerHuge label="Kembali ke beranda" @click="goHome"/>
+        <div class="program-info">
+            <butPrimerNormal label="Hubungi Admin" @click="waAdmin"/>
+            <butSecondNormal label="Kembali ke beranda" @click="goHome"/>
+        </div>
     </div>
     <Footer />
 </template>
@@ -46,11 +63,23 @@ function goHome() {
 
 }
 
+.program-info {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
 .info-container {
     display: flex;
     flex-direction: row;
     gap: 2rem;
     align-items: center;
+}
+
+.info-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .bodyb3, .bodyr3 {

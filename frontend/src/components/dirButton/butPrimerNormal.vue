@@ -4,7 +4,6 @@
           class="custom-button buttonm3"
           tertiary
           round
-          @click="$emit('click')"
         >
           {{ label }}
         </n-button>
