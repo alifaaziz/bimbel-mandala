@@ -184,7 +184,7 @@
 }
 .tabel-jadwal {
     width: 100%;
-    min-width: 700px;
+    min-width: 800px;
     padding: 2rem 0;
     border-radius: 1rem;
 }
@@ -197,10 +197,6 @@
   .container-table .headersb3 {
     font-size: 1rem;
     text-align: center;
-  }
-
-  .tabel-jadwal {
-    min-width: 600px;
   }
 
   .n-data-table {

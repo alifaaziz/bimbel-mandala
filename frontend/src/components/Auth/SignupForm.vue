@@ -81,10 +81,6 @@ function goToLogin() {
   emit('toggle-form')
 }
 
-// Tambahkan fungsi toggle
-function toggleShowPassword() {
-  showPassword.value = !showPassword.value
-}
 </script>
 
 <template>
@@ -124,19 +120,12 @@ function toggleShowPassword() {
           <n-input
             round
             v-model:value="password"
+            show-password-on="mousedown"
             placeholder="Password"
             :type="showPassword ? 'text' : 'password'"
             class="input-custom mb-2 bodyr2"
             @blur="validatePassword"
           />
-          <button
-            type="button"
-            @click="toggleShowPassword"
-            class="toggle-password-btn"
-            :aria-label="showPassword ? 'Sembunyikan password' : 'Lihat password'"
-          >
-            {{ showPassword ? '👁️' : '🙈' }}
-          </button>
         </div>
         <p class="bodyr4">Password harus lebih dari 8 karakter</p>
         <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
@@ -264,19 +253,6 @@ function toggleShowPassword() {
 .google-icon-img {
   width: 40px;
   height: auto;
-}
-
-.toggle-password-btn {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 0 4px;
-  color: #154484;
 }
 
 .divider {
