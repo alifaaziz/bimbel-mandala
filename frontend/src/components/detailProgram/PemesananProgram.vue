@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import ButPrimerNormal from '../dirButton/butPrimerNormal.vue';
 
 const route = useRoute();
+const router = useRouter();
 const slug = route.params.id as string;
 const programData = ref<any>(null);
 const isTutor = ref(false);
+const options = ref<any[]>([]); // Opsi dropdown
+const selectedOption = ref<string | null>(null); // Opsi yang dipilih
+const address = ref(''); // Alamat lokasi bimbing
+const isSubmitting = ref(false);
 
 onMounted(async () => {
   try {
@@ -25,21 +30,116 @@ onMounted(async () => {
       const data = await userRes.json();
       isTutor.value = data.data?.role === 'tutor';
     }
+
+    const availableGroupTypes = programData.value.groupType.map((group: any) => group.type);
+    options.value = [
+      { label: "Privat", value: "privat", disabled: !availableGroupTypes.includes("privat") },
+      { label: "Kelompok 2 Siswa", value: "grup2", disabled: !availableGroupTypes.includes("grup2") },
+      { label: "Kelompok 3 Siswa", value: "grup3", disabled: !availableGroupTypes.includes("grup3") },
+      { label: "Kelompok 4 Siswa", value: "grup4", disabled: !availableGroupTypes.includes("grup4") },
+      { label: "Kelompok 5 Siswa", value: "grup5", disabled: !availableGroupTypes.includes("grup5") },
+      { label: "Kelas", value: "kelas", disabled: !availableGroupTypes.includes("kelas") },
+    ];
   } catch (err) {
     programData.value = null;
     console.error('Error:', err);
   }
 });
 
+const totalBiaya = computed(() => {
+  if (!selectedOption.value || !programData.value) return 'Rp0';
+
+  const selectedGroup = programData.value.groupType.find(
+    (group: any) => group.type === selectedOption.value
+  );
+
+  if (!selectedGroup) return 'Rp0';
+
+  // Gunakan discPrice jika ada, fallback ke price
+  const price = Number(selectedGroup.discPrice || selectedGroup.price);
+  return formatCurrency(price);
+});
+
+function formatCurrency(amount: number): string {
+  return `Rp${amount.toLocaleString('id-ID')}`;
+}
+
+function getPriceRange(groupType: any[]): string {
+  if (!groupType || groupType.length === 0) return '0';
+
+  // Konversi harga menjadi angka menggunakan `Number`
+  const prices = groupType.map(group => Number(group.discPrice || group.price));
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+
+  // Format harga menjadi string
+  return `${formatCurrency(minPrice)} - ${formatCurrency(maxPrice)}`;
+}
+
+async function handleConfirm() {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Anda harus login terlebih dahulu.');
+    router.push('/auth');
+    isSubmitting.value = false;
+    return;
+  }
+
+  if (!selectedOption.value || !address.value) {
+    alert('Harap lengkapi semua data sebelum melanjutkan.');
+    isSubmitting.value = false;
+    return;
+  }
+
+  const selectedGroup = programData.value.groupType.find(
+    (group: any) => group.type === selectedOption.value
+  );
+
+  if (!selectedGroup) {
+    alert('Tipe grup yang dipilih tidak valid.');
+    isSubmitting.value = false;
+    return;
+  }
+
+  const payload = {
+    packageId: programData.value.id,
+    groupTypeId: selectedGroup.id,
+    address: address.value,
+  };
+
+  try {
+    const res = await fetch('http://localhost:3000/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'Gagal membuat pesanan.');
+    }
+
+    router.push('/orders');
+  } catch (err) {
+    console.error('Error:', err);
+    alert('Terjadi kesalahan saat membuat pesanan.');
+  }
+  finally {
+    isSubmitting.value = false;
+  }
+}
+
 function formatTime(isoString: string): string {
   if (!isoString) return '';
   const time = isoString.split('T')[1];
   const [hour, minute] = time.split(':');
   return `${hour}:${minute} WIB`;
-}
-
-function formatCurrency(amount: number): string {
-  return `Rp${amount.toLocaleString('id-ID')}`;
 }
 
 function groupTypeLabel(groupTypeArr: any[]): string {
@@ -59,150 +159,143 @@ const badgeClass = (level: string) => {
 };
 
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-
 // Data peserta (contoh, bisa diganti dengan data dinamis)
-const value = ref(null);
-const options = [
-  { label: "Privat", value: "privat" },
-  { label: "Kelompok 2 Siswa", value: "kelompok2" },
-  { label: "Kelompok 3 Siswa", value: "kelompok3" },
-  { label: "Kelompok 4 Siswa", value: "kelompok4" },
-  { label: "Kelompok 5 Siswa", value: "kelompok5" },
-  { label: "Kelas", value: "kelas", disabled: true },
-];
-
 </script>
 
 <template>
-    <div class="padding-components">
-        <div class="container-detail" v-if="programData">
-            <div>
-                <img
-                    class="program-photo"
-                    :src="programData.photo ? `http://localhost:3000${programData.photo}` : '/tutor/Tutor_Default.png'"
-                    alt="Program Photo"
-                />
-                </div>
-                <div>
-                <div class="head-detail">
-                    <div>
-                    <div class="headersb1 head-program">{{ programData.name }}</div>
-                    <div class="bodym2">{{ programData.tutorName }}</div>
-                    </div>
-                    <div>
-                    <div
-                        class="headerb1"
-                        :class="badgeClass(programData.level)"
-                    >
-                        {{ programData.level }}
-                    </div>
-                    </div>
-                </div>
-                <div class="space-detail">
-                    <div>
-                    <n-space class="bodyr2">
-                        <n-tag
-                        v-for="(day, index) in allDays"
-                        :key="index"
-                        class="tag"
-                        :class="{ 'tag-unselected': !programData.days.includes(day) }"
-                        >
-                        {{ day }}
-                        </n-tag>
-                    </n-space>
-                    </div>
-                    <div>
-                    <n-space vertical size="medium" class="space-detail bodyr2">
-                        <InfoRow label="Area" :value="programData.area" />
-                        <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
-                        <InfoRow label="Pukul" :value="formatTime(programData.time)" />
-                        <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
-                    </n-space>
-                    </div>
-                    <div>
-                    <p class="bodyb1 type-program">
-                        {{ groupTypeLabel(programData.groupType) }}
-                    </p>
-                    <p v-if="!isTutor" class="bodyb1 price">
-                        {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
-                        {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
-                    </p>
-                    </div>
-                </div>
+  <div class="padding-components">
+    <div class="container-detail" v-if="programData">
+      <div>
+        <img
+          class="program-photo"
+          :src="programData.photo ? `http://localhost:3000${programData.photo}` : '/tutor/Tutor_Default.png'"
+          alt="Program Photo"
+        />
+      </div>
+      <div>
+        <div class="head-detail">
+          <div>
+            <div class="headersb1 head-program">{{ programData.name }}</div>
+            <div class="bodym2">{{ programData.tutorName }}</div>
+          </div>
+          <div>
+            <div
+              class="headerb1"
+              :class="badgeClass(programData.level)"
+            >
+              {{ programData.level }}
             </div>
+          </div>
         </div>
-        <div class="form-pemesanan">
-            <h3 class="headerb2">
-                Lengkapi Data
-            </h3>
-            <div class="input-pemesanan">
-                <p class="bodym2">Lokasi Bimbingan Belajar</p>
-                <n-input
-                round
-                placeholder="Alamat Lokasi Bimbing"
-                class="input-custom mb-2 bodyr2"
-                />
-            </div>
-            <div class="input-pemesanan">
-                <p class="bodym2">Peserta</p>
-                <n-space vertical>
-                    <n-select 
-                    round 
-                    v-model:value="value" 
-                    :options="options"
-                    class="select-rounded"
-                    />
-                </n-space>
-            </div>
-            <div class="input-pemesanan">
-                <p class="bodym2">Total Biaya</p>
-                <p>
-                    <span class="bodyb2 price">
-                        Rp1.000.000
-                        <!-- HARGA DISESUAIKAN PAKET -->
-                    </span>
-                </p>
-            </div>
+        <div class="space-detail">
+          <div>
+            <n-space class="bodyr2">
+              <n-tag
+                v-for="(day, index) in allDays"
+                :key="index"
+                class="tag"
+                :class="{ 'tag-unselected': !programData.days.includes(day) }"
+              >
+                {{ day }}
+              </n-tag>
+            </n-space>
+          </div>
+          <div>
+            <n-space vertical size="medium" class="space-detail bodyr2">
+              <InfoRow label="Area" :value="programData.area" />
+              <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
+              <InfoRow label="Pukul" :value="formatTime(programData.time)" />
+              <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
+            </n-space>
+          </div>
+          <div>
+            <p class="bodyb1 type-program">
+              {{ groupTypeLabel(programData.groupType) }}
+            </p>
+            <p v-if="!isTutor" class="bodyb1 price">
+              {{ getPriceRange(programData.groupType) }}
+            </p>
+          </div>
         </div>
-        <n-divider class="divider" />
-        <div class="form-pemesanan">
-            <h3 class="headerb2">
-                Pembayaran
-            </h3>
-            <div class="metode-pembayaran bodym3">
-                <p>List Rakening</p>
-                <p>Transfer</p>
-            </div>
-            <div class="bank-pembayaran">
-                <n-image
-                    width="24"
-                    src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-                />
-                <p class=" bodyr2 no-rek">
-                    xxx-xxx-xxx
-                </p>
-            </div>
-            <div class="bank-pembayaran">
-                <n-image
-                    width="24"
-                    src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-                />
-                <p class=" bodyr2 no-rek">
-                    xxx-xxx-xxx
-                </p>
-            </div>
-            <div class="bank-pembayaran">
-                <n-image
-                    width="24"
-                    src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-                />
-                <p class=" bodyr2 no-rek">
-                    xxx-xxx-xxx
-                </p>
-            </div>
-        </div>
-        <ButPrimerNormal label="Konfirmasi" class="but-konfirmasi"/>
+      </div>
     </div>
+    <div class="form-pemesanan">
+      <h3 class="headerb2">
+        Lengkapi Data
+      </h3>
+      <div class="input-pemesanan">
+        <p class="bodym2">Lokasi Bimbingan Belajar</p>
+        <n-input
+          round
+          v-model:value="address"
+          placeholder="Alamat Lokasi Bimbing"
+          class="input-custom mb-2 bodyr2"
+        />
+      </div>
+      <div class="input-pemesanan">
+        <p class="bodym2">Peserta</p>
+        <n-space vertical>
+          <n-select 
+            round 
+            v-model:value="selectedOption" 
+            :options="options"
+            class="select-rounded"
+          />
+        </n-space>
+      </div>
+      <div class="input-pemesanan">
+        <p class="bodym2">Total Biaya</p>
+        <p>
+          <span class="bodyb2 price">
+            {{ totalBiaya }}
+          </span>
+        </p>
+      </div>
+      <n-divider class="divider" />
+      <div class="form-pemesanan">
+        <h3 class="headerb2">
+          Pembayaran
+        </h3>
+        <div class="metode-pembayaran bodym3">
+          <p>List Rakening</p>
+          <p>Transfer</p>
+        </div>
+        <div class="bank-pembayaran">
+          <n-image
+            width="24"
+            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
+          <p class=" bodyr2 no-rek">
+            xxx-xxx-xxx
+          </p>
+        </div>
+        <div class="bank-pembayaran">
+          <n-image
+            width="24"
+            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
+          <p class=" bodyr2 no-rek">
+            xxx-xxx-xxx
+          </p>
+        </div>
+        <div class="bank-pembayaran">
+          <n-image
+            width="24"
+            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
+          <p class=" bodyr2 no-rek">
+            xxx-xxx-xxx
+          </p>
+        </div>
+      </div>
+      <ButPrimerNormal 
+        label="Konfirmasi" 
+        class="but-konfirmasi" 
+        @click="handleConfirm"
+        :disabled="isSubmitting"
+      />
+    </div>
+  </div>
 </template>
 
 <style scoped>

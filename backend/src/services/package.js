@@ -185,6 +185,7 @@ async function getBimbelPackageBySlug(slug) {
       },
       groupType: {
         select: {
+          id: true,
           type: true,
           price: true,
           discPrice: true
@@ -218,6 +219,7 @@ async function getBimbelPackageBySlug(slug) {
     tutorName: pkg.user.name,
     photo: pkg.user.tutors[0]?.photo,
     groupType: pkg.groupType.map(gt => ({
+      id: gt.id,
       type: gt.type,
       price: gt.price,
       discPrice: gt.discPrice 

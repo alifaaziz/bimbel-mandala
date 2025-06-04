@@ -26,21 +26,26 @@ const formatGroupType = (type) => {
   }
 };
 
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+  }).format(price);
+};
+
 onMounted(async () => {
   const token = localStorage.getItem('token');
-  const slug = route.params.id; // Ambil slug dari route params
+  const slug = route.params.id;
   try {
-    const res = await fetch(`http://localhost:3000/packages/my/${slug}`, {
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
     const data = await res.json();
 
-    // Validasi data sebelum mengakses properti
     if (data) {
-      program.value = data; // Simpan data program ke state
+      program.value = data;
 
-      // Urutkan groupTypes berdasarkan urutan tertentu
       const order = ['privat', 'grup2', 'grup3', 'grup4', 'grup5', 'kelas'];
       groupTypes.value = (data.groupType || []).sort(
         (a, b) => order.indexOf(a.type) - order.indexOf(b.type)
@@ -62,11 +67,14 @@ onMounted(async () => {
         <h3 class="headersb4">{{ formatGroupType(group.type) }}</h3>
         <div class="detail-skema">
           <div>
-            <span v-if="group.discPrice" class="bodysb3">
-              Rp {{ group.discPrice.toLocaleString('id-ID') }}
+            <span v-if="group.discPrice" class="price-normal">
+              Rp {{ formatPrice(group.price) }}
             </span>
-            <span v-else class="bodysb3">
-              Rp {{ group.price.toLocaleString('id-ID') }}
+            <span v-if="group.discPrice" class="price-discount">
+              Rp {{ formatPrice(group.discPrice) }}
+            </span>
+            <span v-else>
+              Rp {{ formatPrice(group.price) }}
             </span>
           </div>
         </div>
@@ -99,11 +107,10 @@ onMounted(async () => {
 }
 
 .col-skema {
-    max-width: 200px;
-    flex: 1;
-    margin: 0 auto;
+  max-width: 200px;
+  flex: 1;
+  margin: 0 auto;
 }
-
 
 .headersb4 {
   color: #154288;
@@ -116,7 +123,19 @@ onMounted(async () => {
   gap: 0.5rem;
 }
 
-@media (max-width: 768px) {
+.price-normal {
+  text-decoration: line-through;
+  color: red;
+  font-size: 0.9rem;
+  margin-right: 8px;
+}
 
+.price-discount {
+  font-weight: bold;
+  color: black;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
 }
 </style>
