@@ -125,7 +125,14 @@ async function handleConfirm() {
       throw new Error(errorData.message || 'Gagal membuat pesanan.');
     }
 
-    router.push('/registerprogramsuccess');
+    router.push({
+      path: '/registerprogramsuccess',
+      query: {
+        program: programData.value.name,
+        level: programData.value.level,
+        tutor: programData.value.tutorName,
+      },
+    });
   } catch (err) {
     console.error('Error:', err);
     alert('Terjadi kesalahan saat membuat pesanan.');

@@ -2,13 +2,19 @@
 import butPrimerNormal from '../dirButton/butPrimerNormal.vue';
 import butSecondNormal from '../dirButton/butSecondNormal.vue';
 import Footer from '@/components/footer.vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
+
+// Ambil data dari query parameters
+const programName = route.query.program || 'Program Tidak Diketahui';
+const programLevel = route.query.level || 'Jenjang Tidak Diketahui';
+const tutorName = route.query.tutor || 'Tutor Tidak Diketahui';
 
 function waAdmin() {
   const phoneNumber = '6285855852485'; // Ganti dengan nomor WhatsApp admin
-  const message = 'Halo, saya ingin mengonfirmasi pendaftaran Bimbingan Belajar Mandala.';
+  const message = `Halo, saya ingin mengonfirmasi pendaftaran program bimbingan belajar ${programName} ${programLevel} dengan tutor ${tutorName}.`;
   const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   window.open(url, '_blank');
 }
@@ -34,7 +40,7 @@ function goHome() {
                         Program: 
                     </p>
                     <p class="bodyb1">
-                        <span>(Program Terdaftar){{ $route.query.program }}</span>
+                        <span>{{ programName }} {{ programLevel }}</span>
                     </p>
                 </div>
                 <p class="bodyr3">
