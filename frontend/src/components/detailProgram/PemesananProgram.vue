@@ -261,27 +261,30 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
           <p>Transfer</p>
         </div>
         <div class="bank-pembayaran">
-          <n-image
-            width="24"
-            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          <img
+            style="max-width: 60px;"
+            src="@/assets/bank/bca.svg"
+            alt="BCA Logo"
           />
           <p class=" bodyr2 no-rek">
             xxx-xxx-xxx
           </p>
         </div>
         <div class="bank-pembayaran">
-          <n-image
-            width="24"
-            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          <img
+             style="max-width: 60px;"
+            src="@/assets/bank/bni.svg"
+            alt="BNI Logo"
           />
           <p class=" bodyr2 no-rek">
             xxx-xxx-xxx
           </p>
         </div>
         <div class="bank-pembayaran">
-          <n-image
-            width="24"
-            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          <img
+            style="max-width: 60px;"
+            src="@/assets/bank/mandiri.svg"
+            alt="Mandiri Logo"
           />
           <p class=" bodyr2 no-rek">
             xxx-xxx-xxx

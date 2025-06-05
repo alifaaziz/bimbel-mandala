@@ -34,7 +34,7 @@ function goHome() {
                         Program: 
                     </p>
                     <p class="bodyb1">
-                        <span>(Program Terdaftar){{ $route.query.program }}</span>
+                        <span>(Program Terdaftar, level, paket jumlah siswa){{ $route.query.program }}</span>
                     </p>
                 </div>
                 <p class="bodyr3">
@@ -82,7 +82,7 @@ function goHome() {
     gap: 0.5rem;
 }
 
-.bodyb3, .bodyr3 {
+.bodyb3, .bodyr3, .bodyr1 {
     color: #061222; 
 }
 .headlineb1 {
