@@ -105,7 +105,7 @@ async function verifyTutor(applicationId) {
       },
     });
 
-    await sendTutorVerificationEmail(user.email, user.name, defaultPassword);
+    await sendTutorVerificationEmail(user.email, defaultPassword);
 
     return user;
   });
