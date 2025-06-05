@@ -1,3 +1,51 @@
+<template>
+  <div class="program-card">
+    <div class="card-header headerb3">Jadwal Program</div>
+    <div class="card-body">
+      <!-- DESKTOP TABLE -->
+      <div class="table-wrapper" v-if="!isMobile">
+        <n-data-table
+          :bordered="false"
+          :columns="columns"
+          :data="data"
+          :row-props="rowProps"
+        />
+      </div>
+
+      <!-- MOBILE CARD LIST -->
+      <div class="mobile-cards" v-else>
+        <div
+          class="mobile-card"
+          v-for="item in data"
+          :key="item.key"
+          @click="goToDetail"
+        >
+          <div class="title">{{ item.jadwal }}</div>
+          <div class="subtitle">{{ item.guru }}</div>
+          <div class="info"><strong>Jenis:</strong> {{ item.jenis }}</div>
+          <div class="info"><strong>Pertemuan:</strong> {{ item.pertemuan }}</div>
+          <div class="info"><strong>Tanggal:</strong> {{ item.tanggal }}</div>
+          <div class="info"><strong>Jam:</strong> {{ item.jam }}</div>
+          <div class="info"><strong>Durasi:</strong> {{ item.durasi }}</div>
+          <div class="info status-tags">
+            <strong>Status:</strong>
+            <n-tag
+              v-for="tag in item.status"
+              :key="tag"
+              :type="tagTypeMap[tag] || 'default'"
+              size="small"
+              round
+              class="bodyr4"
+            >
+              {{ tag }}
+            </n-tag>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
 import { NTag } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
@@ -30,7 +78,8 @@ export default defineComponent({
         tanggal: item.date ? formatDate(item.date) : '-',
         jam: item.date ? formatTime(item.date) : '-',
         durasi: item.duration ? `${item.duration} Menit` : '-',
-        status: [formatStatus(item.status)]
+        status: [formatStatus(item.status)],
+        slug: item.slug
       }));
     });
 
@@ -73,7 +122,7 @@ export default defineComponent({
 
     const rowProps = (row) => ({
       style: { cursor: 'pointer' },
-      onClick: () => window.location.href = '/DetailJadwal'
+      onClick: () => window.location.href = `/detailjadwal/${row.slug}`
     });
 
     const columns = [
@@ -115,7 +164,7 @@ export default defineComponent({
     ];
 
     const goToDetail = () => {
-      window.location.href = '/DetailJadwal';
+      window.location.href = `/detailjadwal/${row.slug}`;
     };
 
     return {
