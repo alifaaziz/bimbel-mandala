@@ -12,11 +12,14 @@ import ProfileUser from './components/ProfileUser.vue';
 import DetailJadwal from './components/jadwal/DetailJadwal.vue'
 import { NConfigProvider, NMessageProvider } from 'naive-ui';
 
+import ProgramTerdaftar from './components/detailProgram/ProgramTerdaftar/ProgramTerdaftar.vue';
+
 import RegisterSuccess from './components/successPage/MenjadiTutor.vue';
 import RegisterprogramSuccess from './components/successPage/PemesananProgram.vue';
 
 const route = useRoute();
 
+// Style
 const layout = computed(() => {
   if (route.path.startsWith('/auth')) {
     return Auth;
@@ -38,6 +41,9 @@ const layout = computed(() => {
   } 
   else if (route.path.startsWith('/registersuccess')) {
     return RegisterSuccess;
+  } 
+  else if (route.path.startsWith('/ProgramTerdaftar')) {
+    return ProgramTerdaftar;
   } 
   else if (route.path.startsWith('/registerprogramsuccess')) {
     return RegisterprogramSuccess;
