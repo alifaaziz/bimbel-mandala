@@ -18,7 +18,7 @@
           class="mobile-card"
           v-for="item in data"
           :key="item.key"
-          @click="goToDetail"
+          @click="goToDetail(item.slug)"
         >
           <div class="title">{{ item.jadwal }}</div>
           <div class="subtitle">{{ item.guru }}</div>
@@ -78,7 +78,8 @@ export default defineComponent({
         tanggal: item.date ? formatDate(item.date) : '-',
         jam: item.date ? formatTime(item.date) : '-',
         durasi: item.duration ? `${item.duration} Menit` : '-',
-        status: [formatStatus(item.status)]
+        status: [formatStatus(item.status)],
+        slug: item.slug
       }));
     });
 
@@ -121,7 +122,7 @@ export default defineComponent({
 
     const rowProps = (row) => ({
       style: { cursor: 'pointer' },
-      onClick: () => window.location.href = '/DetailJadwal'
+      onClick: () => window.location.href = `/detailjadwal/${row.slug}`
     });
 
     const columns = [
@@ -163,7 +164,7 @@ export default defineComponent({
     ];
 
     const goToDetail = () => {
-      window.location.href = '/DetailJadwal';
+      window.location.href = `/detailjadwal/${row.slug}`;
     };
 
     return {

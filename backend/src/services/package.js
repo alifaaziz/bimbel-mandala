@@ -654,13 +654,9 @@ async function getBimbelPackagesByPopularity() {
     }
   });
 
-  const packageIds = orderCounts.map(order => order.packageId);
-
   const packages = await prisma.bimbelPackage.findMany({
     where: {
-      id: {
-        in: packageIds
-      }
+      isActive: true
     },
     include: {
       user: {
@@ -692,12 +688,11 @@ async function getBimbelPackagesByPopularity() {
     }
   });
 
-  const sortedPackages = packageIds.map(packageId =>
-    packages.find(pkg => pkg.id === packageId)
-  );
+  // Pastikan semua paket bimbel ditampilkan, termasuk yang tidak ada di orderCounts
+  return packages.map(pkg => {
+    const orderCountEntry = orderCounts.find(order => order.packageId === pkg.id);
+    const orderCount = orderCountEntry ? orderCountEntry._count.packageId : 0; // Default ke 0 jika tidak ditemukan
 
-  return sortedPackages.map(pkg => {
-    const orderCount = orderCounts.find(order => order.packageId === pkg.id)._count.packageId;
     return {
       id: pkg.id,
       name: pkg.name,
@@ -716,7 +711,7 @@ async function getBimbelPackagesByPopularity() {
         discPrice: gt.discPrice
       })),
       days: pkg.packageDay.map(day => day.day.daysName),
-      orderCount
+      orderCount // Tetap tampilkan orderCount, termasuk yang bernilai 0
     };
   });
 }
