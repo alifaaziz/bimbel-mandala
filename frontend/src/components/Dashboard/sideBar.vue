@@ -1,12 +1,7 @@
 <template>
   <div class="sidebar">
     <div class="logo-container">
-      <img src="path/to/your/logo.png" alt="Logo Bimbingan Belajar Mandala" class="logo">
-      <div class="logo-text">
-        <span class="brand-name">BIMBINGAN BELAJAR</span>
-        <span class="brand-main">MANDALA</span>
-        <span class="brand-tagline">Cerdas, Creative, Prestasi</span>
-      </div>
+      <img src="../../assets/logomandala22.png" alt="Logo Bimbingan Belajar Mandala" class="logo">
     </div>
     <nav class="navigation">
       <ul>
@@ -76,8 +71,8 @@ export default {
 
 <style scoped>
 .sidebar {
-  width: 280px; /* Lebar sidebar bisa disesuaikan */
-  background-color: #000; /* Warna latar belakang utama sidebar */
+  width: 256px; /* Lebar sidebar bisa disesuaikan */
+  background-color: #091c36; /* Warna latar belakang utama sidebar */
   color: #fff;
   display: flex;
   flex-direction: column;

@@ -17,6 +17,8 @@ import ProgramTerdaftar from './components/detailProgram/ProgramTerdaftar/Progra
 import RegisterSuccess from './components/successPage/MenjadiTutor.vue';
 import RegisterprogramSuccess from './components/successPage/PemesananProgram.vue';
 
+import dashboard from './components/Dashboard/dashboard.vue';
+
 const route = useRoute();
 
 // Style
@@ -48,6 +50,9 @@ const layout = computed(() => {
   else if (route.path.startsWith('/registerprogramsuccess')) {
     return RegisterprogramSuccess;
   } 
+  else if (route.path.startsWith('/cobadulu')) {
+    return dashboard;
+  }
   else {
     return Main;
   }
