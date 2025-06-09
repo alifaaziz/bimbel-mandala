@@ -1,51 +1,3 @@
-<template>
-  <div class="program-card">
-    <div class="card-header headerb3">Jadwal Program</div>
-    <div class="card-body">
-      <!-- DESKTOP TABLE -->
-      <div class="table-wrapper" v-if="!isMobile">
-        <n-data-table
-          :bordered="false"
-          :columns="columns"
-          :data="data"
-          :row-props="rowProps"
-        />
-      </div>
-
-      <!-- MOBILE CARD LIST -->
-      <div class="mobile-cards" v-else>
-        <div
-          class="mobile-card"
-          v-for="item in data"
-          :key="item.key"
-          @click="goToDetail"
-        >
-          <div class="title">{{ item.jadwal }}</div>
-          <div class="subtitle">{{ item.guru }}</div>
-          <div class="info"><strong>Jenis:</strong> {{ item.jenis }}</div>
-          <div class="info"><strong>Pertemuan:</strong> {{ item.pertemuan }}</div>
-          <div class="info"><strong>Tanggal:</strong> {{ item.tanggal }}</div>
-          <div class="info"><strong>Jam:</strong> {{ item.jam }}</div>
-          <div class="info"><strong>Durasi:</strong> {{ item.durasi }}</div>
-          <div class="info status-tags">
-            <strong>Status:</strong>
-            <n-tag
-              v-for="tag in item.status"
-              :key="tag"
-              :type="tagTypeMap[tag] || 'default'"
-              size="small"
-              round
-              class="bodyr4"
-            >
-              {{ tag }}
-            </n-tag>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 import { NTag } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
@@ -53,64 +5,24 @@ import { defineComponent, h, ref, onMounted } from "vue";
 export default defineComponent({
   setup() {
     const isMobile = ref(false);
-    const data = ref([]);
 
     const updateIsMobile = () => {
       isMobile.value = window.innerWidth <= 600;
     };
 
-    onMounted(async () => {
+    onMounted(() => {
       updateIsMobile();
       window.addEventListener("resize", updateIsMobile);
-
-      const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/schedules', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const result = await res.json();
-      const sorted = (result.data || []).sort((a, b) => new Date(a.date) - new Date(b.date));
-      data.value = sorted.slice(0, 5).map((item, idx) => ({
-        key: item.id || idx + 1,
-        jadwal: item.packageName || '-',
-        guru: item.tutorName || '-',
-        jenis: formatGroupType(item.groupType),
-        pertemuan: item.meet ? `Pertemuan ${item.meet}` : '-',
-        tanggal: item.date ? formatDate(item.date) : '-',
-        jam: item.date ? formatTime(item.date) : '-',
-        durasi: item.duration ? `${item.duration} Menit` : '-',
-        status: [formatStatus(item.status)],
-        slug: item.slug
-      }));
     });
 
-    function formatTime(dateStr) {
-      if (!dateStr) return '-'
-      return dateStr.slice(11, 16)
-    }
-
-    function formatDate(dateStr) {
-      if (!dateStr) return '-'
-      const date = new Date(dateStr)
-      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-    }
-
     function formatStatus(status) {
-      if (!status) return '-'
-      if (status.toLowerCase() === 'terjadwal') return 'Terjadwal'
-      if (status.toLowerCase() === 'jadwal ulang') return 'Jadwal Ulang'
-      if (status.toLowerCase() === 'masuk') return 'Masuk'
-      if (status.toLowerCase() === 'izin') return 'Izin'
-      return status
-    }
-
-    function formatGroupType(type) {
-      if (type === 'privat') return 'Privat'
-      if (type === 'kelas') return 'Kelas'
-      if (type?.startsWith('grup')) {
-        const jumlah = type.replace('grup', '')
-        return `Kelompok ${jumlah} Peserta`
-      }
-      return type
+      if (!status) return '-';
+      const s = status.toLowerCase();
+      if (s === 'terjadwal') return 'Terjadwal';
+      if (s === 'jadwal ulang') return 'Jadwal Ulang';
+      if (s === 'masuk') return 'Masuk';
+      if (s === 'izin') return 'Izin';
+      return status;
     }
 
     const tagTypeMap = {
@@ -120,9 +32,46 @@ export default defineComponent({
       "Izin": "error"
     };
 
-    const rowProps = (row) => ({
+    const data = ref([
+      {
+        key: 1,
+        jadwal: "Matematika Dasar",
+        guru: "Budi Santoso",
+        jenis: "Kelopok 3 Peserta",
+        pertemuan: "Pertemuan 1",
+        tanggal: "9 Juni 2025",
+        jam: "15:00",
+        durasi: "90 Menit",
+        status: [formatStatus("Terjadwal")]
+      },
+      {
+        key: 2,
+        jadwal: "Matematika Dasar",
+        guru: "Budi Santoso",
+        jenis: "Kelopok 3 Peserta",
+        pertemuan: "Pertemuan 2",
+        tanggal: "11  Juni 2025",
+        jam: "15:00",
+        durasi: "90 Menit",
+        status: [formatStatus("Terjadwal")]
+      },
+      {
+        key: 3,
+        jadwal: "Matematika Dasar",
+        guru: "Budi Santoso",
+        jenis: "Kelopok 3 Peserta",
+        pertemuan: "Pertemuan 3",
+        tanggal: "13  Juni 2025",
+        jam: "15:00",
+        durasi: "90 Menit",
+        status: [formatStatus("Terjadwal")]
+      },
+      
+    ]);
+
+    const rowProps = () => ({
       style: { cursor: 'pointer' },
-      onClick: () => window.location.href = `/detailjadwal/${row.slug}`
+      onClick: () => window.location.href = '/DetailJadwal'
     });
 
     const columns = [
@@ -145,26 +94,21 @@ export default defineComponent({
         title: "Status",
         key: "status",
         render(row) {
-          return row.status.map(tag => {
-            return h(
-              NTag,
-              {
-                type: tagTypeMap[tag] || "default",
-                size: "small",
-                round: true,
-                bordered: false,
-                class: "bodyr4",
-                style: "margin-right: 6px"
-              },
-              { default: () => tag }
-            );
-          });
+          return row.status.map(tag =>
+            h(NTag, {
+              type: tagTypeMap[tag] || "default",
+              size: "small",
+              round: true,
+              bordered: false,
+              style: "margin-right: 6px"
+            }, { default: () => tag })
+          );
         }
       }
     ];
 
     const goToDetail = () => {
-      window.location.href = `/detailjadwal/${row.slug}`;
+      window.location.href = '/DetailJadwal';
     };
 
     return {

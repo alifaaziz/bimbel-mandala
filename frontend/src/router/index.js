@@ -3,6 +3,7 @@ import Main from '../Main.vue';
 import Home from '../Home.vue'; 
 import TentangKami from '../TentangKami.vue';
 import DetailProgram from '../detailProgram.vue';
+
 import programBelajar from '../components/detailProgram/program.vue'
 import PemesananProgram from '../components/detailProgram/PemesananProgram.vue';
 
