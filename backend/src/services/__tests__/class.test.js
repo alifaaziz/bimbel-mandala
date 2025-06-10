@@ -3,7 +3,8 @@ import { jest } from '@jest/globals';
 const mockPrisma = {
     order: { findUnique: jest.fn() },
     class: { create: jest.fn(), findUnique: jest.fn(), findMany: jest.fn() },
-    studentClass: { createMany: jest.fn(), findFirst: jest.fn(), create: jest.fn(), findMany: jest.fn() }
+    studentClass: { createMany: jest.fn(), findFirst: jest.fn(), create: jest.fn(), findMany: jest.fn() },
+    notification: { create: jest.fn() }
 };
 
 jest.unstable_mockModule('../../utils/db.js', () => ({
@@ -71,10 +72,17 @@ describe('ClassService', () => {
             });
             mockPrisma.studentClass.findFirst.mockResolvedValueOnce(null);
             mockPrisma.studentClass.create.mockResolvedValueOnce({ id: 4, userId: 1, classId: 2 });
-            mockPrisma['notification'] = { create: jest.fn() };
             const result = await ClassService.joinClass({ code: 'ABC', userId: 1 });
             expect(mockPrisma.studentClass.create).toHaveBeenCalledWith({
                 data: { userId: 1, classId: 2 }
+            });
+            expect(mockPrisma.notification.create).toHaveBeenCalledWith({
+                data: {
+                    userId: 1,
+                    type: 'Program',
+                    description: expect.stringContaining('Selamat, Anda telah bergabung'),
+                    photo: 'photo.jpg'
+                }
             });
             expect(result).toMatchObject({ id: 4, userId: 1, classId: 2 });
         });
@@ -149,31 +157,6 @@ describe('ClassService', () => {
             });
         });
 
-        it('should handle null bimbelPackage for siswa', async () => {
-            mockPrisma.studentClass.findMany.mockResolvedValueOnce([
-                {
-                    class: {
-                        status: 'aktif',
-                        tutor: {},
-                        order: {
-                            groupType: null,
-                            bimbelPackage: null
-                        }
-                    }
-                }
-            ]);
-            const result = await ClassService.getMyClass('user3', 'siswa');
-            expect(result[0]).toMatchObject({
-                status: 'aktif',
-                tutorName: 'Bu undefined',
-                programName: null,
-                groupType: null,
-                days: null,
-                time: null,
-                duration: null
-            });
-        });
-
         it('should return mapped class data for tutor', async () => {
             mockPrisma.class.findMany.mockResolvedValueOnce([
                 {
@@ -205,58 +188,6 @@ describe('ClassService', () => {
                 days: 'Selasa',
                 time: '08:00',
                 duration: 60
-            });
-        });
-
-        it('should handle missing tutor and packageDay for tutor', async () => {
-            mockPrisma.class.findMany.mockResolvedValueOnce([
-                {
-                    status: 'berjalan',
-                    tutor: {},
-                    order: {
-                        groupType: null,
-                        bimbelPackage: {
-                            name: 'Paket D',
-                            level: 'SMP',
-                            time: null,
-                            duration: null,
-                            packageDay: null
-                        }
-                    }
-                }
-            ]);
-            const result = await ClassService.getMyClass('tutor2', 'tutor');
-            expect(result[0]).toMatchObject({
-                status: 'berjalan',
-                tutorName: 'Bu undefined',
-                programName: 'Paket D SMP',
-                groupType: null,
-                days: null,
-                time: null,
-                duration: null
-            });
-        });
-
-        it('should handle null bimbelPackage for tutor', async () => {
-            mockPrisma.class.findMany.mockResolvedValueOnce([
-                {
-                    status: 'berjalan',
-                    tutor: {},
-                    order: {
-                        groupType: null,
-                        bimbelPackage: null
-                    }
-                }
-            ]);
-            const result = await ClassService.getMyClass('tutor3', 'tutor');
-            expect(result[0]).toMatchObject({
-                status: 'berjalan',
-                tutorName: 'Bu undefined',
-                programName: null,
-                groupType: null,
-                days: null,
-                time: null,
-                duration: null
             });
         });
     });

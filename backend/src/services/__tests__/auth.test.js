@@ -159,10 +159,10 @@ describe('AuthService', () => {
     });
 
     describe('sendPasswordResetEmail', () => {
-        it('should do nothing if user not found', async () => {
+        it('should throw if user not found', async () => {
             mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-            const result = await AuthService.sendPasswordResetEmail('notfound@mail.com');
-            expect(result).toBeNull();
+            await expect(AuthService.sendPasswordResetEmail('notfound@mail.com'))
+            .rejects.toThrow('Your email is not registered, please sign up');
         });
 
         it('should send reset email if user found', async () => {
