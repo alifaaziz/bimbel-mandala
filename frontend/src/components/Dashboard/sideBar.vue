@@ -1,60 +1,64 @@
 <template>
   <div class="sidebar">
     <div class="logo-container">
-      <img src="../../assets/logomandala22.png" alt="Logo Bimbingan Belajar Mandala" class="logo">
+      <img src="../../assets/logomandala22.png" alt="Logo Bimbingan Belajar Mandala" class="logo" />
     </div>
+
     <nav class="navigation">
-      <ul>
-        <li class="nav-item active">
-          <a href="#">
-            <i class="fas fa-home"></i>
+      <ul class="bodyr1">
+        <li class="nav-item">
+          <a class="nav-but" href="#">
+            <img src="@/assets/icons/admin/home.svg" alt="Home Icon" class="icon-white">
             <span>Dashboard</span>
           </a>
         </li>
         <li class="nav-item">
-          <a href="#">
-            <i class="fas fa-user-graduate"></i>
+          <a class="nav-but" href="#">
+            <img src="@/assets/icons/admin/siswa.svg" alt="Home Icon" class="icon-white">
             <span>Siswa</span>
           </a>
         </li>
         <li class="nav-item">
-          <a href="#">
-            <i class="fas fa-user"></i>
+          <a class="nav-but" href="#">
+            <img src="@/assets/icons/admin/teacher.svg" alt="Home Icon" class="icon-white">
             <span>Tutor</span>
           </a>
         </li>
         <li class="nav-item">
-          <a href="#">
-            <i class="fas fa-tasks"></i>
+          <a class="nav-but" href="#">
+            <img src="@/assets/icons/admin/program.svg" alt="Home Icon" class="icon-white">
             <span>Program</span>
           </a>
         </li>
         <li class="nav-item">
-          <a href="#">
-            <i class="fas fa-calendar-alt"></i>
+          <a class="nav-but" href="#">
+            <img src="@/assets/icons/admin/jpa.svg" alt="Home Icon" class="icon-white">
             <span>Jadwal Program Aktif</span>
           </a>
         </li>
         <li class="nav-item">
-          <a href="#">
-            <i class="fas fa-clipboard"></i>
+          <a class="nav-but" href="#">
+            <img src="@/assets/icons/admin/cb.svg" alt="Home Icon" class="icon-white">
             <span>Catatan & Biaya</span>
           </a>
         </li>
       </ul>
     </nav>
-    <div class="sidebar-bottom">
+
+    <n-divider />
+
+    <div class="sidebar-bottom bodyr1">
       <ul>
         <li class="nav-item">
-          <a href="#">
-            <i class="fas fa-bell"></i>
+          <a class="nav-but" href="#">
+            <img src="@/assets/icons/admin/bell.svg" alt="Home Icon" class="icon-white">
             <span>Notifikasi</span>
             <span class="notification-badge"></span>
           </a>
         </li>
         <li class="nav-item">
-          <a href="#">
-            <i class="fas fa-sign-out-alt"></i>
+          <a class="nav-but" href="#">
+            <img src="@/assets/icons/admin/logout.svg" alt="Home Icon" class="icon-white">
             <span>Log Out</span>
           </a>
         </li>
@@ -71,56 +75,47 @@ export default {
 
 <style scoped>
 .sidebar {
-  width: 256px; /* Lebar sidebar bisa disesuaikan */
-  background-color: #091c36; /* Warna latar belakang utama sidebar */
+  top: 0;
+  left: 0;
+  width: 256px;
+  height: 100vh;
+  background-color: #091c36;
   color: #fff;
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Tinggi sidebar sesuai tinggi viewport */
-  font-family: sans-serif; /* Ganti dengan font yang sesuai */
+  padding: 20px;
+  font-family: sans-serif;
+  z-index: 1000;
+  overflow-y: auto;
 }
 
 .logo-container {
-  background-color: #fff; /* Warna latar belakang logo section */
-  padding: 20px;
+  background-color: white;
   display: flex;
+  justify-content: center;
   align-items: center;
-  border-bottom-right-radius: 30px; /* Lengkungan seperti di gambar */
-  border-bottom-left-radius: 30px; /* Lengkungan seperti di gambar */
-  margin-bottom: 10px; /* Jarak ke menu navigasi */
+  border-radius: 60px;
+  padding: 0px 12px;
 }
 
 .logo {
-  height: 50px; /* Sesuaikan ukuran logo */
-  margin-right: 15px;
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-  color: #000; /* Warna teks logo */
-}
-
-.brand-name {
-  font-size: 0.8em;
-  font-weight: bold;
-  color: #555; /* Warna teks "BIMBINGAN BELAJAR" */
-}
-
-.brand-main {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #003366; /* Warna biru tua untuk "MANDALA" */
-}
-
-.brand-tagline {
-  font-size: 0.7em;
-  color: #777; /* Warna teks tagline */
+  height: 50px;
 }
 
 .navigation {
-  flex-grow: 1; /* Membuat navigasi mengisi ruang yang tersisa */
-  padding: 0 20px;
+  margin-top: 20px;
+}
+
+.icon-white {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+}
+
+.nav-but {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
 }
 
 .navigation ul,
@@ -130,33 +125,25 @@ export default {
   margin: 0;
 }
 
-.nav-item {
-  margin-bottom: 5px; /* Jarak antar item */
-}
-
 .nav-item a {
   display: flex;
   align-items: center;
-  padding: 15px 20px; /* Padding untuk setiap item */
+  padding: 12px 16px;
   color: #fff;
   text-decoration: none;
-  border-radius: 25px; /* Lengkungan untuk item */
+  border-radius: 25px;
   transition: background-color 0.3s ease;
 }
 
-.nav-item a:hover {
-  background-color: #1a1a1a; /* Warna latar saat hover */
-}
-
-.nav-item.active a {
-  background-color: #003366; /* Warna latar item aktif (biru tua) */
-  color: #fff;
+.nav-item a:hover,
+.nav-item a.active {
+  background-color: #1a1a1a;
 }
 
 .nav-item i {
   margin-right: 15px;
-  font-size: 1.2em; /* Ukuran ikon */
-  width: 20px; /* Agar ikon sejajar */
+  font-size: 1.2em;
+  width: 20px;
   text-align: center;
 }
 
@@ -164,23 +151,13 @@ export default {
   font-size: 0.95em;
 }
 
-.sidebar-bottom {
-  padding: 0 20px 20px 20px; /* Padding untuk bagian bawah */
-  border-top: 1px solid #333; /* Garis pemisah jika diperlukan */
-  margin-top: auto; /* Mendorong ke bawah */
-}
-
 .notification-badge {
   width: 8px;
   height: 8px;
-  background-color: #ff8c00; /* Warna badge notifikasi (oranye) */
+  background-color: #ff8c00;
   border-radius: 50%;
-  margin-left: auto; /* Mendorong badge ke kanan */
-  align-self: flex-start; /* Menjaga posisi badge di atas */
-  margin-top: 5px; /* Sedikit jarak dari atas */
+  margin-left: auto;
+  align-self: flex-start;
+  margin-top: 5px;
 }
-
-/* Pastikan Anda telah mengimpor Font Awesome jika menggunakan class fas, far */
-/* Contoh import di file main.js atau index.html: */
-/* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" /> */
 </style>

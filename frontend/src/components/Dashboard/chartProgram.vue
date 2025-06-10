@@ -138,19 +138,18 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   background-color: #fff;
-  border-radius: 20px; /* Sesuai lengkungan kartu pada gambar */
-  padding: 20px 15px;
+  border-radius: 12px; /* Sesuai lengkungan kartu pada gambar */
+  padding: 12px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); /* Shadow halus */
-  width: var(--chart-width, 220px); /* Menggunakan CSS variable untuk lebar, default 220px */
+  width: 280px;
   box-sizing: border-box;
 }
 
 .donut-svg {
   display: block;
   margin-bottom: 20px; /* Jarak antara chart dan legenda */
-  max-width: 100%; /* Agar SVG responsif di dalam container */
+  width: 70%; /* Agar SVG responsif di dalam container */
   height: auto; /* Menjaga rasio aspek SVG */
 }
 

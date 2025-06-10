@@ -11,25 +11,19 @@
       <div class="jadwal-container">
         <JadwalProgram />
       </div>
-    </div>
-
-    <!-- Right Panel -->
-    <div class="right-panel">
-      <!-- Chart Program -->
-      <div class="chart-container">
-        <ChartProgram :programAktif="15" :programDibuka="85" />
-      </div>
-
-      <!-- Program Aktif -->
-      <div class="program-aktif-container">
-        <ProgramAktifList />
-      </div>
-
-      <!-- Top Tutor -->
-      <div class="top-tutor-container">
-        <TopTutor />
+      <div class="right-side">
+        <div>
+          <ChartProgram />
+        </div>
+        <div>
+          <ProgramAktifList />
+        </div>
+        <div>
+          <TopTutor />
+        </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -56,49 +50,29 @@ export default {
 .dashboard-container {
   display: flex;
   flex-direction: row;
-  height: 100vh; /* Tinggi penuh viewport */
-  background-color: #f8f9fa; /* Warna latar belakang dashboard */
-}
-
-.sidebar-container {
-  flex: 0 0 5%;
-  background-color: #091c36; /* Warna latar sidebar */
+  height: 100vh;
+  background-color: #f8f9fa;
 }
 
 .main-content {
-  flex: 0 0 60%; /* Jadwal 1/2 layar */
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  gap: 8px;
+  justify-content: space-between;
   padding: 20px 30px; /* Padding untuk konten utama */
-  overflow-y: auto; /* Scroll jika konten terlalu panjang */
+  overflow-y: auto;
+  background-color: #091c36;
 }
-
 .jadwal-container {
   background-color: #fff;
+  width: 100%;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow untuk kontainer jadwal */
-  height: 100%; /* Tinggi penuh untuk menyesuaikan */
 }
 
-.right-panel {
-  flex: 0 0 25%; /* Panel kanan 1/4 layar */
+.right-side {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Jarak antar komponen di panel kanan */
-  padding: 20px;
-  background-color: #f8f9fa; /* Warna latar panel kanan */
-  overflow-y: auto; /* Scroll jika konten terlalu panjang */
-}
-
-.chart-container,
-.program-aktif-container,
-.top-tutor-container {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow untuk kontainer */
-  flex: 1; /* Membagi tinggi secara merata */
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Pusatkan konten secara vertikal */
+  gap: 8px;
 }
 </style>

@@ -42,7 +42,6 @@ export default {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   max-width: 360px; /* Maximum width of the card */
-  margin: 20px auto; /* Centering the card for display */
 }
 
 .card-title {

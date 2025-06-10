@@ -1,18 +1,20 @@
 <template>
   <div class="dashboard-view">
-    <header class="dashboard-header">
-      <h1>Dashboard</h1>
-    </header>
+    <h1 class="headlineb2 dashboard-header">Dashboard</h1>
 
     <div class="search-container">
-      <div class="search-input-wrapper">
-        <i class="fas fa-search search-icon"></i>
-        <input type="text" placeholder="Cari jadwal program bimbel..." class="search-input">
-      </div>
+      <n-input
+      round
+      size="large"
+      placeholder="Cari jadwal program bimbel...">
+        <template #prefix>
+          <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
+        </template>
+      </n-input>
     </div>
 
     <section class="schedule-section">
-      <h2>Jadwal Program</h2>
+      <h2 class="headersb2">Jadwal Program</h2>
       <div class="table-responsive">
         <table class="schedule-table">
           <thead>
@@ -116,21 +118,17 @@ export default {
 
 <style scoped>
 .dashboard-view {
-  padding: 20px 30px; /* Memberikan padding keseluruhan */
-  font-family: 'Arial', sans-serif; /* Ganti dengan font yang sesuai */
-  background-color: #f8f9fa; /* Warna latar belakang view yang sedikit abu-abu */
-  min-height: 100vh;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
 }
 
-.dashboard-header h1 {
-  font-size: 28px;
-  font-weight: bold;
-  color: #0d47a1; /* Warna biru tua untuk judul Dashboard */
-  margin-bottom: 25px;
+.headlineb2, .schedule-section h2 {
+  color: #154484;
 }
 
 .search-container {
-  margin-bottom: 30px;
+  margin: 20px 0;
 }
 
 .search-input-wrapper {
@@ -142,10 +140,10 @@ export default {
   padding: 5px 15px;
 }
 
-.search-icon {
-  color: #6c757d; /* Warna ikon search */
-  margin-right: 10px;
-  font-size: 0.9em;
+.img-search {
+  width: 16px;
+  height: auto;
+   margin-right: 8px;
 }
 
 .search-input {
@@ -156,17 +154,6 @@ export default {
   padding: 10px 5px;
   font-size: 1em;
   color: #495057;
-}
-
-.search-input::placeholder {
-  color: #6c757d;
-}
-
-.schedule-section h2 {
-  font-size: 20px;
-  font-weight: bold;
-  color: #343a40; /* Warna judul Jadwal Program */
-  margin-bottom: 20px;
 }
 
 .table-responsive {
@@ -245,30 +232,4 @@ export default {
 /* Contoh import di file main.js atau index.html: */
 /* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" /> */
 
-/* Untuk tampilan mobile, jika diperlukan */
-@media (max-width: 768px) {
-  .dashboard-view {
-    padding: 15px;
-  }
-  .dashboard-header h1 {
-    font-size: 24px;
-  }
-  .schedule-section h2 {
-    font-size: 18px;
-  }
-  .schedule-table th,
-  .schedule-table td {
-    padding: 10px 8px;
-    font-size: 0.9em;
-  }
-  .bimbel-subject {
-    font-size: 0.95em;
-  }
-  .bimbel-teacher {
-    font-size: 0.8em;
-  }
-  .detail-button {
-    padding: 5px 10px;
-  }
-}
 </style>
