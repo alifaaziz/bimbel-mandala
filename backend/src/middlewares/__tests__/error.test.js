@@ -2,12 +2,7 @@ import express from 'express';
 import { HttpError } from '../../utils/error.js';
 import { logger } from '../../loaders/pino.js';
 import { setupExpressMock } from '../../utils/jest.js';
-
-const {
-  notFound,
-  errorHandler,
-  default: errorMiddleware
-} = await import('../error.js');
+import errorMiddleware, { notFound, errorHandler } from '../error.js';
 
 const oldLoggerLevel = logger.level;
 

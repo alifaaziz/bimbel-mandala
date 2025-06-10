@@ -72,6 +72,9 @@ const mockPrisma = {
     },
     day: {
         findFirst: jest.fn()
+    },
+    bimbelPackage: {
+        count: jest.fn()
     }
 };
 
@@ -503,6 +506,41 @@ describe('UserService', () => {
                 name: 'NoClassStudent',
                 level: null,
                 classCount: 0
+            });
+        });
+    });
+
+    // --- getStatistics ---
+    describe('getStatistics', () => {
+        it('should return correct statistics', async () => {
+            mockPrisma.user.count.mockResolvedValueOnce(10); // tutorCount
+            mockPrisma.user.count.mockResolvedValueOnce(20); // studentCount
+            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(30); // packageCount
+            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(15); // activePackageCount
+
+            const result = await UserService.getStatistics();
+
+            expect(result).toEqual({
+                tutorCount: 10,
+                studentCount: 20,
+                packageCount: 30,
+                activePackageCount: 15
+            });
+        });
+
+        it('should handle zero counts gracefully', async () => {
+            mockPrisma.user.count.mockResolvedValueOnce(0); // tutorCount
+            mockPrisma.user.count.mockResolvedValueOnce(0); // studentCount
+            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(0); // packageCount
+            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(0); // activePackageCount
+
+            const result = await UserService.getStatistics();
+
+            expect(result).toEqual({
+                tutorCount: 0,
+                studentCount: 0,
+                packageCount: 0,
+                activePackageCount: 0
             });
         });
     });

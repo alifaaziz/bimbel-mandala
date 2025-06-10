@@ -32,7 +32,7 @@ jest.unstable_mockModule('../../utils/db.js', () => ({
 jest.unstable_mockModule('bcrypt', () => ({
   __esModule: true,
   default: mockBcrypt,
-  ...mockBcrypt
+  ...mockBcrypt,
 }));
 jest.unstable_mockModule('../../utils/emails/core/tutor.js', () => ({
   sendTutorVerificationEmail: mockSendTutorVerificationEmail,
@@ -48,26 +48,6 @@ jest.unstable_mockModule('../../utils/error.js', () => ({
 }));
 jest.unstable_mockModule('../../utils/helper.js', () => ({
   savePhoto: mockSavePhoto,
-}));
-jest.unstable_mockModule('fs/promises', () => ({
-  __esModule: true,
-  default: {
-    mkdir: jest.fn(),
-    rename: jest.fn(),
-  },
-  mkdir: jest.fn(),
-  rename: jest.fn(),
-}));
-jest.unstable_mockModule('path', () => ({
-  __esModule: true,
-  default: {
-    extname: jest.fn(() => '.jpg'),
-    resolve: jest.fn(() => '/public'),
-    join: jest.fn((...args) => args.join('/')),
-  },
-  extname: jest.fn(() => '.jpg'),
-  resolve: jest.fn(() => '/public'),
-  join: jest.fn((...args) => args.join('/')),
 }));
 
 const { TutorApplicationService } = await import('../tutorApplication.js');
@@ -153,7 +133,7 @@ describe('TutorApplicationService', () => {
         cb({
           tutorApplication: {
             findUnique: jest.fn().mockResolvedValueOnce(fakeApp),
-            delete: jest.fn()
+            delete: jest.fn(),
           },
           user: { create: jest.fn().mockResolvedValueOnce(fakeUser) },
           tutor: { create: jest.fn() },
@@ -166,7 +146,6 @@ describe('TutorApplicationService', () => {
       expect(mockBcrypt.hash).toHaveBeenCalledWith('bimbelmandala', 10);
       expect(mockSendTutorVerificationEmail).toHaveBeenCalledWith(
         fakeApp.email,
-        fakeApp.name,
         'bimbelmandala'
       );
     });

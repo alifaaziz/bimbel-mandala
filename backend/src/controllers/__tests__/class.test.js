@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals';
 import { setupExpressMock } from '../../utils/jest.js';
+import { ClassController } from '../../controllers/class.js';
+import { ClassService } from '../../services/class.js';
 
 const classMock = { id: 1, name: 'Test Class' };
 const joinedClassMock = { id: 2, code: 'ABC123' };
@@ -13,8 +15,6 @@ jest.unstable_mockModule('../../services/class.js', () => ({
   },
 }));
 
-const { ClassController } = await import('../../controllers/class.js');
-const { ClassService } = await import('../../services/class.js');
 
 describe('ClassController', () => {
   describe('createClass', () => {

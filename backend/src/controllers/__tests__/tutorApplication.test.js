@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals';
 import { setupExpressMock } from '../../utils/jest.js';
+import { TutorApplicationController } from '../../controllers/tutorApplication.js';
+import { TutorApplicationService } from '../../services/tutorApplication.js';
 
 const applicationMock = { id: 1, name: 'Tutor Baru' };
 const userMock = { id: 2, name: 'Tutor Verified' };
@@ -11,8 +13,6 @@ jest.unstable_mockModule('../../services/tutorApplication.js', () => ({
   },
 }));
 
-const { TutorApplicationController } = await import('../../controllers/tutorApplication.js');
-const { TutorApplicationService } = await import('../../services/tutorApplication.js');
 
 describe('TutorApplicationController', () => {
   describe('applyTutor', () => {

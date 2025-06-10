@@ -1,8 +1,11 @@
 import { jest } from '@jest/globals';
 import { setupExpressMock } from '../../utils/jest.js';
+import { UserController } from '../../controllers/user.js';
+import { UserService } from '../../services/user.js';
 
 // Mock UserService sesuai dengan fungsi yang ada di service
 const userMock = { id: 123, name: 'Test User', role: 'siswa' };
+const statisticsMock = { totalUsers: 100, activeUsers: 80 };
 
 jest.unstable_mockModule('../../services/user.js', () => ({
   UserService: {
@@ -12,11 +15,10 @@ jest.unstable_mockModule('../../services/user.js', () => ({
     getNewStudents: jest.fn(() => Promise.resolve([userMock])),
     getTutorsSortedByClassCount: jest.fn(() => Promise.resolve([userMock])),
     updateUser: jest.fn(() => Promise.resolve()),
+    getStatistics: jest.fn(() => Promise.resolve(statisticsMock)),
   },
 }));
 
-const { UserController } = await import('../../controllers/user.js');
-const { UserService } = await import('../../services/user.js');
 
 describe('UserController', () => {
   describe('getCurrentUser', () => {
@@ -64,7 +66,7 @@ describe('UserController', () => {
           id: 123,
           role: 'siswa',
           name: 'Updated User',
-          email: 'updated@example.com'
+          email: 'updated@example.com',
         },
         undefined
       );
@@ -114,6 +116,20 @@ describe('UserController', () => {
       expect(UserService.getTutorsSortedByClassCount).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ data: [userMock] });
+    });
+  });
+
+  describe('getStatistics', () => {
+    it('should return user statistics', async () => {
+      UserService.getStatistics.mockResolvedValue(statisticsMock);
+
+      const { req, res } = setupExpressMock();
+
+      await UserController.getStatistics(req, res);
+
+      expect(UserService.getStatistics).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ data: statisticsMock });
     });
   });
 });
