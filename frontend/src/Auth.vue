@@ -26,7 +26,7 @@ watch(() => route.query.tab, checkTab);
     <div :class="['left-side', showLogin ? 'login-bg' : 'signup-bg']">
       <div class="overlay">
         <router-link to="/">
-          <img src="./assets/logomandala.svg" alt="Mandala Logo" class="logo" />
+          <img src="./assets/logo_mandala_bg.svg" alt="Mandala Logo" class="logo" />
         </router-link>
         <div>
           <h1 class="headlineb1 welcoming-text">

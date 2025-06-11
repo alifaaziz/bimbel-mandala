@@ -37,7 +37,7 @@
               <td>{{ item.jam }}</td>
               <td>
                 <button class="detail-button" @click="showDetail(item)">
-                  <i class="fas fa-ellipsis-h"></i>
+                  <img src="@/assets/icons/more-horizontal.svg" alt="">
                 </button>
               </td>
             </tr>

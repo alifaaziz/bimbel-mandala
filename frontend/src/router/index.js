@@ -4,6 +4,7 @@ import Home from '../Home.vue';
 import TentangKami from '../TentangKami.vue';
 import DetailProgram from '../detailProgram.vue';
 
+import Program from '@/components/listProgram/program.vue'
 import programBelajar from '../components/detailProgram/program.vue'
 import PemesananProgram from '../components/detailProgram/PemesananProgram.vue';
 
@@ -56,6 +57,10 @@ const routes = [
       { path: 'tentangkami', 
         name: 'TentangKami', 
         component: TentangKami 
+      },
+      { path: 'program', 
+        name: 'Program', 
+        component: Program 
       },
       { path: 'pendaftarantutor', 
         name: 'Menjadi Tutor', 

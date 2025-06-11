@@ -11,7 +11,6 @@
         :stroke-width="strokeWidth"
         :stroke-dasharray="strokeDashArrayDibuka"
         :transform="transformDibuka"
-        stroke-linecap="round"
       />
       <circle
         v-if="percentAktif > 0"
@@ -23,22 +22,21 @@
         :stroke-width="strokeWidth"
         :stroke-dasharray="strokeDashArrayAktif"
         :transform="transformAktif"
-        stroke-linecap="round"
       />
     </svg>
     <div class="legend">
       <div class="legend-item">
         <span class="legend-dot" :style="{ backgroundColor: colorAktif }"></span>
         <div class="legend-text-group">
-          <span class="legend-value">{{ programAktif }} Program</span>
-          <span class="legend-label">Aktif</span>
+          <span class="bodym2 legend-value">{{ programAktif }} Program</span>
+          <span class="bodyr3 legend-label">Aktif</span>
         </div>
       </div>
       <div class="legend-item">
         <span class="legend-dot" :style="{ backgroundColor: colorDibuka }"></span>
         <div class="legend-text-group">
-          <span class="legend-value">{{ programDibuka }} Program</span>
-          <span class="legend-label">Dibuka</span>
+          <span class="bodym2 legend-value">{{ programDibuka }} Program</span>
+          <span class="bodyr3 legend-label">Dibuka</span>
         </div>
       </div>
     </div>
@@ -180,14 +178,11 @@ export default {
 }
 
 .legend-value {
-  font-size: 1rem; /* Sekitar 16px */
-  font-weight: 600; /* Bold seperti di gambar */
-  color: #2c3e50; /* Warna teks gelap */
+  color: #061222; /* Warna teks gelap */
   line-height: 1.3;
 }
 
 .legend-label {
-  font-size: 0.875rem; /* Sekitar 14px */
   color: #7f8c8d; /* Warna teks abu-abu */
   line-height: 1.3;
 }

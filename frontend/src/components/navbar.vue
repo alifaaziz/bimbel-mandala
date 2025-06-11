@@ -33,7 +33,7 @@ const unreadCount = computed(() => notifications.value.filter(n => !n.read).leng
 
 const menuOptionsLoggedOut = [
   { label: 'Beranda', key: 'Beranda', to: '/' },
-  { label: 'Tentang Kami', key: 'Tentang Kami', to: '/tentangkami' },
+  { label: 'Tentang Kami', key: 'TentangKami', to: '/tentangkami' },
   { label: 'Program', key: 'Program', to: '/program' },
   { label: 'Menjadi Tutor', key: 'Menjadi Tutor', to: '/pendaftarantutor' },
   { label: 'Daftar', key: 'Daftar', to: '/daftar' },
@@ -42,7 +42,7 @@ const menuOptionsLoggedOut = [
 
 const menuOptionsLoggedIn = [
   { label: 'Beranda', key: 'Beranda', to: '/' },
-  { label: 'Tentang Kami', key: 'Tentang Kami', to: '/tentangkami' },
+  { label: 'Tentang Kami', key: 'TentangKami', to: '/tentangkami' },
   { label: 'Absen', key: 'Absen', to: '/absen' },
   { label: 'Program', key: 'Program', to: '/program' },
   { label: 'Rekap', key: 'Rekap', to: '/rekap' },
@@ -184,7 +184,7 @@ const notificationsWithTime = computed(() =>
     <n-layout-header class="navbar">
       <div class="navbar-wrapper">
         <router-link to="/" class="logo">
-          <img src="../assets/logomandala22.png" alt="Logo" />
+          <img src="../assets/logo_mandala.svg" alt="Logo" />
         </router-link>
 
         <div class="menu-container">

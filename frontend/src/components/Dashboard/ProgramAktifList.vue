@@ -1,13 +1,13 @@
 <template>
   <div class="program-aktif-card">
-    <h2 class="card-title">Program Aktif</h2>
+    <h2 class="headerb2 card-title">Program Aktif</h2>
     <ul class="program-list">
       <li v-for="program in activePrograms" :key="program.code" class="program-item">
         <div class="program-info">
-          <span class="program-subject">{{ program.subject }}</span>
-          <span class="program-teacher">{{ program.teacher }}</span>
+          <span class="bodyb2 program-subject">{{ program.subject }}</span>
+          <span class="bodyr3 program-teacher">{{ program.teacher }}</span>
         </div>
-        <span class="program-code">{{ program.code }}</span>
+        <span class="bodyr3 program-code">{{ program.code }}</span>
       </li>
     </ul>
   </div>
@@ -40,8 +40,6 @@ export default {
 }
 
 .card-title {
-  font-size: 26px; /* Ukuran font judul */
-  font-weight: bold;
   color: #1e3a8a; /* Warna biru tua untuk judul */
   margin-bottom: 20px; /* Jarak bawah dari judul ke daftar */
 }
@@ -79,22 +77,17 @@ export default {
 }
 
 .program-subject {
-  font-size: 1.05rem; /* Ukuran font untuk subjek (sekitar 17px) */
-  font-weight: 600; /* Sedikit tebal */
-  color: #1f2937; /* Warna abu-abu gelap untuk subjek */
+  color: #061222; /* Warna abu-abu gelap untuk subjek */
 }
 
 .program-teacher {
-  font-size: 0.9rem; /* Ukuran font untuk nama guru (sekitar 14.5px) */
   color: #4b6a9c; /* Warna biru yang lebih lembut untuk nama guru */
 }
 
 .program-code {
-  font-size: 0.95rem; /* Ukuran font untuk kode program */
-  font-weight: 500;
   color: #8492a6; /* Warna abu-abu untuk kode program */
   background-color: #dde3ed; /* Latar belakang sedikit berbeda untuk kode (opsional, jika diinginkan) */
-  padding: 4px 8px; /* Padding kecil di sekitar kode (opsional) */
+  padding: 4px; /* Padding kecil di sekitar kode (opsional) */
   border-radius: 6px; /* Lengkungan untuk latar belakang kode (opsional) */
   white-space: nowrap; /* Mencegah kode dari wrapping jika terlalu panjang */
 }
