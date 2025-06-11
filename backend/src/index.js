@@ -13,10 +13,15 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function main() {
+async function main() {
   const app = express();
   const server = createServer(app);
-  
+
+  if (appEnv.NODE_ENV === 'development') {
+    const { default: monitor } = await import('express-status-monitor');
+    app.use(monitor());
+  }
+
   app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE'],
@@ -34,6 +39,9 @@ function main() {
 
   server.listen(appEnv.PORT, () => {
     logger.info(`🚀 Server running on http://localhost:${appEnv.PORT}`);
+    if (appEnv.NODE_ENV === 'development') {
+      logger.info(`📊 Status monitor available at http://localhost:${appEnv.PORT}/status`);
+    }
   });
 
   server.on('error', (err) => {
