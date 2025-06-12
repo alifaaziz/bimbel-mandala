@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
     <div class="footer-content">
-      <img src="../assets/logomandala.svg" alt="Logo Bimbel Mandala" class="logo" />
+      <img src="../assets/logo_mandala_bg.svg" alt="Logo Bimbel Mandala" class="logo" />
       
       <div class="footer-container">
         <!-- Contact Section -->
@@ -68,7 +68,6 @@ footer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 40px;
-  margin-top: 30px;
 }
 
 .about {

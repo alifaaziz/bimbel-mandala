@@ -2,8 +2,8 @@
   <div class="navbar-container">
     <div class="navbar-left">
       <div class="jenjang-trigger" @click="toggleJenjangDrawer" ref="jenjangTriggerRef">
-        <span class="logo">🎓</span>
-        <span class="text">{{ selectedJenjang }}</span>
+        <img src="@/assets/icons/jenjang.svg" alt="">
+        <span class="bodysb1 text">{{ selectedJenjang }}</span>
         <svg v-if="!isJenjangDrawerOpen" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-caret-down-fill arrow-icon" viewBox="0 0 16 16">
           <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
         </svg>
@@ -15,13 +15,11 @@
       <transition name="slide-fade">
         <div v-if="isJenjangDrawerOpen" class="jenjang-drawer" ref="jenjangDrawerRef">
           <div class="drawer-header">
-            <span>Jenjang</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up arrow-icon-header" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
-            </svg>
+            <span class="headerb3">Jenjang</span>
           </div>
           <ul>
             <li
+              class="bodyr1"
               v-for="jenjang in jenjangOptions"
               :key="jenjang.id"
               :class="{ active: jenjang.nama === selectedJenjang }"
@@ -246,24 +244,18 @@ export default {
 .jenjang-trigger {
   display: flex;
   align-items: center;
+  gap: 1rem;
   cursor: pointer;
-  padding: 8px 12px;
   border-radius: 4px;
   user-select: none;
+  align-content: center;
 }
-.logo {
-  font-size: 24px;
-  margin-right: 8px;
-  color: #0056b3;
-}
+
 .jenjang-trigger .text {
-  font-weight: bold;
-  margin-right: 8px;
-  color: #0056b3;
-  font-size: 16px;
+  color: #061222;
 }
 .arrow-icon {
-  color: #0056b3;
+  color: #154484;
 }
 .jenjang-drawer {
   position: absolute;
@@ -295,7 +287,6 @@ export default {
 }
 .jenjang-drawer li {
   padding: 12px 16px;
-  font-size: 16px;
   cursor: pointer;
   color: #333;
 }
