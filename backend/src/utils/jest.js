@@ -36,7 +36,7 @@ export function generatePrismaMock() {
     findUnique: jest.fn(),
     findFirstOrThrow: jest.fn(),
     findUniqueOrThrow: jest.fn(),
-    createManyAndReturn: jest.fn()
+    createManyAndReturn: jest.fn(),
   };
 
   const prismaMock = modelsName.reduce((modelAccumulator, modelName) => {
@@ -47,8 +47,8 @@ export function generatePrismaMock() {
   return {
     prisma: {
       ...prismaMock,
-      $transaction: jest.fn()
-    }
+      $transaction: jest.fn(),
+    },
   };
 }
 
@@ -62,14 +62,16 @@ export function generatePrismaMock() {
 /** @param {ExpressMockOptions} options */
 export function setupExpressMock({ req = {}, res = {} } = {}) {
   const parsedReq = {
-    ...req
+    ...req,
   };
 
   const parsedRes = {
     json: jest.fn(),
     status: jest.fn().mockReturnThis(),
     locals: {},
-    ...res
+    setHeader: jest.fn(),
+    end: jest.fn(),
+    ...res,
   };
 
   const next = jest.fn();
@@ -77,7 +79,54 @@ export function setupExpressMock({ req = {}, res = {} } = {}) {
   return { req: parsedReq, res: parsedRes, next };
 }
 
-/** @param {() => unknown | Promise<unknown>} fn */
+/**
+ * Mock setup for Puppeteer.
+ *
+ * @returns {{
+ *   mockBrowser: { newPage: jest.Mock, close: jest.Mock };
+ *   mockPage: { setContent: jest.Mock, pdf: jest.Mock, close: jest.Mock };
+ * }}
+ */
+export function setupPuppeteerMock() {
+  const mockPage = {
+    setContent: jest.fn(),
+    pdf: jest.fn(() => Buffer.from('PDF content')), // Mock PDF content
+    close: jest.fn(),
+  };
+
+  const mockBrowser = {
+    newPage: jest.fn(() => mockPage),
+    close: jest.fn(),
+  };
+
+  jest.unstable_mockModule('puppeteer', () => ({
+    launch: jest.fn(() => mockBrowser),
+  }));
+
+  return { mockBrowser, mockPage };
+}
+
+/**
+ * Mock setup for fs/promises.
+ *
+ * @returns {{ readFile: jest.Mock }}
+ */
+export function setupFsMock() {
+  const readFile = jest.fn(() => '<html><body>{{classId}}</body></html>'); // Mock template HTML
+
+  jest.unstable_mockModule('fs/promises', () => ({
+    readFile,
+  }));
+
+  return { readFile };
+}
+
+/**
+ * Utility to capture thrown errors from a function.
+ *
+ * @param {() => unknown | Promise<unknown>} fn - The function to execute.
+ * @returns {Promise<Error | undefined>} The error thrown by the function, if any.
+ */
 export async function getFunctionThrownError(fn) {
   try {
     await fn();

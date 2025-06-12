@@ -1,54 +1,56 @@
 import { jest } from '@jest/globals';
 import { setupExpressMock } from '../../utils/jest.js';
-import { TutorApplicationController } from '../../controllers/tutorApplication.js';
-import { TutorApplicationService } from '../../services/tutorApplication.js';
 
-const applicationMock = { id: 1, name: 'Tutor Baru' };
-const userMock = { id: 2, name: 'Tutor Verified' };
+const tutorApplicationMock = { id: 1, name: 'John Doe', status: 'pending' };
+const verifiedTutorMock = { id: 1, name: 'John Doe', status: 'verified' };
 
 jest.unstable_mockModule('../../services/tutorApplication.js', () => ({
   TutorApplicationService: {
-    applyTutor: jest.fn(() => Promise.resolve(applicationMock)),
-    verifyTutor: jest.fn(() => Promise.resolve(userMock)),
+    applyTutor: jest.fn(() => Promise.resolve(tutorApplicationMock)),
+    verifyTutor: jest.fn(() => Promise.resolve(verifiedTutorMock)),
   },
 }));
 
+const { TutorApplicationController } = await import('../../controllers/tutorApplication.js');
+const { TutorApplicationService } = await import('../../services/tutorApplication.js');
 
 describe('TutorApplicationController', () => {
   describe('applyTutor', () => {
-    it('should apply tutor and return 201', async () => {
-      TutorApplicationService.applyTutor.mockResolvedValue(applicationMock);
-
+    it('should apply a new tutor and return 201', async () => {
       const { req, res } = setupExpressMock({
-        req: { body: { name: 'Tutor Baru' }, file: { filename: 'cv.pdf' } },
+        req: {
+          body: { name: 'John Doe', email: 'john.doe@example.com' },
+          file: { filename: 'resume.pdf' },
+        },
       });
 
       await TutorApplicationController.applyTutor(req, res);
 
-      expect(TutorApplicationService.applyTutor).toHaveBeenCalledWith({ name: 'Tutor Baru' }, { filename: 'cv.pdf' });
+      expect(TutorApplicationService.applyTutor).toHaveBeenCalledWith(
+        { name: 'John Doe', email: 'john.doe@example.com' },
+        { filename: 'resume.pdf' }
+      );
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Tutor applied successfully',
-        data: applicationMock,
+        data: tutorApplicationMock,
       });
     });
   });
 
   describe('verifyTutor', () => {
-    it('should verify tutor and return 200', async () => {
-      TutorApplicationService.verifyTutor.mockResolvedValue(userMock);
-
+    it('should verify a tutor application and return 200', async () => {
       const { req, res } = setupExpressMock({
-        req: { params: { id: 2 } },
+        req: { params: { id: 1 } },
       });
 
       await TutorApplicationController.verifyTutor(req, res);
 
-      expect(TutorApplicationService.verifyTutor).toHaveBeenCalledWith(2);
+      expect(TutorApplicationService.verifyTutor).toHaveBeenCalledWith(1);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Tutor verified successfully',
-        data: userMock,
+        data: verifiedTutorMock,
       });
     });
   });

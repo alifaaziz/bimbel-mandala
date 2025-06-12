@@ -130,10 +130,6 @@ async function updateClassBimbelPackage(req, res) {
   const { id } = req.params;
   const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
 
-  if (!groupType || !groupType.price) {
-    return res.status(400).json({ message: 'Group type price is required' });
-  }
-
   const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(id, {
     name,
     level,

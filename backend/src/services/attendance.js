@@ -1,5 +1,4 @@
 import { prisma } from '../utils/db.js';
-import { SalaryService } from './salary.js';
 
 const SALARY_PERCENTAGE = 0.9;
 

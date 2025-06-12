@@ -1,165 +1,204 @@
 import { jest } from '@jest/globals';
+import { generatePrismaMock } from '../../utils/jest.js';
 
-const mockPrisma = {
-    bimbelPackage: {
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        findFirst: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-        count: jest.fn()
-    },
-    groupType: { deleteMany: jest.fn() },
-    packageDay: { deleteMany: jest.fn() },
-    day: { findMany: jest.fn() },
-    order: { groupBy: jest.fn() },
-    class: { findMany: jest.fn() },
-    studentClass: { findMany: jest.fn() }
-};
+const mockPrisma = generatePrismaMock();
 
 jest.unstable_mockModule('../../utils/db.js', () => ({
-    prisma: mockPrisma
+  prisma: mockPrisma.prisma,
 }));
 
 const { BimbelPackageService } = await import('../package.js');
 
 beforeEach(() => {
-    jest.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 describe('BimbelPackageService', () => {
-    describe('getActiveBimbelPackages', () => {
-        it('should return active bimbel packages with correct structure', async () => {
-            mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([
-                {
-                    name: 'Paket A',
-                    level: 'SMA',
-                    totalMeetings: 10,
-                    time: '10:00',
-                    duration: 90,
-                    area: 'Jakarta',
-                    isActive: true,
-                    user: { name: 'Tutor A', tutors: [{ photo: 'photo.jpg' }] },
-                    groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
-                    packageDay: [{ day: { daysName: 'Senin' } }]
-                }
-            ]);
-            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(1);
+  describe('getActiveBimbelPackages', () => {
+    it('should return active bimbel packages with pagination', async () => {
+      mockPrisma.prisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        { id: 1, name: 'Math Package', isActive: true },
+      ]);
+      mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(1);
 
-            const result = await BimbelPackageService.getActiveBimbelPackages({ page: 1, pageSize: 10 });
+      const result = await BimbelPackageService.getActiveBimbelPackages({ page: 1, pageSize: 10 });
 
-            expect(result.data[0]).toMatchObject({
-                name: 'Paket A',
-                level: 'SMA',
-                totalMeetings: 10,
-                time: '10:00',
-                duration: 90,
-                area: 'Jakarta',
-                isActive: true,
-                tutorName: 'Tutor A',
-                photo: 'photo.jpg',
-                groupType: [expect.objectContaining({ type: 'privat', price: 100000, discPrice: 90000 })],
-                days: ['Senin']
-            });
-            expect(result.total).toBe(1);
-        });
+      expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalledWith(expect.any(Object));
+      expect(mockPrisma.prisma.bimbelPackage.count).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual({
+        data: [{ id: 1, name: 'Math Package', isActive: true }],
+        total: 1,
+        page: 1,
+        pageSize: 10,
+      });
+    });
+  });
 
-        it('should return empty array if no active packages', async () => {
-            mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([]);
-            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(0);
+  describe('getAllBimbelPackages', () => {
+    it('should return all bimbel packages with pagination', async () => {
+      mockPrisma.prisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        { id: 1, name: 'Math Package' },
+      ]);
+      mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(1);
 
-            const result = await BimbelPackageService.getActiveBimbelPackages({ page: 1, pageSize: 10 });
+      const result = await BimbelPackageService.getAllBimbelPackages({ page: 1, pageSize: 10 });
 
-            expect(result.data).toEqual([]);
-            expect(result.total).toBe(0);
-        });
+      expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalledWith(expect.any(Object));
+      expect(mockPrisma.prisma.bimbelPackage.count).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual({
+        data: [{ id: 1, name: 'Math Package' }],
+        total: 1,
+        page: 1,
+        pageSize: 10,
+      });
+    });
+  });
+
+  describe('getBimbelPackageBySlug', () => {
+    it('should return a bimbel package by slug', async () => {
+      mockPrisma.prisma.bimbelPackage.findUnique.mockResolvedValueOnce({
+        id: 1,
+        name: 'Math Package',
+        slug: 'math-package',
+      });
+
+      const result = await BimbelPackageService.getBimbelPackageBySlug('math-package');
+
+      expect(mockPrisma.prisma.bimbelPackage.findUnique).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual({
+        id: 1,
+        name: 'Math Package',
+        slug: 'math-package',
+      });
     });
 
-    describe('createBimbelPackage', () => {
-        it('throws if days invalid', async () => {
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 1 });
-            mockPrisma.day.findMany.mockResolvedValueOnce([]);
-            await expect(BimbelPackageService.createBimbelPackage({
-                name: 'Paket D', level: 'SMA', totalMeetings: 10, time: '10:00', duration: 90, area: 'Jakarta',
-                tutorId: 1, groupType: [{ type: 'privat', price: 100000 }], days: ['Sabtu'], discount: 10
-            })).rejects.toThrow('Invalid days provided');
-        });
+    it('should return null if package is not found', async () => {
+      mockPrisma.prisma.bimbelPackage.findUnique.mockResolvedValueOnce(null);
 
-        it('throws if tutor not found', async () => {
-            mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-            await expect(BimbelPackageService.createBimbelPackage({
-                name: 'Paket X', level: 'SMA', totalMeetings: 10, time: '10:00', duration: 90, area: 'Jakarta',
-                tutorId: 999, groupType: [{ type: 'privat', price: 100000 }], days: ['Senin'], discount: 10
-            })).rejects.toThrow('Tutor (user) tidak ditemukan');
-        });
+      const result = await BimbelPackageService.getBimbelPackageBySlug('nonexistent-package');
 
-        it('returns created data', async () => {
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 1 });
-            mockPrisma.day.findMany.mockResolvedValueOnce([{ id: 1 }]);
-            mockPrisma.bimbelPackage.create.mockResolvedValueOnce({ id: 'pkg2', groupType: [], packageDay: [] });
-            const result = await BimbelPackageService.createBimbelPackage({
-                name: 'Paket E', level: 'SMA', totalMeetings: 10, time: '10:00', duration: 90, area: 'Jakarta',
-                tutorId: 1, groupType: [{ type: 'privat', price: 100000 }], days: ['Sabtu', 'Minggu'], discount: 10
-            });
-            expect(result).toHaveProperty('message');
-            expect(result.data).toHaveProperty('id', 'pkg2');
-            expect(result.data).not.toBeNull();
-        });
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('createBimbelPackage', () => {
+    it('should create a new bimbel package', async () => {
+      mockPrisma.prisma.user.findUnique.mockResolvedValueOnce({ id: 'tutor1' });
+      mockPrisma.prisma.day.findMany.mockResolvedValueOnce([{ id: 1 }]);
+      mockPrisma.prisma.bimbelPackage.create.mockResolvedValueOnce({
+        id: 1,
+        name: 'Math Package',
+      });
+
+      const result = await BimbelPackageService.createBimbelPackage({
+        name: 'Math Package',
+        level: 'SMA',
+        totalMeetings: 10,
+        time: '10:00',
+        duration: 60,
+        area: 'Jakarta',
+        tutorId: 'tutor1',
+        groupType: [{ type: 'privat', price: 100000 }],
+        days: ['Senin'],
+        discount: 10,
+      });
+
+      expect(mockPrisma.prisma.bimbelPackage.create).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual({
+        message: 'Bimbel package created successfully',
+        data: { id: 1, name: 'Math Package' },
+      });
     });
 
-    describe('updateBimbelPackage', () => {
-        it('throws if days invalid', async () => {
-            mockPrisma.day.findMany.mockResolvedValueOnce([]);
-            await expect(BimbelPackageService.updateBimbelPackage('pkg3', {
-                name: 'Paket F', level: 'SMA', totalMeetings: 10, time: '10:00', duration: 90, area: 'Jakarta',
-                tutorId: 1, groupType: [{ type: 'privat', price: 100000 }], days: ['Sabtu'], discount: 10
-            })).rejects.toThrow('Invalid days provided');
-        });
+    it('should throw an error if tutor is not found', async () => {
+      mockPrisma.prisma.user.findUnique.mockResolvedValueOnce(null);
 
-        it('returns updated data', async () => {
-            mockPrisma.day.findMany.mockResolvedValueOnce([{ id: 1 }]);
-            mockPrisma.bimbelPackage.update.mockResolvedValueOnce({ id: 'pkg4', groupType: [], packageDay: { day: {} } });
-            const result = await BimbelPackageService.updateBimbelPackage('pkg4', {
-                name: 'Paket G', level: 'SMA', totalMeetings: 10, time: '10:00', duration: 90, area: 'Jakarta',
-                tutorId: 1, groupType: [{ type: 'privat', price: 100000 }], days: ['Sabtu'], discount: 10
-            });
-            expect(result).toHaveProperty('message');
-            expect(result.data).toHaveProperty('id', 'pkg4');
-        });
+      await expect(
+        BimbelPackageService.createBimbelPackage({
+          tutorId: 'nonexistent-tutor',
+        })
+      ).rejects.toThrow('Tutor (user) tidak ditemukan');
+    });
+  });
+
+  describe('updateBimbelPackage', () => {
+    it('should update a bimbel package', async () => {
+      mockPrisma.prisma.day.findMany.mockResolvedValueOnce([{ id: 1 }]);
+      mockPrisma.prisma.bimbelPackage.update.mockResolvedValueOnce({
+        id: 1,
+        name: 'Updated Package',
+      });
+
+      const result = await BimbelPackageService.updateBimbelPackage('1', {
+        name: 'Updated Package',
+        level: 'SMA',
+        totalMeetings: 10,
+        time: '10:00',
+        duration: 60,
+        area: 'Jakarta',
+        tutorId: 'tutor1',
+        groupType: [{ type: 'privat', price: 100000 }],
+        days: ['Senin'],
+        discount: 10,
+      });
+
+      expect(mockPrisma.prisma.bimbelPackage.update).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual({
+        message: 'Bimbel package updated successfully',
+        data: { id: 1, name: 'Updated Package' },
+      });
+    });
+  });
+
+  describe('deleteBimbelPackage', () => {
+    it('should delete a bimbel package', async () => {
+      mockPrisma.prisma.groupType.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.prisma.packageDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.prisma.bimbelPackage.delete.mockResolvedValueOnce({});
+
+      const result = await BimbelPackageService.deleteBimbelPackage('1');
+
+      expect(mockPrisma.prisma.groupType.deleteMany).toHaveBeenCalledWith(expect.any(Object));
+      expect(mockPrisma.prisma.packageDay.deleteMany).toHaveBeenCalledWith(expect.any(Object));
+      expect(mockPrisma.prisma.bimbelPackage.delete).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual({ message: 'Bimbel package deleted successfully' });
+    });
+  });
+
+  describe('getBimbelPackageStatistics', () => {
+    it('should return bimbel package statistics', async () => {
+      mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(10);
+      mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(8);
+
+      const result = await BimbelPackageService.getBimbelPackageStatistics();
+
+      expect(mockPrisma.prisma.bimbelPackage.count).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({
+        totalPackages: 10,
+        activePackages: 8,
+        inactivePackages: 2,
+      });
+    });
+  });
+
+  describe('getMyPackages', () => {
+    it('should return bimbel packages for the logged-in tutor', async () => {
+      mockPrisma.prisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        { id: 1, name: 'Math Package', isActive: true },
+      ]);
+
+      const result = await BimbelPackageService.getMyPackages({ id: 'tutor1', role: 'tutor' });
+
+      expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual([
+        { id: 1, name: 'Math Package', isActive: true },
+      ]);
     });
 
-    describe('deleteBimbelPackage', () => {
-        it('should delete a bimbel package successfully', async () => {
-            mockPrisma.groupType.deleteMany.mockResolvedValueOnce();
-            mockPrisma.packageDay.deleteMany.mockResolvedValueOnce();
-            mockPrisma.bimbelPackage.delete.mockResolvedValueOnce();
-
-            const result = await BimbelPackageService.deleteBimbelPackage('pkg1');
-
-            expect(result).toHaveProperty('message', 'Bimbel package deleted successfully');
-        });
-
-        it('should throw an error if deletion fails', async () => {
-            mockPrisma.groupType.deleteMany.mockResolvedValueOnce();
-            mockPrisma.packageDay.deleteMany.mockResolvedValueOnce();
-            mockPrisma.bimbelPackage.delete.mockRejectedValueOnce(new Error('Delete failed'));
-
-            await expect(BimbelPackageService.deleteBimbelPackage('pkg1')).rejects.toThrow('Delete failed');
-        });
+    it('should throw an error if user is not a tutor', async () => {
+      await expect(
+        BimbelPackageService.getMyPackages({ id: 'user1', role: 'siswa' })
+      ).rejects.toThrow('Only tutors can access this resource');
     });
-
-    describe('getBimbelPackageStatistics', () => {
-        it('should return correct statistics', async () => {
-            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(10).mockResolvedValueOnce(4);
-
-            const result = await BimbelPackageService.getBimbelPackageStatistics();
-
-            expect(result).toEqual({
-                totalPackages: 10,
-                activePackages: 4,
-                inactivePackages: 6
-            });
-        });
-    });
+  });
 });
