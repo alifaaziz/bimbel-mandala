@@ -14,10 +14,27 @@ import { Prisma } from '@prisma/client';
 /** @typedef {{ prisma: PrismaMock & { $transaction: jest.Mock } }} GeneratedPrismaMock */
 
 /** @returns {GeneratedPrismaMock} */
-export function generatePrismaMock() {
-  const modelsName = /** @type {ModelName[]} */ (
-    Prisma.dmmf.datamodel.models.map(({ name }) => name.toLowerCase())
-  );
+export function generatePrismaMock()  {
+  const modelsName = [
+    'attendance',
+    'bimbelPackage',
+    'class',
+    'day',
+    'groupType',
+    'notification',
+    'order',
+    'otp',
+    'packageDay',
+    'passwrdReset',
+    'salary',
+    'schedule',
+    'studentClass',
+    'student',
+    'tutorApplication',
+    'tutorDay',
+    'tutor',
+    'user',
+  ];
 
   /** @type {Record<ModelAction, jest.Mock>} */
   const modelOperation = {

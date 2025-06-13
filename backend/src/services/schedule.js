@@ -181,7 +181,7 @@ async function reschedule(scheduleId, newDate, req, res, isAdmin = false) {
     throw new Error('Reschedule can only be done once');
   }
 
-  const attendance = schedule.attendances[0];
+  const attendance = schedule.attendances?.[0] || null;
   if (attendance && (attendance.status === 'masuk' || attendance.status === 'izin')) {
     throw new Error('Cannot reschedule after attendance has been recorded');
   }
@@ -404,7 +404,7 @@ async function getSchedulesForStudent(userId) {
     const tutor = classData?.tutor;
     const tutorGender = tutor?.tutors?.[0]?.gender;
     const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
-    const attendance = schedule.attendances[0];
+    const attendance = schedule.attendances?.[0] || null;
 
     return {
       id: schedule.id,
@@ -489,7 +489,7 @@ async function getSchedulesForTutor(userId) {
     const tutor = classData?.tutor;
     const tutorGender = tutor?.tutors?.[0]?.gender;
     const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
-    const attendance = schedule.attendances[0];
+    const attendance = schedule.attendances?.[0] || null;
 
     return {
       id: schedule.id,

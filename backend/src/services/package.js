@@ -131,7 +131,7 @@ async function getAllBimbelPackages({ page = 1, pageSize = 10 } = {}) {
       skip,
       take: pageSize
     }),
-    prisma.bimbelPackage.count()
+    prisma.bimbelPackage.count({})
   ]);
 
   return {

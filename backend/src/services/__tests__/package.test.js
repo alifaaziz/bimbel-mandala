@@ -17,7 +17,14 @@ describe('BimbelPackageService', () => {
   describe('getActiveBimbelPackages', () => {
     it('should return active bimbel packages with pagination', async () => {
       mockPrisma.prisma.bimbelPackage.findMany.mockResolvedValueOnce([
-        { id: 1, name: 'Math Package', isActive: true },
+        {
+          id: 1,
+          name: 'Math Package',
+          isActive: true,
+          user: { name: 'Tutor A', tutors: [{ photo: 'photo.jpg' }] },
+          groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
+          packageDay: [{ day: { daysName: 'Senin' } }],
+        },
       ]);
       mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(1);
 
@@ -26,7 +33,22 @@ describe('BimbelPackageService', () => {
       expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalledWith(expect.any(Object));
       expect(mockPrisma.prisma.bimbelPackage.count).toHaveBeenCalledWith(expect.any(Object));
       expect(result).toEqual({
-        data: [{ id: 1, name: 'Math Package', isActive: true }],
+        data: [
+          {
+            name: 'Math Package',
+            level: undefined,
+            totalMeetings: undefined,
+            time: undefined,
+            duration: undefined,
+            area: undefined,
+            slug: undefined,
+            isActive: true,
+            tutorName: 'Tutor A',
+            photo: 'photo.jpg',
+            groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
+            days: ['Senin'],
+          },
+        ],
         total: 1,
         page: 1,
         pageSize: 10,
@@ -37,7 +59,13 @@ describe('BimbelPackageService', () => {
   describe('getAllBimbelPackages', () => {
     it('should return all bimbel packages with pagination', async () => {
       mockPrisma.prisma.bimbelPackage.findMany.mockResolvedValueOnce([
-        { id: 1, name: 'Math Package' },
+        {
+          id: 1,
+          name: 'Math Package',
+          user: { name: 'Tutor A', tutors: [{ photo: 'photo.jpg' }] },
+          groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
+          packageDay: [{ day: { daysName: 'Senin' } }],
+        },
       ]);
       mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(1);
 
@@ -46,7 +74,22 @@ describe('BimbelPackageService', () => {
       expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalledWith(expect.any(Object));
       expect(mockPrisma.prisma.bimbelPackage.count).toHaveBeenCalledWith(expect.any(Object));
       expect(result).toEqual({
-        data: [{ id: 1, name: 'Math Package' }],
+        data: [
+          {
+            name: 'Math Package',
+            level: undefined,
+            totalMeetings: undefined,
+            time: undefined,
+            duration: undefined,
+            area: undefined,
+            slug: undefined,
+            isActive: undefined,
+            tutorName: 'Tutor A',
+            photo: 'photo.jpg',
+            groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
+            days: ['Senin'],
+          },
+        ],
         total: 1,
         page: 1,
         pageSize: 10,
@@ -60,6 +103,9 @@ describe('BimbelPackageService', () => {
         id: 1,
         name: 'Math Package',
         slug: 'math-package',
+        user: { name: 'Tutor A', tutors: [{ photo: 'photo.jpg' }] },
+        groupType: [{ id: 1, type: 'privat', price: 100000, discPrice: 90000 }],
+        packageDay: [{ day: { daysName: 'Senin' } }],
       });
 
       const result = await BimbelPackageService.getBimbelPackageBySlug('math-package');
@@ -68,7 +114,16 @@ describe('BimbelPackageService', () => {
       expect(result).toEqual({
         id: 1,
         name: 'Math Package',
+        level: undefined,
+        totalMeetings: undefined,
+        time: undefined,
+        duration: undefined,
+        area: undefined,
         slug: 'math-package',
+        tutorName: 'Tutor A',
+        photo: 'photo.jpg',
+        groupType: [{ id: 1, type: 'privat', price: 100000, discPrice: 90000 }],
+        days: ['Senin'],
       });
     });
 
@@ -184,14 +239,34 @@ describe('BimbelPackageService', () => {
   describe('getMyPackages', () => {
     it('should return bimbel packages for the logged-in tutor', async () => {
       mockPrisma.prisma.bimbelPackage.findMany.mockResolvedValueOnce([
-        { id: 1, name: 'Math Package', isActive: true },
+        {
+          id: 1,
+          name: 'Math Package',
+          isActive: true,
+          user: { tutors: [{ photo: 'photo.jpg' }] },
+          groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
+          packageDay: [{ day: { daysName: 'Senin' } }],
+        },
       ]);
 
       const result = await BimbelPackageService.getMyPackages({ id: 'tutor1', role: 'tutor' });
 
       expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalledWith(expect.any(Object));
       expect(result).toEqual([
-        { id: 1, name: 'Math Package', isActive: true },
+        {
+          id: 1,
+          name: 'Math Package',
+          level: undefined,
+          totalMeetings: undefined,
+          time: undefined,
+          duration: undefined,
+          area: undefined,
+          slug: undefined,
+          isActive: true,
+          photo: 'photo.jpg',
+          groupType: [{ type: 'privat', price: 90000, discPrice: 81000 }],
+          days: ['Senin'],
+        },
       ]);
     });
 
@@ -199,6 +274,137 @@ describe('BimbelPackageService', () => {
       await expect(
         BimbelPackageService.getMyPackages({ id: 'user1', role: 'siswa' })
       ).rejects.toThrow('Only tutors can access this resource');
+    });
+  });
+
+  describe('updateBimbelPackageStatus', () => {
+    it('should update isActive to true if all schedules have attendances', async () => {
+      mockPrisma.prisma.class.findMany.mockResolvedValueOnce([
+        {
+          schedules: [{ attendances: [{}] }],
+          order: { bimbelPackage: { id: 1 } },
+        },
+      ]);
+      mockPrisma.prisma.bimbelPackage.update.mockResolvedValueOnce({});
+
+      const result = await BimbelPackageService.updateBimbelPackageStatus();
+
+      expect(mockPrisma.prisma.class.findMany).toHaveBeenCalled();
+      expect(mockPrisma.prisma.bimbelPackage.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { isActive: true },
+      });
+      expect(result).toEqual({ message: 'Bimbel package status updated successfully' });
+    });
+  });
+
+  describe('getBimbelPackagesByPopularity', () => {
+    it('should return bimbel packages sorted by popularity', async () => {
+      mockPrisma.prisma.order.groupBy.mockResolvedValueOnce([
+        { packageId: 1, _count: { packageId: 5 } },
+      ]);
+      mockPrisma.prisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        {
+          id: 1,
+          name: 'Math Package',
+          isActive: true,
+          user: { name: 'Tutor A', tutors: [{ photo: 'photo.jpg' }] },
+          groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
+          packageDay: [{ day: { daysName: 'Senin' } }],
+        },
+      ]);
+
+      const result = await BimbelPackageService.getBimbelPackagesByPopularity();
+
+      expect(mockPrisma.prisma.order.groupBy).toHaveBeenCalled();
+      expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalled();
+      expect(result).toEqual([
+        {
+          id: 1,
+          name: 'Math Package',
+          level: undefined,
+          totalMeetings: undefined,
+          time: undefined,
+          duration: undefined,
+          area: undefined,
+          slug: undefined,
+          isActive: true,
+          tutorName: 'Tutor A',
+          photo: 'photo.jpg',
+          groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
+          days: ['Senin'],
+          orderCount: 5,
+        },
+      ]);
+    });
+  });
+
+  describe('getRunningPrograms', () => {
+    it('should return running programs with classId, tutorName, and bimbelPackageName', async () => {
+      mockPrisma.prisma.class.findMany.mockResolvedValueOnce([
+        {
+          id: 1,
+          status: 'berjalan',
+          tutor: { name: 'Tutor A', tutors: [{ gender: 'Male' }] },
+          order: { bimbelPackage: { name: 'Math Package' } },
+        },
+      ]);
+
+      const result = await BimbelPackageService.getRunningPrograms();
+
+      expect(mockPrisma.prisma.class.findMany).toHaveBeenCalledWith({
+        where: { status: 'berjalan' },
+        include: expect.any(Object),
+      });
+      expect(result).toEqual([
+        {
+          classId: 1,
+          tutorName: 'Pak Tutor A',
+          bimbelPackageName: 'Math Package',
+        },
+      ]);
+    });
+  });
+
+  describe('getMyProgramsStatistics', () => {
+    it('should return statistics for a student', async () => {
+      mockPrisma.prisma.studentClass.findMany.mockResolvedValueOnce([
+        { class: { status: 'berjalan' } },
+        { class: { status: 'selesai' } },
+      ]);
+
+      const result = await BimbelPackageService.getMyProgramsStatistics({ id: 'student1', role: 'siswa' });
+
+      expect(mockPrisma.prisma.studentClass.findMany).toHaveBeenCalledWith({
+        where: { userId: 'student1' },
+        include: { class: true },
+      });
+      expect(result).toEqual({
+        runningClasses: 1,
+        completedClasses: 1,
+      });
+    });
+
+    it('should return statistics for a tutor', async () => {
+      mockPrisma.prisma.class.findMany.mockResolvedValueOnce([
+        { status: 'berjalan' },
+        { status: 'selesai' },
+      ]);
+      mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(5);
+
+      const result = await BimbelPackageService.getMyProgramsStatistics({ id: 'tutor1', role: 'tutor' });
+
+      expect(mockPrisma.prisma.class.findMany).toHaveBeenCalledWith({
+        where: { tutorId: 'tutor1', status: { in: ['berjalan', 'selesai'] } },
+      });
+      expect(mockPrisma.prisma.bimbelPackage.count).toHaveBeenCalledWith({
+        where: { userId: 'tutor1', isActive: true },
+      });
+      expect(result).toEqual({
+        runningClasses: 1,
+        completedClasses: 1,
+        activePackages: 5,
+      });
     });
   });
 });

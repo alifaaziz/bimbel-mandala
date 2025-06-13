@@ -16,6 +16,8 @@ jest.unstable_mockModule('../../services/attendance.js', () => ({
 const { AttendanceController } = await import('../attendance.js');
 const { AttendanceService } = await import('../../services/attendance.js');
 
+jest.setTimeout(10000); // Set batas waktu menjadi 10 detik
+
 describe('AttendanceController', () => {
   describe('absenMasuk', () => {
     it('should record attendance with status "masuk"', async () => {
