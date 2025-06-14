@@ -69,7 +69,11 @@ function groupTypeLabel(groupTypeArr) {
 
 // Handler tombol
 function handleButton(slug) {
-  if (isTutor.value) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/auth');
+  }
+  else if (isTutor.value) {
     router.push(`/detailprogram/${slug}`);
   } else {
     router.push(`/detailProgram/${slug}`);
@@ -89,7 +93,7 @@ function handleButton(slug) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo ? `http://localhost:3000${program.photo}` : '/public/tutor/3.png'" 
+              :src="program.photo ? `http://localhost:3000${program.photo}` : '/tutor/Tutor_Default.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>

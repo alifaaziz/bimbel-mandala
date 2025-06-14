@@ -41,9 +41,9 @@ onMounted(async () => {
   // Fetch program populer jika bukan tutor
   if (!isTutor.value) {
     try {
-      const res = await fetch('http://localhost:3000/packages/populer');
+      const res = await fetch('http://localhost:3000/packages');
       const data = await res.json();
-      limitedPrograms.value = data;
+      limitedPrograms.value = data.data;
     } catch (err) {
       console.error('Gagal fetch data:', err);
     }
@@ -89,7 +89,7 @@ function handleButton(slug) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo ? `http://localhost:3000${program.photo}` : '/public/tutor/3.png'" 
+              :src="program.photo ? `http://localhost:3000${program.photo}` : '/tutor/Tutor_Default.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
