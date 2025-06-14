@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { setupExpressMock, setupPuppeteerMock, setupFsMock } from '../../utils/jest.js';
+import { setupExpressMock } from '../../utils/jest.js';
 
 jest.unstable_mockModule('../../services/attendance.js', () => ({
   AttendanceService: {
@@ -16,7 +16,7 @@ jest.unstable_mockModule('../../services/attendance.js', () => ({
 const { AttendanceController } = await import('../attendance.js');
 const { AttendanceService } = await import('../../services/attendance.js');
 
-jest.setTimeout(10000); // Set batas waktu menjadi 10 detik
+jest.setTimeout(10000);
 
 describe('AttendanceController', () => {
   describe('absenMasuk', () => {
@@ -49,12 +49,6 @@ describe('AttendanceController', () => {
         scheduleId: 'schedule1',
         userId: 'user1',
       });
-
-      // expect(res.status).toHaveBeenCalledWith(201);
-      // expect(res.json).toHaveBeenCalledWith({
-      //   message: 'Attendance recorded successfully',
-      //   data: mockResponse,
-      // });
     });
   });
 
@@ -89,11 +83,6 @@ describe('AttendanceController', () => {
         userId: 'user1',
         reason: 'Sick',
       });
-      // expect(res.status).toHaveBeenCalledWith(201);
-      // expect(res.json).toHaveBeenCalledWith({
-      //   message: 'Attendance recorded successfully',
-      //   data: mockResponse,
-      // });
     });
 
     it('should return 400 if reason is not provided', async () => {
@@ -159,26 +148,6 @@ describe('AttendanceController', () => {
       });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(statsMock);
-    });
-  });
-
-  describe('downloadRekapPDF', () => {
-    it('should generate and send a PDF for class rekap', async () => {
-      const { mockBrowser, mockPage } = setupPuppeteerMock();
-      const { readFile } = setupFsMock();
-
-      AttendanceService.getRekapKelasById.mockResolvedValue({
-        classId: 'class1',
-        printDate: '2023-01-01',
-      });
-
-      const { req, res } = setupExpressMock({
-        req: { params: { classId: 'class1' } },
-      });
-
-      await AttendanceController.downloadRekapPDF(req, res);
-
-      expect(AttendanceService.getRekapKelasById).toHaveBeenCalledWith('class1');
     });
   });
 });

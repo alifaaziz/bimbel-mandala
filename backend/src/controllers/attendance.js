@@ -1,6 +1,6 @@
 import { AttendanceService } from "../services/attendance.js";
 import { asyncWrapper } from "../utils/asyncWrapper.js";
-import fs from "fs/promises";
+import { readFile } from 'fs/promises';
 import path from "path";
 import puppeteer from "puppeteer";
 import Handlebars from "handlebars";
@@ -130,7 +130,7 @@ async function downloadRekapPDF(req, res) {
     });
 
     const templatePath = path.resolve("src/utils/emails/template/rekap.html");
-    const templateSource = await fs.readFile(templatePath, "utf-8");
+    const templateSource = await readFile(templatePath, "utf-8");
     const template = Handlebars.compile(templateSource);
     const html = template(rekapData);
 

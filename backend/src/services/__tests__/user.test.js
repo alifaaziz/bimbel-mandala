@@ -25,7 +25,13 @@ const mockTutor = {
     verified: true,
     createdAt: new Date(),
     students: [],
-    tutors: [{ subjects: 'Math', teachLevel: 'SMA', description: 'desc', photo: 'photo.jpg', tutorDay: [{ day: { daysName: 'Senin' } }] }],
+    tutors: [{
+        subjects: 'Math',
+        teachLevel: 'SMA',
+        description: 'desc',
+        photo: 'photo.jpg',
+        tutorDay: [{ day: { daysName: 'Senin' } }]
+    }],
     _count: { class: 5 }
 };
 
@@ -169,7 +175,6 @@ describe('UserService', () => {
 
             const result = await UserService.createStudent({
                 name: 'NoPass', email: 'nopass@mail.com'
-                // password tidak dikirim
             });
 
             expect(mockPrisma.user.create).toHaveBeenCalledWith(expect.objectContaining({
@@ -286,29 +291,6 @@ describe('UserService', () => {
             });
             expect(result).toHaveProperty('id', 1);
         });
-
-        // it('should update user with password (password is given)', async () => {
-        //     mockPrisma.user.update.mockResolvedValueOnce({});
-        //     mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
-
-        //     const result = await UserService.updateUser({
-        //         id: 1,
-        //         name: 'Updated Name',
-        //         email: 'updated@mail.com',
-        //         password: 'newpassword'
-        //     });
-
-        //     expect(mockHashPassword).toHaveBeenCalledWith('newpassword');
-        //     expect(mockPrisma.user.update).toHaveBeenCalledWith({
-        //         where: { id: 1 },
-        //         data: {
-        //             name: 'Updated Name',
-        //             email: 'updated@mail.com',
-        //             password: 'hashed_newpassword'
-        //         }
-        //     });
-        //     expect(result).toHaveProperty('id', 1);
-        // });
 
         it('should update tutor days if daysName is provided', async () => {
             mockPrisma.user.update.mockResolvedValueOnce({});

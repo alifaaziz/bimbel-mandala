@@ -100,27 +100,28 @@ export function setupExpressMock({ req = {}, res = {} } = {}) {
  * Mock setup for Puppeteer.
  *
  * @returns {{
- *   mockBrowser: { newPage: jest.Mock, close: jest.Mock };
- *   mockPage: { setContent: jest.Mock, pdf: jest.Mock, close: jest.Mock };
+ *   puppeteerMock: { launch: jest.Mock },
+ *   mockBrowser: { newPage: jest.Mock, close: jest.Mock },
+ *   mockPage: { setContent: jest.Mock, pdf: jest.Mock, close: jest.Mock }
  * }}
  */
 export function setupPuppeteerMock() {
   const mockPage = {
     setContent: jest.fn(),
-    pdf: jest.fn(() => Buffer.from('PDF content')), // Mock PDF content
+    pdf: jest.fn(() => Buffer.from('PDF content')),
     close: jest.fn(),
   };
 
   const mockBrowser = {
-    newPage: jest.fn(() => mockPage),
+    newPage: jest.fn(() => Promise.resolve(mockPage)),
     close: jest.fn(),
   };
 
-  jest.unstable_mockModule('puppeteer', () => ({
-    launch: jest.fn(() => mockBrowser),
-  }));
+  const puppeteerMock = {
+    launch: jest.fn(() => Promise.resolve(mockBrowser)),
+  };
 
-  return { mockBrowser, mockPage };
+  return { puppeteerMock, mockBrowser, mockPage };
 }
 
 /**
@@ -132,6 +133,7 @@ export function setupFsMock() {
   const readFile = jest.fn(() => '<html><body>{{classId}}</body></html>'); // Mock template HTML
 
   jest.unstable_mockModule('fs/promises', () => ({
+    default: { readFile }, 
     readFile,
   }));
 
