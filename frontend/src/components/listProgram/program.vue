@@ -45,7 +45,8 @@ onMounted(async () => {
 .padding-components {
   display: flex;
   flex-direction: column;
-  gap: 4rem;
-  padding-bottom: 4rem;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  padding-top: 3rem;
 }
 </style>
