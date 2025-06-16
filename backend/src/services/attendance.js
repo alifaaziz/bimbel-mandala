@@ -30,31 +30,6 @@ function calculateAttendancePercentage(totalMasuk, totalSchedules) {
 }
 
 /**
- * Utility function to calculate payroll for a tutor.
- *
- * @param {Object} order - The order object containing groupType and price.
- * @param {number} totalAttendanceMasuk - The total number of "masuk" attendances.
- * @param {number} totalSchedules - The total number of schedules.
- * @returns {number} The calculated payroll.
- */
-function calculatePayroll(order, totalAttendanceMasuk, totalSchedules) {
-  const salary = (order?.groupType?.price || 0) * SALARY_PERCENTAGE;
-  const totalAttendancePercentage = calculateAttendancePercentage(totalAttendanceMasuk, totalSchedules);
-  return salary * (totalAttendancePercentage / 100);
-}
-
-/**
- * Checks if the given schedule is the last schedule in the class.
- *
- * @param {Object} schedule - The current schedule.
- * @param {Array} schedules - The list of all schedules in the class.
- * @returns {boolean} True if the schedule is the last one, false otherwise.
- */
-function isLastSchedule(schedule, schedules) {
-  return schedule.meet === schedules.length;
-}
-
-/**
  * Helper to get tutor attendance and payroll stats.
  *
  * @async
