@@ -329,7 +329,6 @@ async function createBimbelPackage(data) {
 async function createClassBimbelPackage(data) {
   const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days } = data;
 
-  // Validasi tutorId
   const tutor = await prisma.user.findUnique({ where: { id: tutorId } });
   if (!tutor) {
     throw new Error('Tutor (user) tidak ditemukan');
@@ -688,10 +687,9 @@ async function getBimbelPackagesByPopularity() {
     }
   });
 
-  // Pastikan semua paket bimbel ditampilkan, termasuk yang tidak ada di orderCounts
   return packages.map(pkg => {
     const orderCountEntry = orderCounts.find(order => order.packageId === pkg.id);
-    const orderCount = orderCountEntry ? orderCountEntry._count.packageId : 0; // Default ke 0 jika tidak ditemukan
+    const orderCount = orderCountEntry ? orderCountEntry._count.packageId : 0;
 
     return {
       id: pkg.id,
@@ -711,7 +709,7 @@ async function getBimbelPackagesByPopularity() {
         discPrice: gt.discPrice
       })),
       days: pkg.packageDay.map(day => day.day.daysName),
-      orderCount // Tetap tampilkan orderCount, termasuk yang bernilai 0
+      orderCount
     };
   });
 }
@@ -968,6 +966,100 @@ async function getMyProgramsStatistics(user) {
   }
 }
 
+/**
+ * Retrieves recommended bimbel packages for the logged-in user, sorted by orderCount (ascending) and limited to 4.
+ *
+ * @async
+ * @function getRecommendations
+ * @param {Object} user - The logged-in user object.
+ * @returns {Promise<Array|null>} The list of recommended bimbel packages or null if not a student.
+ */
+async function getRecommendations(user) {
+  if (user.role !== 'siswa') {
+    return null;
+  }
+
+  const student = await prisma.student.findUnique({
+    where: {
+      userId: user.id
+    },
+    select: {
+      level: true
+    }
+  });
+
+  if (!student) {
+    return null;
+  }
+
+  const { level } = student;
+
+  const recommendedPackages = await prisma.bimbelPackage.findMany({
+    where: {
+      level: level,
+      isActive: true
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          tutors: {
+            select: {
+              photo: true
+            }
+          }
+        }
+      },
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: {
+            select: {
+              daysName: true
+            }
+          }
+        }
+      },
+      orders: true
+    }
+  });
+
+  const packagesWithOrderCount = recommendedPackages.map(pkg => ({
+    ...pkg,
+    orderCount: pkg.orders.length
+  }));
+
+  const sortedPackages = packagesWithOrderCount
+    .sort((a, b) => a.orderCount - b.orderCount)
+    .slice(0, 4);
+  
+  return sortedPackages.map(pkg => ({
+    id: pkg.id,
+    name: pkg.name,
+    level: pkg.level,
+    totalMeetings: pkg.totalMeetings,
+    time: pkg.time,
+    duration: pkg.duration,
+    area: pkg.area,
+    slug: pkg.slug,
+    isActive: pkg.isActive,
+    tutorName: pkg.user.name,
+    photo: pkg.user.tutors[0]?.photo || null,
+    groupType: pkg.groupType.map(gt => ({
+      type: gt.type,
+      price: gt.price,
+      discPrice: gt.discPrice
+    })),
+    days: pkg.packageDay.map(day => day.day.daysName),
+    orderCount: pkg.orderCount
+  }));
+}
 
 export const BimbelPackageService = {
   getActiveBimbelPackages,
@@ -984,5 +1076,6 @@ export const BimbelPackageService = {
   getMyPackages,
   getMyPackageBySlug,
   getBimbelPackageStatistics,
-  getMyProgramsStatistics
+  getMyProgramsStatistics,
+  getRecommendations
 };

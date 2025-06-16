@@ -268,6 +268,26 @@ async function getMyProgramsStatistics(req, res) {
   res.status(200).json(statistics);
 }
 
+/**
+ * Handles the request to get recommended bimbel packages for the logged-in user.
+ *
+ * @async
+ * @function getRecommendations
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of recommended bimbel packages or null if not a student.
+ */
+async function getRecommendations(req, res) {
+  const user = res.locals.user;
+  const recommendations = await BimbelPackageService.getRecommendations(user);
+
+  if (!recommendations) {
+    return res.status(200).json({ message: 'No recommendations available for this user.' });
+  }
+
+  res.status(200).json(recommendations);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getActiveBimbelPackages: asyncWrapper(getActiveBimbelPackages),
@@ -283,5 +303,6 @@ export const BimbelPackageController = {
     getMyPackages: asyncWrapper(getMyPackages),
     getMyPackageBySlug: asyncWrapper(getMyPackageBySlug),
     getBimbelPackageStatistics: asyncWrapper(getBimbelPackageStatistics),
-    getMyProgramsStatistics: asyncWrapper(getMyProgramsStatistics)
+    getMyProgramsStatistics: asyncWrapper(getMyProgramsStatistics),
+    getRecommendations: asyncWrapper(getRecommendations)
 };
