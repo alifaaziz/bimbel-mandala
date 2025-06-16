@@ -25,6 +25,7 @@ jest.unstable_mockModule('../../services/package.js', () => ({
     getMyPackageBySlug: jest.fn(() => Promise.resolve(packageMock)),
     getBimbelPackageStatistics: jest.fn(() => Promise.resolve(statisticsMock)),
     getMyProgramsStatistics: jest.fn(() => Promise.resolve(statisticsMock)),
+    getRecommendations: jest.fn(() => Promise.resolve(packagesMock)),
   },
 }));
 
@@ -315,6 +316,39 @@ describe('BimbelPackageController', () => {
       });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(statisticsMock);
+    });
+  });
+  describe('getRecommendations', () => {
+    it('should return recommended bimbel packages for the logged-in user', async () => {
+      const recommendationsMock = [
+        { id: 3, name: 'English Package', level: 'SMA' },
+        { id: 4, name: 'Physics Package', level: 'SMA' },
+      ];
+      BimbelPackageService.getRecommendations.mockResolvedValue(recommendationsMock);
+
+      const { req, res } = setupExpressMock({
+        res: { locals: { user: { id: 456, role: 'student' } } },
+      });
+
+      await BimbelPackageController.getRecommendations(req, res);
+
+      expect(BimbelPackageService.getRecommendations).toHaveBeenCalledWith({ id: 456, role: 'student' });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(recommendationsMock);
+    });
+
+    it('should return a message if no recommendations are available', async () => {
+      BimbelPackageService.getRecommendations.mockResolvedValue(null);
+
+      const { req, res } = setupExpressMock({
+        res: { locals: { user: { id: 789, role: 'student' } } },
+      });
+
+      await BimbelPackageController.getRecommendations(req, res);
+
+      expect(BimbelPackageService.getRecommendations).toHaveBeenCalledWith({ id: 789, role: 'student' });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ message: 'No recommendations available for this user.' });
     });
   });
 });

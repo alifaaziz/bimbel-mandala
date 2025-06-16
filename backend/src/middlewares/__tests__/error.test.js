@@ -1,8 +1,18 @@
+import { jest } from '@jest/globals';
 import express from 'express';
 import { HttpError } from '../../utils/error.js';
 import { logger } from '../../loaders/pino.js';
 import { setupExpressMock } from '../../utils/jest.js';
 import errorMiddleware, { notFound, errorHandler } from '../error.js';
+
+jest.mock('../../loaders/pino', () => ({
+  logger: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
 
 const oldLoggerLevel = logger.level;
 

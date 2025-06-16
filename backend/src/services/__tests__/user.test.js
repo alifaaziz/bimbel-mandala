@@ -337,6 +337,75 @@ describe('UserService', () => {
             expect(mockSavePhoto).toHaveBeenCalled();
             expect(result).toHaveProperty('id', 2);
         });
+
+        it('should use userDb.name as userName if not provided when saving photo', async () => {
+            // Simulate no name in payload, so userDb.name is used
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ name: 'DbName' });
+            mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
+            mockPrisma.user.update.mockResolvedValueOnce({});
+            mockPrisma.tutor.update.mockResolvedValueOnce({});
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
+
+            const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
+
+            const result = await UserService.updateUser({
+            id: 2,
+            email: 'tutor@mail.com',
+            role: 'tutor',
+            subjects: 'Math'
+            // no name in payload
+            }, file);
+
+            expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 2 } });
+            expect(mockSavePhoto).toHaveBeenCalledWith(file, 'DbName');
+            expect(result).toHaveProperty('id', 2);
+        });
+
+        it('should use id as userName if userDb.name is falsy when saving photo', async () => {
+            // Simulate userDb.name is undefined, so id is used
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ name: undefined });
+            mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
+            mockPrisma.user.update.mockResolvedValueOnce({});
+            mockPrisma.tutor.update.mockResolvedValueOnce({});
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
+
+            const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
+
+            const result = await UserService.updateUser({
+            id: 2,
+            email: 'tutor@mail.com',
+            role: 'tutor',
+            subjects: 'Math'
+            // no name in payload
+            }, file);
+
+            expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 2 } });
+            expect(mockSavePhoto).toHaveBeenCalledWith(file, 2);
+            expect(result).toHaveProperty('id', 2);
+        });
+
+        it('should use "tutor" as userName if userDb.name and id are falsy when saving photo', async () => {
+            // Simulate userDb.name and id are undefined/null, so 'tutor' is used
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ name: undefined });
+            mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
+            mockPrisma.user.update.mockResolvedValueOnce({});
+            mockPrisma.tutor.update.mockResolvedValueOnce({});
+            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: undefined });
+
+            const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
+
+            const result = await UserService.updateUser({
+            id: undefined,
+            email: 'tutor@mail.com',
+            role: 'tutor',
+            subjects: 'Math'
+            // no name in payload
+            }, file);
+
+            expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: undefined } });
+            expect(mockSavePhoto).toHaveBeenCalledWith(file, 'tutor');
+            expect(result).toHaveProperty('id', undefined);
+        });
     });
 
     // --- updateUser branch coverage ---

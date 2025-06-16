@@ -11,7 +11,7 @@
     "db:seed": "dotenv -e .env -- node src/utils/prisma/seed/seed.js",
     "db:seed:dev": "npm run db:reset && dotenv -e .env -- node src/utils/prisma/seed/seed-dev.js",
     "api": "node src/scripts/openapi.js",
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage"
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage"
   },
   "keywords": [],
   "author": "",
