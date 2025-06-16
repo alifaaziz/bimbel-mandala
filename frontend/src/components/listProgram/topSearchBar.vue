@@ -121,7 +121,7 @@ watch(selectedPaket, logActiveFilters, { deep: true });
         <!-- Hari -->
         <div class="filter" :class="{ active: isFilterActive('hari') }">
           <strong class="headersb3">Hari</strong>
-          <n-checkbox-group v-model:value="selectedDays">
+          <n-checkbox-group v-model:value="selectedDays" class="filter">
             <n-checkbox size="medium" label="Senin" value="Senin" />
             <n-checkbox size="medium" label="Selasa" value="Selasa" />
             <n-checkbox size="medium" label="Rabu" value="Rabu" />
@@ -155,11 +155,11 @@ watch(selectedPaket, logActiveFilters, { deep: true });
         <!-- Paket -->
         <div class="filter" :class="{ active: isFilterActive('paket') }">
           <strong class="headersb3">Paket</strong>
-          <n-checkbox-group v-model:value="selectedPaket">
-            <n-checkbox size="medium" label="1 kali seminggu" value="1x" />
-            <n-checkbox size="medium" label="2 kali seminggu" value="2x" />
-            <n-checkbox size="medium" label="3 kali seminggu" value="3x" />
-            <n-checkbox size="medium" label="4 kali seminggu" value="4x" />
+          <n-checkbox-group v-model:value="selectedPaket" class="filter">
+            <n-checkbox size="medium" label="1 kali seminggu" :value="1" />
+          <n-checkbox size="medium" label="2 kali seminggu" :value="2" />
+          <n-checkbox size="medium" label="3 kali seminggu" :value="3" />
+          <n-checkbox size="medium" label="4 kali seminggu" :value="4" />
           </n-checkbox-group>
         </div>
       </n-drawer-content>

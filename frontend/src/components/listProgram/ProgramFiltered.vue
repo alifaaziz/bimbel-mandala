@@ -1,0 +1,296 @@
+<script setup>
+import { ref, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { NCard } from 'naive-ui';
+import butSecondSmall from '../dirButton/butSecondSmall.vue';
+
+const props = defineProps({
+  filters: {
+    type: Object,
+    default: () => ({})
+  }
+});
+
+const allPrograms = ref([]);
+const filteredPrograms = ref([]);
+const isTutor = ref(false);
+const title = ref('Hasil Pencarian');
+const router = useRouter();
+
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const res = await fetch('http://localhost:3000/users/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (res.ok) {
+      const user = await res.json();
+      isTutor.value = user.data?.role === 'tutor';
+
+      const url = isTutor.value
+        ? 'http://localhost:3000/packages/my'
+        : 'http://localhost:3000/packages';
+
+      try {
+        const programRes = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (programRes.ok) {
+          const programData = await programRes.json();
+          allPrograms.value = isTutor.value ? programData : programData.data;
+          applyFilters();
+        }
+      } catch (err) {
+        console.error('Gagal fetch:', err);
+      }
+    }
+  }
+});
+
+watch(
+  () => props.filters,
+  () => {
+    filteredPrograms.value = [];
+    applyFilters();
+  },
+  { deep: true, immediate: true }
+);
+
+function applyFilters() {
+  const { level, searchText, hari, duration, paket } = props.filters;
+
+  filteredPrograms.value = allPrograms.value.filter(program => {
+    const matchLevel = level ? program.level === level : true;
+    const matchSearch = searchText
+      ? program.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        program.subject?.toLowerCase().includes(searchText.toLowerCase()) ||
+        program.tutorName?.toLowerCase().includes(searchText.toLowerCase())
+      : true;
+    const matchHari = hari?.length
+      ? hari.some(h => program.days.includes(h))
+      : true;
+    const matchDurasi = duration !== null && duration !== undefined
+      ? Number(program.duration) === Number(duration)
+      : true;
+    const matchPaket = paket?.length
+      ? paket.some(p => program.groupType?.some(g => g.name === p))
+      : true;
+
+    return matchLevel && matchSearch && matchHari && matchDurasi && matchPaket;
+  });
+}
+
+function formatTime(dateTime) {
+  const time = dateTime.split('T')[1];
+  const [hour, minute] = time.split(':');
+  return `${hour}:${minute} WIB`;
+}
+
+function truncateName(name) {
+  return name.length > 16 ? name.slice(0, 16) + '...' : name;
+}
+
+function groupTypeLabel(groupTypeArr) {
+  if (!Array.isArray(groupTypeArr)) return '';
+  return groupTypeArr.some(gt => gt.type?.toLowerCase().includes('kelas'))
+    ? 'Kelas'
+    : 'Privat/Kelompok';
+}
+
+function handleButton(slug) {
+  router.push(isTutor.value ? `/detailprogram/${slug}` : `/detailProgram/${slug}`);
+}
+</script>
+
+<template>
+  <div>
+    <h2 class="headerb1 title2">{{ title }}</h2>
+    <div class="card-container">
+      <n-card v-for="program in filteredPrograms" :key="program.id" class="n-card">
+        <div class="card-content">
+          <div class="card-image">
+            <img :src="program.photo ? `http://localhost:3000${program.photo}` : '/tutor/Tutor_Default.png'" />
+            <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
+          </div>
+          <div class="card-text">
+            <div class="header">
+              <div class="title-group">
+                <h3 class="headerb2">{{ truncateName(program.name) }}</h3>
+                <p class="name bodyr3">{{ program.tutorName }}</p>
+              </div>
+              <div class="badge">{{ program.level }}</div>
+            </div>
+            <div class="info-row"><span class="label"><strong>Area</strong></span><span class="value">: {{ program.area }}</span></div>
+            <div class="info-row"><span class="label"><strong>Hari</strong></span><span class="value">: {{ program.days.join(', ') }}</span></div>
+            <div class="info-row"><span class="label"><strong>Pukul</strong></span><span class="value">: {{ formatTime(program.time) }}</span></div>
+            <div class="info-row"><span class="label"><strong>Durasi</strong></span><span class="value">: {{ program.duration }} menit</span></div>
+            <div class="Action">
+              <butSecondSmall :label="isTutor ? 'Detail Program' : 'Daftar Program'" @click="handleButton(program.slug)" />
+            </div>
+          </div>
+        </div>
+      </n-card>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.title1 {
+    color: #FDC998 !important;
+    text-align: center;
+}
+.title2 {
+    color: #154484;
+    text-align: center;
+    margin-bottom: 12px;
+}
+.card-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  width: 100%;
+}
+
+.n-card {
+  width: 100%;
+  background-color: #003366;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-image {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.card-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.info-row {
+    display: flex;
+}
+.label {
+    text-align: left;
+    width: 60px;
+}
+
+
+.privat {
+  color: white;
+  text-align: center;
+}
+
+.card-text {
+  color: white;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.title-group h3 {
+  color: #DEE4EE;
+}
+
+.name {
+  color: #DEE4EE;
+}
+
+.badge {
+  padding: 6px 12px;
+  background-color: #dee4ee;
+  color: #617592;
+  border-radius: 90px;
+  font-weight: bold;
+}
+
+.card-text p {
+  color: white;
+}
+
+.butPesan {
+  margin-top: 2rem;
+}
+
+/* Tablet (768px and up) */
+@media (min-width: 920px) {
+  header {
+    padding: 0 2rem;
+  }
+  .card-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .n-card {
+    width: calc(50% - 0.75rem);
+  }
+
+  .card-content {
+    flex-direction: row;
+    height: 100%;
+  }
+
+  .card-image {
+    width: 40%;
+    margin-bottom: 0;
+    margin-right: 1.5rem;
+  }
+
+  .card-image img {
+    height: 200px;
+  }
+
+  .card-text {
+    width: 60%;
+  }
+
+  .btn-daftar {
+    width: auto;
+    padding: 10px 20px;
+  }
+}
+
+/* Desktop (1024px and up) */
+@media (min-width: 1200px) {
+
+  .n-card {
+    width: calc(50% - 0.75rem);
+    max-width: 576px;
+  }
+
+  .card-image img {
+    height: 228px;
+  }
+
+  .btn-daftar {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+}
+
+/* Large Desktop (1440px and up) */
+@media (min-width: 1440px) {
+
+  .card-container {
+    justify-content: center;
+  }
+}
+
+</style>

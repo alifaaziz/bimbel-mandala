@@ -1,11 +1,21 @@
 <script setup>
-defineProps({
+import ProgramFiltered from './ProgramFiltered.vue';
+
+const props = defineProps({
   jenjang: String,
   searchText: String,
   hari: Array,
   durasi: [Number, null],
   paket: Array
 });
+
+const filters = {
+  level: props.jenjang,
+  searchText: props.searchText,
+  hari: props.hari,
+  duration: props.durasi,
+  paket: props.paket
+};
 </script>
 
 <template>
@@ -19,6 +29,9 @@ defineProps({
       <li v-if="paket.length">Paket: {{ paket.join(', ') }}</li>
     </ul>
   </div>
+
+  <!-- Komponen untuk menampilkan hasil filter -->
+  <ProgramFiltered :filters="filters" />
 </template>
 
 <style scoped>
@@ -37,7 +50,7 @@ ul {
 }
 
 h3, ul {
-    color: black;
+  color: black;
 }
 
 li {
