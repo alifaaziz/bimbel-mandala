@@ -25,8 +25,9 @@ onMounted(async () => {
 
 <template>
   <div class="padding-components">
-    <topSearchBar />
-    <!-- Rekomendasi hanya muncul jika user bukan tutor -->
+    <div v-if="!isTutor">
+      <topSearchBar />
+    </div>
     <Rekomendasi v-if="!isTutor" />
     <PalingPopuler />
     <seluruhProgram />

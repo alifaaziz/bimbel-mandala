@@ -257,9 +257,48 @@ watch(selectedPaket, logActiveFilters, { deep: true });
   color: #777E90;
 }
 
+/* Tambahan di akhir <style scoped> */
 @media (max-width: 768px) {
+  .navbar-container {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .select-jenjang {
+    width: 72%;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .search-input {
+    width: 100%;
+    font-size: 13px;
+  }
+
+  .menu-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: auto;
+    padding: 8px;
+  }
+
+  .jenjang-trigger {
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .search-img {
+    width: 12px;
+    margin-right: 8px;
+  }
+
   .filter-drawer-content {
-    width: 280px;
+    width: 100% !important;
   }
 }
 </style>

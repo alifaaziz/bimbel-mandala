@@ -75,4 +75,10 @@ export default {
   flex-direction: column;
   gap: 8px;
 }
+.sidebar-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1001;
+}
 </style>

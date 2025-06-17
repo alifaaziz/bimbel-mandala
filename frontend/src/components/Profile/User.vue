@@ -149,7 +149,6 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1rem 0;
   color: #061222;
   flex-wrap: wrap;
   gap: 1rem;

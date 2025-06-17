@@ -186,4 +186,10 @@ export default {
   color: #7f8c8d; /* Warna teks abu-abu */
   line-height: 1.3;
 }
+
+@media (max-width: 768px) {
+ .donut-chart-container {
+    max-width: 100%;
+  }
+}
 </style>
