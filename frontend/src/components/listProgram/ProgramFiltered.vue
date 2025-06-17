@@ -18,67 +18,63 @@ const title = ref('Hasil Pencarian');
 const router = useRouter();
 
 onMounted(async () => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    const res = await fetch('http://localhost:3000/users/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    if (res.ok) {
-      const user = await res.json();
-      isTutor.value = user.data?.role === 'tutor';
-
-      const url = isTutor.value
-        ? 'http://localhost:3000/packages/my'
-        : 'http://localhost:3000/packages';
-
-      try {
-        const programRes = await fetch(url, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (programRes.ok) {
-          const programData = await programRes.json();
-          allPrograms.value = isTutor.value ? programData : programData.data;
-          applyFilters();
-        }
-      } catch (err) {
-        console.error('Gagal fetch:', err);
-      }
-    }
-  }
+  await fetchData();
+  applyFilters();
 });
 
-watch(
-  () => props.filters,
-  () => {
-    filteredPrograms.value = [];
-    applyFilters();
-  },
-  { deep: true, immediate: true }
-);
+watch(() => props.filters, () => {
+  applyFilters();
+}, { deep: true });
+
+async function fetchData() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  const res = await fetch('http://localhost:3000/users/me', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  if (res.ok) {
+    const user = await res.json();
+    isTutor.value = user.data?.role === 'tutor';
+
+    const url = isTutor.value
+      ? 'http://localhost:3000/packages/my'
+      : 'http://localhost:3000/packages';
+
+    try {
+      const programRes = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (programRes.ok) {
+        const programData = await programRes.json();
+        allPrograms.value = isTutor.value ? programData : programData.data;
+      }
+    } catch (err) {
+      console.error('Gagal fetch:', err);
+    }
+  }
+}
+
 
 function applyFilters() {
-  const { level, searchText, hari, duration, paket } = props.filters;
+  const { level, searchText, hari, durasi } = props.filters;
 
   filteredPrograms.value = allPrograms.value.filter(program => {
     const matchLevel = level ? program.level === level : true;
     const matchSearch = searchText
       ? program.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        program.subject?.toLowerCase().includes(searchText.toLowerCase()) ||
         program.tutorName?.toLowerCase().includes(searchText.toLowerCase())
       : true;
     const matchHari = hari?.length
-      ? hari.some(h => program.days.includes(h))
+      ? hari.some(selectedDay => program.days.includes(selectedDay))
       : true;
-    const matchDurasi = duration !== null && duration !== undefined
-      ? Number(program.duration) === Number(duration)
-      : true;
-    const matchPaket = paket?.length
-      ? paket.some(p => program.groupType?.some(g => g.name === p))
+    const matchDurasi = durasi
+      ? program.duration === Number(durasi)
       : true;
 
-    return matchLevel && matchSearch && matchHari && matchDurasi && matchPaket;
+    return matchLevel && matchSearch && matchHari && matchDurasi;
   });
 }
 
@@ -106,9 +102,10 @@ function handleButton(slug) {
 
 <template>
   <div>
-    <h2 class="headerb1 title2">{{ title }}</h2>
+    <h2 v-if="filteredPrograms.length > 0" class="headerb1 title2">{{ title }}</h2>
+    <div v-else class="no-results">Tidak ada program yang sesuai dengan filter.</div>
     <div class="card-container">
-      <n-card v-for="program in filteredPrograms" :key="program.id" class="n-card">
+      <n-card v-for="program in filteredPrograms" :key="program.slug" class="n-card">
         <div class="card-content">
           <div class="card-image">
             <img :src="program.photo ? `http://localhost:3000${program.photo}` : '/tutor/Tutor_Default.png'" />
@@ -137,6 +134,12 @@ function handleButton(slug) {
 </template>
 
 <style scoped>
+.no-results {
+  text-align: center;
+  color: #888;
+  margin: 20px 0;
+}
+
 .title1 {
     color: #FDC998 !important;
     text-align: center;

@@ -6,11 +6,10 @@ import butSecondSmall from '../dirButton/butSecondSmall.vue';
 
 const limitedPrograms = ref([]);
 const isTutor = ref(false);
-const title = ref('Rekomendasi'); // Default title
+const title = ref('Rekomendasi'); 
 const router = useRouter();
 
 onMounted(async () => {
-  // Ambil role user dari API
   const token = localStorage.getItem('token');
   if (token) {
     const res = await fetch('http://localhost:3000/users/me', {
@@ -38,10 +37,11 @@ onMounted(async () => {
     }
   }
 
-  // Fetch program populer jika bukan tutor
   if (!isTutor.value) {
     try {
-      const res = await fetch('http://localhost:3000/packages/populer');
+      const res = await fetch('http://localhost:3000/packages/recommendations', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       limitedPrograms.value = data.slice(0, 4);
     } catch (err) {
@@ -67,7 +67,6 @@ function groupTypeLabel(groupTypeArr) {
     : 'Privat/Kelompok';
 }
 
-// Handler tombol
 function handleButton(slug) {
   if (isTutor.value) {
     router.push(`/detailprogram/${slug}`);
@@ -79,7 +78,7 @@ function handleButton(slug) {
 
 <template>
   <div>
-    <h2 class="headerb1 title2">{{ title }}</h2>
+    <h2 v-if="limitedPrograms.length > 0" class="headerb1 title2">{{ title }}</h2>
     <div class="card-container">
       <n-card 
         v-for="program in limitedPrograms" 
@@ -129,7 +128,6 @@ function handleButton(slug) {
         </div>
       </n-card>
     </div>
-
   </div>
 </template>
 
