@@ -203,7 +203,7 @@ async function main() {
     const students = [
         {
             id: "0195c5ed-3fc9-748b-9fde-426f41730565",
-            userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa", 
+            userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa", // Su Yon Oh
             phone: '1234567890',
             parentPhone: '0987654321',
             level: 'SMP',
@@ -212,7 +212,7 @@ async function main() {
         },
         {
             id: "019618a1-68a4-7dd8-b39c-5ecd04d1c010",
-            userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
+            userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326", // So Lie Kien
             phone: '1234567890',
             parentPhone: '0987654321',
             level: 'SMA',
@@ -221,7 +221,7 @@ async function main() {
         },
         {
             id: "019618a1-68a4-7bdf-853b-916546c664a7",
-            userId: "019618a1-68a4-7742-9471-2548f7726e86",
+            userId: "019618a1-68a4-7742-9471-2548f7726e86",// Ma Tor Nu Won
             phone: '1234567890',
             parentPhone: '0987654321',
             level: 'SD',
@@ -230,7 +230,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-78f5-b5e0-24959d2c0582",
-            userId: "0196b294-4791-7c97-bfed-3d6e3e640448",
+            userId: "0196b294-4791-7c97-bfed-3d6e3e640448",// Michelle Chloe
             phone: '1234567890',
             parentPhone: '0987654321',
             level: 'SMP',
@@ -239,7 +239,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-795e-9f05-d6ce2f38a456",
-            userId: "0196b294-4791-7510-a96a-db04d94dfbdd",
+            userId: "0196b294-4791-7510-a96a-db04d94dfbdd",// Diana Wong
             phone: '1234567890',
             parentPhone: '0987654321',
             level: 'SMA',
@@ -248,7 +248,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000001",
-            userId: "0196b294-4791-7972-912a-33627d5b14b1",
+            userId: "0196b294-4791-7972-912a-33627d5b14b1",// Adi Nugroho
             phone: "081234567891",
             parentPhone: "082345678901",
             level: "SMP",
@@ -257,7 +257,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000002",
-            userId: "0196b294-4791-7972-912a-33627d5b14b2",
+            userId: "0196b294-4791-7972-912a-33627d5b14b2",// Sari Utami
             phone: "081234567892",
             parentPhone: "082345678902",
             level: "SMA",
@@ -266,7 +266,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000003",
-            userId: "0196b294-4791-7972-912a-33627d5b14b3",
+            userId: "0196b294-4791-7972-912a-33627d5b14b3",// Rudi Santoso
             phone: "081234567893",
             parentPhone: "082345678903",
             level: "SD",
@@ -275,7 +275,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000004",
-            userId: "0196b294-4791-7972-912a-33627d5b14b4",
+            userId: "0196b294-4791-7972-912a-33627d5b14b4",// Lina Agustina
             phone: "081234567894",
             parentPhone: "082345678904",
             level: "SMP",
@@ -284,7 +284,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000005",
-            userId: "0196b294-4791-7972-912a-33627d5b14b5",
+            userId: "0196b294-4791-7972-912a-33627d5b14b5",// Budi Hartono
             phone: "081234567895",
             parentPhone: "082345678905",
             level: "SMA",
@@ -293,7 +293,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000006",
-            userId: "0196b294-4791-7972-912a-33627d5b14b6",
+            userId: "0196b294-4791-7972-912a-33627d5b14b6",// Maya Putri
             phone: "081234567896",
             parentPhone: "082345678906",
             level: "SD",
@@ -302,7 +302,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000007",
-            userId: "0196b294-4791-7972-912a-33627d5b14b7",
+            userId: "0196b294-4791-7972-912a-33627d5b14b7",// Yoga Pratama
             phone: "081234567897",
             parentPhone: "082345678907",
             level: "SMP",
@@ -311,7 +311,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000008",
-            userId: "0196b294-4791-7972-912a-33627d5b14b8",
+            userId: "0196b294-4791-7972-912a-33627d5b14b8", // Dewi Anjani
             phone: "081234567898",
             parentPhone: "082345678908",
             level: "SMA",
@@ -320,7 +320,7 @@ async function main() {
         },
         {
             id: "0196b294-4791-7b00-8000-000000000009",
-            userId: "0196b294-4791-7972-912a-33627d5b14b9",
+            userId: "0196b294-4791-7972-912a-33627d5b14b9", // Tommy Wijaya
             phone: "081234567899",
             parentPhone: "082345678909",
             level: "SD",
@@ -348,7 +348,7 @@ async function main() {
     const tutors = [
         {
             id: "0195c5ed-3fc9-7a1f-92ed-f2a421fd5fac",
-            userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", 
+            userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
             birthDate: new Date('1990-01-01'),
             gender: 'Male',
             phone: '1234567890',
@@ -497,35 +497,35 @@ async function main() {
     const notifications = [
         {
             id: "0195c5ed-3fc9-7254-aaef-e5136c6b8606",
-            userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa",
+            userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa",// Su Yon Oh
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
             photo: '/public/mandala.png',
         },
         {
             id: "019618a1-68a4-7d40-bcf4-ed7d4e8305ff",
-            userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
+            userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",// So Lie Kien
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
             photo: '/public/mandala.png',
         },
         {
             id: "019618a1-68a4-725a-bd3d-e62956fbd79b",
-            userId: "019618a1-68a4-7742-9471-2548f7726e86",
+            userId: "019618a1-68a4-7742-9471-2548f7726e86",// Ma Tor Nu Won
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
             photo: '/public/mandala.png',
         },
         {
             id: "0195c5fa-413e-7927-afed-d65683fb14c0",
-            userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2",
+            userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
             photo: '/public/mandala.png',
         },
         {
             id: "019618a1-68a4-7bff-a08a-255d2635db95",
-            userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+            userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa", // Venita S.Pd
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
             photo: '/public/mandala.png',
@@ -545,7 +545,7 @@ async function main() {
             photo: '/public/mandala.png',
         },
         {
-            id: "0196b294-4791-7972-912a-33627d5b14b2", // ID unik
+            id: "019780d6-fa98-7447-9fce-7a7b2eee0ff7", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b1", // Adi Nugroho
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
@@ -573,21 +573,21 @@ async function main() {
             photo: '/public/mandala.png',
         },
         {
-            id: "0196b294-4791-7972-912a-33627d5b14b6", // ID unik
+            id: "019780d5-a8ba-7c7f-9fec-224d26300039", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b5", // Budi Hartono
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
             photo: '/public/mandala.png',
         },
         {
-            id: "0196b294-4791-7972-912a-33627d5b14b7", // ID unik
+            id: "019780d5-e394-7239-9ca6-3ae5c6bdb2a9", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b6", // Maya Putri
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
             photo: '/public/mandala.png',
         },
         {
-            id: "0196b294-4791-7972-912a-33627d5b14b8", // ID unik
+            id: "019780b5-1d07-797a-ae32-20936b8b5767", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b7", // Yoga Pratama
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
@@ -637,14 +637,14 @@ async function main() {
         },
         {
             id: "0196f634-6979-7231-b83b-18de51222ec6",
-            userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa",
+            userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa", // Su Yon Oh
             type: 'Program',
             description: 'Selamat, Bimbingan belajar <strong>Matematika SMP #AAA123</strong> bersama <strong>Pak Dendy Wan, S.Pd</strong> sudah terkonfirmasi dan segera berlangsung.',
             photo: '/public/1.png',
         },
         {
             id: "0196f634-6979-7e5a-b353-4a2c95a35435",
-            userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2",
+            userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
             type: 'Program',
             description: 'Selamat, Bimbingan belajar <strong>Matematika SMP #AAA123</strong> sudah terkonfirmasi dan segera berlangsung.',
             photo: '/public/1.png',
@@ -669,7 +669,7 @@ async function main() {
             duration: 90,
             area: 'Semarang',
             slug: 'matematika-smp-12lkop',
-            userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2',
+            userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2', // Dendy Wan S.Pd
             discount: 10,
             isActive: false,
         },
@@ -682,7 +682,7 @@ async function main() {
             duration: 120,
             area: 'Semarang',
             slug: 'bahasa-inggris-sma-14klui',
-            userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa',
+            userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa', // Venita S.Pd
         },
         {
             id: "0196b294-4791-7b00-8000-000000000011",
@@ -720,6 +720,17 @@ async function main() {
             userId: "0196b294-4791-7972-912a-33627d5b14a9", // Intan Lestari, S.Si
             discount: 10,
         },
+        {
+            id: "0196b294-4791-7b00-8000-000000000014",
+            name: "FOKUS UTBK",
+            level: "SMA",
+            totalMeetings: 4,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "fokus-utbk-sma-9j8k7l",
+            userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
+        },
     ];
 
     for (const bimbelPackage of bimbelPackages) {
@@ -735,7 +746,7 @@ async function main() {
             type: 'privat',
             price: 1540000,
             discPrice: 1386000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
             maxStudent: 1
         },
         {
@@ -743,7 +754,7 @@ async function main() {
             type: 'grup2',
             price: 2860000,
             discPrice: 2574000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
             maxStudent: 2
         },
         { 
@@ -751,7 +762,7 @@ async function main() {
             type: 'grup3',
             price: 4180000,
             discPrice: 3762000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
             maxStudent: 3
         },
         { 
@@ -759,7 +770,7 @@ async function main() {
             type: 'grup4',
             price: 5500000,
             discPrice: 4950000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
             maxStudent: 4
         },
         { 
@@ -767,42 +778,42 @@ async function main() {
             type: 'grup5',
             price: 6820000,
             discPrice: 6138000,
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
             maxStudent: 5
         },
         {
             id: "019618a1-68a4-7fbd-adfa-b4f55c9c5d5c",
             type: 'privat',
             price: 580000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
             maxStudent: 1
         },
         { 
             id: "019618a1-68a4-7a75-948f-e8df29d3bb9c",
             type: 'grup2',
             price: 1020000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
             maxStudent: 2
         },
         { 
             id: "019618a1-68a4-7ddc-ad78-9f9e43be8ffb",
             type: 'grup3',
             price: 1460000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
             maxStudent: 3
         },
         { 
             id: "01963714-7d72-73a8-adf1-ba8ac656ca62",
             type: 'grup4',
             price: 1900000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
             maxStudent: 4
         },
         { 
             id: "01963714-a4a0-7260-b049-1aedc3b832f1",
             type: 'grup5',
             price: 2340000,
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
             maxStudent: 5
         },
         {
@@ -810,7 +821,7 @@ async function main() {
             type: "privat",
             price: 2500000, // (24 * 100000) + 100000
             discPrice: 2250000, // 10% discount
-            packageId: "0196b294-4791-7b00-8000-000000000011",
+            packageId: "0196b294-4791-7b00-8000-000000000011",  // Kimia SMA
             maxStudent: 1,
         },
         {
@@ -818,7 +829,7 @@ async function main() {
             type: "grup2",
             price: 4900000, // (2 * 24 * 100000) + 100000
             discPrice: 4410000, // 10% discount
-            packageId: "0196b294-4791-7b00-8000-000000000011",
+            packageId: "0196b294-4791-7b00-8000-000000000011", // Kimia SMA
             maxStudent: 2,
         },
         {
@@ -826,7 +837,7 @@ async function main() {
             type: "grup3",
             price: 7300000, // (3 * 24 * 100000) + 100000
             discPrice: 6570000, // 10% discount
-            packageId: "0196b294-4791-7b00-8000-000000000011",
+            packageId: "0196b294-4791-7b00-8000-000000000011", // Kimia SMA
             maxStudent: 3,
         },
         {
@@ -834,7 +845,7 @@ async function main() {
             type: "grup4",
             price: 9700000, // (4 * 24 * 100000) + 100000
             discPrice: 8730000, // 10% discount
-            packageId: "0196b294-4791-7b00-8000-000000000011",
+            packageId: "0196b294-4791-7b00-8000-000000000011",  // Kimia SMA
             maxStudent: 4,
         },
         {
@@ -842,7 +853,7 @@ async function main() {
             type: "grup5",
             price: 12100000, // (5 * 24 * 100000) + 100000
             discPrice: 10890000, // 10% discount
-            packageId: "0196b294-4791-7b00-8000-000000000011",
+            packageId: "0196b294-4791-7b00-8000-000000000011",  // Kimia SMA
             maxStudent: 5,
         },
     
@@ -852,7 +863,7 @@ async function main() {
             type: "privat",
             price: 2500000,
             discPrice: 2250000,
-            packageId: "0196b294-4791-7b00-8000-000000000012",
+            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
             maxStudent: 1,
         },
         {
@@ -860,7 +871,7 @@ async function main() {
             type: "grup2",
             price: 4900000,
             discPrice: 4410000,
-            packageId: "0196b294-4791-7b00-8000-000000000012",
+            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
             maxStudent: 2,
         },
         {
@@ -868,7 +879,7 @@ async function main() {
             type: "grup3",
             price: 7300000,
             discPrice: 6570000,
-            packageId: "0196b294-4791-7b00-8000-000000000012",
+            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
             maxStudent: 3,
         },
         {
@@ -876,7 +887,7 @@ async function main() {
             type: "grup4",
             price: 9700000,
             discPrice: 8730000,
-            packageId: "0196b294-4791-7b00-8000-000000000012",
+            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
             maxStudent: 4,
         },
         {
@@ -884,7 +895,7 @@ async function main() {
             type: "grup5",
             price: 12100000,
             discPrice: 10890000,
-            packageId: "0196b294-4791-7b00-8000-000000000012",
+            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
             maxStudent: 5,
         },
     
@@ -894,7 +905,7 @@ async function main() {
             type: "privat",
             price: 2500000,
             discPrice: 2250000,
-            packageId: "0196b294-4791-7b00-8000-000000000013",
+            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
             maxStudent: 1,
         },
         {
@@ -902,7 +913,7 @@ async function main() {
             type: "grup2",
             price: 4900000,
             discPrice: 4410000,
-            packageId: "0196b294-4791-7b00-8000-000000000013",
+            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
             maxStudent: 2,
         },
         {
@@ -910,7 +921,7 @@ async function main() {
             type: "grup3",
             price: 7300000,
             discPrice: 6570000,
-            packageId: "0196b294-4791-7b00-8000-000000000013",
+            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
             maxStudent: 3,
         },
         {
@@ -918,7 +929,7 @@ async function main() {
             type: "grup4",
             price: 9700000,
             discPrice: 8730000,
-            packageId: "0196b294-4791-7b00-8000-000000000013",
+            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
             maxStudent: 4,
         },
         {
@@ -926,9 +937,16 @@ async function main() {
             type: "grup5",
             price: 12100000,
             discPrice: 10890000,
-            packageId: "0196b294-4791-7b00-8000-000000000013",
+            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
             maxStudent: 5,
         },
+        {
+            id: "0196b294-4791-7b00-8000-000000000401",
+            type: "kelas",
+            price: 4000000, // (4 * 100000) + 100000
+            packageId: "0196b294-4791-7b00-8000-000000000014", // FOKUS UTBK
+            maxStudent: 20,
+        }
     ];
 
     for (const groupType of groupTypes) {
@@ -994,6 +1012,16 @@ async function main() {
             packageId: "0196b294-4791-7b00-8000-000000000013",
             dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
         },
+        {
+            id: "0196b294-4791-7b00-8000-000000000701",
+            packageId: "0196b294-4791-7b00-8000-000000000014",
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "0196b294-4791-7b00-8000-000000000702",
+            packageId: "0196b294-4791-7b00-8000-000000000014",
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
     ]
 
     for (const packageDay of packagesDays) {
@@ -1022,7 +1050,7 @@ async function main() {
         },
         {
             id: "0196b2d1-ecd3-7d08-8784-4e413a3f3788",
-            userId: "0196b294-4791-7972-912a-33627d5b14b2", // Adi Nugroho
+            userId: "0196b294-4791-7972-912a-33627d5b14b2", // Sari Utami
             packageId: "0196b294-4791-7b00-8000-000000000011", // Kimia
             groupTypeId: "0196b294-4791-7b00-8000-000000000101", // privat
             address: 'Jl. Merdeka No. 3',
@@ -1043,6 +1071,7 @@ async function main() {
             status: 'berjalan',
             tutorId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan
             orderId: "019618a1-68a4-7134-b8a7-98ba49f8e50f", // So Yon Oh - Matematika
+            maxStudents: 1,
         },
         {
             id: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
@@ -1050,6 +1079,7 @@ async function main() {
             status: 'selesai',
             tutorId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",// Ma Tor Nu Won - Bahasa Inggris
+            maxStudents: 2,
         },
     ];
     for (const classData of classes) {
