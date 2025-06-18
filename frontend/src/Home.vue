@@ -16,7 +16,7 @@ import Footer from './components/footer.vue';
       <keunggulanH />
     </div>
     <div class="pad_cta">
-      <div class="part cta-section">
+      <div class="cta-section">
         <cta />
       </div>
     </div>
@@ -53,35 +53,9 @@ header {
   padding-bottom: 2rem ;
 }
 
-
-.cta-section {
-  position: relative; /* Dibutuhkan untuk pseudo-element */
-  background-image: url('./assets/bgCta.png'); /* Ganti dengan path gambar Anda */
-  background-size: cover;
-  background-position: center;
-  width: 100%;
-}
-
 .pad_cta {
   padding: 2rem 0;
 }
-
-.cta-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Warna overlay gelap dengan transparansi */
-  z-index: 1; /* Pastikan overlay berada di atas background */
-}
-
-.cta-section > * {
-  position: relative;
-  z-index: 2; /* Pastikan konten berada di atas overlay */
-}
-
 @media (max-width: 982px) {
   header {
     display: flex;

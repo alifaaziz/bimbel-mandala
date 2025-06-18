@@ -188,6 +188,12 @@
     padding: 2rem 0;
     border-radius: 1rem;
 }
+:deep(.n-data-table__pagination) {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  /* ...style lain jika ada... */
+}
 @media (max-width: 768px) {
   .container-table {
     margin-top: 80px;

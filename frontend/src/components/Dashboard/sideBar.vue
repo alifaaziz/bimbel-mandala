@@ -1,76 +1,110 @@
 <template>
-  <div class="sidebar">
-    <div class="logo-container">
-      <img src="../../assets/logomandala22.png" alt="Logo Bimbingan Belajar Mandala" class="logo" />
+  <div>
+    <!-- Sidebar -->
+    <div class="sidebar" ref="sidebar" :class="{ 'is-open': sidebarOpen }">
+      <div class="logo-container">
+        <img src="../../assets/logo_mandala_bg.svg" alt="Logo" class="logo" />
+      </div>
+
+      <nav class="navigation">
+        <ul class="bodyr1">
+          <li class="nav-item">
+            <a class="nav-but" href="#">
+              <img src="@/assets/icons/admin/home.svg" alt="Home Icon" class="icon-white">
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-but" href="#">
+              <img src="@/assets/icons/admin/siswa.svg" alt="Siswa Icon" class="icon-white">
+              <span>Siswa</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-but" href="#">
+              <img src="@/assets/icons/admin/teacher.svg" alt="Tutor Icon" class="icon-white">
+              <span>Tutor</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-but" href="#">
+              <img src="@/assets/icons/admin/program.svg" alt="Program Icon" class="icon-white">
+              <span>Program</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-but" href="#">
+              <img src="@/assets/icons/admin/jpa.svg" alt="JPA Icon" class="icon-white">
+              <span>Jadwal Program Aktif</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-but" href="#">
+              <img src="@/assets/icons/admin/cb.svg" alt="CB Icon" class="icon-white">
+              <span>Catatan & Biaya</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <n-divider />
+
+      <div class="sidebar-bottom bodyr1">
+        <ul>
+          <li class="nav-item">
+            <a class="nav-but" href="#">
+              <img src="@/assets/icons/admin/bell.svg" alt="Notifikasi Icon" class="icon-white">
+              <span>Notifikasi</span>
+              <span class="notification-badge"></span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-but" href="#">
+              <img src="@/assets/icons/admin/logout.svg" alt="Logout Icon" class="icon-white">
+              <span>Log Out</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
-
-    <nav class="navigation">
-      <ul class="bodyr1">
-        <li class="nav-item">
-          <a class="nav-but" href="#">
-            <img src="@/assets/icons/admin/home.svg" alt="Home Icon" class="icon-white">
-            <span>Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-but" href="#">
-            <img src="@/assets/icons/admin/siswa.svg" alt="Home Icon" class="icon-white">
-            <span>Siswa</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-but" href="#">
-            <img src="@/assets/icons/admin/teacher.svg" alt="Home Icon" class="icon-white">
-            <span>Tutor</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-but" href="#">
-            <img src="@/assets/icons/admin/program.svg" alt="Home Icon" class="icon-white">
-            <span>Program</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-but" href="#">
-            <img src="@/assets/icons/admin/jpa.svg" alt="Home Icon" class="icon-white">
-            <span>Jadwal Program Aktif</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-but" href="#">
-            <img src="@/assets/icons/admin/cb.svg" alt="Home Icon" class="icon-white">
-            <span>Catatan & Biaya</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <n-divider />
-
-    <div class="sidebar-bottom bodyr1">
-      <ul>
-        <li class="nav-item">
-          <a class="nav-but" href="#">
-            <img src="@/assets/icons/admin/bell.svg" alt="Home Icon" class="icon-white">
-            <span>Notifikasi</span>
-            <span class="notification-badge"></span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-but" href="#">
-            <img src="@/assets/icons/admin/logout.svg" alt="Home Icon" class="icon-white">
-            <span>Log Out</span>
-          </a>
-        </li>
-      </ul>
+    <!-- Burger Menu (mobile only) -->
+    <div class="burger-menu" ref="burger" @click="toggleSidebar" v-show="!sidebarOpen">
+      <p class="buttonb1">Menu</p>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'SidebarNav'
-}
+  name: 'SidebarNav',
+  data() {
+    return {
+      sidebarOpen: false
+    };
+  },
+  methods: {
+    toggleSidebar() {
+      this.sidebarOpen = !this.sidebarOpen;
+    },
+    handleClickOutside(event) {
+      const isMobile = window.innerWidth <= 768;
+      if (
+        isMobile &&
+        this.sidebarOpen &&
+        !this.$refs.sidebar.contains(event.target) &&
+        !this.$refs.burger.contains(event.target)
+      ) {
+        this.sidebarOpen = false;
+      }
+    }
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside);
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside);
+  }
+};
 </script>
 
 <style scoped>
@@ -87,8 +121,10 @@ export default {
   font-family: sans-serif;
   z-index: 1000;
   overflow-y: auto;
+  transition: transform 0.3s ease;
 }
 
+/* Logo */
 .logo-container {
   background-color: white;
   display: flex;
@@ -140,13 +176,6 @@ export default {
   background-color: #1a1a1a;
 }
 
-.nav-item i {
-  margin-right: 15px;
-  font-size: 1.2em;
-  width: 20px;
-  text-align: center;
-}
-
 .nav-item span {
   font-size: 0.95em;
 }
@@ -159,5 +188,36 @@ export default {
   margin-left: auto;
   align-self: flex-start;
   margin-top: 5px;
+}
+
+/* Burger Menu */
+.burger-menu {
+  display: none;
+  position: fixed;
+  top: 20px;
+  z-index: 1100;
+  background-color: orange;
+  border-radius: 0 8px 8px 0;
+  padding: 8px;
+}
+
+.buttonb1 {
+  color: white;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    position: fixed;
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .burger-menu {
+    display: block;
+  }
 }
 </style>

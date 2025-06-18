@@ -324,15 +324,6 @@ const notificationsWithTime = computed(() =>
             :width="260"
           >            
             <div class="mobile-auth-actions" v-if="isLoggedIn">
-              <n-button
-                block
-                size="small"
-                class="mark-all-read-btn"
-                @click="markAllNotificationsRead"
-                style="margin-bottom: 1rem;"
-              >
-                Tandai semua sudah dibaca
-              </n-button>
               <div class="user-actions">
                 <div class="notification-wrapper">
                   <button 

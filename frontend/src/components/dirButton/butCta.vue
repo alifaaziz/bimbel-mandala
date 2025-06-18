@@ -4,11 +4,22 @@
           class="custom-button buttonb2"
           tertiary
           round
+          @click="navigateToListProgram"
         >
           Daftar Program
         </n-button>
     </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    navigateToListProgram() {
+      this.$router.push('/program');
+    }
+  }
+};
+</script>
 
 <style scoped>
 .button-container {
