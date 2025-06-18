@@ -4,6 +4,7 @@ import butMasuk from './dirButton/butMasuk.vue';
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NLayout, NLayoutHeader, NMenu, NButton, NDrawer } from 'naive-ui';
+import ButSecondNormal from './dirButton/butSecondNormal.vue';
 
 const props = defineProps({});
 
@@ -106,12 +107,6 @@ const closeNotifications = (event) => {
   }
 };
 
-const logout = () => {
-  localStorage.removeItem('token')
-  isLoggedIn.value = false
-  router.push('/')
-};
-
 const markAllNotificationsRead = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -134,11 +129,24 @@ watch(
 );
 
 let timeInterval = null;
+const isTutor = ref(false)
 
 onMounted(async () => {
   window.addEventListener('resize', handleResize);
   document.addEventListener('click', closeNotifications);
   await fetchNotifications();
+
+  const token = localStorage.getItem('token')
+  if (!token) return
+  const res = await fetch('http://localhost:3000/users/me', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  if (res.ok) {
+    const data = await res.json()
+    isTutor.value = data.data?.role === 'tutor'
+  }
 });
 
 onBeforeUnmount(() => {
@@ -215,6 +223,7 @@ const notificationsWithTime = computed(() =>
             
             <template v-else>
               <div class="user-actions">
+                <butSecondNormal v-if="!isTutor" label="Gabung Kelas"/>
                 <div class="notification-wrapper">
                   <button 
                     @click.stop="toggleNotifications"
@@ -489,7 +498,6 @@ const notificationsWithTime = computed(() =>
   width: 2px;
   height: 32px;
   background-color: var(--menu-divider-color);
-  margin: 0 1rem;
   align-self: center;
 }
 
@@ -524,6 +532,7 @@ ion-icon {
 /* Notification styles */
 .notification-wrapper {
   position: relative;
+  align-content: center;
 }
 
 .notification-badge {
@@ -736,10 +745,6 @@ ion-icon {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .menu-divider {
-    margin: 0 0.5rem;
-  }
-
   .navbar {
     padding: 0 2rem;
   }
