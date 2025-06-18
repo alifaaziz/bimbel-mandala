@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import Main from './Main.vue';
 import Auth from './Auth.vue';
 import Jadwal from './components/Jadwal.vue';
+import gabungprogram from './components/gabungProgram.vue';
 
 import Otp from './components/Auth/otp.vue';
 import ResetPassword from './components/Auth/ResetPassword.vue';
@@ -52,6 +53,9 @@ const layout = computed(() => {
   } 
   else if (route.path.startsWith('/cobadulu')) {
     return dashboard;
+  }
+  else if (route.path.startsWith('/gabungprogram')) {
+    return gabungprogram;
   }
   else {
     return Main;

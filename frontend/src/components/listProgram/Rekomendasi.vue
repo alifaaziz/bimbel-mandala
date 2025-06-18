@@ -79,54 +79,62 @@ function handleButton(slug) {
 <template>
   <div>
     <h2 v-if="limitedPrograms.length > 0" class="headerb1 title2">{{ title }}</h2>
+    <h2 v-else class="headerb1 title2">{{ title }}</h2>
     <div class="card-container">
-      <n-card 
-        v-for="program in limitedPrograms" 
-        :key="program.id"
-        class="n-card"
-      >
-        <div class="card-content">
-          <div class="card-image">
-            <img 
-              :src="program.photo ? `http://localhost:3000${program.photo}` : '/tutor/Tutor_Default.png'" 
-              :alt="`Image of ${program.name}`" 
-            />
-            <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
-          </div>
-          <div class="card-text">
-            <div class="header">
-              <div class="title-group">
-                <h3 class="headerb2">{{ truncateName(program.name) }}</h3>
-                <p class="name bodyr3">{{ program.tutorName }}</p>
-              </div>
-              <div class="badge">{{ program.level }}</div>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Area</strong></span>
-                <span class="value">: {{ program.area }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Hari</strong></span>
-                <span class="value">: {{ program.days.join(', ') }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Pukul</strong></span>
-                <span class="value">: {{ formatTime(program.time) }}</span>
-            </div>
-            <div class="info-row">
-                <span class="label"><strong>Durasi</strong></span>
-                <span class="value">: {{ program.duration }} menit</span>
-            </div>
-            <div class="Action">
-              <butSecondSmall
-                class="butPesan"
-                :label="isTutor ? 'Detail Program' : 'Daftar Program'"
-                @click="handleButton(program.slug)"
+      <template v-if="limitedPrograms.length > 0">
+        <n-card 
+          v-for="program in limitedPrograms" 
+          :key="program.id"
+          class="n-card"
+        >
+          <div class="card-content">
+            <div class="card-image">
+              <img 
+                :src="program.photo ? `http://localhost:3000${program.photo}` : '/tutor/Tutor_Default.png'" 
+                :alt="`Image of ${program.name}`" 
               />
+              <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
+            </div>
+            <div class="card-text">
+              <div class="header">
+                <div class="title-group">
+                  <h3 class="headerb2">{{ truncateName(program.name) }}</h3>
+                  <p class="name bodyr3">{{ program.tutorName }}</p>
+                </div>
+                <div class="badge">{{ program.level }}</div>
+              </div>
+              <div class="info-row">
+                  <span class="label"><strong>Area</strong></span>
+                  <span class="value">: {{ program.area }}</span>
+              </div>
+              <div class="info-row">
+                  <span class="label"><strong>Hari</strong></span>
+                  <span class="value">: {{ program.days.join(', ') }}</span>
+              </div>
+              <div class="info-row">
+                  <span class="label"><strong>Pukul</strong></span>
+                  <span class="value">: {{ formatTime(program.time) }}</span>
+              </div>
+              <div class="info-row">
+                  <span class="label"><strong>Durasi</strong></span>
+                  <span class="value">: {{ program.duration }} menit</span>
+              </div>
+              <div class="Action">
+                <butSecondSmall
+                  class="butPesan"
+                  :label="isTutor ? 'Detail Program' : 'Daftar Program'"
+                  @click="handleButton(program.slug)"
+                />
+              </div>
             </div>
           </div>
+        </n-card>
+      </template>
+      <template v-else>
+        <div class="no-recommendation">
+          Belum ada rekomendasi program yang tersedia.
         </div>
-      </n-card>
+      </template>
     </div>
   </div>
 </template>
@@ -221,6 +229,13 @@ function handleButton(slug) {
 
 .butPesan {
   margin-top: 2rem;
+}
+
+.no-recommendation {
+  width: 100%;
+  text-align: center;
+  color: #617592;
+  font-size: 1.2rem;
 }
 
 /* Tablet (768px and up) */
