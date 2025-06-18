@@ -130,7 +130,7 @@ async function handleConfirm() {
       query: {
         program: programData.value.name,
         level: programData.value.level,
-        tutor: programData.value.tutorName,
+        groupType: options.value.find(opt => opt.value === selectedGroup.type)?.label || selectedGroup.type,
       },
     });
   } catch (err) {

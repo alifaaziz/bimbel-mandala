@@ -10,7 +10,7 @@ const route = useRoute();
 // Ambil data dari query parameters
 const programName = route.query.program || 'Program Tidak Diketahui';
 const programLevel = route.query.level || 'Jenjang Tidak Diketahui';
-const tutorName = route.query.tutor || 'Tutor Tidak Diketahui';
+const groupType = route.query.groupType || 'Tipe Grup Tidak Diketahui';
 
 function waAdmin() {
   const phoneNumber = '6285855852485'; // Ganti dengan nomor WhatsApp admin
@@ -40,11 +40,7 @@ function goHome() {
                         Program: 
                     </p>
                     <p class="bodyb1">
-<<<<<<< HEAD
-                        <span>(Program Terdaftar, level, paket jumlah siswa){{ $route.query.program }}</span>
-=======
-                        <span>{{ programName }} {{ programLevel }}</span>
->>>>>>> b438404ba7b855660cd262f31bc520b8372e3871
+                        <span>{{ programName }}, {{ programLevel }}, {{ groupType }}</span>
                     </p>
                 </div>
                 <p class="bodyr3">
