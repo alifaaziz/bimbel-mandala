@@ -169,6 +169,8 @@ async function getMyClass(userId, role) {
                 ? `${bimbelPackage.name} ${bimbelPackage.level}`
                 : null;
 
+            const slug = bimbelPackage?.slug || null;
+
             const days = packageDays
                 ? packageDays.map(day => day.day.daysName).join(', ')
                 : null;
@@ -177,6 +179,7 @@ async function getMyClass(userId, role) {
                 status: cls.status,
                 tutorName,
                 programName,
+                slug,
                 groupType: groupType?.type || null,
                 days,
                 time: bimbelPackage?.time || null,
@@ -227,6 +230,8 @@ async function getMyClass(userId, role) {
                 ? `${bimbelPackage.name} ${bimbelPackage.level}`
                 : null;
 
+            const slug = bimbelPackage?.slug || null;
+
             const days = packageDays
                 ? packageDays.map(day => day.day.daysName).join(', ')
                 : null;
@@ -235,6 +240,7 @@ async function getMyClass(userId, role) {
                 status: cls.status,
                 tutorName,
                 programName,
+                slug,
                 groupType: groupType?.type || null,
                 days,
                 time: bimbelPackage?.time || null,

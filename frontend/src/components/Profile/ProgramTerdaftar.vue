@@ -15,7 +15,12 @@
               <td class="bodyr3" data-label="Jam">{{ formatTime(program.time) }}</td>
               <td class="bodyr3" data-label="Durasi">{{ program.duration }} Menit</td>
               <td data-label="Aksi">
-                <n-button ghost color="#154484" class="but-table">
+                <n-button
+                  ghost
+                  color="#154484"
+                  class="but-table"
+                  @click="$router.push(`/detailprogram/${program.slug}`)"
+                >
                   <n-icon>
                     <img src="@/assets/icons/more-horizontal.svg" alt="">
                   </n-icon>

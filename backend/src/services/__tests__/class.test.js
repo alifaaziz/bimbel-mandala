@@ -102,6 +102,7 @@ describe('ClassService', () => {
                             groupType: { type: 'Reguler' },
                             bimbelPackage: {
                                 name: 'Paket A',
+                                slug: 'paket-a',
                                 level: 'SMA',
                                 time: '10:00',
                                 duration: 90,
@@ -119,6 +120,7 @@ describe('ClassService', () => {
                 status: 'aktif',
                 tutorName: 'Pak Budi',
                 programName: 'Paket A SMA',
+                slug: 'paket-a',
                 groupType: 'Reguler',
                 days: 'Senin, Rabu',
                 time: '10:00',
@@ -137,6 +139,7 @@ describe('ClassService', () => {
                             bimbelPackage: {
                                 name: 'Paket B',
                                 level: 'SMP',
+                                slug: 'paket-b',
                                 time: null,
                                 duration: null,
                                 packageDay: null
@@ -150,6 +153,7 @@ describe('ClassService', () => {
                 status: 'aktif',
                 tutorName: 'Bu undefined',
                 programName: 'Paket B SMP',
+                slug: 'paket-b',
                 groupType: null,
                 days: null,
                 time: null,
@@ -169,6 +173,7 @@ describe('ClassService', () => {
                         groupType: { type: 'Privat' },
                         bimbelPackage: {
                             name: 'Paket C',
+                            slug: 'paket-c',
                             level: 'SD',
                             time: '08:00',
                             duration: 60,
@@ -184,6 +189,7 @@ describe('ClassService', () => {
                 status: 'berjalan',
                 tutorName: 'Bu Siti',
                 programName: 'Paket C SD',
+                slug: 'paket-c',
                 groupType: 'Privat',
                 days: 'Selasa',
                 time: '08:00',
