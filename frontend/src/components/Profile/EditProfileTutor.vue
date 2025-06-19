@@ -95,71 +95,73 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <navbarEditProfile />
-  <div class="profile-container padding-components">
-    <h1 class="headersb3">Informasi Akun</h1>
-    <n-space vertical class="input bodym2">
-      <div class="input-line">
-        <div class="input-nama">
-          <p class="input-judul">Nama</p>
-          <n-input v-model:value="nama" type="text" placeholder="Ganti nama kamu" />
+  <div>
+    <navbarEditProfile />
+    <div class="profile-container padding-components">
+      <h1 class="headersb3">Informasi Akun</h1>
+      <n-space vertical class="input bodym2">
+        <div class="input-line">
+          <div class="input-nama">
+            <p class="input-judul">Nama</p>
+            <n-input v-model="nama" type="text" placeholder="Ganti nama kamu" />
+          </div>
+          <div class="input-status">
+            <p class="input-judul">Status</p>
+            <n-select 
+              v-model="status" 
+              :options="options" 
+              placeholder="Pilih status" 
+            />
+          </div>
         </div>
-        <div class="input-status">
-          <p class="input-judul">Status</p>
-          <n-select 
-            v-model:value="status" 
-            :options="options" 
-            placeholder="Pilih status" 
-          />
-        </div>
-      </div>
 
-      <div class="input-line">
-        <div class="input-wa">
-          <p class="input-judul">No. Whatsapp</p>
-          <n-input v-model:value="noWa" type="text" placeholder="Ganti nomor Whatsapp" />
+        <div class="input-line">
+          <div class="input-wa">
+            <p class="input-judul">No. Whatsapp</p>
+            <n-input v-model="noWa" type="text" placeholder="Ganti nomor Whatsapp" />
+          </div>
         </div>
-      </div>
 
-      <div class="input-line">
-        <div class="input-alamat">
-          <p class="input-judul">Alamat</p>
-          <n-input v-model:value="alamat" type="text" placeholder="Ganti alamat kamu" />
+        <div class="input-line">
+          <div class="input-alamat">
+            <p class="input-judul">Alamat</p>
+            <n-input v-model="alamat" type="text" placeholder="Ganti alamat kamu" />
+          </div>
         </div>
-      </div>
 
-      <div class="input-line">
-        <div class="input-jenjang">
-          <p class="input-judul">Jenjang diajar</p>
-          <n-input v-model:value="jenjang" type="text" placeholder="masukkan jenjang yang bisa anda ajar" />
+        <div class="input-line">
+          <div class="input-jenjang">
+            <p class="input-judul">Jenjang diajar</p>
+            <n-input v-model="jenjang" type="text" placeholder="masukkan jenjang yang bisa anda ajar" />
+          </div>
         </div>
-      </div>
-      
-      <div class="input-line">
-        <div class="input-pelajaran">
-          <p class="input-judul">Mata Pelajaran</p>
-          <n-input v-model:value="pelajaran" type="text" placeholder="masukkan jenjang yang bisa anda ajar" />
+        
+        <div class="input-line">
+          <div class="input-pelajaran">
+            <p class="input-judul">Mata Pelajaran</p>
+            <n-input v-model="pelajaran" type="text" placeholder="masukkan jenjang yang bisa anda ajar" />
+          </div>
         </div>
-      </div>
 
-      <div class="hari-mengajar">
-        <p class="input-judul">Hari aktif</p>
-        <div class="days">
-          <button
-            v-for="(day, index) in days"
-            :key="index"
-            :class="['day-button', { active: selectedDays.includes(day) }]"
-            @click="toggleDay(day)"
-          >
-            {{ day }}
-          </button>
+        <div class="hari-mengajar">
+          <p class="input-judul">Hari aktif</p>
+          <div class="days">
+            <button
+              v-for="(day, index) in days"
+              :key="index"
+              :class="['day-button', { active: selectedDays.includes(day) }]"
+              @click="toggleDay(day)"
+            >
+              {{ day }}
+            </button>
+          </div>
         </div>
-      </div>
 
-    </n-space>
-    <butSimpan @click="submitForm"/>
+      </n-space>
+      <butSimpan @click="submitForm"/>
+    </div>
+    <Footer/> 
   </div>
-  <Footer/> 
 </template>
 
 <style scoped>

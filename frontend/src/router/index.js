@@ -26,6 +26,10 @@ import EditProfile from '@/components/Profile/EditProfile.vue'
 import EditProfileTutor from '@/components/Profile/EditProfileTutor.vue'
 import Rekap from '@/components/rekap.vue'
 import GoogleSuccess from '@/components/Auth/GoogleSuccess.vue';
+import path from 'path';
+import DashboardParent from '@/components/Dashboard/DashboardParent.vue';
+
+import Dashboard from '@/components/Dashboard/dashboard.vue';
 
 const routes = [
   { 
@@ -140,6 +144,17 @@ const routes = [
       },
     ]
   },
+  {
+    path: '/dashboard', 
+    component: Dashboard,
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: Dashboard,
+      },
+    ]
+  }
 ]
 
 const router = createRouter({

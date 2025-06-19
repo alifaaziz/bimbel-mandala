@@ -1,0 +1,118 @@
+<template>
+  <div class="siswa-terbaru-widget">
+    <n-space vertical :size="16">
+      <n-h2 class="widget-title">Siswa Terbaru</n-h2>
+
+      <n-card
+        v-for="student in newStudents"
+        :key="student.id"
+        class="student-card"
+        :bordered="false"
+        hoverable
+      >
+        <div class="card-content">
+          <div class="student-info">
+            <div class="student-name">{{ student.name }}</div>
+            <n-text :depth="3" class="student-date">{{ student.date }}</n-text>
+          </div>
+
+          <div class="student-level">
+            <n-tag :bordered="false" size="large" round>
+              {{ student.level }}
+            </n-tag>
+          </div>
+        </div>
+      </n-card>
+    </n-space>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { NCard, NSpace, NH2, NText, NTag } from 'naive-ui';
+
+// Data tiruan (mock data) untuk siswa terbaru
+const newStudents = ref([
+  {
+    id: 1,
+    name: 'Salasabila Vanessa',
+    level: 'SMA',
+    date: '12 Maret 2025',
+  },
+  {
+    id: 2,
+    name: 'Budiono Siregar',
+    level: 'SD',
+    date: '11 Maret 2025',
+  },
+  {
+    id: 3,
+    name: 'Aurora Wijayanti',
+    level: 'SMP',
+    date: '11 Maret 2025',
+  },
+]);
+</script>
+
+<style scoped>
+.siswa-terbaru-widget {
+  padding: 20px;
+  max-width: 400px; /* Atur lebar maksimum widget */
+  font-family: 'Inter', sans-serif; /* Menggunakan font yang lebih modern */
+}
+
+.widget-title {
+  margin: 0;
+  font-weight: 700;
+  color: #0F2C5A; /* Warna biru tua sesuai gambar */
+}
+
+/* Kustomisasi n-card agar sesuai dengan desain */
+:deep(.student-card.n-card) {
+  background-color: #EFF4FB; /* Warna latar belakang kartu */
+  border-radius: 12px; /* Membuat sudut lebih bulat */
+}
+:deep(.student-card.n-card:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+:deep(.student-card > .n-card__content) {
+    padding: 16px !important;
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.student-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #1e1e1e;
+}
+
+.student-date {
+  font-size: 0.9rem;
+}
+
+.student-level {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Kustomisasi n-tag agar mirip teks biasa tapi tetap komponen Naive */
+:deep(.n-tag) {
+  color: #6B7280; /* Warna abu-abu untuk jenjang */
+  background-color: transparent;
+  font-weight: 500;
+  font-size: 1rem;
+  padding-right: 0; /* Menghapus padding agar rata kanan */
+}
+</style>

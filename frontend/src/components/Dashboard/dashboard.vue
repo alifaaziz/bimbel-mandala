@@ -1,10 +1,4 @@
 <template>
-  <div class="dashboard-container">
-    <!-- Sidebar -->
-    <div class="sidebar-container">
-      <SideBar />
-    </div>
-
     <!-- Main Content -->
     <div class="main-content">
       <!-- Jadwal Program -->
@@ -23,8 +17,6 @@
         </div>
       </div>
     </div>
-
-  </div>
 </template>
 
 <script>
