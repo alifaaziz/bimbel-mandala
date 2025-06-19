@@ -15,7 +15,8 @@ async function createClass(data) {
     const order = await prisma.order.findUnique({
         where: { id: orderId },
         include: {
-            bimbelPackage: true
+            bimbelPackage: true,
+            groupType: true
         }
     });
 
@@ -25,6 +26,7 @@ async function createClass(data) {
 
     const studentId = order.userId; 
     const tutorId = order.bimbelPackage.userId;
+    const maxStudents = order.groupType?.maxStudent;
 
     const code = crypto.randomBytes(3).toString('hex').toUpperCase();
 
@@ -34,6 +36,7 @@ async function createClass(data) {
             orderId,
             tutorId,
             status: 'berjalan',
+            maxStudents
         }
     });
 
@@ -75,6 +78,16 @@ async function joinClass(data) {
   
     if (!classData) {
       throw new Error('Class not found');
+    }
+
+    const studentCount = await prisma.studentClass.count({
+        where: {
+            classId: classData.id
+        }
+    });
+
+    if (studentCount >= classData.maxStudents) {
+        throw new Error('Class is full');
     }
   
     const existingStudent = await prisma.studentClass.findFirst({

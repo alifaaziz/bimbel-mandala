@@ -9,14 +9,13 @@
     </n-layout>
 </template>
 
-<script>
-export default {
-  methods: {
-    goBack() {
-      this.$router.go(-1); // Navigasi ke halaman sebelumnya
-    }
-  }
-};
+<script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+function goBack() {
+  router.go(-1);
+}
 </script>
 
 <style scoped>

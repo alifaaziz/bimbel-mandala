@@ -25,10 +25,12 @@ onMounted(async () => {
 
 <template>
   <div class="padding-components">
-    <div v-if="!isTutor">
-      <topSearchBar />
+    <div>
+      <topSearchBar v-if="!isTutor" />
     </div>
-    <Rekomendasi v-if="!isTutor" />
+    <div v-if="!isTutor">
+      <Rekomendasi />
+    </div>
     <PalingPopuler />
     <seluruhProgram />
   </div>

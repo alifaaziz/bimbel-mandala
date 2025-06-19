@@ -8,6 +8,8 @@ model Class {
     tutorId   String?  @map("tutor_id")
     tutor    User?    @relation(fields: [tutorId], references: [id])
 
+    maxStudents Int @map("max_students")
+
     studentClasses StudentClass[]
     schedules      Schedule[]
 

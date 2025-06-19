@@ -15,7 +15,7 @@ CREATE TABLE `attendances` (
 CREATE TABLE `bimbel_packages` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `level` VARCHAR(191) NOT NULL,
+    `level` ENUM('SD', 'SMP', 'SMA', 'Umum') NOT NULL,
     `total_meetings` INTEGER NOT NULL,
     `time` DATETIME(3) NOT NULL,
     `duration` INTEGER NOT NULL,
@@ -38,6 +38,7 @@ CREATE TABLE `class` (
     `status` ENUM('berjalan', 'selesai') NOT NULL,
     `order_id` VARCHAR(191) NULL,
     `tutor_id` VARCHAR(191) NULL,
+    `max_students` INTEGER NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
