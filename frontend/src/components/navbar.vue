@@ -223,7 +223,11 @@ const notificationsWithTime = computed(() =>
             
             <template v-else>
               <div class="user-actions">
-                <butSecondNormal v-if="!isTutor" label="Gabung Kelas"/>
+                <butSecondNormal 
+                  v-if="!isTutor" 
+                  label="Gabung Kelas"
+                  @click="$router.push('/gabungprogram')"
+                />
                 <div class="notification-wrapper">
                   <button 
                     @click.stop="toggleNotifications"

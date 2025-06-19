@@ -18,7 +18,7 @@ const successFeedback = ref('')
 
 const message = useMessage()
 
-function submitprogram() {
+async function submitprogram() {
   feedback.value = ''
   status.value = ''
   successFeedback.value = ''
@@ -29,21 +29,35 @@ function submitprogram() {
   }
   loading.value = true
 
-  setTimeout(() => {
+  try {
+    const token = localStorage.getItem('token')
+    const res = await fetch('http://localhost:3000/classes/join', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token || ''}`
+      },
+      body: JSON.stringify({ code: programCode.value })
+    })
+    const data = await res.json()
     loading.value = false
-    if (programCode.value === 'MANDALA123') {
+
+    if (res.ok) {
       message.success('Berhasil bergabung dengan program!')
       successFeedback.value = 'Berhasil bergabung dengan program!'
       programCode.value = ''
-      // Tambahkan timeout untuk redirect setelah 2 detik
       setTimeout(() => {
-        router.push('/absen') // Ganti 'Home' dengan nama route halaman utama jika berbeda
+        router.push('/absen')
       }, 2000)
     } else {
-      feedback.value = 'Kode program tidak valid'
+      feedback.value = data.message || 'Kode program tidak valid'
       status.value = 'error'
     }
-  }, 1200)
+  } catch (err) {
+    loading.value = false
+    feedback.value = 'Terjadi kesalahan. Silakan coba lagi.'
+    status.value = 'error'
+  }
 }
 </script>
 
