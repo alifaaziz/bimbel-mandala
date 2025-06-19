@@ -18,9 +18,9 @@ import ProgramTerdaftar from './components/detailProgram/ProgramTerdaftar/Progra
 import RegisterSuccess from './components/successPage/MenjadiTutor.vue';
 import RegisterprogramSuccess from './components/successPage/PemesananProgram.vue';
 
-import dashboard from './components/Dashboard/DashboardParent.vue';
+import Dashboardadmin from './components/Dashboard/DashboardParent.vue';
 
-const route = useRoute();
+const route = useRoute();``
 
 // Style
 const layout = computed(() => {
@@ -51,13 +51,10 @@ const layout = computed(() => {
   else if (route.path.startsWith('/registerprogramsuccess')) {
     return RegisterprogramSuccess;
   } 
-  else if (route.path.startsWith('/dashboard')) {
-    return dashboard;
-  }
   else if (route.path.startsWith('/gabungprogram')) {
     return gabungprogram;
   }
-  else {
+  else if (route.path.startsWith('/')) {
     return Main;
   }
 });

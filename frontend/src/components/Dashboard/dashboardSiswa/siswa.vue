@@ -1,6 +1,15 @@
 <script setup>
-import sidebar from '@/components/Sidebar/sidebar.vue';
+import sideBar from '../sideBar.vue';
 </script>
-<template>
 
+<template>
+    <div class="fuck">
+        FUCK OFF
+    </div>
 </template>
+
+<style setup>
+.fuck{
+    color: black;
+}
+</style>

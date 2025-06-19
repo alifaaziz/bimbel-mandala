@@ -223,7 +223,12 @@ const notificationsWithTime = computed(() =>
             
             <template v-else>
               <div class="user-actions">
-                <butSecondNormal v-if="!isTutor" label="Gabung Kelas"/>
+                <butSecondNormal 
+                v-if="!isTutor" 
+                label="Gabung Kelas"
+                @click="router.push('/gabungprogram')"
+                class="butGabungProgram"
+                />
                 <div class="notification-wrapper">
                   <button 
                     @click.stop="toggleNotifications"
@@ -296,14 +301,6 @@ const notificationsWithTime = computed(() =>
                         Tidak ada notifikasi
                       </div>
                     </div>
-                    
-                    <!-- <router-link 
-                      to="/notification" 
-                      class="view-all"
-                      @click.stop="showNotificationPopup = false"
-                    >
-                      Lihat Semua Notifikasi
-                    </router-link> -->
                   </div>
                 </div>
                 
@@ -333,103 +330,111 @@ const notificationsWithTime = computed(() =>
             :width="260"
           >            
             <div class="mobile-auth-actions" v-if="isLoggedIn">
-              <div class="user-actions">
-                <div class="notification-wrapper">
-                  <button 
-                    @click.stop="toggleNotifications"
-                    class="action-icon"
-                    aria-label="Notifications"
-                  >
-                    <ion-icon name="notifications-outline"></ion-icon>
-                    <span v-if="unreadCount > 0" class="notification-badge">
-                      {{ unreadCount }}
-                    </span>
-                  </button>
-                  
-                  <div v-if="showNotificationPopup" class="notification-popup">
-                    <div class="notification-header">
-                      <h3 class="headersb2">Notifikasi</h3>
-                      <button 
-                        @click.stop="showNotificationPopup = false" 
-                        class="close-btn"
-                      >
-                        <ion-icon name="close-outline"></ion-icon>
-                      </button>
-                    </div>
-                    
-                    <div class="notification-list">
-                      <div 
-                        v-for="notification in notificationsWithTime" 
-                        :key="notification.id"
-                        class="notification-item"
-                        :class="{ 'unread': !notification.read }"
-                      >
-                        <div class="notification-photo">
-                          <img 
-                            :src="notification.photo" 
-                            alt="Foto notifikasi" 
-                          />
-                        </div>
-                        
-                        <div class="notification-content">
-                          <h4 class="bodyb2">{{ notification.type }}</h4>
-                          <p class="bodyr3" v-html="notification.message"></p>
-                          <div v-if="notification.type === 'Izin' && notification.reason" class="reason-box">
-                            <div class="reason-label">Alasan Izin:</div>
-                            <div class="reason-text bodyr3">{{ notification.reason }}</div>
-                          </div>
-                          <span class="notification-time bodyr3">
-                            {{ notification.time }}
-                          </span>
-                          
-                          <div 
-                            v-if="notification.type === 'Jadwal'" 
-                            class="notification-actions"
-                          >
-                            <n-button 
-                              size="small" 
-                              @click.stop="goToSchedule()"
-                              class="schedule-button"
-                            >
-                              Lihat Jadwal
-                            </n-button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div 
-                        v-if="notifications.length === 0" 
-                        class="empty-notifications"
-                      >
-                        Tidak ada notifikasi
-                      </div>
-                    </div>
-                    
-                    <router-link 
-                      to="/notification" 
-                      class="view-all"
-                      @click.stop="showNotificationPopup = false"
+              <div class="headNav-Mobile">
+                <div class="user-actions mobile-wrapper">
+                  <div class="notification-wrapper">
+                    <button 
+                      @click.stop="toggleNotifications"
+                      class="action-icon"
+                      aria-label="Notifications"
                     >
-                      Lihat Semua Notifikasi
-                    </router-link>
+                      <ion-icon name="notifications-outline"></ion-icon>
+                      <span v-if="unreadCount > 0" class="notification-badge">
+                        {{ unreadCount }}
+                      </span>
+                    </button>
+                    
+                    <div v-if="showNotificationPopup" class="notification-popup">
+                      <div class="notification-header">
+                        <h3 class="headersb2">Notifikasi</h3>
+                        <button 
+                          @click.stop="showNotificationPopup = false" 
+                          class="close-btn"
+                        >
+                          <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                      </div>
+                      
+                      <div class="notification-list">
+                        <div 
+                          v-for="notification in notificationsWithTime" 
+                          :key="notification.id"
+                          class="notification-item"
+                          :class="{ 'unread': !notification.read }"
+                        >
+                          <div class="notification-photo">
+                            <img 
+                              :src="notification.photo" 
+                              alt="Foto notifikasi" 
+                            />
+                          </div>
+                          
+                          <div class="notification-content">
+                            <h4 class="bodyb2">{{ notification.type }}</h4>
+                            <p class="bodyr3" v-html="notification.message"></p>
+                            <div v-if="notification.type === 'Izin' && notification.reason" class="reason-box">
+                              <div class="reason-label">Alasan Izin:</div>
+                              <div class="reason-text bodyr3">{{ notification.reason }}</div>
+                            </div>
+                            <span class="notification-time bodyr3">
+                              {{ notification.time }}
+                            </span>
+                            
+                            <div 
+                              v-if="notification.type === 'Jadwal'" 
+                              class="notification-actions"
+                            >
+                              <n-button 
+                                size="small" 
+                                @click.stop="goToSchedule()"
+                                class="schedule-button"
+                              >
+                                Lihat Jadwal
+                              </n-button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div 
+                          v-if="notifications.length === 0" 
+                          class="empty-notifications"
+                        >
+                          Tidak ada notifikasi
+                        </div>
+                      </div>
+                      
+                      <router-link 
+                        to="/notification" 
+                        class="view-all"
+                        @click.stop="showNotificationPopup = false"
+                      >
+                        Lihat Semua Notifikasi
+                      </router-link>
+                    </div>
                   </div>
+                  
+                  <router-link 
+                    to="/jadwal" 
+                    class="action-icon"
+                    aria-label="Schedule"
+                  >
+                    <ion-icon name="calendar-outline"></ion-icon>
+                  </router-link>
+                  
+                  <router-link 
+                    to="/profileuser" 
+                    class="action-icon"
+                    aria-label="Account"
+                  >
+                    <ion-icon name="person-outline"></ion-icon>
+                  </router-link>
                 </div>
-                
-                <router-link 
-                  to="/jadwal" 
-                  class="action-icon"
-                  aria-label="Schedule"
-                >
-                  <ion-icon name="calendar-outline"></ion-icon>
-                </router-link>
-                
-                <router-link 
-                  to="/profileuser" 
-                  class="action-icon"
-                  aria-label="Account"
-                >
-                  <ion-icon name="person-outline"></ion-icon>
-                </router-link>
+                <butSecondNormal 
+                  v-if="!isTutor" 
+                  label="Gabung Kelas"
+                  @click="router.push('/gabungprogram')"
+                  class="butGabungProgram-mobile"
+                />
               </div>
             </div>
             <n-menu
@@ -501,11 +506,24 @@ const notificationsWithTime = computed(() =>
   align-self: center;
 }
 
+.headNav-Mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 /* User actions */
 .user-actions {
   display: flex;
   gap: 1.5rem;
+}
+
+.butGabungProgram {
   margin-left: 1rem;
+}
+
+.butGabungProgram-mobile {
+  margin: 0 auto;
 }
 
 .action-icon {
@@ -534,6 +552,13 @@ ion-icon {
   position: relative;
   align-content: center;
 }
+
+.mobile-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+} 
 
 .notification-badge {
   position: absolute;
@@ -748,7 +773,9 @@ ion-icon {
   .navbar {
     padding: 0 2rem;
   }
-  
+  .logo img {
+  height: 40px;
+  }
   .notification-popup {
     width: 90vw;
     max-width: 350px;
@@ -759,14 +786,14 @@ ion-icon {
     position: fixed; 
   }
   @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
 }
 </style>
