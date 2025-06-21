@@ -1,51 +1,31 @@
-<template>
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Jadwal Program -->
-      <div class="jadwal-container">
-        <JadwalProgram />
-      </div>
-      <div class="right-side">
-        <div>
-          <ChartProgram />
-        </div>
-        <div>
-          <ProgramAktifList />
-        </div>
-        <div>
-          <TopTutor />
-        </div>
-      </div>
-    </div>
-</template>
-
-<script>
-import SideBar from './sideBar.vue';
+<script setup>
 import JadwalProgram from './jadwalProgram.vue';
 import ChartProgram from './chartProgram.vue';
 import ProgramAktifList from './ProgramAktifList.vue';
 import TopTutor from './TopTutor.vue';
-
-export default {
-  name: 'DashboardPage',
-  components: {
-    SideBar,
-    JadwalProgram,
-    ChartProgram,
-    ProgramAktifList,
-    TopTutor,
-  },
-};
 </script>
 
-<style scoped>
-.dashboard-container {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  background-color: #f8f9fa;
-}
+<template>
+  <div class="main-content">
+    <div class="jadwal-container">
+      <JadwalProgram />
+    </div>
+    <div class="right-side">
+      <div>
+        <ChartProgram />
+      </div>
+      <div>
+        <ProgramAktifList />
+      </div>
+      <div>
+        <TopTutor />
+      </div>
+    </div>
+  </div>
+</template>
 
+
+<style scoped>
 .main-content {
   display: flex;
   flex-direction: row;
@@ -66,11 +46,5 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-.sidebar-toggle {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 1001;
 }
 </style>

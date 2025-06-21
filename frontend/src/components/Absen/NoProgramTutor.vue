@@ -77,19 +77,16 @@ onMounted(async () => {
 }
 
 /* Responsive untuk mobile */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .noprogram-container {
     flex-direction: column;
     padding: 2rem 1rem;
     gap: 2rem;
     align-items: center;
   }
-  .noprogram-img {
-    max-width: 220px;
-  }
   .noprogram-text {
     width: 100%;
-    text-align: center;
+    text-align: left;
   }
 }
 </style>

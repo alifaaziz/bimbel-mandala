@@ -9,40 +9,70 @@
       <nav class="navigation">
         <ul class="bodyr1">
           <li class="nav-item">
-            <a class="nav-but" href="#">
+            <router-link
+              class="nav-but"
+              to="/dashboardadmin"
+              :class="{ active: activeMenu === 'Dashboard' }"
+              @click.native="setActive('Dashboard')"
+            >
               <img src="@/assets/icons/admin/home.svg" alt="Home Icon" class="icon-white">
               <span>Dashboard</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-but" href="#">
+            <router-link
+              class="nav-but"
+              to="/dashboardadmin/siswa"
+              :class="{ active: activeMenu === 'Siswa' }"
+              @click.native="setActive('Siswa')"
+            >
               <img src="@/assets/icons/admin/siswa.svg" alt="Siswa Icon" class="icon-white">
               <span>Siswa</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-but" href="#">
+            <router-link
+              class="nav-but"
+              to="/tutor"
+              :class="{ active: activeMenu === 'Tutor' }"
+              @click.native="setActive('Tutor')"
+            >
               <img src="@/assets/icons/admin/teacher.svg" alt="Tutor Icon" class="icon-white">
               <span>Tutor</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-but" href="#">
+            <router-link
+              class="nav-but"
+              to="/program"
+              :class="{ active: activeMenu === 'Program' }"
+              @click.native="setActive('Program')"
+            >
               <img src="@/assets/icons/admin/program.svg" alt="Program Icon" class="icon-white">
               <span>Program</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-but" href="#">
+            <router-link
+              class="nav-but"
+              to="/jadwal-program-aktif"
+              :class="{ active: activeMenu === 'Jadwal Program Aktif' }"
+              @click.native="setActive('Jadwal Program Aktif')"
+            >
               <img src="@/assets/icons/admin/jpa.svg" alt="JPA Icon" class="icon-white">
               <span>Jadwal Program Aktif</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-but" href="#">
+            <router-link
+              class="nav-but"
+              to="/catatan-biaya"
+              :class="{ active: activeMenu === 'Catatan & Biaya' }"
+              @click.native="setActive('Catatan & Biaya')"
+            >
               <img src="@/assets/icons/admin/cb.svg" alt="CB Icon" class="icon-white">
               <span>Catatan & Biaya</span>
-            </a>
+            </router-link>
           </li>
         </ul>
       </nav>
@@ -79,7 +109,8 @@ export default {
   name: 'SidebarNav',
   data() {
     return {
-      sidebarOpen: false
+      sidebarOpen: false,
+      activeMenu: 'Dashboard' // default menu aktif
     };
   },
   methods: {
@@ -96,6 +127,9 @@ export default {
       ) {
         this.sidebarOpen = false;
       }
+    },
+    setActive(menu) {
+      this.activeMenu = menu;
     }
   },
   mounted() {
@@ -174,6 +208,11 @@ export default {
 .nav-item a:hover,
 .nav-item a.active {
   background-color: #1a1a1a;
+}
+
+.nav-item a.active {
+  background-color: #154484;
+  color: #fff;
 }
 
 .nav-item span {

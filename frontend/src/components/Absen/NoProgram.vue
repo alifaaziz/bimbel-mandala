@@ -71,4 +71,16 @@ onMounted(async () => {
     line-height: 1;
     padding-bottom: 1rem;
 }
+@media (max-width: 768px) {
+  .noprogram-container {
+    flex-direction: column;
+    padding: 2rem 1rem;
+    gap: 2rem;
+    align-items: center;
+  }
+  .noprogram-text {
+    width: 100%;
+    text-align: left;
+  }
+}
 </style>
