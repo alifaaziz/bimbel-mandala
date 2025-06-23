@@ -191,6 +191,70 @@ async function main() {
             role: "tutor",
             verified: true,
           },
+          {
+            id:"01979a81-cc2d-76ff-8ec8-7ad40efe4999",
+            name: "Ahmad Fadli, S.Pd.I",
+            email: "ahmadfadli@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+          },
+          {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166429",
+            name:"Siti Aisyah, S.Pd",
+            email: "siti@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+          },
+          {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14abc",
+            name: "Rina Kartika, S.Pd",
+            email: "rina@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+          },
+          {
+            id:"01979a8d-7e80-7055-a1b1-93c5b270acbd",
+            name: "Dimas Prasetyo, S.Pd",
+            email: "dimas@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+          },
+          {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1a0",
+            name: "Mega Ayuningtyas, S.Pd",
+            email: "mega@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+          },
+          {
+            id:"01979a8f-4a1a-7693-83e2-ff00c9e31fac",
+            name:"Hendri Setiawan, S.Pd",
+            email: "hendri@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+          },
+          {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7ca",
+            name: "Siti Rahmawati, S.Pd",
+            email: "sitirahmawati@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+          },
+          {
+            id:"01979a91-6fde-7196-ba74-891549333b26",
+            name: "Anastasia Widya, S.Pd",
+            email: "anastasia@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+          }
     ];
 
     for (const user of users) {
@@ -419,7 +483,119 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Biology, once guided a biology competition at the rt level in tembalang sub-district. hardworking and responsive.',
-        }
+        },
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe4999",
+            userId: "01979a81-cc2d-76ff-8ec8-7ad40efe4999", // Ahmad Fadli, S.Pd.I
+            birthDate: new Date('1992-06-15'),
+            gender: 'Male',
+            phone: '081234567890',
+            address: 'Jl. Merdeka No. 6',
+            subjects: 'Pendidikan Agama Islam & Budi Pekerti',
+            status: 'S1',
+            major: 'Pendidikan Agama Islam',
+            school: 'Universitas Bina Sekolah',
+            teachLevel: 'SD',
+            description: 'Experienced tutor in Islamic studies, dedicated and passionate about teaching.',
+        },
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166429",
+            userId: "01979a8a-d5c8-71ba-9bd5-75e76b166429", // Siti Aisyah, S.Pd
+            birthDate: new Date('1993-07-21'),
+            gender: 'Female',
+            phone: '081234567891',
+            address: 'Jl. Merdeka No. 7',
+            subjects: 'Pendidikan Pancasila',
+            status: 'S1',
+            major: 'Pendidikan Guru Sekolah Dasar',
+            school: 'Universitas Bina Sekolah',
+            teachLevel: 'SD',
+            description: 'Experienced tutor in Pendidikan Pancasila, dedicated and passionate about teaching.',
+        },
+        {
+            id: "01979a92-eefe-7aef-8175-49e2c7f8da9b",
+            userId: "01979a8b-e9c9-709a-a8d6-c741b8a14abc",// Rina Kartika, S.Pd
+            birthDate: new Date('1994-08-12'),
+            gender: 'Female',
+            phone: '081234567892',
+            address: 'Jl. Merdeka No. 8',
+            subjects: 'Bahasa Indonesia',
+            status: 'S1',
+            major: 'Pendidikan Guru Sekolah Dasar',
+            school: 'Universitas Bina Sekolah',
+            teachLevel: 'SD',
+            description: 'Experienced tutor in Bahasa Indonesia, passionate about teaching at elementary level.',
+        },
+        {
+            id: "01979a92-eefe-79cd-b645-e1c1566f0ddf",
+            userId: "01979a8d-7e80-7055-a1b1-93c5b270acbd",// Dimas Prasetyo, S.Pd
+            birthDate: new Date('1995-09-15'),
+            gender: 'Male',
+            phone: '081234567893',
+            address: 'Jl. Merdeka No. 9',
+            subjects: 'Matematika',
+            status: 'S1',
+            major: 'Pendidikan Guru Sekolah Dasar',
+            school: 'Universitas Bina Sekolah',
+            teachLevel: 'SD',
+            description: 'Experienced tutor in Mathematics, dedicated to helping elementary students excel.',
+        },
+        {
+            id: "01979a92-eefe-7965-91b4-0139dcd8ad1a",
+            userId: "01979a8d-ae94-73cb-8864-ce9f864fc1a0",// Mega Ayuningtyas, S.Pd
+            birthDate: new Date('1996-10-20'),
+            gender: 'Female',
+            phone: '081234567894',
+            address: 'Jl. Merdeka No. 10',
+            subjects: 'PJOK',
+            status: 'S1',
+            major: 'Pendidikan Guru Sekolah Dasar',
+            school: 'Universitas Bina Sekolah',
+            teachLevel: 'SD',
+            description: 'Experienced tutor in PJOK, enthusiastic about physical education for young learners.',
+        },
+        {
+            id: "01979a92-eefe-79b7-a33f-92d802fb9bac",
+            userId: "01979a8f-4a1a-7693-83e2-ff00c9e31fac",// Hendri Setiawan, S.Pd
+            birthDate: new Date('1994-11-25'),
+            gender: 'Male',
+            phone: '081234567895',
+            address: 'Jl. Merdeka No. 11',
+            subjects: 'Seni Budaya',
+            status: 'S1',
+            major: 'Pendidikan Guru Sekolah Dasar',
+            school: 'Universitas Bina Sekolah',
+            teachLevel: 'SD',
+            description: 'Experienced tutor in Seni Budaya, creative and passionate about arts education.',
+        },
+        {
+            id: "01979a92-eefe-7d78-b9ac-e570ddc914e2",
+            userId: "01979a90-8fd7-734e-a4a7-43ef668ce7ca",// Siti Rahmawati, S.Pd
+            birthDate: new Date('1993-12-30'),
+            gender: 'Female',
+            phone: '081234567896',
+            address: 'Jl. Merdeka No. 12',
+            subjects: 'IPAS',
+            status: 'S1',
+            major: 'Pendidikan Guru Sekolah Dasar',
+            school: 'Universitas Bina Sekolah',
+            teachLevel: 'SD',
+            description: 'Experienced tutor in IPAS, committed to science education for elementary students.',
+        },
+        {
+            id: "01979a92-eefe-783c-a68e-2066ef410830",
+            userId: "01979a91-6fde-7196-ba74-891549333b26",// Anastasia Widya, S.Pd
+            birthDate: new Date('1992-07-18'),
+            gender: 'Female',
+            phone: '081234567897',
+            address: 'Jl. Merdeka No. 13',
+            subjects: 'Bahasa Inggris',
+            status: 'S1',
+            major: 'Pendidikan Bahasa Inggris',
+            school: 'Universitas Bina Sekolah',
+            teachLevel: 'SD',
+            description: 'Experienced tutor in Bahasa Inggris, passionate about teaching English to young learners.',
+        },
     ];
 
     for (const tutor of tutors) {
@@ -484,6 +660,94 @@ async function main() {
             id: "a3333333-0000-0000-0000-000000000002",
             tutorId: "0196b294-4791-7793-9e50-871941b175a0",
             daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2",
+        },
+        // Ahmad Fadli, S.Pd.I
+        {
+            id: "a7777777-0000-0000-0000-000000000001",
+            tutorId: "01979a81-cc2d-76ff-8ec8-7ad40efe4999", // Ahmad Fadli, S.Pd.I
+            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "a7777777-0000-0000-0000-000000000002",
+            tutorId: "01979a81-cc2d-76ff-8ec8-7ad40efe4999", // Ahmad Fadli, S.Pd.I
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        // Siti Aisyah, S.Pd
+        {
+            id: "a8888888-0000-0000-0000-000000000001",
+            tutorId: "01979a8a-d5c8-71ba-9bd5-75e76b166429", // Siti Aisyah, S.Pd
+            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "a8888888-0000-0000-0000-000000000002",
+            tutorId: "01979a8a-d5c8-71ba-9bd5-75e76b166429", // Siti Aisyah, S.Pd
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        // Rina Kartika, S.Pd
+        {
+            id: "a9999999-0000-0000-0000-000000000001",
+            tutorId: "01979a92-eefe-7aef-8175-49e2c7f8da9b", // Rina Kartika, S.Pd
+            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "a9999999-0000-0000-0000-000000000002",
+            tutorId: "01979a92-eefe-7aef-8175-49e2c7f8da9b", // Rina Kartika, S.Pd
+            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        // Dimas Prasetyo, S.Pd
+        {
+            id: "a1010101-0000-0000-0000-000000000001",
+            tutorId: "01979a92-eefe-79cd-b645-e1c1566f0ddf", // Dimas Prasetyo, S.Pd
+            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "a1010101-0000-0000-0000-000000000002",
+            tutorId: "01979a92-eefe-79cd-b645-e1c1566f0ddf", // Dimas Prasetyo, S.Pd
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        // Mega Ayuningtyas, S.Pd
+        {
+            id: "a1111112-0000-0000-0000-000000000001",
+            tutorId: "01979a92-eefe-7965-91b4-0139dcd8ad1a", // Mega Ayuningtyas, S.Pd
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "a1111112-0000-0000-0000-000000000002",
+            tutorId: "01979a92-eefe-7965-91b4-0139dcd8ad1a", // Mega Ayuningtyas, S.Pd
+            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        // Hendri Setiawan, S.Pd
+        {
+            id: "a1212121-0000-0000-0000-000000000001",
+            tutorId: "01979a92-eefe-79b7-a33f-92d802fb9bac", // Hendri Setiawan, S.Pd
+            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "a1212121-0000-0000-0000-000000000002",
+            tutorId: "01979a92-eefe-79b7-a33f-92d802fb9bac", // Hendri Setiawan, S.Pd
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        // Siti Rahmawati, S.Pd
+        {
+            id: "a1313131-0000-0000-0000-000000000001",
+            tutorId: "01979a92-eefe-7d78-b9ac-e570ddc914e2", // Siti Rahmawati, S.Pd
+            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "a1313131-0000-0000-0000-000000000002",
+            tutorId: "01979a92-eefe-7d78-b9ac-e570ddc914e2", // Siti Rahmawati, S.Pd
+            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        // Anastasia Widya, S.Pd
+        {
+            id: "a1414141-0000-0000-0000-000000000001",
+            tutorId: "01979a92-eefe-783c-a68e-2066ef410830", // Anastasia Widya, S.Pd
+            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "a1414141-0000-0000-0000-000000000002",
+            tutorId: "01979a92-eefe-783c-a68e-2066ef410830", // Anastasia Widya, S.Pd
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
         },
     ];
 
@@ -731,6 +995,110 @@ async function main() {
             slug: "fokus-utbk-sma-9j8k7l",
             userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
         },
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166430",
+            name: "Pendidikan Pancasila",
+            level: "SD",
+            totalMeetings: 12,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 60,
+            area: "Semarang",
+            slug: "pendidikan-pancasila-sd-1a2b3c",
+            userId: "01979a8a-d5c8-71ba-9bd5-75e76b166429", // Siti Aisyah, S.Pd
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14abd",
+            name: "Bahasa Indonesia",
+            level: "SD",
+            totalMeetings: 12,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 60,
+            area: "Semarang",
+            slug: "bahasa-indonesia-sd-4d5e6f",
+            userId: "01979a8b-e9c9-709a-a8d6-c741b8a14abc", // Rina Kartika, S.Pd
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "01979a8d-7e80-7055-a1b1-93c5b270acbe",
+            name: "Matematika",
+            level: "SD",
+            totalMeetings: 12,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 60,
+            area: "Semarang",
+            slug: "matematika-sd-7g8h9i",
+            userId: "01979a8d-7e80-7055-a1b1-93c5b270acbd", // Dimas Prasetyo, S.Pd
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1a1",
+            name: "PJOK",
+            level: "SD",
+            totalMeetings: 12,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 60,
+            area: "Semarang",
+            slug: "pjok-sd-0j1k2l",
+            userId: "01979a8d-ae94-73cb-8864-ce9f864fc1a0", // Mega Ayuningtyas, S.Pd
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fad",
+            name: "Seni Budaya",
+            level: "SD",
+            totalMeetings: 12,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 60,
+            area: "Semarang",
+            slug: "seni-budaya-sd-3m4n5o",
+            userId: "01979a8f-4a1a-7693-83e2-ff00c9e31fac", // Hendri Setiawan, S.Pd
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7cb",
+            name: "IPAS",
+            level: "SD",
+            totalMeetings: 12,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 60,
+            area: "Semarang",
+            slug: "ipas-sd-6p7q8r",
+            userId: "01979a90-8fd7-734e-a4a7-43ef668ce7ca", // Siti Rahmawati, S.Pd
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "01979a91-6fde-7196-ba74-891549333b27",
+            name: "Bahasa Inggris",
+            level: "SD",
+            totalMeetings: 12,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 60,
+            area: "Semarang",
+            slug: "bahasa-inggris-sd-9s0t1u",
+            userId: "01979a91-6fde-7196-ba74-891549333b26", // Anastasia Widya, S.Pd
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499a",
+            name: "Pendidikan Agama Islam & Budi Pekerti",
+            level: "SD",
+            totalMeetings: 12,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 60,
+            area: "Semarang",
+            slug: "pai-budi-pekerti-sd-2b3c4d",
+            userId: "01979a81-cc2d-76ff-8ec8-7ad40efe4999", // Ahmad Fadli, S.Pd.I
+            discount: 0,
+            isActive: true,
+        }
     ];
 
     for (const bimbelPackage of bimbelPackages) {
@@ -946,6 +1314,301 @@ async function main() {
             price: 4000000, // (4 * 100000) + 100000
             packageId: "0196b294-4791-7b00-8000-000000000014", // FOKUS UTBK
             maxStudent: 20,
+        },
+        // Bahasa Inggris SD
+        {
+            id: "01979a91-6fde-7196-ba74-891549333b28",
+            type: "privat",
+            price: (1 * 12 * 60000) + 100000,
+            packageId: "01979a91-6fde-7196-ba74-891549333b27",
+            maxStudent: 1,
+        },
+        {
+            id: "01979a91-6fde-7196-ba74-891549333b29",
+            type: "grup2",
+            price: (2 * 12 * 60000) + 100000,
+            packageId: "01979a91-6fde-7196-ba74-891549333b27",
+            maxStudent: 2,
+        },
+        {
+            id: "01979a91-6fde-7196-ba74-891549333b2a",
+            type: "grup3",
+            price: (3 * 12 * 60000) + 100000,
+            packageId: "01979a91-6fde-7196-ba74-891549333b27",
+            maxStudent: 3,
+        },
+        {
+            id: "01979a91-6fde-7196-ba74-891549333b2b",
+            type: "grup4",
+            price: (4 * 12 * 60000) + 100000,
+            packageId: "01979a91-6fde-7196-ba74-891549333b27",
+            maxStudent: 4,
+        },
+        {
+            id: "01979a91-6fde-7196-ba74-891549333b2c",
+            type: "grup5",
+            price: (5 * 12 * 60000) + 100000,
+            packageId: "01979a91-6fde-7196-ba74-891549333b27",
+            maxStudent: 5,
+        },
+
+        // IPAS SD
+        {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7cc",
+            type: "privat",
+            price: (1 * 12 * 60000) + 100000,
+            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb",
+            maxStudent: 1,
+        },
+        {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7cd",
+            type: "grup2",
+            price: (2 * 12 * 60000) + 100000,
+            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb",
+            maxStudent: 2,
+        },
+        {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7ce",
+            type: "grup3",
+            price: (3 * 12 * 60000) + 100000,
+            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb",
+            maxStudent: 3,
+        },
+        {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7cf",
+            type: "grup4",
+            price: (4 * 12 * 60000) + 100000,
+            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb",
+            maxStudent: 4,
+        },
+        {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7d0",
+            type: "grup5",
+            price: (5 * 12 * 60000) + 100000,
+            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb",
+            maxStudent: 5,
+        },
+
+        // Seni Budaya SD
+        {
+            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fae",
+            type: "privat",
+            price: (1 * 12 * 60000) + 100000,
+            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad",
+            maxStudent: 1,
+        },
+        {
+            id: "01979a8f-4a1a-7693-83e2-ff00c9e31faf",
+            type: "grup2",
+            price: (2 * 12 * 60000) + 100000,
+            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad",
+            maxStudent: 2,
+        },
+        {
+            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fb0",
+            type: "grup3",
+            price: (3 * 12 * 60000) + 100000,
+            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad",
+            maxStudent: 3,
+        },
+        {
+            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fb1",
+            type: "grup4",
+            price: (4 * 12 * 60000) + 100000,
+            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad",
+            maxStudent: 4,
+        },
+        {
+            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fb2",
+            type: "grup5",
+            price: (5 * 12 * 60000) + 100000,
+            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad",
+            maxStudent: 5,
+        },
+
+        // PJOK SD
+        {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1a2",
+            type: "privat",
+            price: (1 * 12 * 60000) + 100000,
+            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1",
+            maxStudent: 1,
+        },
+        {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1a3",
+            type: "grup2",
+            price: (2 * 12 * 60000) + 100000,
+            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1",
+            maxStudent: 2,
+        },
+        {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1a4",
+            type: "grup3",
+            price: (3 * 12 * 60000) + 100000,
+            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1",
+            maxStudent: 3,
+        },
+        {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1a5",
+            type: "grup4",
+            price: (4 * 12 * 60000) + 100000,
+            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1",
+            maxStudent: 4,
+        },
+        {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1a6",
+            type: "grup5",
+            price: (5 * 12 * 60000) + 100000,
+            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1",
+            maxStudent: 5,
+        },
+
+        // Matematika SD
+        {
+            id: "01979a8d-7e80-7055-a1b1-93c5b270acbf",
+            type: "privat",
+            price: (1 * 12 * 60000) + 100000,
+            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe",
+            maxStudent: 1,
+        },
+        {
+            id: "01979a8d-7e80-7055-a1b1-93c5b270acc0",
+            type: "grup2",
+            price: (2 * 12 * 60000) + 100000,
+            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe",
+            maxStudent: 2,
+        },
+        {
+            id: "01979a8d-7e80-7055-a1b1-93c5b270acc1",
+            type: "grup3",
+            price: (3 * 12 * 60000) + 100000,
+            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe",
+            maxStudent: 3,
+        },
+        {
+            id: "01979a8d-7e80-7055-a1b1-93c5b270acc2",
+            type: "grup4",
+            price: (4 * 12 * 60000) + 100000,
+            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe",
+            maxStudent: 4,
+        },
+        {
+            id: "01979a8d-7e80-7055-a1b1-93c5b270acc3",
+            type: "grup5",
+            price: (5 * 12 * 60000) + 100000,
+            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe",
+            maxStudent: 5,
+        },
+
+        // Bahasa Indonesia SD
+        {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14abe",
+            type: "privat",
+            price: (1 * 12 * 60000) + 100000,
+            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd",
+            maxStudent: 1,
+        },
+        {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14abf",
+            type: "grup2",
+            price: (2 * 12 * 60000) + 100000,
+            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd",
+            maxStudent: 2,
+        },
+        {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14ac0",
+            type: "grup3",
+            price: (3 * 12 * 60000) + 100000,
+            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd",
+            maxStudent: 3,
+        },
+        {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14ac1",
+            type: "grup4",
+            price: (4 * 12 * 60000) + 100000,
+            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd",
+            maxStudent: 4,
+        },
+        {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14ac2",
+            type: "grup5",
+            price: (5 * 12 * 60000) + 100000,
+            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd",
+            maxStudent: 5,
+        },
+
+        // Pendidikan Pancasila SD
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166431",
+            type: "privat",
+            price: (1 * 12 * 60000) + 100000,
+            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430",
+            maxStudent: 1,
+        },
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166432",
+            type: "grup2",
+            price: (2 * 12 * 60000) + 100000,
+            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430",
+            maxStudent: 2,
+        },
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166433",
+            type: "grup3",
+            price: (3 * 12 * 60000) + 100000,
+            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430",
+            maxStudent: 3,
+        },
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166434",
+            type: "grup4",
+            price: (4 * 12 * 60000) + 100000,
+            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430",
+            maxStudent: 4,
+        },
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166435",
+            type: "grup5",
+            price: (5 * 12 * 60000) + 100000,
+            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430",
+            maxStudent: 5,
+        },
+
+        // Pendidikan Agama Islam & Budi Pekerti SD
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499b",
+            type: "privat",
+            price: (1 * 12 * 60000) + 100000,
+            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a",
+            maxStudent: 1,
+        },
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499c",
+            type: "grup2",
+            price: (2 * 12 * 60000) + 100000,
+            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a",
+            maxStudent: 2,
+        },
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499d",
+            type: "grup3",
+            price: (3 * 12 * 60000) + 100000,
+            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a",
+            maxStudent: 3,
+        },
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499e",
+            type: "grup4",
+            price: (4 * 12 * 60000) + 100000,
+            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a",
+            maxStudent: 4,
+        },
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499f",
+            type: "grup5",
+            price: (5 * 12 * 60000) + 100000,
+            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a",
+            maxStudent: 5,
         }
     ];
 
@@ -959,69 +1622,149 @@ async function main() {
     const packagesDays = [
         {
             id : "0195c714-07f8-752f-9851-39965d06919e",
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52"
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52" // Senin
         },
         {
             id : "0195c714-07f8-7774-8c05-0b5addb724b0",
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21"
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21" // Rabu
         },
         {
             id : "0195c714-07f8-74ac-8c81-b47289e3596b",
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3",
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2"
+            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2" // Sabtu
         },
         {
             id: "019618a1-68a4-75d2-b3c6-a0879be13185",
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
             dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
         },
         {
             id: "019618a1-68a4-7f43-bba4-4e8f5b047428",
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
             dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
         },
         {
             id: "0196b294-4791-7b00-8000-000000000401",
-            packageId: "0196b294-4791-7b00-8000-000000000011",
+            packageId: "0196b294-4791-7b00-8000-000000000011",  // Kimia SMA
             dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
         },
         {
             id: "0196b294-4791-7b00-8000-000000000402",
-            packageId: "0196b294-4791-7b00-8000-000000000011",
+            packageId: "0196b294-4791-7b00-8000-000000000011", // Kimia SMA
             dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
         },
         {
             id: "0196b294-4791-7b00-8000-000000000501",
-            packageId: "0196b294-4791-7b00-8000-000000000012",
+            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
             dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
         },
         {
             id: "0196b294-4791-7b00-8000-000000000502",
-            packageId: "0196b294-4791-7b00-8000-000000000012",
+            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
             dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
         },
         {
             id: "0196b294-4791-7b00-8000-000000000601",
-            packageId: "0196b294-4791-7b00-8000-000000000013",
+            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
             dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
         },
         {
             id: "0196b294-4791-7b00-8000-000000000602",
-            packageId: "0196b294-4791-7b00-8000-000000000013",
+            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
             dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
         },
         {
             id: "0196b294-4791-7b00-8000-000000000701",
-            packageId: "0196b294-4791-7b00-8000-000000000014",
+            packageId: "0196b294-4791-7b00-8000-000000000014", // FOKUS UTBK
             dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
         },
         {
             id: "0196b294-4791-7b00-8000-000000000702",
-            packageId: "0196b294-4791-7b00-8000-000000000014",
+            packageId: "0196b294-4791-7b00-8000-000000000014", // FOKUS UTBK
             dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
         },
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166440",
+            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430", // Pendidikan Pancasila SD
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu (Siti Aisyah, S.Pd)
+        },
+        {
+            id: "01979a8a-d5c8-71ba-9bd5-75e76b166441",
+            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430", // Pendidikan Pancasila SD
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat (Siti Aisyah, S.Pd)
+        },
+        {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14ace",
+            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd", // Bahasa Indonesia SD
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu (Rina Kartika, S.Pd)
+        },
+        {
+            id: "01979a8b-e9c9-709a-a8d6-c741b8a14acf",
+            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd", // Bahasa Indonesia SD
+            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis (Rina Kartika, S.Pd)
+        },
+        {
+            id: "01979a8d-7e80-7055-a1b1-93c5b270acde",
+            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe", // Matematika SD
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin (Dimas Prasetyo, S.Pd)
+        },
+        {
+            id: "01979a8d-7e80-7055-a1b1-93c5b270acdf",
+            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe", // Matematika SD
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat (Dimas Prasetyo, S.Pd)
+        },
+        {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1b0",
+            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1", // PJOK SD
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa (Mega Ayuningtyas, S.Pd)
+        },
+        {
+            id: "01979a8d-ae94-73cb-8864-ce9f864fc1b1",
+            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1", // PJOK SD
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu (Mega Ayuningtyas, S.Pd)
+        },
+        {
+            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fbe",
+            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad", // Seni Budaya SD
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu (Hendri Setiawan, S.Pd)
+        },
+        {
+            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fbf",
+            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad", // Seni Budaya SD
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat (Hendri Setiawan, S.Pd)
+        },
+        {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7dc",
+            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb", // IPAS SD
+            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis (Siti Rahmawati, S.Pd)
+        },
+        {
+            id: "01979a90-8fd7-734e-a4a7-43ef668ce7dd",
+            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb", // IPAS SD
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu (Siti Rahmawati, S.Pd)
+        },
+        {
+            id: "01979a91-6fde-7196-ba74-891549333b38",
+            packageId: "01979a91-6fde-7196-ba74-891549333b27", // Bahasa Inggris SD
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin (Anastasia Widya, S.Pd)
+        },
+        {
+            id: "01979a91-6fde-7196-ba74-891549333b39",
+            packageId: "01979a91-6fde-7196-ba74-891549333b27", // Bahasa Inggris SD
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa (Anastasia Widya, S.Pd)
+        },
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499c",
+            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a", // Pendidikan Agama Islam & Budi Pekerti SD
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin (Ahmad Fadli, S.Pd.I)
+        },
+        {
+            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499d",
+            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a", // Pendidikan Agama Islam & Budi Pekerti SD
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa (Ahmad Fadli, S.Pd.I)
+        }
     ]
 
     for (const packageDay of packagesDays) {
