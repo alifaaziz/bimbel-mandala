@@ -139,7 +139,7 @@ onMounted(async () => {
   <Footer/>
 </template>
 
-<style>
+<style scoped>
 .profile-container {
   margin-top: 104px !important;
   margin-bottom: 4rem;

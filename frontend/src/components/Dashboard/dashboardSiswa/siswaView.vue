@@ -1,26 +1,21 @@
 <template>
   <div class="siswa-container">
     <n-space vertical :size="24">
-      <n-h1 style="margin: 0;">Siswa</n-h1>
+      <h1 class="headlineb2">Siswa</h1>
 
-      <n-space justify="space-between" align="center">
-        <n-input
-          v-model="searchText"
-          placeholder="Cari siswa..."
-          clearable
-          style="width: 300px;"
-        >
-          <template #prefix>
-            <n-icon :component="SearchOutline" />
-          </template>
-        </n-input>
-        <n-button type="primary" ghost @click="handleTambahSiswa">
-          <template #icon>
-            <n-icon :component="AddOutline" />
-          </template>
-          Tambah Siswa
-        </n-button>
-      </n-space>
+      <div class="search-tambah">
+        <div class="search-container">
+          <n-input
+          round
+          size="large"
+          placeholder="Cari jadwal program bimbel...">
+            <template #prefix>
+              <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
+            </template>
+          </n-input>
+        </div>
+        <ButImgTambahSecondNormal label="Tambah Siswa" @click="handleTambahSiswa"/>
+      </div>
 
       <n-data-table
         :columns="columns"
@@ -35,14 +30,15 @@
 
 <script setup>
 import { ref, h, computed } from 'vue';
+import { useRouter } from 'vue-router'; // Tambahkan ini
 import { NButton, NIcon, NDataTable, NSpace, NH1, NInput, useMessage } from 'naive-ui';
 import {
-  SearchOutline,
-  AddOutline,
   EllipsisHorizontal,
 } from '@vicons/ionicons5';
+import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
 
 const message = useMessage();
+const router = useRouter(); // Inisialisasi router
 const searchText = ref('');
 
 // --- Definisi Kolom untuk n-data-table ---
@@ -84,7 +80,8 @@ const createColumns = ({ viewDetails }) => {
           {
             tertiary: true,
             circle: true,
-            onClick: () => viewDetails(row),
+            disabled: !row.id, // Tombol nonaktif jika id tidak ada
+            onClick: () => row.id && viewDetails(row),
           },
           {
             icon: () => h(NIcon, { component: EllipsisHorizontal }),
@@ -97,16 +94,16 @@ const createColumns = ({ viewDetails }) => {
 
 // --- Data Siswa (Mock Data) ---
 const data = ref([
-  { key: 0, name: 'Arell Saverro Biyanroto', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 2 },
-  { key: 1, name: 'Alif Abdul Aziz', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { key: 2, name: 'Raihan Muhammad R. R.', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { key: 3, name: 'Zyan Shainori', level: 'SD', whatsapp: '085xxxxxxxxx', program: 2 },
-  { key: 4, name: 'Yulius Calvin', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { key: 5, name: 'Anina Adelia', level: 'SMP', whatsapp: '085xxxxxxxxx', program: 1 },
-  { key: 6, name: 'Raihan Muhammad R. R.', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { key: 7, name: 'Zyan Shainori', level: 'SD', whatsapp: '085xxxxxxxxx', program: 2 },
-  { key: 8, name: 'Yulius Calvin', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { key: 9, name: 'Anina Adelia', level: 'SMP', whatsapp: '085xxxxxxxxx', program: 1 },
+  { id: 1, key: 0, name: 'Arell Saverro Biyanroto', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 2 },
+  { id: 2, key: 1, name: 'Alif Abdul Aziz', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
+  { id: 3, key: 2, name: 'Raihan Muhammad R. R.', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
+  { id: 4, key: 3, name: 'Zyan Shainori', level: 'SD', whatsapp: '085xxxxxxxxx', program: 2 },
+  { id: 5, key: 4, name: 'Yulius Calvin', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
+  { id: 6, key: 5, name: 'Anina Adelia', level: 'SMP', whatsapp: '085xxxxxxxxx', program: 1 },
+  { id: 7, key: 6, name: 'Raihan Muhammad R. R.', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
+  { id: 8, key: 7, name: 'Zyan Shainori', level: 'SD', whatsapp: '085xxxxxxxxx', program: 2 },
+  { id: 9, key: 8, name: 'Yulius Calvin', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
+  { id: 10, key: 9, name: 'Anina Adelia', level: 'SMP', whatsapp: '085xxxxxxxxx', program: 1 },
 ]);
 
 // --- Logika Pencarian ---
@@ -131,8 +128,8 @@ const handleTambahSiswa = () => {
 };
 
 const viewDetails = (row) => {
-  message.info(`Melihat detail untuk: ${row.name}`);
-  // Logika untuk menampilkan detail siswa, misalnya dengan dropdown atau modal
+  // Navigasi ke halaman detail dengan path sesuai permintaan
+  router.push(`/dashboardadmin/siswa/detail/:${row.id}`);
 };
 
 // --- Inisialisasi Kolom ---
@@ -142,9 +139,37 @@ const columns = createColumns({
 </script>
 
 <style scoped>
+.headlineb2 {
+  color: #154484;
+}
 .siswa-container {
-  padding: 24px;
-  background-color: #fdfdfd; /* Warna latar yang sedikit off-white */
+  background-color: #fff;
+  width: 100%;
+  border-radius: 12px;
+  padding: 20px;
+  height: fit-content;
+}
+
+.n-input-wrapper {
+  width: 100%;
+}
+
+.search-tambah {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.img-search {
+  width: 16px;
+  height: auto;
+   margin-right: 8px;
 }
 
 /* Kustomisasi gaya tombol Tambah Siswa agar sesuai dengan gambar */

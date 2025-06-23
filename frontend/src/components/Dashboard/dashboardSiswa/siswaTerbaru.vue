@@ -56,9 +56,9 @@ const newStudents = ref([
 
 <style scoped>
 .siswa-terbaru-widget {
-  padding: 20px;
-  max-width: 400px; /* Atur lebar maksimum widget */
-  font-family: 'Inter', sans-serif; /* Menggunakan font yang lebih modern */
+  border-radius: 16px; /* Sudut yang lebih bulat sesuai gambar */
+  background-color: #f8faff; /* Latar belakang soft-white/blue */
+  padding: 24px; /* Padding internal untuk widget */
 }
 
 .widget-title {

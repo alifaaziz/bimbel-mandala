@@ -29,8 +29,14 @@ import GoogleSuccess from '@/components/Auth/GoogleSuccess.vue';
 
 import Dashboardadmin from '@/components/Dashboard/DashboardParent.vue';
 import HomeAdmin from '@/components/Dashboard/dashboard.vue';
+
 import Siswa from '@/components/Dashboard/dashboardSiswa/siswa.vue';
+import siswaMain from '@/components/Dashboard/dashboardSiswa/siswaMain.vue';
+import DetailSiswa from '@/components/Dashboard/dashboardSiswa/siswaDetail.vue';
+
 import Tutor from '@/components/Dashboard/dahsboardTutor/Tutor.vue';
+import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
+import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/catatanBiaya.vue';
 
 const routes = [
   { 
@@ -79,10 +85,6 @@ const routes = [
         name: 'Rekap', 
         component: Rekap 
       },
-      // { path: 'rekap', 
-      //   name: 'Rekap', 
-      //   component: RekapSiswa 
-      // },
     ]
   },
   {
@@ -158,11 +160,33 @@ const routes = [
         path: 'siswa',
         name: 'Siswa',
         component: Siswa,
+        children: [
+          {
+            path: '',
+            name: 'siswaMain',
+            component: siswaMain,
+          },
+          {
+            path: 'detail/:id',
+            name: 'DetailSiswa',
+            component: DetailSiswa,
+          },
+        ]
       },
       {
         path: 'tutor',
         name: 'Tutor',
         component: Tutor,
+      },
+      {
+        path: 'jadwal',
+        name: 'JadwalAdmin',
+        component: JadwalAdmin,
+      },
+      {
+        path: 'catatanbiaya',
+        name: 'CatatanBiaya',
+        component: CatatanBiaya,
       },
     ]
   }

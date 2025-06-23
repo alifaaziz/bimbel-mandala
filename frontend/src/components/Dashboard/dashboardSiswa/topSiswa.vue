@@ -1,8 +1,7 @@
 <template>
   <n-card class="top-siswa-widget" :bordered="false">
-    <n-space vertical :size="20">
+    <n-space vertical :size="16">
       <n-h3 class="widget-title">Top Siswa</n-h3>
-
       <div class="siswa-list">
         <div class="list-row header-row">
           <span class="header-text">Nama</span>
@@ -37,12 +36,14 @@ const topStudents = ref([
 </script>
 
 <style scoped>
-.top-siswa-widget {
-  max-width: 350px; /* Atur lebar maksimum widget */
+.top-siswa-widget { /* Atur lebar maksimum widget */
   border-radius: 16px; /* Sudut yang lebih bulat sesuai gambar */
   background-color: #f8faff; /* Latar belakang soft-white/blue */
-  padding: 16px; /* Padding internal untuk widget */
-  font-family: 'Inter', sans-serif; /* Menggunakan font yang lebih modern */
+  padding: 24px; /* Padding internal untuk widget */
+}
+
+:deep(.n-card__content) {
+  padding: 0;
 }
 
 .widget-title {

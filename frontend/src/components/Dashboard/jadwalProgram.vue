@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-view">
-    <h1 class="headlineb2 dashboard-header">Dashboard</h1>
+    <h1 class="headlineb2">Dashboard</h1>
 
     <div class="search-container">
       <n-input
@@ -131,29 +131,10 @@ export default {
   margin: 20px 0;
 }
 
-.search-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background-color: #e9ecef; /* Warna latar search bar */
-  border-radius: 25px; /* Membuat search bar sangat rounded */
-  padding: 5px 15px;
-}
-
 .img-search {
   width: 16px;
   height: auto;
    margin-right: 8px;
-}
-
-.search-input {
-  border: none;
-  background-color: transparent;
-  outline: none;
-  width: 100%;
-  padding: 10px 5px;
-  font-size: 1em;
-  color: #495057;
 }
 
 .table-responsive {

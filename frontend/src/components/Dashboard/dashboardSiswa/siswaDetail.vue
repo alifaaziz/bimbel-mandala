@@ -2,7 +2,7 @@
   <div class="page-background">
     <div class="profile-container">
       <n-space vertical :size="24">
-        <n-space justify="space-between" align="start">
+        <n-space justify="space-between">
           <n-space vertical :size="0">
             <n-h1 class="profile-name">John Due</n-h1>
             <n-text :depth="3">Jenjang</n-text>
@@ -209,13 +209,13 @@ const programScheduleColumns = [
 
 <style scoped>
 .page-background {
-  background-color: #f7f9fc;
+  background-color: #091c36; /* Biru tua */
   padding: 24px;
 }
 
 .profile-container {
-  max-width: 1200px;
-  margin: auto;
+  background-color: #ffffff;
+  padding: 20px;
 }
 
 .profile-name {

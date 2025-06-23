@@ -55,7 +55,7 @@
           <li class="nav-item">
             <router-link
               class="nav-but"
-              to="/jadwal-program-aktif"
+              to="/dashboardadmin/jadwal"
               :class="{ active: activeMenu === 'Jadwal Program Aktif' }"
               @click.native="setActive('Jadwal Program Aktif')"
             >
@@ -66,7 +66,7 @@
           <li class="nav-item">
             <router-link
               class="nav-but"
-              to="/catatan-biaya"
+              to="/dashboardadmin/catatanbiaya"
               :class="{ active: activeMenu === 'Catatan & Biaya' }"
               @click.native="setActive('Catatan & Biaya')"
             >
@@ -81,13 +81,6 @@
 
       <div class="sidebar-bottom bodyr1">
         <ul>
-          <li class="nav-item">
-            <a class="nav-but" href="#">
-              <img src="@/assets/icons/admin/bell.svg" alt="Notifikasi Icon" class="icon-white">
-              <span>Notifikasi</span>
-              <span class="notification-badge"></span>
-            </a>
-          </li>
           <li class="nav-item">
             <a class="nav-but" href="#">
               <img src="@/assets/icons/admin/logout.svg" alt="Logout Icon" class="icon-white">
