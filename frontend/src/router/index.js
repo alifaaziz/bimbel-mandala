@@ -30,6 +30,7 @@ import GoogleSuccess from '@/components/Auth/GoogleSuccess.vue';
 import Dashboardadmin from '@/components/Dashboard/DashboardParent.vue';
 import HomeAdmin from '@/components/Dashboard/dashboard.vue';
 import Siswa from '@/components/Dashboard/dashboardSiswa/siswa.vue';
+import Tutor from '@/components/Dashboard/dahsboardTutor/Tutor.vue';
 
 const routes = [
   { 
@@ -157,6 +158,11 @@ const routes = [
         path: 'siswa',
         name: 'Siswa',
         component: Siswa,
+      },
+      {
+        path: 'tutor',
+        name: 'Tutor',
+        component: Tutor,
       },
     ]
   }
