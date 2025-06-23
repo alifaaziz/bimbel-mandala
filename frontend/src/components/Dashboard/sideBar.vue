@@ -33,7 +33,7 @@
           <li class="nav-item">
             <router-link
               class="nav-but"
-              to="/tutor"
+              to="/dashboardadmin/tutor"
               :class="{ active: activeMenu === 'Tutor' }"
               @click.native="setActive('Tutor')"
             >
