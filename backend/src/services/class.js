@@ -263,8 +263,48 @@ async function getMyClass(userId, role) {
     }
 }
 
+/**
+ * Retrieves all running classes.
+ *
+ * @async
+ * @function getRunningClass
+ * @returns {Promise<Array>} The list of running classes with tutor and program information.
+ */
+async function getRunningClass() {
+    const runningClasses = await prisma.class.findMany({
+        where: {
+            status: 'berjalan',
+        },
+        include: {
+            tutor: {
+                select: {
+                    name: true,
+                },
+            },
+            order: {
+                include: {
+                    bimbelPackage: {
+                        select: {
+                            name: true,
+                            level: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    return runningClasses.map((cls) => ({
+        tutorName: cls.tutor?.name || 'Tidak ada tutor',
+        programName: cls.order?.bimbelPackage?.name || 'Tidak ada program',
+        level: cls.order?.bimbelPackage?.level || 'Tidak ada level',
+        classCode: cls.code,
+    }));
+}
+
 export const ClassService = {
     createClass,
     joinClass,
-    getMyClass
+    getMyClass,
+    getRunningClass
 };

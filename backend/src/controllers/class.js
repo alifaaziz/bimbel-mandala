@@ -48,8 +48,23 @@ async function getMyClass(req, res) {
   res.status(200).json({ data: classes });
 }
 
+/**
+ * Handles the request to get running classes.
+ *
+ * @async
+ * @function getRunningClass
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the running classes.
+ */
+async function getRunningClass(req, res) {
+  const classes = await ClassService.getRunningClass();
+  res.status(200).json({ data: classes });
+}
+
 export const ClassController = {
   createClass: asyncWrapper(createClass),
   joinClass: asyncWrapper(joinClass),
   getMyClass: asyncWrapper(getMyClass),
+  getRunningClass: asyncWrapper(getRunningClass)
 };

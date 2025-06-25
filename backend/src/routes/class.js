@@ -12,4 +12,6 @@ export default (app) => {
   router.post('/', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ClassController.createClass);
 
   router.post('/join',AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['siswa']), ClassController.joinClass);
+
+  router.get('/running', AuthMiddleware.isAuthorized, ClassController.getRunningClass);
 };
