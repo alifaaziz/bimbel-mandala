@@ -1,9 +1,9 @@
 <template>
     <div class="container-table padding-components">
-        <h4 class="headersb3">
-            Jadwal Program
-        </h4>
-        <div class="tabel-jadwal-wrapper">
+      <div class="tabel-jadwal-wrapper">
+          <h4 class="headersb3">
+              Jadwal Program
+          </h4>
           <div class="tabel-jadwal">
               <n-space vertical :size="12">
               <n-data-table
@@ -76,11 +76,11 @@
                 size: "small",
                 bordered: false,
                 round: true,
-                class: "bodyr4"
+                class: "bodyr3"
                 },
                 { default: () => tagKey }
             );
-            });
+          });
         }
       }
     ];
@@ -181,11 +181,14 @@
 .tabel-jadwal-wrapper {
   width: 100%;
   overflow-x: auto;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 .tabel-jadwal {
     width: 100%;
     min-width: 800px;
-    padding: 2rem 0;
     border-radius: 1rem;
 }
 :deep(.n-data-table__pagination) {

@@ -43,7 +43,7 @@ const activeFilters = computed(() => ({
 <template>
   <div class="navbar-container">
     <div class="jenjang-trigger">
-      <img src="@/assets/icons/jenjang.svg" alt="">
+      <img class="jenjang-img" src="@/assets/icons/jenjang.svg" alt="">
       <n-select
         placeholder="SMA"
         class="bodysb1 select-jenjang"
@@ -75,7 +75,7 @@ const activeFilters = computed(() => ({
         <!-- Hari -->
         <div class="filter">
           <strong>Hari</strong>
-          <n-checkbox-group v-model:value="selectedDays">
+          <n-checkbox-group class="hari-checkbox-group" v-model:value="selectedDays">
             <n-checkbox label="Senin" value="Senin" />
             <n-checkbox label="Selasa" value="Selasa" />
             <n-checkbox label="Rabu" value="Rabu" />
@@ -194,13 +194,52 @@ const activeFilters = computed(() => ({
   gap: 0.5rem;
 }
 
+.hari-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .found {
   color: #777E90;
 }
 
 @media (max-width: 768px) {
-  .filter-drawer-content {
-    width: 280px;
+  .navbar-container {
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .jenjang-trigger {
+    gap: 0.2rem;
+  }
+
+  .jenjang-img {
+    display: none;
+  }
+
+  .search-bar {
+    max-width: 80%;
+    padding: 6px 10px;
+    border-radius: 14px;
+  }
+
+  .search-input {
+    font-size: 13px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .menu-button {
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .filter-open {
+    width: 90vw !important;
+    min-width: unset !important;
+    max-width: 100vw !important;
   }
 }
 </style>

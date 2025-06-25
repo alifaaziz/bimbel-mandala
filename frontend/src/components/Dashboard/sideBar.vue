@@ -44,7 +44,7 @@
           <li class="nav-item">
             <router-link
               class="nav-but"
-              to="dashboard/program"
+              to="/dashboardadmin/program"
               :class="{ active: activeMenu === 'Program' }"
               @click.native="setActive('Program')"
             >

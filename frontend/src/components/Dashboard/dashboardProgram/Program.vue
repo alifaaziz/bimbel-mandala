@@ -4,11 +4,11 @@
 
 <template>
     <div class="main-content">
-        Jadwal Dashboard
+        Program Dashboard
     </div>
 </template>
 
-<style>
+<style scoped>
 .main-content {
   display: flex;
   flex-direction: row;

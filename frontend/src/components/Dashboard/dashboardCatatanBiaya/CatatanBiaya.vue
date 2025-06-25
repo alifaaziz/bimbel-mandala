@@ -4,7 +4,7 @@
 
 <template>
     <div class="main-content">
-        duck you beatch catatan
+        Catatan & Biaya Dashboard
     </div>
 </template>
 

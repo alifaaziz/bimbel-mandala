@@ -103,7 +103,14 @@ function handleButton(slug) {
 <template>
   <div>
     <h2 v-if="filteredPrograms.length > 0" class="headerb1 title2">{{ title }}</h2>
-    <div v-else class="no-results">Tidak ada program yang sesuai dengan filter.</div>
+    <div v-else class="no-results">
+        <n-result
+          status="404"
+          description="Kami belum menemukan program yang sesuai dengan kriteria pencarian kamu."
+          size="huge"
+        >
+        </n-result>
+    </div>
     <div class="card-container">
       <n-card v-for="program in filteredPrograms" :key="program.slug" class="n-card">
         <div class="card-content">
@@ -137,7 +144,7 @@ function handleButton(slug) {
 .no-results {
   text-align: center;
   color: #888;
-  margin: 20px 0;
+  margin-top: 48px;
 }
 
 .title1 {

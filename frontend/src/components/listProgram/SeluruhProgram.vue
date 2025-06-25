@@ -1,13 +1,28 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { NCard } from 'naive-ui';
 import butSecondSmall from '../dirButton/butSecondSmall.vue';
 
 const limitedPrograms = ref([]);
 const isTutor = ref(false);
-const title = ref('Seluruh Program'); // Default title
+const title = ref('Seluruh Program');
 const router = useRouter();
+
+const currentPage = ref(1);
+const itemsPerPage = 8;
+
+const totalPages = computed(() => Math.ceil(limitedPrograms.value.length / itemsPerPage));
+const paginatedPrograms = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return limitedPrograms.value.slice(start, start + itemsPerPage);
+});
+
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+}
 
 onMounted(async () => {
   // Ambil role user dari API
@@ -82,7 +97,7 @@ function handleButton(slug) {
     <h2 class="headerb1 title2">{{ title }}</h2>
     <div class="card-container">
       <n-card 
-        v-for="program in limitedPrograms" 
+        v-for="program in paginatedPrograms" 
         :key="program.id"
         class="n-card"
       >
@@ -130,6 +145,15 @@ function handleButton(slug) {
       </n-card>
     </div>
 
+    <!-- Pagination Controls -->
+    <n-pagination
+      v-if="totalPages > 1"
+      v-model:page="currentPage"
+      :page-count="totalPages"
+      :page-size="itemsPerPage"
+      class="pagination"
+      style="margin-top: 1rem; justify-content: center;"
+    />
   </div>
 </template>
 

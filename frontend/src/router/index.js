@@ -38,6 +38,7 @@ import TambahSiswa from '@/components/Dashboard/dashboardSiswa/tambahSiswa.vue';
 
 import Tutor from '@/components/Dashboard/dahsboardTutor/Tutor.vue';
 import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
+import ProgramAdmin from '@/components/Dashboard/dashboardProgram/Program.vue';
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
 
 const routes = [
@@ -57,7 +58,7 @@ const routes = [
         children: [
           {
             path: '',
-            name: 'ProgramBelaajar',
+            name: 'ProgramBelajar',
             component: programBelajar
           },
           {
@@ -194,6 +195,11 @@ const routes = [
         path: 'tutor',
         name: 'Tutor',
         component: Tutor,
+      },
+      {
+        path: 'program',
+        name: 'ProgramAdmin',
+        component: ProgramAdmin,
       },
       {
         path: 'jadwal',
