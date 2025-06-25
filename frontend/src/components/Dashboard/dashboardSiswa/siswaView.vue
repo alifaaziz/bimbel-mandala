@@ -8,7 +8,7 @@
           <n-input
           round
           size="large"
-          placeholder="Cari jadwal program bimbel...">
+          placeholder="Cari siswa">
             <template #prefix>
               <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
             </template>
@@ -30,7 +30,7 @@
 
 <script setup>
 import { ref, h, computed } from 'vue';
-import { useRouter } from 'vue-router'; // Tambahkan ini
+import { useRouter } from 'vue-router';
 import { NButton, NIcon, NDataTable, NSpace, NH1, NInput, useMessage } from 'naive-ui';
 import {
   EllipsisHorizontal,
@@ -38,7 +38,7 @@ import {
 import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
 
 const message = useMessage();
-const router = useRouter(); // Inisialisasi router
+const router = useRouter();
 const searchText = ref('');
 
 // --- Definisi Kolom untuk n-data-table ---
@@ -123,8 +123,7 @@ const pagination = {
 
 // --- Fungsi Handler ---
 const handleTambahSiswa = () => {
-  message.success('Fungsi "Tambah Siswa" akan diimplementasikan di sini.');
-  // Logika untuk membuka modal atau halaman tambah siswa
+  router.push('/dashboardadmin/siswa/tambahsiswa');
 };
 
 const viewDetails = (row) => {

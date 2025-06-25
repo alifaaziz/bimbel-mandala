@@ -44,7 +44,7 @@
           <li class="nav-item">
             <router-link
               class="nav-but"
-              to="/program"
+              to="dashboard/program"
               :class="{ active: activeMenu === 'Program' }"
               @click.native="setActive('Program')"
             >
@@ -140,7 +140,7 @@ export default {
   left: 0;
   width: 256px;
   height: 100vh;
-  background-color: #091c36;
+  background-color: #0B2343;
   color: #fff;
   display: flex;
   flex-direction: column;

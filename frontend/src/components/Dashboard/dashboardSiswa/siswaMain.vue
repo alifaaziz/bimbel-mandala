@@ -5,7 +5,7 @@ import topSiswa from './topSiswa.vue';
 </script>
 
 <template>
-    <div class=" main-content">
+    <div class="main-content">
         <siswaView />
         <div class="right-side">
             <topSiswa />
@@ -18,9 +18,9 @@ import topSiswa from './topSiswa.vue';
 .main-content {
   gap: 8px;
   justify-content: space-between;
-  padding: 20px 30px; /* Padding untuk konten utama */
+  padding: 20px;
   overflow-y: auto;
-  background-color: #091c36;
+  background-color: #0B2343;
 }
 .right-side {
   display: flex;

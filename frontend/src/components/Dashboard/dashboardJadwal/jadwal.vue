@@ -15,8 +15,8 @@
   flex: 1;
   gap: 8px;
   justify-content: space-between;
-  padding: 20px 30px;
+  padding: 20px;
   overflow-y: auto;
-  background-color: #091c36;
+  background-color: #0B2343;
 }
 </style>

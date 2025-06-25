@@ -28,7 +28,7 @@ const getTagType = (level) => {
 <template>
   <div class="latest-tutors-widget">
     <n-space vertical :size="20">
-      <n-h2 class="widget-title">Tutor Terbaru</n-h2>
+      <h2 class="headerb2 widget-title">Tutor Terbaru</h2>
 
       <n-space vertical size="medium">
         <div
@@ -57,15 +57,12 @@ const getTagType = (level) => {
   background-color: #ffffff;
   padding: 24px;
   border-radius: 20px;
-  max-width: 400px; /* Lebar optimal untuk widget seperti ini */
-  margin: 20px auto;
+  max-width: 400px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .widget-title {
-  margin: 0;
-  font-weight: 700;
-  color: #1e3a8a; /* Warna biru tua sesuai gambar */
+  color: #154484; /* Warna biru tua sesuai gambar */
 }
 
 .tutor-item-card {

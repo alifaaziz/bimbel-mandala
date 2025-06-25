@@ -1,6 +1,6 @@
 <template>
   <div class="form-container">
-    <n-card title="Tambah Akun Siswa">
+    <n-card class="form-card" title="Tambah Akun Siswa">
       <n-form
         ref="formRef"
         :model="formModel"
@@ -13,7 +13,7 @@
             <n-form-item label="Nama Lengkap" path="namaLengkap">
               <n-input
                 v-model="formModel.namaLengkap"
-                placeholder="Tuliskan nama siswa disini"
+                placeholder="Tuliskan nama siswa di sini"
               />
             </n-form-item>
           </n-gi>
@@ -22,6 +22,7 @@
               <n-select
                 v-model="formModel.jenjang"
                 :options="jenjangOptions"
+                placeholder="Pilih jenjang"
               />
             </n-form-item>
           </n-gi>
@@ -30,7 +31,8 @@
             <n-form-item label="E-mail" path="email">
               <n-input
                 v-model="formModel.email"
-                placeholder="Tuliskan e-mail siswa disini"
+                placeholder="Tuliskan e-mail siswa di sini"
+                type="email"
               />
             </n-form-item>
           </n-gi>
@@ -69,16 +71,13 @@
                 v-model="formModel.alamat"
                 type="textarea"
                 placeholder="Alamat tempat tinggal siswa"
-                :autosize="{
-                  minRows: 3,
-                  maxRows: 5,
-                }"
+                :autosize="{ minRows: 3, maxRows: 5 }"
               />
             </n-form-item>
           </n-gi>
         </n-grid>
 
-        <n-text :depth="3">
+        <n-text :depth="3" style="margin-top: 8px; display: block;">
           Kolom dengan tanda bintang (*) wajib diisi
         </n-text>
 
@@ -97,6 +96,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   NForm,
   NFormItem,
@@ -111,16 +111,14 @@ import {
   useMessage,
 } from 'naive-ui';
 
-// Hook untuk menampilkan notifikasi
 const message = useMessage();
+const router = useRouter();
 
-// Referensi ke komponen form untuk memicu validasi
 const formRef = ref(null);
 
-// Model data reaktif untuk semua input form
 const formModel = ref({
   namaLengkap: '',
-  jenjang: 'SMA', // Nilai default sesuai gambar
+  jenjang: 'SMA',
   email: '',
   password: '',
   noWhatsApp: '',
@@ -128,69 +126,64 @@ const formModel = ref({
   alamat: '',
 });
 
-// Opsi untuk dropdown "Jenjang"
-const jenjangOptions = ref([
+const jenjangOptions = [
   { label: 'SD', value: 'SD' },
   { label: 'SMP', value: 'SMP' },
   { label: 'SMA', value: 'SMA' },
   { label: 'SMK', value: 'SMK' },
-]);
+];
 
-// Aturan validasi untuk form
 const rules = {
-  namaLengkap: {
-    required: true,
-    message: 'Nama lengkap wajib diisi',
-    trigger: ['input', 'blur'],
-  },
-  email: {
-    required: true,
-    message: 'E-mail wajib diisi',
-    trigger: ['input', 'blur'],
-  },
-  password: {
-    required: true,
-    message: 'Password wajib diisi',
-    trigger: ['input', 'blur'],
-  },
+  namaLengkap: [
+    { required: true, message: 'Nama lengkap wajib diisi' }
+  ],
+  jenjang: [
+    { required: true, message: 'Jenjang wajib dipilih' }
+  ],
+  email: [
+    { 
+      required: true, 
+      message: 'E-mail wajib diisi' 
+    },
+    {
+      validator(rule, value) {
+        if (!value) return true;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) return new Error('Format e-mail tidak valid');
+        return true;
+      }
+    }
+  ],
+  password: [
+    { required: true, message: 'Password wajib diisi' },
+    { min: 6, message: 'Password minimal 6 karakter' }
+  ]
 };
 
-// Fungsi saat tombol "Terapkan" diklik
 const handleApplyClick = (e) => {
   e.preventDefault();
   formRef.value?.validate((errors) => {
-    if (!errors) {
-      console.log('Data form valid:', formModel.value);
-      message.success('Akun siswa berhasil ditambahkan!');
-      // Di sini Anda dapat menambahkan logika untuk mengirim data ke server
+    if (errors) {
+      message.error('Harap isi semua kolom yang wajib diisi dengan benar.');
     } else {
-      console.log('Validasi gagal:', errors);
-      message.error('Harap isi semua kolom yang wajib diisi.');
+      // Tidak perlu menampilkan pesan sukses di sini, hanya submit ke backend jika diperlukan
+      // message.success('Akun siswa berhasil ditambahkan!');
+      // Tambahkan logika submit ke backend di sini jika diperlukan
     }
   });
 };
 
-// Fungsi saat tombol "Batal" diklik
 const handleCancelClick = () => {
-  // Reset form ke nilai awal
-  formModel.value = {
-    namaLengkap: '',
-    jenjang: 'SMA',
-    email: '',
-    password: '',
-    noWhatsApp: '',
-    noTelpWali: '',
-    alamat: '',
-  };
-  message.info('Penambahan akun dibatalkan dan form telah direset.');
+  router.back();
 };
-
 </script>
 
 <style scoped>
 .form-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
+  width: 100%;
+  padding: 20px;
+}
+.form-card {
+  border-radius: 16px;
 }
 </style>

@@ -26,8 +26,8 @@ const handleActionClick = (registrant) => {
 
 <template>
   <div class="registrant-container">
-    <n-space vertical :size="24">
-      <n-h1 style="margin: 0; color: #1e3a8a;">Pendaftar</n-h1>
+    <n-space vertical :size="20">
+      <h1 class="headerb2" style="margin: 0; color: #154484;">Pendaftar</h1>
 
       <n-space vertical size="medium">
         <div
@@ -52,8 +52,6 @@ const handleActionClick = (registrant) => {
   background-color: #ffffff;
   padding: 24px;
   border-radius: 20px; /* Sudut membulat seperti pada container di gambar */
-  max-width: 450px;
-  margin: 20px auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Memberi sedikit bayangan */
 }
 

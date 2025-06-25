@@ -1,11 +1,11 @@
 <template>
   <div class="page-background">
     <div class="profile-container">
-      <n-space vertical :size="24">
+      <n-space vertical :size="12">
         <n-space justify="space-between">
           <n-space vertical :size="0">
-            <n-h1 class="profile-name">John Due</n-h1>
-            <n-text :depth="3">Jenjang</n-text>
+            <h1 class="headerb1 profile-name">{{ profileData.name }}</h1>
+            <n-text :depth="3">{{ profileData.jenjang }}</n-text>
           </n-space>
           <n-space>
             <n-button @click="handleEdit">
@@ -19,6 +19,8 @@
           </n-space>
         </n-space>
 
+        <n-divider />
+
         <n-grid :x-gap="24" :y-gap="16" :cols="2">
           <n-gi>
             <n-space vertical>
@@ -26,21 +28,21 @@
                 <n-icon :component="MailOutline" size="20" :depth="3" />
                 <div class="info-item">
                   <div class="info-label">Alamat E-mail</div>
-                  <div class="info-value">namaemail@gmail.com</div>
+                  <div class="info-value">{{ profileData.email }}</div>
                 </div>
               </n-space>
               <n-space align="center">
                 <n-icon :component="LogoWhatsapp" size="20" :depth="3" />
                 <div class="info-item">
                   <div class="info-label">No. WhatsApp</div>
-                  <div class="info-value">085786234264</div>
+                  <div class="info-value">{{ profileData.whatsapp }}</div>
                 </div>
               </n-space>
               <n-space align="center">
                 <n-icon :component="CallOutline" size="20" :depth="3" />
                 <div class="info-item">
                   <div class="info-label">No. Telp Wali</div>
-                  <div class="info-value">085786234264</div>
+                  <div class="info-value">{{ profileData.telpWali }}</div>
                 </div>
               </n-space>
             </n-space>
@@ -51,14 +53,14 @@
                 <n-icon :component="SchoolOutline" size="20" :depth="3" />
                 <div class="info-item">
                   <div class="info-label">Sekolah</div>
-                  <div class="info-value">SMA Negeri 10 Semarang</div>
+                  <div class="info-value">{{ profileData.sekolah }}</div>
                 </div>
               </n-space>
               <n-space align="center">
                 <n-icon :component="HomeOutline" size="20" :depth="3" />
                 <div class="info-item">
                   <div class="info-label">Alamat rumah</div>
-                  <div class="info-value">Jl Sekaran No.05 RT05/04, Gunung Pati, Kota Semarang</div>
+                  <div class="info-value">{{ profileData.alamat }}</div>
                 </div>
               </n-space>
             </n-space>
@@ -79,6 +81,8 @@
           </n-card>
         </div>
 
+        <n-divider />
+
         <div class="section-container">
           <n-h2 class="section-title">Jadwal Program</n-h2>
           <n-card :bordered="false" class="content-card">
@@ -93,23 +97,63 @@
 
       </n-space>
     </div>
+    <!-- Modal Konfirmasi Hapus Akun -->
+    <n-modal v-model:show="showDeleteConfirm" preset="dialog" title="Konfirmasi Hapus Akun"
+      positive-text="Hapus" negative-text="Batal"
+      type="error"
+      @positive-click="confirmDelete"
+      @negative-click="cancelDelete"
+    >
+      <template #default>
+        <div>
+          Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat dibatalkan.
+        </div>
+      </template>
+    </n-modal>
   </div>
 </template>
 
 <script setup>
 import { h, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import {
-  NSpace, NButton, NH1, NH2, NText, NIcon, NGrid, NGi, NDivider, NCard, NDataTable, NDropdown, NTag, useMessage
+  NSpace, NButton, NH1, NH2, NText, NIcon, NGrid, NGi, NDivider, NCard, NDataTable, NDropdown, NTag, NModal, useMessage
 } from 'naive-ui';
 import {
   PencilOutline, TrashOutline, MailOutline, LogoWhatsapp, CallOutline, SchoolOutline, HomeOutline, EllipsisHorizontal
 } from '@vicons/ionicons5';
 
 const message = useMessage();
+const router = useRouter();
 
-// --- Handlers ---
-const handleEdit = () => message.info('Aksi: Edit Profil');
-const handleDelete = () => message.warning('Aksi: Hapus Akun');
+const profileData = ref({
+  name: 'John Due',
+  jenjang: 'SMA Kelas 12',
+  email: 'namaemail@gmail.com',
+  whatsapp: '085786234264',
+  telpWali: '085786234264',
+  sekolah: 'SMA Negeri 10 Semarang',
+  alamat: 'Jl Sekaran No.05 RT05/04, Gunung Pati, Kota Semarang'
+});
+
+// State untuk modal konfirmasi hapus akun
+const showDeleteConfirm = ref(false);
+
+const handleEdit = () => {
+  router.push('/dashboardadmin/siswa/editprofilesiswa');
+};
+const handleDelete = () => {
+  showDeleteConfirm.value = true;
+};
+const confirmDelete = () => {
+  showDeleteConfirm.value = false;
+  message.success('Akun berhasil dihapus!');
+  // Tambahkan logika penghapusan akun di sini
+};
+const cancelDelete = () => {
+  showDeleteConfirm.value = false;
+};
+
 const handleDropdownSelect = (key) => message.info(`Memilih aksi: ${key}`);
 
 // --- Data & Kolom untuk Tabel "Program Terdaftar" ---
@@ -160,7 +204,6 @@ const registeredProgramColumns = [
   }
 ];
 
-
 // --- Data & Kolom untuk Tabel "Jadwal Program" ---
 const programScheduleData = ref([
   { key: 1, program: 'Matematika SMA', tutor: 'Pak Dendy Wan S.Pd', type: 'Privat', session: 12, date: 'Rabu, 12 Maret 2025', time: '15:00', duration: '90 Menit', status: 'Masuk' },
@@ -199,7 +242,7 @@ const programScheduleColumns = [
       return h(NTag, {
         type: type,
         bordered: false,
-        style: 'width: 100px; justify-content: center;' // Agar lebar tag sama
+        style: 'width: 100px; justify-content: center;'
       }, { default: () => row.status });
     }
   }
@@ -209,20 +252,20 @@ const programScheduleColumns = [
 
 <style scoped>
 .page-background {
-  background-color: #091c36; /* Biru tua */
+  background-color: #0B2343; /* Biru tua */
   padding: 24px;
+  width: 100%;
+  overflow-y: auto;
 }
 
 .profile-container {
   background-color: #ffffff;
   padding: 20px;
+  border-radius: 12px;
 }
 
 .profile-name {
-  margin: 0;
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: #1e293b;
+  color: #154484;
 }
 
 .info-item {

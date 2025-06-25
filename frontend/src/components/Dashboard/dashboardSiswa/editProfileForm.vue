@@ -1,6 +1,6 @@
 <template>
   <div class="form-container">
-    <n-card title="Edit Profil Siswa">
+    <n-card title="Edit Profil Siswa" class="edit-profile-card">
       <n-form
         ref="formRef"
         :model="formModel"
@@ -91,26 +91,24 @@ import {
   NGrid,
   NGi,
   NSpace,
-  useMessage, // Opsional, untuk menampilkan notifikasi
+  useMessage,
 } from 'naive-ui';
+import { useRouter } from 'vue-router';
 
-// Inisialisasi message untuk notifikasi
 const message = useMessage();
+const router = useRouter();
 
-// Mereferensikan elemen form (berguna untuk validasi)
 const formRef = ref(null);
 
-// Model data untuk form, menggunakan ref agar reaktif
 const formModel = ref({
   namaLengkap: '',
-  jenjang: 'SMA', // Nilai default sesuai gambar
+  jenjang: 'SMA',
   sekolah: '',
   noWhatsApp: '',
   noTelpWali: '',
   alamat: '',
 });
 
-// Opsi untuk dropdown "Jenjang"
 const jenjangOptions = ref([
   { label: 'SD', value: 'SD' },
   { label: 'SMP', value: 'SMP' },
@@ -119,11 +117,8 @@ const jenjangOptions = ref([
   { label: 'Universitas', value: 'Universitas' },
 ]);
 
-// Fungsi yang dipanggil saat tombol "Terapkan" diklik
 const handleApplyClick = (e) => {
-  e.preventDefault(); // Mencegah perilaku default form submission
-  
-  // Contoh validasi (opsional)
+  e.preventDefault();
   formRef.value?.validate((errors) => {
     if (!errors) {
       console.log('Data yang akan dikirim:', formModel.value);
@@ -135,18 +130,19 @@ const handleApplyClick = (e) => {
   });
 };
 
-// Fungsi yang dipanggil saat tombol "Batal Edit" diklik
 const handleCancelClick = () => {
-    console.log('Proses edit dibatalkan');
-    message.info('Perubahan dibatalkan.');
-    // Di sini Anda bisa menambahkan logika untuk mereset form atau kembali ke halaman sebelumnya
+  message.info('Perubahan dibatalkan.');
+  router.back();
 };
 </script>
 
 <style scoped>
 .form-container {
-  max-width: 800px;
-  margin: 2rem auto;
+  width: 100%;
   padding: 1rem;
+}
+
+.edit-profile-card {
+  border-radius: 16px;
 }
 </style>

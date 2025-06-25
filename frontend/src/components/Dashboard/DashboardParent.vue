@@ -19,6 +19,6 @@ import sideBar from './sideBar.vue';
   flex-direction: row;
   height: 100vh;
   z-index: 1000;
-  background-color: #f8f9fa;
+  background-color: #0B2343;
 }
 </style>

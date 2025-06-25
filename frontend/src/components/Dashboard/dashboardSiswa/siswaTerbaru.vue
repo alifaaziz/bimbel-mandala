@@ -1,7 +1,7 @@
 <template>
   <div class="siswa-terbaru-widget">
     <n-space vertical :size="16">
-      <n-h2 class="widget-title">Siswa Terbaru</n-h2>
+      <h2 class="headerb2 widget-title">Siswa Terbaru</h2>
 
       <n-card
         v-for="student in newStudents"
@@ -12,8 +12,8 @@
       >
         <div class="card-content">
           <div class="student-info">
-            <div class="student-name">{{ student.name }}</div>
-            <n-text :depth="3" class="student-date">{{ student.date }}</n-text>
+            <div class="bodysb1 student-name">{{ student.name }}</div>
+            <n-text :depth="3" class="bodym2">{{ student.date }}</n-text>
           </div>
 
           <div class="student-level">
@@ -62,9 +62,7 @@ const newStudents = ref([
 }
 
 .widget-title {
-  margin: 0;
-  font-weight: 700;
-  color: #0F2C5A; /* Warna biru tua sesuai gambar */
+  color: #154484; /* Warna biru tua sesuai gambar */
 }
 
 /* Kustomisasi n-card agar sesuai dengan desain */
@@ -92,13 +90,7 @@ const newStudents = ref([
 }
 
 .student-name {
-  font-weight: 600;
-  font-size: 1.1rem;
   color: #1e1e1e;
-}
-
-.student-date {
-  font-size: 0.9rem;
 }
 
 .student-level {

@@ -33,10 +33,12 @@ import HomeAdmin from '@/components/Dashboard/dashboard.vue';
 import Siswa from '@/components/Dashboard/dashboardSiswa/siswa.vue';
 import siswaMain from '@/components/Dashboard/dashboardSiswa/siswaMain.vue';
 import DetailSiswa from '@/components/Dashboard/dashboardSiswa/siswaDetail.vue';
+import EditProfileSiswa from '@/components/Dashboard/dashboardSiswa/editProfileForm.vue';
+import TambahSiswa from '@/components/Dashboard/dashboardSiswa/tambahSiswa.vue';
 
 import Tutor from '@/components/Dashboard/dahsboardTutor/Tutor.vue';
 import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
-import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/catatanBiaya.vue';
+import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
 
 const routes = [
   { 
@@ -170,6 +172,21 @@ const routes = [
             path: 'detail/:id',
             name: 'DetailSiswa',
             component: DetailSiswa,
+          },
+          {
+            path: 'editprofilesiswa',
+            name: 'EditProfileSiswa',
+            component: EditProfileSiswa,
+          },
+          {
+            path: 'editprofilesiswa',
+            name: 'EditProfileSiswa',
+            component: EditProfileSiswa,
+          },
+          {
+            path: 'tambahsiswa',
+            name: 'TambahSiswa',
+            component: TambahSiswa,
           },
         ]
       },

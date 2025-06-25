@@ -8,7 +8,7 @@ import TopTutor from '../TopTutor.vue';
 <template>
     <div class="main-content">
         <TutorView />
-        <div>
+        <div class="right-side">
             <listPendaftar />
             <TutorTerbaru />
             <TopTutor />
@@ -23,8 +23,12 @@ import TopTutor from '../TopTutor.vue';
   flex: 1;
   gap: 8px;
   justify-content: space-between;
-  padding: 20px 30px; /* Padding untuk konten utama */
+  padding: 20px; /* Padding untuk konten utama */
   overflow-y: auto;
-  background-color: #091c36;
+  background-color: #0B2343;
+}
+
+.right-side {
+  min-width: 280px;
 }
 </style>

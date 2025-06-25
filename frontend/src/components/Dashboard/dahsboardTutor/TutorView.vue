@@ -2,10 +2,10 @@
 import { ref, computed, h } from 'vue';
 import { NButton, NIcon, NDropdown, useMessage } from 'naive-ui';
 import {
-  SearchOutline as SearchIcon,
-  AddOutline as AddIcon,
   EllipsisHorizontal as EllipsisIcon
 } from '@vicons/ionicons5';
+
+import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
 
 // Gunakan 'useMessage' untuk menampilkan notifikasi saat aksi dropdown dipilih
 const message = useMessage();
@@ -111,24 +111,21 @@ const renderIcon = (icon) => {
 <template>
   <div class="tutor-container">
     <n-space vertical size="large">
-      <n-h1 style="margin: 0;">Tutor</n-h1>
+      <h1 class="headlineb2">Tutor</h1>
 
-      <n-space justify="space-between" align="center">
-        <n-input
-          v-model="searchQuery"
-          placeholder="Cari tutor..."
-          style="max-width: 300px;"
-          clearable
-        >
-          <template #prefix>
-            <n-icon :component="SearchIcon" />
-          </template>
-        </n-input>
-
-        <n-button type="primary" ghost :render-icon="renderIcon(AddIcon)" @click="handleAddTutor">
-          Tambah Tutor
-        </n-button>
-      </n-space>
+      <div class="search-tambah">
+        <div class="search-container">
+          <n-input
+          round
+          size="large"
+          placeholder="Cari tutor...">
+            <template #prefix>
+              <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
+            </template>
+          </n-input>
+        </div>
+        <ButImgTambahSecondNormal label="Tambah Tutor" @click="handleAddTutor"/>
+      </div>
 
       <n-data-table
         :columns="columns"
@@ -142,10 +139,27 @@ const renderIcon = (icon) => {
 </template>
 
 <style scoped>
-/* Menambahkan sedikit padding agar komponen tidak menempel di tepi layar */
+
+.headlineb2 {
+  color: #154484;
+}
+
+.search-tambah {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 100%;
+}
+
 .tutor-container {
-  padding: 24px;
-  max-width: 1000px; /* Atur lebar maksimum sesuai kebutuhan */
-  margin: 0 auto;
+  padding: 20px;
+  border-radius: 16px;
+  width: 100%;
+  background-color: #fff; /* Latar belakang soft-white/blue */
 }
 </style>

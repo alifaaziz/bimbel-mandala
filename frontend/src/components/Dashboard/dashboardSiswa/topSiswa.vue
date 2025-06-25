@@ -1,9 +1,9 @@
 <template>
   <n-card class="top-siswa-widget" :bordered="false">
     <n-space vertical :size="16">
-      <n-h3 class="widget-title">Top Siswa</n-h3>
+      <h3 class="headerb2 widget-title">Top Siswa</h3>
       <div class="siswa-list">
-        <div class="list-row header-row">
+        <div class="list-row headersb3 header-row">
           <span class="header-text">Nama</span>
           <span class="header-text">Program</span>
         </div>
@@ -13,8 +13,8 @@
           :key="student.id"
           class="list-row student-row"
         >
-          <span class="student-name">{{ student.name }}</span>
-          <span class="student-program">{{ student.program }}</span>
+          <span class="bodym2 student-name">{{ student.name }}</span>
+          <span class="bodym2 student-program">{{ student.program }}</span>
         </div>
       </div>
     </n-space>
@@ -44,13 +44,11 @@ const topStudents = ref([
 
 :deep(.n-card__content) {
   padding: 0;
+  padding-top: 0 !important;
 }
 
-.widget-title {
-  margin: 0;
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: #0F2C5A; /* Warna biru tua untuk judul */
+.widget-title, .header-text {
+  color: #154484; /* Warna biru tua untuk judul */
 }
 
 .list-row {
@@ -64,24 +62,15 @@ const topStudents = ref([
   padding-bottom: 12px;
 }
 
-.header-text {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #0F2C5A; /* Warna biru tua yang sama dengan judul */
-}
-
 .student-row {
   border-top: 1px solid #e8eef8; /* Garis pemisah tipis antar siswa */
 }
 
 .student-name {
-  font-size: 1rem;
   color: #334155; /* Warna abu-abu tua untuk nama */
 }
 
 .student-program {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #3b82f6; /* Warna biru untuk nomor program */
+  color: #154484; /* Warna biru untuk nomor program */
 }
 </style>
