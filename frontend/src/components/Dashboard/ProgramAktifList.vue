@@ -1,6 +1,6 @@
 <template>
   <div class="program-aktif-card">
-    <h2 class="headerb2 card-title">Program Aktif</h2>
+    <h2 class="headerb2 card-title">Program Berjalan</h2>
     <ul class="program-list">
       <li v-for="program in activePrograms" :key="program.code" class="program-item">
         <div class="program-info">
@@ -18,13 +18,40 @@ export default {
   name: 'ProgramAktifList',
   data() {
     return {
-      activePrograms: [
-        { subject: 'Matematika SMA', teacher: 'Pak Dendy Wan S.Pd', code: '#11234' },
-        { subject: 'Matematika SD', teacher: 'Bu Luna S.Pd', code: '#11355' },
-        { subject: 'Fisika SMA', teacher: 'Bu Wendy S.Pd', code: '#11237' },
-        { subject: 'Seni SMA', teacher: 'Pak Wahyu Hendi S.Pd', code: '#11244' },
-      ],
+      activePrograms: [],
     };
+  },
+  methods: {
+    async fetchRunningClasses() {
+      try {
+        const token = localStorage.getItem('token'); // Ambil token dari localStorage
+        if (!token) {
+          throw new Error('Token tidak ditemukan. Silakan login kembali.');
+        }
+        const response = await fetch('http://localhost:3000/classes/running', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        this.activePrograms = result.data.map((program) => ({
+            subject: `${program.programName} ${program.level}`,
+          teacher: program.tutorName,
+          code: program.classCode,
+        }));
+      } catch (error) {
+        console.error('Error fetching running classes:', error);
+        alert('Gagal mengambil data program aktif.');
+      }
+    },
+  },
+  mounted() {
+    this.fetchRunningClasses(); // Panggil fetch saat komponen dimuat
   },
 };
 </script>

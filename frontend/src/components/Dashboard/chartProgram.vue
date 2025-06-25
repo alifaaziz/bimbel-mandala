@@ -47,48 +47,42 @@
 export default {
   name: 'DonutChart',
   props: {
-    programAktif: {
-      type: Number,
-      required: true,
-      default: 15,
-    },
-    programDibuka: {
-      type: Number,
-      required: true,
-      default: 85,
-    },
     colorAktif: {
       type: String,
-      default: '#1e3a8a', // Biru Tua (sesuai gambar)
+      default: '#1e3a8a', // Biru Tua
     },
     colorDibuka: {
       type: String,
-      default: '#f97316', // Oranye (sesuai gambar)
+      default: '#f97316', // Oranye
     },
     containerWidth: {
       type: [String, Number],
-      default: 220, // Lebar container keseluruhan
+      default: 220,
     },
     containerHeight: {
       type: [String, Number],
-      // default: 280, // Tinggi bisa otomatis atau diset jika perlu
     },
     strokeWidth: {
       type: Number,
-      default: 18, // Ketebalan ring donat
+      default: 18,
     },
-    svgSize: { // Ukuran internal viewBox SVG, untuk skala
-        type: Number,
-        default: 100, // Ukuran viewBox (misal 100x100)
-    }
+    svgSize: {
+      type: Number,
+      default: 100,
+    },
+  },
+  data() {
+    return {
+      programAktif: 0, // Nilai awal
+      programDibuka: 0, // Nilai awal
+    };
   },
   computed: {
     center() {
-      return this.svgSize / 2; // Titik tengah SVG
+      return this.svgSize / 2;
     },
     radius() {
-      // Radius dihitung agar strokeWidth terpusat dan ada sedikit padding dari tepi viewBox
-      return (this.svgSize / 2) - (this.strokeWidth / 2) - (this.svgSize * 0.02); // 2% padding
+      return (this.svgSize / 2) - (this.strokeWidth / 2) - (this.svgSize * 0.02);
     },
     totalPrograms() {
       return this.programAktif + this.programDibuka;
@@ -104,29 +98,50 @@ export default {
     circumference() {
       return 2 * Math.PI * this.radius;
     },
-    // --- Kalkulasi untuk Segmen Aktif (Biru) ---
     strokeDashArrayAktif() {
-      // Panjang goresan untuk segmen Aktif, sisanya adalah gap
       const dashLength = this.percentAktif * this.circumference;
       return `${dashLength} ${this.circumference}`;
     },
     transformAktif() {
-      // Mulai dari atas (jam 12), yaitu -90 derajat rotasi
       return `rotate(-90 ${this.center} ${this.center})`;
     },
-    // --- Kalkulasi untuk Segmen Dibuka (Oranye) ---
     strokeDashArrayDibuka() {
-      // Panjang goresan untuk segmen Dibuka
       const dashLength = this.percentDibuka * this.circumference;
       return `${dashLength} ${this.circumference}`;
     },
     transformDibuka() {
-      // Mulai setelah segmen Aktif berakhir.
-      // Segmen Aktif mencakup (percentAktif * 360) derajat.
-      // Jadi, segmen Dibuka dimulai dari rotasi -90 + (derajat segmen Aktif).
       const rotationAngle = (this.percentAktif * 360) - 90;
       return `rotate(${rotationAngle} ${this.center} ${this.center})`;
-    }
+    },
+  },
+  methods: {
+    async fetchStatistics() {
+      try {
+        const token = localStorage.getItem('token'); // Ambil token dari localStorage
+        if (!token) {
+          throw new Error('Token tidak ditemukan. Silakan login kembali.');
+        }
+        const response = await fetch('http://localhost:3000/users/statistics', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        this.programAktif = result.data.activePackageCount; // Isi programAktif
+        this.programDibuka = result.data.packageCount; // Isi programDibuka
+      } catch (error) {
+        console.error('Error fetching statistics:', error);
+        alert('Gagal mengambil data statistik.');
+      }
+    },
+  },
+  mounted() {
+    this.fetchStatistics(); // Panggil fetch saat komponen dimuat
   },
 };
 </script>

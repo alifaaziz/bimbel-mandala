@@ -21,14 +21,43 @@ export default {
   name: 'TopTutorList',
   data() {
     return {
-      tutors: [
-        { id: 1, name: 'Pak Dendy Wan S.Pd', completedPrograms: 12 },
-        { id: 2, name: 'Bu Susi Wati S.Pd', completedPrograms: 7 },
-        { id: 3, name: 'Pak Wahyu Hendi S.Pd', completedPrograms: 6 },
-        { id: 4, name: 'Bu Luna S.Pd', completedPrograms: 5 },
-        { id: 5, name: 'Pak Indra Jaya S.Pd', completedPrograms: 2 },
-      ],
+      tutors: [], // Data tutor akan diisi dari API
     };
+  },
+  methods: {
+    async fetchTopTutors() {
+      try {
+        const token = localStorage.getItem('token'); // Ambil token dari localStorage
+        if (!token) {
+          throw new Error('Token tidak ditemukan. Silakan login kembali.');
+        }
+        const response = await fetch('http://localhost:3000/users/tutors', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        // Ambil 4 tutor teratas berdasarkan classCount
+        this.tutors = result.data
+          .sort((a, b) => b.classCount - a.classCount) // Urutkan berdasarkan classCount (desc)
+          .slice(0, 5) // Ambil 4 teratas
+          .map(tutor => ({
+            name: tutor.name,
+            completedPrograms: tutor.classCount, // Map classCount ke completedPrograms
+          }));
+      } catch (error) {
+        console.error('Error fetching top tutors:', error);
+        alert('Gagal mengambil data tutor.');
+      }
+    },
+  },
+  mounted() {
+    this.fetchTopTutors(); // Panggil fetch saat komponen dimuat
   },
 };
 </script>

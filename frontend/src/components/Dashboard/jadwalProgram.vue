@@ -32,7 +32,7 @@
                 <div class="bimbel-subject">{{ item.bimbel.subject }}</div>
                 <div class="bimbel-teacher">{{ item.bimbel.teacher }}</div>
               </td>
-              <td>{{ item.kode }}</td>
+              <td>#{{ item.kode }}</td>
               <td>{{ item.tanggal }}</td>
               <td>{{ item.jam }}</td>
               <td>
@@ -44,6 +44,11 @@
           </tbody>
         </table>
       </div>
+      <div class="pagination">
+        <button @click="goToPreviousPage" :disabled="page === 1">Sebelumnya</button>
+        <span>Halaman {{ page }} dari {{ totalPages }}</span>
+        <button @click="goToNextPage" :disabled="page === totalPages">Selanjutnya</button>
+      </div>
     </section>
   </div>
 </template>
@@ -53,67 +58,72 @@ export default {
   name: 'DashboardView',
   data() {
     return {
-      scheduleItems: [
-        {
-          bimbel: { subject: 'Matematika SMA', teacher: 'Pak Dendy Wan S.Pd' },
-          kode: '#11234',
-          tanggal: 'Sabtu, 15 Maret 2025',
-          jam: '15:00',
-        },
-        {
-          bimbel: { subject: 'Matematika SD', teacher: 'Bu Luna S.Pd' },
-          kode: '#11355',
-          tanggal: 'Sabtu, 15 Maret 2025',
-          jam: '15:00',
-        },
-        {
-          bimbel: { subject: 'Fisika SMA', teacher: 'Bu Wendy S.Pd' },
-          kode: '#11237',
-          tanggal: 'Sabtu, 15 Maret 2025',
-          jam: '15:00',
-        },
-        {
-          bimbel: { subject: 'Seni SMA', teacher: 'Pak Wahyu Hendi S.Pd' },
-          kode: '#11244',
-          tanggal: 'Sabtu, 15 Maret 2025',
-          jam: '15:00',
-        },
-        {
-          bimbel: { subject: 'Fokus UTBK', teacher: 'Pak Indra Jaya S.Pd' },
-          kode: '#101',
-          tanggal: 'Sabtu, 15 Maret 2025',
-          jam: '15:00',
-        },
-        {
-          bimbel: { subject: 'English SMP', teacher: 'Bu Susi Wati S.Pd' },
-          kode: '#11199',
-          tanggal: 'Sabtu, 15 Maret 2025',
-          jam: '15:00',
-        },
-        {
-          bimbel: { subject: 'Matematika SMA', teacher: 'Pak Dendy Wan S.Pd' },
-          kode: '#11234', // Sepertinya ada duplikasi kode pada gambar, saya biarkan sesuai gambar
-          tanggal: 'Senin, 17 Maret 2025',
-          jam: '15:00',
-        },
-        {
-          bimbel: { subject: 'Matematika SD', teacher: 'Bu Luna S.Pd' },
-          kode: '#11355', // Sepertinya ada duplikasi kode pada gambar
-          tanggal: 'Senin, 17 Maret 2025',
-          jam: '15:00',
-        },
-      ]
+      scheduleItems: [], 
+      page: 1,
+      limit: 10, 
+      totalPages: 1
     };
   },
   methods: {
+    async fetchClosestSchedules(page = this.page) {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token tidak ditemukan. Silakan login kembali.');
+        }
+        const response = await fetch(`http://localhost:3000/schedules/closest?page=${page}&limit=${this.limit}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        this.scheduleItems = result.data.data.map(item => ({
+          kode: item.classCode,
+          bimbel: {
+            subject: item.packageName,
+            teacher: item.tutorName
+          },
+          tanggal: new Date(item.date).toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          jam: item.date.split('T')[1].slice(0, 5),
+          slug: item.slug
+        }));
+        this.page = result.data.page;
+        this.totalPages = result.data.totalPages;
+      } catch (error) {
+        console.error('Error fetching closest schedules:', error);
+        alert('Gagal mengambil data jadwal terdekat.');
+      }
+    },
     showDetail(item) {
-      // Logika untuk menampilkan detail item
-      // Misalnya, bisa membuka modal atau navigasi ke halaman detail
       console.log('Menampilkan detail untuk:', item.kode, item.bimbel.subject);
       alert(`Detail untuk ${item.bimbel.subject} (${item.kode})`);
+    },
+    goToNextPage() {
+      if (this.page < this.totalPages) {
+        this.page++;
+        this.fetchClosestSchedules(this.page);
+      }
+    },
+    goToPreviousPage() {
+      if (this.page > 1) {
+        this.page--;
+        this.fetchClosestSchedules(this.page);
+      }
     }
+  },
+  mounted() {
+    this.fetchClosestSchedules();
   }
-}
+};
 </script>
 
 <style scoped>
@@ -209,4 +219,30 @@ export default {
   font-size: 0.9em;
 }
 
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pagination button {
+  background-color: #154484;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 0.9em;
+  color: #333;
+}
 </style>
