@@ -268,44 +268,57 @@ async function updateScheduleInformation(scheduleId, information) {
 }
 
 /**
- * Get closest schedule from today
+ * Get closest schedules from today with pagination.
  * 
  * @async
  * @function getClosestSchedules
- * @returns {Promise<Array>} The closest schedules, each with class code and tutor name included.
+ * @param {Number} page - The page number (default: 1).
+ * @param {Number} limit - The number of items per page (default: 10).
+ * @returns {Promise<Object>} The paginated closest schedules, including total count and current page.
  * @throws {Error} If there are no schedules.
  */
-async function getClosestSchedules() {
-  const schedules = await prisma.schedule.findMany({
-    where: { date: { gte: new Date() } },
-    include: {
-      class: {
-        include: {
-          order: {
-            include: {
-              bimbelPackage: {
-                include: {
-                  user: true,
-                  groupType: true
-                }
-              },
-              groupType: true
+async function getClosestSchedules(page = 1, limit = 10) {
+  const offset = (page - 1) * limit; // Hitung offset berdasarkan page dan limit
+
+  console.log('Offset:', offset, 'Page:', page, 'Limit:', limit); // Debugging
+
+  const [schedules, total] = await Promise.all([
+    prisma.schedule.findMany({
+      where: { date: { gte: new Date() } }, // Ambil jadwal yang dimulai dari hari ini
+      include: {
+        class: {
+          include: {
+            order: {
+              include: {
+                bimbelPackage: {
+                  include: {
+                    user: true,
+                    groupType: true
+                  }
+                },
+                groupType: true
+              }
+            },
+            tutor: {
+              include: { tutors: true }
             }
-          },
-          tutor: {
-            include: { tutors: true }
           }
         }
-      }
-    },
-    orderBy: { date: 'asc' }
-  });
+      },
+      orderBy: { date: 'asc' }, // Urutkan berdasarkan tanggal terdekat
+      skip: offset, // Gunakan offset untuk pagination
+      take: limit // Ambil jumlah data sesuai limit
+    }),
+    prisma.schedule.count({
+      where: { date: { gte: new Date() } } // Hitung total jadwal yang tersedia
+    })
+  ]);
 
   if (!schedules || schedules.length === 0) {
     throw new Error('No schedules found');
   }
 
-  return schedules.map(schedule => {
+  const data = schedules.map(schedule => {
     const classData = schedule.class;
     const order = classData?.order;
     const bimbelPackage = order?.bimbelPackage;
@@ -327,6 +340,14 @@ async function getClosestSchedules() {
       slug: schedule.slug || null,
     };
   });
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 /**
