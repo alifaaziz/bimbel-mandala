@@ -10,61 +10,71 @@
                   :bordered="false"
                   :columns="columns"
                   :data="data"
-                  :pagination="pagination"
+                  :pagination="false"
                   :row-props="rowProps"
               />
               </n-space>
+              <div class="pagination-wrapper">
+                <n-pagination
+                  :page="pagination.page"
+                  :page-size="pagination.pageSize"
+                  :page-count="pagination.pageCount"
+                  @update:page="handlePageChange"
+                  :page-slot="7"
+                  v-model:page="page"
+                />
+              </div>
           </div>
         </div>
     </div>
 </template>
   
-  <script>
-  import { NTag, useMessage } from "naive-ui";
-  import { defineComponent, h, ref, onMounted } from "vue";
-  
-  function createColumns({}) {
-    return [
-      {
-        title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Jadwal'),
-        key: "jadwal",
-        render(row) {
-            return h("div", {}, [
-            h("div", { style: "font-weight: 600;" }, row.jadwal),
-            h("div", { style: "font-size: 12px; color: #666;" }, row.guru)
-            ]);
-        }
-      },
-      {
-        title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Jenis'),
-        key: "jenis"
-      },
-      {
-        title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Pertemuan'),
-        key: "pertemuan"
-      },
-      {
-        title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Tanggal'),
-        key: "tanggal"
-      },
-      {
-        title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Jam'),
-        key: "jam"
-      },
-      {
-        title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Durasi'),
-        key: "durasi"
-      },
-      {
-        title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Status'),
-        key: "status",
-        render(row) {
-            const tagTypeMap = {
-            "Terjadwal": "success",
-            "Jadwal Ulang": "warning",
-            "Masuk": "info",
-            "Izin": "error"
-            };
+<script>
+import { NTag, useMessage, NPagination } from "naive-ui";
+import { defineComponent, h, ref, onMounted } from "vue";
+
+function createColumns({}) {
+  return [
+    {
+      title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Jadwal'),
+      key: "jadwal",
+      render(row) {
+          return h("div", {}, [
+          h("div", { style: "font-weight: 600;" }, row.jadwal),
+          h("div", { style: "font-size: 12px; color: #666;" }, row.guru)
+          ]);
+      }
+    },
+    {
+      title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Jenis'),
+      key: "jenis"
+    },
+    {
+      title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Pertemuan'),
+      key: "pertemuan"
+    },
+    {
+      title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Tanggal'),
+      key: "tanggal"
+    },
+    {
+      title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Jam'),
+      key: "jam"
+    },
+    {
+      title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Durasi'),
+      key: "durasi"
+    },
+    {
+      title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Status'),
+      key: "status",
+      render(row) {
+          const tagTypeMap = {
+          "Terjadwal": "success",
+          "Jadwal Ulang": "warning",
+          "Masuk": "info",
+          "Izin": "error"
+          };
 
             return row.status.map((tagKey) => {
             const type = tagTypeMap[tagKey] || "default";
@@ -196,6 +206,11 @@
   justify-content: flex-start;
   align-items: center;
   /* ...style lain jika ada... */
+}
+.pagination-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-start;
 }
 @media (max-width: 768px) {
   .container-table {

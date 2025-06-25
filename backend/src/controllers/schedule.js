@@ -47,8 +47,8 @@ async function reschedule(req, res) {
  * @returns {Promise<void>} Resolves with the closest schedule.
  */
 async function getClosestSchedules(req, res) {
-  const page = parseInt(req.query.page) || 1; // Ambil page dari query string, default ke 1
-  const limit = parseInt(req.query.limit) || 10; // Ambil limit dari query string, default ke 10
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 10; 
   const schedule = await ScheduleService.getClosestSchedules(page, limit);
   res.status(200).json({ data: schedule });
 }
@@ -63,7 +63,9 @@ async function getClosestSchedules(req, res) {
  * @returns {Promise<void>} Resolves with the user's schedules.
  */
 async function getSchedules(req, res) {
-  const schedules = await ScheduleService.getSchedulesByRole(res.locals.user.id);
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 5; 
+  const schedules = await ScheduleService.getSchedulesByRole(res.locals.user.id, page, limit);
   res.status(200).json({ data: schedules });
 }
 

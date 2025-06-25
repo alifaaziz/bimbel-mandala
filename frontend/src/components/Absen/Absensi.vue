@@ -25,7 +25,7 @@ onMounted(async () => {
     })
     if (!res.ok) throw new Error('Gagal mengambil jadwal')
     const result = await res.json()
-    const item = (result.data || [])[0] // Ambil item pertama
+    const item = (result.data.data || [])[0] // Ambil item pertama
 
     if (item) {
       schedule.value = {
