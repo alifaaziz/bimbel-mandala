@@ -351,73 +351,61 @@ async function getClosestSchedules(page = 1, limit = 10) {
 }
 
 /**
- * Get schedules for a student based on their user ID.
+ * Get schedules for a student based on their user ID with pagination.
  *
  * @async
  * @function getSchedulesForStudent
  * @param {String} userId - The ID of the logged-in student.
- * @returns {Promise<Array>} The schedules for the student.
+ * @param {Number} page - The page number (default: 1).
+ * @param {Number} limit - The number of items per page (default: 10).
+ * @returns {Promise<Object>} The paginated schedules for the student.
  */
-async function getSchedulesForStudent(userId) {
+async function getSchedulesForStudent(userId, page = 1, limit = 10) {
+  const offset = (page - 1) * limit;
+
   const studentClasses = await prisma.studentClass.findMany({
-    where: { userId: userId },
-    select: { classId: true }
+    where: { userId },
+    select: { classId: true },
   });
 
   const classIds = studentClasses.map((sc) => sc.classId);
 
   if (classIds.length === 0) {
-    throw new Error('No classes found for this student');
+    return { data: [], total: 0, page, limit, totalPages: 0 };
   }
 
-  const schedules = await prisma.schedule.findMany({
-    where: {
-      classId: { in: classIds }
-    },
-    include: {
-      class: {
-        include: {
-          order: {
-            include: {
-              bimbelPackage: {
-                include: {
-                  user: true,
-                  groupType: true
-                }
+  const [schedules, total] = await Promise.all([
+    prisma.schedule.findMany({
+      where: { classId: { in: classIds } },
+      include: {
+        class: {
+          include: {
+            order: {
+              include: {
+                bimbelPackage: true,
+                groupType: true,
               },
-              groupType: true
-            }
+            },
+            tutor: {
+              include: { tutors: true },
+            },
           },
-          tutor: {
-            include: { tutors: true }
-          }
-        }
+        },
+        attendances: {
+          where: { userId },
+          select: { status: true },
+        },
       },
-      attendances: { 
-        where: { userId },
-        select: { status: true }
-      }
-    },
-    orderBy: { date: 'asc' }
-  });
+      orderBy: { date: 'asc' },
+      skip: offset,
+      take: limit,
+    }),
+    prisma.schedule.count({
+      where: { classId: { in: classIds } },
+    }),
+  ]);
 
-  if (!schedules || schedules.length === 0) {
-    throw new Error('No schedules found for this student');
-  }
-
-  const filtered = schedules.filter(s => s.class?.status !== 'selesai');
-  const now = new Date();
-
-  filtered.sort((a, b) => {
-    const isAFuture = new Date(a.date) >= now;
-    const isBFuture = new Date(b.date) >= now;
-    if (isAFuture === isBFuture) {
-      return new Date(a.date) - new Date(b.date);
-    }
-    return isAFuture ? -1 : 1;
-  });
-
-  return filtered.map(schedule => {
+  const data = schedules.map((schedule) => {
     const classData = schedule.class;
     const order = classData?.order;
     const bimbelPackage = order?.bimbelPackage;
@@ -444,65 +432,58 @@ async function getSchedulesForStudent(userId) {
       slug: schedule.slug || null,
     };
   });
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 /**
- * Get schedules for a tutor based on their user ID.
+ * Get schedules for a tutor based on their user ID with pagination.
  *
  * @async
  * @function getSchedulesForTutor
  * @param {String} userId - The ID of the logged-in tutor.
- * @returns {Promise<Array>} The schedules for the tutor.
+ * @param {Number} page - The page number (default: 1).
+ * @param {Number} limit - The number of items per page (default: 10).
+ * @returns {Promise<Object>} The paginated schedules for the tutor.
  */
-async function getSchedulesForTutor(userId) {
-  const schedules = await prisma.schedule.findMany({
-    where: {
-      class: { tutorId: userId }
-    },
-    include: {
-      class: {
-        include: {
-          order: {
-            include: {
-              bimbelPackage: {
-                include: {
-                  user: true,
-                  groupType: true
-                }
+async function getSchedulesForTutor(userId, page = 1, limit = 10) {
+  const offset = (page - 1) * limit;
+
+  const [schedules, total] = await Promise.all([
+    prisma.schedule.findMany({
+      where: { class: { tutorId: userId } },
+      include: {
+        class: {
+          include: {
+            order: {
+              include: {
+                bimbelPackage: true,
+                groupType: true,
               },
-              groupType: true
-            }
+            },
+            tutor: {
+              include: { tutors: true },
+            },
           },
-          tutor: {
-            include: { tutors: true }
-          }
-        }
+        },
+        attendances: true,
       },
-      attendances: { 
-        where: { userId }, 
-        select: { status: true }
-      }
-    },
-    orderBy: { date: 'asc' }
-  });
+      orderBy: { date: 'asc' },
+      skip: offset,
+      take: limit,
+    }),
+    prisma.schedule.count({
+      where: { class: { tutorId: userId } },
+    }),
+  ]);
 
-  if (!schedules || schedules.length === 0) {
-    throw new Error('No schedules found for this tutor');
-  }
-
-  const filtered = schedules.filter(s => s.class?.status !== 'selesai');
-  const now = new Date();
-
-  filtered.sort((a, b) => {
-    const isAFuture = new Date(a.date) >= now;
-    const isBFuture = new Date(b.date) >= now;
-    if (isAFuture === isBFuture) {
-      return new Date(a.date) - new Date(b.date);
-    }
-    return isAFuture ? -1 : 1;
-  });
-
-  return filtered.map(schedule => {
+  const data = schedules.map((schedule) => {
     const classData = schedule.class;
     const order = classData?.order;
     const bimbelPackage = order?.bimbelPackage;
@@ -528,7 +509,15 @@ async function getSchedulesForTutor(userId) {
       photo: tutor?.tutors?.[0]?.photo || null,
       slug: schedule.slug || null,
     };
-  }); 
+  });
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 /**
@@ -539,7 +528,7 @@ async function getSchedulesForTutor(userId) {
  * @param {String} userId - The ID of the logged-in user.
  * @returns {Promise<Array>} The schedules for the user.
  */
-async function getSchedulesByRole(userId) {
+async function getSchedulesByRole(userId, page, limit) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { role: true }
@@ -552,9 +541,9 @@ async function getSchedulesByRole(userId) {
   const { role } = user;
 
   if (role === 'siswa') {
-    return await getSchedulesForStudent(userId);
+    return await getSchedulesForStudent(userId, page, limit);
   } else if (role === 'tutor') {
-    return await getSchedulesForTutor(userId);
+    return await getSchedulesForTutor(userId, page, limit);
   }
 }
 
