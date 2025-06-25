@@ -225,14 +225,21 @@ export default defineComponent({
       return data.value.slice(start, start + mobilePageSize);
     });
 
-    onMounted(async () => {
+    // Pagination untuk tabel desktop
+    const pagination = ref({
+      page: 1,
+      pageSize: 5,
+      total: 0, // Total data dari server
+    });
+
+    async function fetchSchedules() {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:3000/schedules', {
+        const res = await fetch(`http://localhost:3000/schedules?page=${pagination.value.page}&limit=${pagination.value.pageSize}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         const result = await res.json();
-        data.value = (result.data || []).map(item => ({
+        data.value = (result.data.data || []).map(item => ({
           key: item.id,
           jadwal: item.packageName,
           guru: item.tutorName,
@@ -244,18 +251,24 @@ export default defineComponent({
           status: [statusLabel(item.status)],
           slug: item.slug
         }));
+        pagination.value.total = result.data.total || 0; // Total data dari server
       } catch (err) {
         data.value = [];
       }
-    });
+    }
+
+    onMounted(fetchSchedules);
+
+    function changePage(newPage) {
+      pagination.value.page = newPage;
+      fetchSchedules();
+    }
 
     return {
       data,
       columns,
       tagTypeMap,
-      pagination: {
-        pageSize: 5
-      },
+      pagination,
       isMobile,
       // Popup Jadwal Ulang
       showRescheduleModal,
@@ -276,7 +289,8 @@ export default defineComponent({
       showSuccessModal,
       closeSuccessModal,
       // Tambahkan rowProps untuk klik baris tabel
-      rowProps
+      rowProps,
+      changePage
     };
   }
 });
@@ -290,8 +304,17 @@ export default defineComponent({
       :bordered="false"
       :columns="columns"
       :data="data"
-      :pagination="pagination"
+      :pagination="false"
       :row-props="rowProps"
+    />
+    <n-pagination
+      v-if="!isMobile"
+      :page="pagination.page"
+      :page-size="pagination.pageSize"
+      :page-count="Math.ceil(pagination.total / pagination.pageSize)"
+      @update:page="changePage"
+      :page-slot="7"
+      v-model:page="page"
     />
 
     <!-- Mobile View as Card List -->

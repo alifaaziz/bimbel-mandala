@@ -44,7 +44,7 @@ onMounted(async () => {
   });
   if (res.ok) {
     const result = await res.json();
-    jadwalList.value = (result.data || [])
+    jadwalList.value = (result.data.data || [])
       .slice(0, 4)
       .map(item => ({
         id: item.id,

@@ -31,7 +31,7 @@ onMounted(async () => {
     const result = await res.json()
 
     // Ambil jadwal pertama
-    const item = (result.data || [])[0]
+    const item = (result.data.data || [])[0]
     if (item) {
       schedule.value = {
         id: item.id,

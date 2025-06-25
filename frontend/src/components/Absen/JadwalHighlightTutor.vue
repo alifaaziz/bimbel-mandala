@@ -212,7 +212,7 @@ export default defineComponent({
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         const result = await res.json();
-        data.value = (result.data || [])
+        data.value = (result.data.data || [])
         .slice(0, 5)
         .map(item => ({
           key: item.id,
