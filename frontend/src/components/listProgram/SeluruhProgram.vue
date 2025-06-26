@@ -11,21 +11,25 @@ const router = useRouter();
 
 const currentPage = ref(1);
 const itemsPerPage = 8;
+const totalPages = ref(1);
 
-const totalPages = computed(() => Math.ceil(limitedPrograms.value.length / itemsPerPage));
-const paginatedPrograms = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return limitedPrograms.value.slice(start, start + itemsPerPage);
-});
-
-function goToPage(page) {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
+async function fetchPrograms() {
+  try {
+    const res = await fetch(`http://localhost:3000/packages?page=${currentPage.value}&limit=${itemsPerPage}`);
+    const data = await res.json();
+    limitedPrograms.value = data.data; // Data program
+    totalPages.value = Math.ceil(data.total / itemsPerPage); // Total halaman
+  } catch (err) {
+    console.error('Gagal fetch data:', err);
   }
 }
 
+function handlePageChange(page) {
+  currentPage.value = page;
+  fetchPrograms();
+}
+
 onMounted(async () => {
-  // Ambil role user dari API
   const token = localStorage.getItem('token');
   if (token) {
     const res = await fetch('http://localhost:3000/users/me', {
@@ -53,15 +57,8 @@ onMounted(async () => {
     }
   }
 
-  // Fetch program populer jika bukan tutor
   if (!isTutor.value) {
-    try {
-      const res = await fetch('http://localhost:3000/packages');
-      const data = await res.json();
-      limitedPrograms.value = data.data;
-    } catch (err) {
-      console.error('Gagal fetch data:', err);
-    }
+    await fetchPrograms();
   }
 });
 
@@ -82,12 +79,11 @@ function groupTypeLabel(groupTypeArr) {
     : 'Privat/Kelompok';
 }
 
-// Handler tombol
 function handleButton(slug) {
   if (isTutor.value) {
     router.push(`/detailprogram/${slug}`);
   } else {
-    router.push(`/detailProgram/${slug}`);
+    router.push(`/detailprogram/${slug}`);
   }
 }
 </script>
@@ -97,7 +93,7 @@ function handleButton(slug) {
     <h2 class="headerb1 title2">{{ title }}</h2>
     <div class="card-container">
       <n-card 
-        v-for="program in paginatedPrograms" 
+        v-for="program in limitedPrograms" 
         :key="program.id"
         class="n-card"
       >
@@ -151,6 +147,8 @@ function handleButton(slug) {
       v-model:page="currentPage"
       :page-count="totalPages"
       :page-size="itemsPerPage"
+      @update:page="handlePageChange"
+      :page-slot="7"
       class="pagination"
       style="margin-top: 1rem; justify-content: center;"
     />

@@ -20,7 +20,7 @@ export default defineComponent({
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await res.json();
-      const sorted = (result.data || []).sort((a, b) => new Date(a.date) - new Date(b.date));
+      const sorted = (result.data.data || []).sort((a, b) => new Date(a.date) - new Date(b.date));
       data.value = sorted.slice(0, 5).map((item, idx) => ({
         key: item.id || idx + 1,
         jadwal: item.packageName || '-',
