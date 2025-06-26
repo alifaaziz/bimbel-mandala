@@ -18,64 +18,87 @@ const title = ref('Hasil Pencarian');
 const router = useRouter();
 
 onMounted(async () => {
+  await fetchUserRole();
   await fetchData();
-  applyFilters();
 });
 
-watch(() => props.filters, () => {
-  applyFilters();
+watch(() => props.filters, async () => {
+  if (!isTutor.value) {
+    await fetchData();
+  }
 }, { deep: true });
+
+async function fetchUserRole() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  try {
+    const res = await fetch('http://localhost:3000/users/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (res.ok) {
+      const userData = await res.json();
+      isTutor.value = userData.data?.role === 'tutor';
+      title.value = isTutor.value ? 'Program Saya' : 'Hasil Pencarian';
+    } else {
+      console.error('Gagal fetch user role:', res.statusText);
+    }
+  } catch (err) {
+    console.error('Gagal fetch user role:', err);
+  }
+}
 
 async function fetchData() {
   const token = localStorage.getItem('token');
   if (!token) return;
 
-  const res = await fetch('http://localhost:3000/users/me', {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-
-  if (res.ok) {
-    const user = await res.json();
-    isTutor.value = user.data?.role === 'tutor';
-
-    const url = isTutor.value
-      ? 'http://localhost:3000/packages/my'
-      : 'http://localhost:3000/packages';
-
+  if (isTutor.value) {
+    // Jika pengguna adalah tutor, gunakan endpoint /packages/my
     try {
-      const programRes = await fetch(url, {
+      const res = await fetch('http://localhost:3000/packages/my', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      if (programRes.ok) {
-        const programData = await programRes.json();
-        allPrograms.value = isTutor.value ? programData : programData.data;
+      if (res.ok) {
+        const programData = await res.json();
+        allPrograms.value = programData.data;
+        filteredPrograms.value = programData.data;
+      } else {
+        console.error('Gagal fetch data:', res.statusText);
+      }
+    } catch (err) {
+      console.error('Gagal fetch:', err);
+    }
+  } else {
+    // Jika bukan tutor, gunakan endpoint /packages/filtered
+    const { searchText, level, hari, durasi } = props.filters;
+
+    const queryParams = new URLSearchParams({
+      ...(searchText && { searchText }),
+      ...(level && { level }),
+      ...(hari?.length && { hari: hari.join(',') }),
+      ...(durasi && { durasi: durasi.toString() })
+    }).toString();
+
+    const url = `http://localhost:3000/packages/filtered?${queryParams}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        const programData = await res.json();
+        allPrograms.value = programData.data;
+        filteredPrograms.value = programData.data;
+      } else {
+        console.error('Gagal fetch data:', res.statusText);
       }
     } catch (err) {
       console.error('Gagal fetch:', err);
     }
   }
-}
-
-
-function applyFilters() {
-  const { level, searchText, hari, durasi } = props.filters;
-
-  filteredPrograms.value = allPrograms.value.filter(program => {
-    const matchLevel = level ? program.level === level : true;
-    const matchSearch = searchText
-      ? program.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        program.tutorName?.toLowerCase().includes(searchText.toLowerCase())
-      : true;
-    const matchHari = hari?.length
-      ? hari.some(selectedDay => program.days.includes(selectedDay))
-      : true;
-    const matchDurasi = durasi
-      ? program.duration === Number(durasi)
-      : true;
-
-    return matchLevel && matchSearch && matchHari && matchDurasi;
-  });
 }
 
 function formatTime(dateTime) {
