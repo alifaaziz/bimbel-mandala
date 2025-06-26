@@ -1,9 +1,9 @@
 <template>
     <div class="container-table padding-components">
-      <div class="tabel-jadwal-wrapper">
-          <h4 class="headersb3">
-              Jadwal Program
-          </h4>
+        <h4 class="headersb3">
+            Jadwal Program
+        </h4>
+        <div class="tabel-jadwal-wrapper">
           <div class="tabel-jadwal">
               <n-space vertical :size="12">
               <n-data-table
@@ -76,109 +76,116 @@ function createColumns({}) {
           "Izin": "error"
           };
 
-            return row.status.map((tagKey) => {
-            const type = tagTypeMap[tagKey] || "default";
-            return h(
-                NTag,
-                {
-                style: { marginRight: "6px" },
-                type: type,
-                size: "small",
-                bordered: false,
-                round: true,
-                class: "bodyr3"
-                },
-                { default: () => tagKey }
-            );
+          return row.status.map((tagKey) => {
+          const type = tagTypeMap[tagKey] || "default";
+          return h(
+              NTag,
+              {
+              style: { marginRight: "6px" },
+              type: type,
+              size: "small",
+              bordered: false,
+              round: true,
+              class: "bodyr4"
+              },
+              { default: () => tagKey }
+          );
           });
-        }
       }
-    ];
-  }
-  
-  function formatTanggal(dateStr) {
-    const date = new Date(dateStr);
-    const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
-    const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-    return `${hari}, ${tanggal}`;
-  }
-  
-  function formatJam(dateStr) {
-    return dateStr.slice(11, 16).replace(':', '.');
-  }
-  
-  function statusLabel(status) {
-    switch (status) {
-      case "masuk": return "Masuk";
-      case "terjadwal": return "Terjadwal";
-      case "jadwal_ulang": return "Jadwal Ulang";
-      case "izin": return "Izin";
-      default: return status;
     }
+  ];
+}
+
+function formatTanggal(dateStr) {
+  const date = new Date(dateStr);
+  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
+  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+  return `${hari}, ${tanggal}`;
+}
+
+function formatJam(dateStr) {
+  return dateStr.slice(11, 16).replace(':', '.');
+}
+
+function statusLabel(status) {
+  switch (status) {
+    case "masuk": return "Masuk";
+    case "terjadwal": return "Terjadwal";
+    case "jadwal_ulang": return "Jadwal Ulang";
+    case "izin": return "Izin";
+    default: return status;
   }
-  
-  function groupTypeLabel(type) {
-    switch (type) {
-      case "privat": return "Privat";
-      case "grup2": return "Kelompok 2 Peserta";
-      case "grup3": return "Kelompok 3 Peserta";
-      case "grup4": return "Kelompok 4 Peserta";
-      case "grup5": return "Kelompok 5 Peserta";
-      case "kelas": return "Kelas";
-      default: return type;
-    }
+}
+
+function groupTypeLabel(type) {
+  switch (type) {
+    case "privat": return "Privat";
+    case "grup2": return "Kelompok 2 Peserta";
+    case "grup3": return "Kelompok 3 Peserta";
+    case "grup4": return "Kelompok 4 Peserta";
+    case "grup5": return "Kelompok 5 Peserta";
+    case "kelas": return "Kelas";
+    default: return type;
   }
-  
-  export default defineComponent({
-    setup() {
-      const message = useMessage();
-      const data = ref([]);
-  
-      const rowProps = (row) => {
-        return {
-          style: { cursor: 'pointer' },
-          onClick: () => {
-            window.location.href = `/detailjadwal/${row.slug}`;
-          }
-        };
-      };
-  
-      onMounted(async () => {
-        try {
-          const token = localStorage.getItem('token');
-          const res = await fetch('http://localhost:3000/schedules', {
-            headers: token ? { Authorization: `Bearer ${token}` } : {}
-          });
-          const result = await res.json();
-          data.value = (result.data || []).map(item => ({
-            key: item.id,
-            jadwal: item.packageName,
-            guru: item.tutorName,
-            jenis: groupTypeLabel(item.groupType),
-            pertemuan: item.meet,
-            tanggal: formatTanggal(item.date),
-            jam: formatJam(item.date),
-            durasi: `${item.duration} Menit`,
-            status: [statusLabel(item.status)],
-            slug: item.slug
-          }));
-        } catch (err) {
-          data.value = [];
+}
+
+export default defineComponent({
+  setup() {
+    const message = useMessage();
+    const data = ref([]);
+    const pagination = ref({
+      page: 1,
+      pageSize: 5,
+      pageCount: 1
+    });
+
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`http://localhost:3000/schedules?page=${pagination.value.page}&limit=${pagination.value.pageSize}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        const result = await res.json();
+        data.value = (result.data.data || []).map(item => ({
+          key: item.id,
+          jadwal: item.packageName,
+          guru: item.tutorName,
+          jenis: groupTypeLabel(item.groupType),
+          pertemuan: item.meet,
+          tanggal: formatTanggal(item.date),
+          jam: formatJam(item.date),
+          durasi: `${item.duration} Menit`,
+          status: [statusLabel(item.status)],
+          slug: item.slug
+        }));
+        pagination.value.pageCount = result.data.totalPages || 1;
+      } catch (err) {
+        data.value = [];
+      }
+    };
+
+    const handlePageChange = (page) => {
+      pagination.value.page = page;
+      fetchData();
+    };
+
+    onMounted(fetchData);
+
+    return {
+      data,
+      columns: createColumns({}),
+      pagination,
+      rowProps: (row) => ({
+        style: { cursor: 'pointer' },
+        onClick: () => {
+          window.location.href = `/detailjadwal/${row.slug}`;
         }
-      });
-  
-      return {
-        data,
-        columns: createColumns({
-        }),
-        pagination: {
-          pageSize: 5
-        },
-        rowProps
-      };
-    }
-  });
-  </script>
+      }),
+      handlePageChange
+    };
+  }
+});
+</script>
 
 <style scoped>
 .container-table {
@@ -191,14 +198,11 @@ function createColumns({}) {
 .tabel-jadwal-wrapper {
   width: 100%;
   overflow-x: auto;
-  padding-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 .tabel-jadwal {
     width: 100%;
     min-width: 800px;
+    padding: 2rem 0;
     border-radius: 1rem;
 }
 :deep(.n-data-table__pagination) {
