@@ -5,6 +5,7 @@ import cta from './components/beranda/cta.vue'
 import programHighlight from './components/beranda/programHighlight.vue'
 import tutorHighlight from './components/beranda/tutorHighlight.vue'
 import Footer from './components/footer.vue';
+
 </script>
 
 <template>

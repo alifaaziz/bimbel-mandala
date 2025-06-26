@@ -13,8 +13,13 @@
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
 function goBack() {
-  router.go(-1);
+  if (window.history.length > 1) {
+    router.back();
+  } else {
+    router.push('/dashboard');
+  }
 }
 </script>
 

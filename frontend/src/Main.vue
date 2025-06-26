@@ -1,10 +1,32 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import navbar from './components/navbar.vue';
+
+const isAdmin = ref(false)
+const isLoading = ref(true)
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    isLoading.value = false
+    return
+  }
+  const res = await fetch('http://localhost:3000/users/me', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  if (res.ok) {
+    const data = await res.json()
+    isAdmin.value = data.data?.role === 'admin'
+  }
+  isLoading.value = false
+})
 </script>
 
 <template>
   <div class="Main">
-    <navbar />
+    <navbar v-if="!isAdmin && !isLoading"/>
     <router-view />
   </div>
 </template>
