@@ -1,89 +1,86 @@
 <script>
 import { NTag } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
   setup() {
+    const route = useRoute();
+    const slug = route.params.id; // Ambil slug dari URL
     const isMobile = ref(false);
+    const data = ref([]); // Data jadwal dari backend
 
     const updateIsMobile = () => {
       isMobile.value = window.innerWidth <= 600;
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       updateIsMobile();
       window.addEventListener("resize", updateIsMobile);
+
+      // Fetch data jadwal dari backend
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`http://localhost:3000/schedules/closest/${slug}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Gagal mengambil data jadwal");
+        const responseData = await res.json();
+
+        // Format data untuk ditampilkan di tabel
+        data.value = responseData.data.map((item) => ({
+          key: item.id,
+          jadwal: item.packageName,
+          guru: item.tutorName,
+          jenis: item.groupType,
+          pertemuan: `Pertemuan ${item.meet}`,
+          tanggal: new Date(item.date).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+            jam: item.date ? item.date.split("T")[1]?.slice(0, 5) : "-",
+          durasi: `${item.duration} Menit`,
+          status: [formatStatus(item.status)],
+        }));
+      } catch (err) {
+        console.error("Error fetching schedules:", err);
+      }
     });
 
     function formatStatus(status) {
-      if (!status) return '-';
+      if (!status) return "-";
       const s = status.toLowerCase();
-      if (s === 'terjadwal') return 'Terjadwal';
-      if (s === 'jadwal ulang') return 'Jadwal Ulang';
-      if (s === 'masuk') return 'Masuk';
-      if (s === 'izin') return 'Izin';
+      if (s === "terjadwal") return "Terjadwal";
+      if (s === "jadwal ulang") return "Jadwal Ulang";
+      if (s === "masuk") return "Masuk";
+      if (s === "izin") return "Izin";
       return status;
     }
 
     const tagTypeMap = {
-      "Terjadwal": "success",
+      Terjadwal: "success",
       "Jadwal Ulang": "warning",
-      "Masuk": "info",
-      "Izin": "error"
+      Masuk: "info",
+      Izin: "error",
     };
 
-    const data = ref([
-      {
-        key: 1,
-        jadwal: "Matematika Dasar",
-        guru: "Budi Santoso",
-        jenis: "Kelopok 3 Peserta",
-        pertemuan: "Pertemuan 1",
-        tanggal: "9 Juni 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: [formatStatus("Terjadwal")]
-      },
-      {
-        key: 2,
-        jadwal: "Matematika Dasar",
-        guru: "Budi Santoso",
-        jenis: "Kelopok 3 Peserta",
-        pertemuan: "Pertemuan 2",
-        tanggal: "11  Juni 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: [formatStatus("Terjadwal")]
-      },
-      {
-        key: 3,
-        jadwal: "Matematika Dasar",
-        guru: "Budi Santoso",
-        jenis: "Kelopok 3 Peserta",
-        pertemuan: "Pertemuan 3",
-        tanggal: "13  Juni 2025",
-        jam: "15:00",
-        durasi: "90 Menit",
-        status: [formatStatus("Terjadwal")]
-      },
-      
-    ]);
-
     const rowProps = () => ({
-      style: { cursor: 'pointer' },
-      onClick: () => window.location.href = '/DetailJadwal'
+      style: { cursor: "pointer" },
+      onClick: () => window.location.href = "/DetailJadwal",
     });
 
     const columns = [
       {
-        title: () => h('span', { style: { color: '#154484', fontWeight: 'bold' } }, 'Jadwal'),
+        title: () => h("span", { style: { color: "#154484", fontWeight: "bold" } }, "Jadwal"),
         key: "jadwal",
         render(row) {
           return h("div", {}, [
             h("div", { style: "font-weight: 600;" }, row.jadwal),
-            h("div", { style: "font-size: 12px; color: #666;" }, row.guru)
+            h("div", { style: "font-size: 12px; color: #666;" }, row.guru),
           ]);
-        }
+        },
       },
       { title: "Jenis", key: "jenis" },
       { title: "Pertemuan", key: "pertemuan" },
@@ -94,22 +91,22 @@ export default defineComponent({
         title: "Status",
         key: "status",
         render(row) {
-          return row.status.map(tag =>
-            h(NTag, {
-              type: tagTypeMap[tag] || "default",
-              size: "small",
-              round: true,
-              bordered: false,
-              style: "margin-right: 6px"
-            }, { default: () => tag })
+          return row.status.map((tag) =>
+            h(
+              NTag,
+              {
+                type: tagTypeMap[tag] || "default",
+                size: "small",
+                round: true,
+                bordered: false,
+                style: "margin-right: 6px",
+              },
+              { default: () => tag }
+            )
           );
-        }
-      }
+        },
+      },
     ];
-
-    const goToDetail = () => {
-      window.location.href = '/DetailJadwal';
-    };
 
     return {
       data,
@@ -117,9 +114,8 @@ export default defineComponent({
       tagTypeMap,
       rowProps,
       isMobile,
-      goToDetail
     };
-  }
+  },
 });
 </script>
 
@@ -143,7 +139,7 @@ export default defineComponent({
           class="mobile-card"
           v-for="item in data"
           :key="item.key"
-          @click="goToDetail"
+          @click="rowProps().onClick"
         >
           <div class="title">{{ item.jadwal }}</div>
           <div class="subtitle">{{ item.guru }}</div>
@@ -170,7 +166,6 @@ export default defineComponent({
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .program-card {

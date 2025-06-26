@@ -615,6 +615,91 @@ async function getScheduleBySlug(slug) {
   };
 }
 
+/**
+ * Get the closest schedule for a specific bimbel package slug from today.
+ *
+ * @async
+ * @function getClosestScheduleBySlug
+ * @param {String} slug - The slug of the bimbel package.
+ * @returns {Promise<Object>} The closest schedule detail.
+ * @throws {Error} If no schedule is found.
+ */
+async function getClosestScheduleBySlug(slug) {
+  const today = new Date();
+
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      class: {
+        order: {
+          bimbelPackage: {
+            slug: slug // Cari berdasarkan slug bimbel package
+          }
+        }
+      },
+      date: {
+        gte: today // Jadwal mulai dari hari ini
+      }
+    },
+    include: {
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: {
+                include: {
+                  user: true,
+                  groupType: true
+                }
+              },
+              groupType: true
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
+        }
+      },
+      attendances: true
+    },
+    orderBy: {
+      date: 'asc' // Urutkan berdasarkan tanggal terdekat
+    },
+    take: 5 // Ambil hanya 5 jadwal terdekat
+  });
+
+  if (!schedules || schedules.length === 0) {
+    throw new Error('No upcoming schedules found for the given bimbel package slug');
+  }
+
+  return schedules.map(schedule => {
+    const classData = schedule.class;
+    const order = classData?.order;
+    const bimbelPackage = order?.bimbelPackage;
+    const groupType = order?.groupType;
+    const tutor = classData?.tutor;
+    const tutorGender = tutor?.tutors?.[0]?.gender;
+    const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+
+    return {
+      id: schedule.id,
+      classCode: classData.code,
+      packageName: bimbelPackage?.name || null,
+      level: bimbelPackage?.level || null,
+      tutorName: tutorName,
+      groupType: groupType?.type || null,
+      meet: schedule.meet,
+      date: schedule.date,
+      duration: bimbelPackage?.duration || null,
+      status: schedule.status,
+      attendances: schedule.attendances,
+      address: order?.address || null,
+      photo: tutor?.tutors?.[0]?.photo || null,
+      info: schedule.information || null,
+      slug: bimbelPackage?.slug || null
+    };
+  });
+}
+
 
 export const ScheduleService = {
   createSchedules,
@@ -626,5 +711,6 @@ export const ScheduleService = {
   getSchedulesByRole,
   getScheduleBySlug,
   getNextDate,
-  getTutorName
+  getTutorName,
+  getClosestScheduleBySlug
 };

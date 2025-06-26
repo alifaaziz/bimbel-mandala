@@ -216,6 +216,7 @@ async function getBimbelPackageBySlug(slug) {
     duration: pkg.duration,
     area: pkg.area,
     slug: pkg.slug,
+    status: pkg.isActive ? 'aktif' : 'nonaktif',
     tutorName: pkg.user.name,
     photo: pkg.user.tutors[0]?.photo,
     groupType: pkg.groupType.map(gt => ({

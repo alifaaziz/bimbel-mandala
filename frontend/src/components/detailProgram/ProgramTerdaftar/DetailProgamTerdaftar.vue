@@ -1,27 +1,49 @@
 <script setup lang="ts">
-import { defineComponent, h, ref, onMounted } from 'vue';
+import { ref, onMounted, h } from 'vue';
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
+const slug = route.params.id as string; // Ambil slug dari route params
 const programData = ref<any>(null);
 const isTutor = ref(false);
+const classCode = ref<string | null>(null); // Tambahkan state untuk Code Kelas
 
-onMounted(() => {
-  programData.value = {
-    photo: '',
-    name: 'Program Matematika Dasar',
-    tutorName: 'Budi Santoso',
-    level: 'SMP',
-    days: ['Senin', 'Rabu', 'Jumat'],
-    area: 'Yogyakarta',
-    totalMeetings: 12,
-    time: '2024-06-01T15:00:00.000Z',
-    duration: 90,
-    groupType: [
-      { type: 'Privat', price: 200000 },
-      { type: 'Kelompok', price: 150000 }
-    ]
-  };
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem('token');
 
-  isTutor.value = false;
+    // Fetch program berdasarkan slug
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+
+    if (!res.ok) throw new Error('Gagal mengambil data program');
+    programData.value = await res.json();
+
+    // Fetch data kelas dari /classes/my
+    const classesRes = await fetch('http://localhost:3000/classes/my', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (classesRes.ok) {
+      const classesData = await classesRes.json();
+      // Cari kelas yang sesuai dengan slug
+      const matchedClass = classesData.data.find((cls: any) => cls.slug === slug);
+      classCode.value = matchedClass ? matchedClass.code : null; // Simpan Code Kelas
+    }
+
+    // Cek role user
+    const userRes = await fetch('http://localhost:3000/users/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (userRes.ok) {
+      const userData = await userRes.json();
+      isTutor.value = userData.data?.role === 'tutor';
+    }
+  } catch (err) {
+    console.error('Error:', err);
+  }
 });
 
 function formatTime(isoString: string): string {
@@ -40,8 +62,7 @@ interface InfoRowProps {
   value: string;
 }
 
-const InfoRow = defineComponent({
-  name: 'InfoRow',
+const InfoRow = {
   props: {
     label: { type: String, required: true },
     value: { type: String, required: true },
@@ -53,14 +74,7 @@ const InfoRow = defineComponent({
         h('span', null, `: ${props.value}`),
       ]);
   },
-});
-
-function groupTypeLabel(groupTypeArr: any[]): string {
-  if (!Array.isArray(groupTypeArr)) return '';
-  return groupTypeArr.some(gt => gt.type?.toLowerCase().includes('kelas'))
-    ? 'Kelas'
-    : 'Privat/Kelompok';
-}
+};
 
 const badgeClass = (level: string) => {
   switch (level.toLowerCase()) {
@@ -69,11 +83,10 @@ const badgeClass = (level: string) => {
     case 'sma': return 'grade-sma';
     default: return '';
   }
-}
+};
 
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 </script>
-
 
 <template>
   <div class="container-detail" v-if="programData">
@@ -122,14 +135,11 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         </div>
         <div>
           <p class="bodyb1 type-program">
-            {{ groupTypeLabel(programData.groupType) }}
+            Code Kelas: {{ classCode || 'Tidak Tersedia' }}
           </p>
           <p v-if="!isTutor" class="bodyb1 price">
-            {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
-            {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
+            Silahkan gunakan kode kelas ini untuk bergabung ke kelas.
           </p>
-        </div>
-        <div>
         </div>
       </div>
     </div>

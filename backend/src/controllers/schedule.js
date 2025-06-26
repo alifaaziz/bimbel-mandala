@@ -100,11 +100,27 @@ async function updateScheduleInformation(req, res) {
   res.status(200).json({ data: updatedSchedule });
 }
 
+/**
+ * Handles the request to get the closest schedule for a specific slug.
+ *
+ * @function getClosestScheduleBySlug
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the closest schedule detail.
+ */
+async function getClosestScheduleBySlug(req, res) {
+  const { slug } = req.params;
+  const schedule = await ScheduleService.getClosestScheduleBySlug(slug);
+  res.status(200).json({ data: schedule });
+}
+
 export const ScheduleController = {
   createSchedules: asyncWrapper(createSchedules),
   reschedule: asyncWrapper(reschedule),
   getClosestSchedules: asyncWrapper(getClosestSchedules),
   getSchedules: asyncWrapper(getSchedules),
   getScheduleBySlug: asyncWrapper(getScheduleBySlug),
-  updateScheduleInformation: asyncWrapper(updateScheduleInformation)
+  updateScheduleInformation: asyncWrapper(updateScheduleInformation),
+  getClosestScheduleBySlug: asyncWrapper(getClosestScheduleBySlug)
 };

@@ -257,7 +257,8 @@ async function getMyClass(userId, role) {
                 groupType: groupType?.type || null,
                 days,
                 time: bimbelPackage?.time || null,
-                duration: bimbelPackage?.duration || null
+                duration: bimbelPackage?.duration || null,
+                code: cls.code
             };
         });
     }

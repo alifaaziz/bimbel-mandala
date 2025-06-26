@@ -9,6 +9,11 @@
                 <span class="bodysb3">{{ program.programName }}</span><br />
                 <span class="bodyr3">{{ program.tutorName }}</span>
               </td>
+              <td class="bodyr3" data-label="Code">
+                <n-button strong secondary round type="info">
+                  {{ program.code }}
+                </n-button>
+              </td>
               <td class="bodyr3" data-label="Status">{{ formatStatus(program.status) }}</td>
               <td class="bodyr3" data-label="Jenis">{{ formatGroupType(program.groupType) }}</td>
               <td class="bodyr3" data-label="Hari">{{ program.days }}</td>
