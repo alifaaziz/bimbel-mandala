@@ -11,7 +11,12 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
  * @returns {Promise<void>} Resolves with the list of bimbel packages.
  */
 async function getAllBimbelPackages(_req, res) {
-    const packages = await BimbelPackageService.getAllBimbelPackages();
+    const { page = 1, limit = 8 } = _req.query;
+    const paginationOptions = {
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+    };
+    const packages = await BimbelPackageService.getAllBimbelPackages(paginationOptions);
     res.status(200).json(packages);
 }
 
@@ -25,7 +30,12 @@ async function getAllBimbelPackages(_req, res) {
  * @returns {Promise<void>} Resolves with the list of active bimbel packages. 
  */
 async function getActiveBimbelPackages(_req, res) {
-    const packages = await BimbelPackageService.getActiveBimbelPackages();
+    const { page = 1, limit = 8 } = _req.query;
+    const paginationOptions = {
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+    };
+    const packages = await BimbelPackageService.getActiveBimbelPackages(paginationOptions);
     res.status(200).json(packages);
 }
 
@@ -288,6 +298,29 @@ async function getRecommendations(req, res) {
   res.status(200).json(recommendations);
 }
 
+/**
+ * Handles the request to get all bimbel packages that match the filters without pagination.
+ *
+ * @async
+ * @function getFilteredBimbelPackages
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of filtered bimbel packages.
+ */
+async function getFilteredBimbelPackages(req, res) {
+  const { searchText, level, hari, durasi } = req.query;
+
+  const filters = {
+    searchText,
+    level,
+    hari: hari ? hari.split(',') : undefined,
+    durasi: durasi ? parseInt(durasi, 10) : undefined
+  };
+
+  const packages = await BimbelPackageService.getFilteredBimbelPackages(filters);
+  res.status(200).json({ data: packages });
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getActiveBimbelPackages: asyncWrapper(getActiveBimbelPackages),
@@ -304,5 +337,6 @@ export const BimbelPackageController = {
     getMyPackageBySlug: asyncWrapper(getMyPackageBySlug),
     getBimbelPackageStatistics: asyncWrapper(getBimbelPackageStatistics),
     getMyProgramsStatistics: asyncWrapper(getMyProgramsStatistics),
-    getRecommendations: asyncWrapper(getRecommendations)
+    getRecommendations: asyncWrapper(getRecommendations),
+    getFilteredBimbelPackages: asyncWrapper(getFilteredBimbelPackages)
 };

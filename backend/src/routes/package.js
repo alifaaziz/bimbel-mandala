@@ -13,6 +13,8 @@ export default (app) => {
 
     router.get('/populer', BimbelPackageController.getBimbelPackagesByPopularity);
     
+    router.get('/filtered', BimbelPackageController.getFilteredBimbelPackages);
+    
     router.get('/running', AuthMiddleware.isAuthorized, BimbelPackageController.getRunningPrograms);
 
     router.get('/recommendations', AuthMiddleware.isAuthorized, BimbelPackageController.getRecommendations);

@@ -10,7 +10,7 @@ import { prisma } from '../utils/db.js';
  * @param {number} [options.pageSize=10] - Number of items per page.
  * @returns {Promise<Object>} The paginated list of active bimbel packages and total count.
  */
-async function getActiveBimbelPackages({ page = 1, pageSize = 10 } = {}) {
+async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
   const skip = (page - 1) * pageSize;
   const [packages, total] = await Promise.all([
     prisma.bimbelPackage.findMany({
@@ -687,7 +687,7 @@ async function getBimbelPackagesByPopularity() {
     }
   });
 
-  return packages.map(pkg => {
+  const packagesWithOrderCount = packages.map(pkg => {
     const orderCountEntry = orderCounts.find(order => order.packageId === pkg.id);
     const orderCount = orderCountEntry ? orderCountEntry._count.packageId : 0;
 
@@ -712,6 +712,10 @@ async function getBimbelPackagesByPopularity() {
       orderCount
     };
   });
+
+  return packagesWithOrderCount
+    .sort((a, b) => b.orderCount - a.orderCount)
+    .slice(0, 4);
 }
 
 /**
@@ -1061,6 +1065,96 @@ async function getRecommendations(user) {
   }));
 }
 
+/**
+ * Retrieves all bimbel packages that match the filters without pagination.
+ *
+ * @async
+ * @function getFilteredBimbelPackages
+ * @param {Object} [filters] - Filter options.
+ * @param {string} [filters.searchText] - Search text for package name or tutor name.
+ * @param {string} [filters.level] - Filter by level (e.g., "SMA", "SMP", "SD").
+ * @param {string[]} [filters.hari] - Filter by days (e.g., ["Senin", "Selasa"]).
+ * @param {number} [filters.durasi] - Filter by duration (in minutes).
+ * @returns {Promise<Array>} The list of bimbel packages that match the filters.
+ */
+async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {}) {
+  const whereClause = {
+    isActive: true,
+    ...(searchText && {
+      OR: [
+        { name: { contains: searchText } },
+        { user: { name: { contains: searchText } } }
+      ]
+    }),
+    ...(level && { level }),
+    ...(durasi && { duration: durasi }),
+    ...(hari && {
+      packageDay: {
+        some: {
+          day: {
+            daysName: { in: hari }
+          }
+        }
+      }
+    })
+  };
+
+  // Query utama untuk mengambil semua data
+  const packages = await prisma.bimbelPackage.findMany({
+    where: whereClause,
+    include: {
+      user: {
+        select: {
+          name: true, // Nama tutor
+          tutors: {
+            select: {
+              photo: true
+            }
+          }
+        }
+      },
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: {
+            select: {
+              daysName: true
+            }
+          }
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
+
+  return packages.map(pkg => ({
+    name: pkg.name,
+    level: pkg.level,
+    totalMeetings: pkg.totalMeetings,
+    time: pkg.time,
+    duration: pkg.duration,
+    area: pkg.area,
+    slug: pkg.slug,
+    isActive: pkg.isActive,
+    tutorName: pkg.user.name,
+    photo: pkg.user.tutors[0]?.photo,
+    groupType: pkg.groupType.map(gt => ({
+      type: gt.type,
+      price: gt.price,
+      discPrice: gt.discPrice
+    })),
+    days: pkg.packageDay.map(day => day.day.daysName)
+  }));
+}
+
 export const BimbelPackageService = {
   getActiveBimbelPackages,
   getAllBimbelPackages,
@@ -1077,5 +1171,6 @@ export const BimbelPackageService = {
   getMyPackageBySlug,
   getBimbelPackageStatistics,
   getMyProgramsStatistics,
-  getRecommendations
+  getRecommendations,
+  getFilteredBimbelPackages
 };
