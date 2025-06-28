@@ -39,7 +39,7 @@ onMounted(async () => {
       const data = await res.json();
       isTutor.value = data.data?.role === 'tutor';
       if (isTutor.value) {
-        title.value = 'Terbuka';
+        title.value = 'Program Terbuka';
         try {
           const myProgramsRes = await fetch('http://localhost:3000/packages/my', {
             headers: { Authorization: `Bearer ${token}` },

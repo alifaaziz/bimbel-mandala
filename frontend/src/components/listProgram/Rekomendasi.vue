@@ -11,42 +11,18 @@ const router = useRouter();
 
 onMounted(async () => {
   const token = localStorage.getItem('token');
-  if (token) {
-    const res = await fetch('http://localhost:3000/users/me', {
+  try {
+    const res = await fetch('http://localhost:3000/packages/recommendations', {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
       const data = await res.json();
-      isTutor.value = data.data?.role === 'tutor';
-      if (isTutor.value) {
-        title.value = 'Terbuka';
-        try {
-          const myProgramsRes = await fetch('http://localhost:3000/packages/my', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (myProgramsRes.ok) {
-            const myProgramsData = await myProgramsRes.json();
-            limitedPrograms.value = myProgramsData.slice(0, 4);
-          } else {
-            console.error('Gagal fetch data dari /packages/my');
-          }
-        } catch (err) {
-          console.error('Gagal fetch data:', err);
-        }
-      }
-    }
-  }
-
-  if (!isTutor.value) {
-    try {
-      const res = await fetch('http://localhost:3000/packages/recommendations', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
       limitedPrograms.value = data.slice(0, 4);
-    } catch (err) {
-      console.error('Gagal fetch data:', err);
+    } else {
+      console.error('Gagal fetch data dari /packages/recommendations');
     }
+  } catch (err) {
+    console.error('Gagal fetch data:', err);
   }
 });
 

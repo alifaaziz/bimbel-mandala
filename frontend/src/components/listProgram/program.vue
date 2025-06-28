@@ -31,7 +31,7 @@ onMounted(async () => {
     <div v-if="!isTutor">
       <Rekomendasi />
     </div>
-    <PalingPopuler />
+    <PalingPopuler v-if="!isTutor"/>
     <seluruhProgram />
   </div>
   <Footer />

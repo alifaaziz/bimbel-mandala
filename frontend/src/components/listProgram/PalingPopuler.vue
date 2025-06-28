@@ -5,48 +5,15 @@ import { NCard } from 'naive-ui';
 import butSecondSmall from '../dirButton/butSecondSmall.vue';
 
 const limitedPrograms = ref([]);
-const isTutor = ref(false);
-const title = ref('Paling Populer'); // Default title
 const router = useRouter();
 
 onMounted(async () => {
-  // Ambil role user dari API
-  const token = localStorage.getItem('token');
-  if (token) {
-    const res = await fetch('http://localhost:3000/users/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      isTutor.value = data.data?.role === 'tutor';
-      if (isTutor.value) {
-        title.value = 'Terbuka';
-        try {
-          const myProgramsRes = await fetch('http://localhost:3000/packages/my', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (myProgramsRes.ok) {
-            const myProgramsData = await myProgramsRes.json();
-            limitedPrograms.value = myProgramsData.slice(0, 4);
-          } else {
-            console.error('Gagal fetch data dari /packages/my');
-          }
-        } catch (err) {
-          console.error('Gagal fetch data:', err);
-        }
-      }
-    }
-  }
-
-  // Fetch program populer jika bukan tutor
-  if (!isTutor.value) {
-    try {
-      const res = await fetch('http://localhost:3000/packages/populer');
-      const data = await res.json();
-      limitedPrograms.value = data.slice(0, 4);
-    } catch (err) {
-      console.error('Gagal fetch data:', err);
-    }
+  try {
+    const res = await fetch('http://localhost:3000/packages/populer');
+    const data = await res.json();
+    limitedPrograms.value = data.slice(0, 4);
+  } catch (err) {
+    console.error('Gagal fetch data:', err);
   }
 });
 
@@ -72,9 +39,6 @@ function handleButton(slug) {
   const token = localStorage.getItem('token');
   if (!token) {
     router.push('/auth');
-  }
-  else if (isTutor.value) {
-    router.push(`/detailprogram/${slug}`);
   } else {
     router.push(`/detailProgram/${slug}`);
   }
@@ -83,7 +47,7 @@ function handleButton(slug) {
 
 <template>
   <div>
-    <h2 class="headerb1 title2">{{ title }}</h2>
+    <h2 class="headerb1 title2">Paling Populer</h2>
     <div class="card-container">
       <n-card 
         v-for="program in limitedPrograms" 
@@ -125,7 +89,7 @@ function handleButton(slug) {
             <div class="Action">
               <butSecondSmall
                 class="butPesan"
-                :label="isTutor ? 'Detail Program' : 'Daftar Program'"
+                label="Daftar Program"
                 @click="handleButton(program.slug)"
               />
             </div>
@@ -133,7 +97,6 @@ function handleButton(slug) {
         </div>
       </n-card>
     </div>
-
   </div>
 </template>
 
