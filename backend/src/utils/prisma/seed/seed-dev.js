@@ -254,7 +254,119 @@ async function main() {
             password: await bcrypt.hash("password123", 10),
             role: "tutor",
             verified: true,
-          }
+          },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e",
+            name: "Ahmad Fauzi, S.Pd.",
+            email: "ahmadfauzi@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb2",
+            name: "Lestari Widyaningsih, S.Pd.",
+            email: "lestariwidya@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e2",
+            name: "Dedi Prasetyo, S.Pd.",
+            email: "dediprasetyo@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c2",
+            name: "Ratna Melani, S.Pd.",
+            email: "ratnamelani@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee61",
+            name: "Budi Santoso, S.Pd.",
+            email: "budisantoso@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6c4",
+            name: "Siti Nurhaliza, S.Pd.I",
+            email: "sitinurhaliza@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a17",
+            name: "Agustinus Yulianto, S.Pd.K",
+            email: "agustinusyulianto@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf3a",
+            name: "Yohana Maria, S.Pd.",
+            email: "yohanamaria@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9",
+            name: "Rudi Hartono, S.Or.",
+            email: "rudihartono@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb4363579e",
+            name: "Diana Prameswari, S.Pd.",
+            email: "dianaprameswari@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd83",
+            name: "Erwin Saputra, S.Sn.",
+            email: "erwinsaputra@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead5c",
+            name: "Maya Lestari, S.Sn.",
+            email: "mayalestari@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad89",
+            name: "Anjar Widodo, S.Pd.",
+            email: "anjarwidodo@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f5b",
+            name: "Novi Rachmawati, S.Pd.",
+            email: "novirachmawati@mail.com",
+            password: await bcrypt.hash("password123", 10),
+            role: "tutor",
+            verified: true,
+        },
     ];
 
     for (const user of users) {
@@ -596,6 +708,202 @@ async function main() {
             teachLevel: 'SD',
             description: 'Experienced tutor in Bahasa Inggris, passionate about teaching English to young learners.',
         },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e",
+            userId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e", // Ahmad Fauzi, S.Pd.
+            birthDate: new Date('1991-01-01'),
+            gender: 'Male',
+            phone: '081234567900',
+            address: 'Jl. Merdeka No. 14',
+            subjects: 'Bahasa Indonesia',
+            status: 'S1',
+            major: 'Pendidikan Bahasa Indonesia',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Bahasa Indonesia tingkat SMP dan SMA.',
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb2",
+            userId: "0197b421-92cc-7b38-8e52-f786b7603fb2",// Lestari Widyaningsih, S.Pd.
+            birthDate: new Date('1992-02-02'),
+            gender: 'Female',
+            phone: '081234567901',
+            address: 'Jl. Merdeka No. 15',
+            subjects: 'Matematika',
+            status: 'S1',
+            major: 'Pendidikan Matematika',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Matematika tingkat SMP dan SMA.',
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e2",
+            userId: "0197b421-92cc-717d-99d0-e595f2c5b6e2", // Dedi Prasetyo, S.Pd.
+            birthDate: new Date('1993-03-03'),
+            gender: 'Male',
+            phone: '081234567902',
+            address: 'Jl. Merdeka No. 16',
+            subjects: 'Ilmu Pengetahuan Alam',
+            status: 'S1',
+            major: 'Pendidikan Kimia',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar IPA tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c2",
+            userId: "0197b421-92cc-7e5b-addd-fe579bc048c2", // Ratna Melani, S.Pd.
+            birthDate: new Date('1994-04-04'),
+            gender: 'Female',
+            phone: '081234567903',
+            address: 'Jl. Merdeka No. 17',
+            subjects: 'Ilmu Pengetahuan Sosial',
+            status: 'S1',
+            major: 'Pendidikan IPS',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar IPS tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee61",
+            userId: "0197b421-92cc-70a9-ab90-c53667ebee61", // Budi Santoso, S.Pd.
+            birthDate: new Date('1995-05-05'),
+            gender: 'Male',
+            phone: '081234567904',
+            address: 'Jl. Merdeka No. 18',
+            subjects: 'PPKn',
+            status: 'S1',
+            major: 'Pendidikan Pancasila dan Kewarganegaraan',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar PPKn tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6c4",
+            userId: "0197b421-92cc-765b-a22a-ab51d0b2d6c4", // Siti Nurhaliza, S.Pd.I
+            birthDate: new Date('1996-06-06'),
+            gender: 'Female',
+            phone: '081234567905',
+            address: 'Jl. Merdeka No. 19',
+            subjects: 'Pendidikan Agama Islam',
+            status: 'S1',
+            major: 'Pendidikan Agama Islam',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Pendidikan Agama Islam tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a17",
+            userId: "0197b421-92cc-7085-88f1-366574bd9a17", // Agustinus Yulianto, S.Pd.K
+            birthDate: new Date('1997-07-07'),
+            gender: 'Male',
+            phone: '081234567906',
+            address: 'Jl. Merdeka No. 20',
+            subjects: 'Pendidikan Agama Kristen',
+            status: 'S1',
+            major: 'Pendidikan Agama Kristen',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Pendidikan Agama Kristen tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf3a",
+            userId: "0197b421-92cc-7854-a588-26af45c3cf3a", // Yohana Maria, S.Pd.
+            birthDate: new Date('1998-08-08'),
+            gender: 'Female',
+            phone: '081234567907',
+            address: 'Jl. Merdeka No. 21',
+            subjects: 'Bahasa Inggris',
+            status: 'S1',
+            major: 'Pendidikan Bahasa Inggris',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Bahasa Inggris tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9",
+            userId: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9", // Ahmad Fauzi, S.Pd.
+            birthDate: new Date('1999-09-09'),
+            gender: 'Male',
+            phone: '081234567908',
+            address: 'Jl. Merdeka No. 22',
+            subjects: 'PJOK',
+            status: 'S1',
+            major: 'Pendidikan Jasmani, Kesehatan, dan Rekreasi',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar PJOK tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb4363579e",
+            userId: "0197b421-92cc-732e-b902-d6fb4363579e", // Diana Prameswari, S.Pd.
+            birthDate: new Date('1990-10-10'),
+            gender: 'Female',
+            phone: '081234567909',
+            address: 'Jl. Merdeka No. 23',
+            subjects: 'Informatika',
+            status: 'S1',
+            major: 'Pendidikan Teknik Informatika',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Informatika tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd83",
+            userId: "0197b421-92cc-730c-9985-10f25a88fd83", // Erwin Saputra, S.Sn.
+            birthDate: new Date('1991-11-11'),
+            gender: 'Male',
+            phone: '081234567910',
+            address: 'Jl. Merdeka No. 24',
+            subjects: 'Seni Musik',
+            status: 'S1',
+            major: 'Seni Musik',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Seni Musik tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead5c",
+            userId: "0197b421-92cc-7ca6-b637-cb8f6eeead5c", // Maya Lestari, S.Sn.
+            birthDate: new Date('1992-12-12'),
+            gender: 'Female',
+            phone: '081234567911',
+            address: 'Jl. Merdeka No. 25',
+            subjects: 'Seni Rupa',
+            status: 'S1',
+            major: 'Seni Rupa',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Seni Rupa tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad89",
+            userId: "0197b421-92cc-7bfa-bec7-df624300ad89", // Anjar Widodo, S.Pd.
+            birthDate: new Date('1993-08-13'),
+            gender: 'Male',
+            phone: '081234567912',
+            address: 'Jl. Merdeka No. 26',
+            subjects: 'Prakarya',
+            status: 'S1',
+            major: 'Pendidikan Kesejahteraan Keluarga',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Prakarya tingkat SMP.',
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f5b",
+            userId: "0197b421-92cc-776c-8070-d476ed031f5b", // Novi Rachmawati, S.Pd.
+            birthDate: new Date('1994-09-14'),
+            gender: 'Female',
+            phone: '081234567913',
+            address: 'Jl. Merdeka No. 27',
+            subjects: 'Muatan Lokal Bahasa Jawa',
+            status: 'S1',
+            major: 'Pendidikan Bahasa Daerah',
+            school: 'Universitas Negeri Semarang',
+            teachLevel: 'SMP',
+            description: 'Berpengalaman mengajar Bahasa Jawa tingkat SMP.',
+        }
     ];
 
     for (const tutor of tutors) {
@@ -747,6 +1055,146 @@ async function main() {
         {
             id: "a1414141-0000-0000-0000-000000000002",
             tutorId: "01979a92-eefe-783c-a68e-2066ef410830", // Anastasia Widya, S.Pd
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "a1515151-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e", // Ahmad Fauzi, S.Pd.
+            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "a1515151-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e",
+            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "a1616161-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-7b38-8e52-f786b7603fb2", // Lestari Widyaningsih, S.Pd.
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "a1616161-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-7b38-8e52-f786b7603fb2",
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "a1717171-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-717d-99d0-e595f2c5b6e2", // Dedi Prasetyo, S.Pd.
+            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "a1717171-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-717d-99d0-e595f2c5b6e2",
+            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "a1818181-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-7e5b-addd-fe579bc048c2", // Ratna Melani, S.Pd.
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "a1818181-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-7e5b-addd-fe579bc048c2",
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "a1919191-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-70a9-ab90-c53667ebee61", // Budi Santoso, S.Pd.
+            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "a1919191-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-70a9-ab90-c53667ebee61",
+            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "a2020202-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-765b-a22a-ab51d0b2d6c4", // Siti Nurhaliza, S.Pd.I
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "a2020202-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-765b-a22a-ab51d0b2d6c4",
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "a2121212-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-7085-88f1-366574bd9a17", // Agustinus Yulianto, S.Pd.K
+            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "a2121212-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-7085-88f1-366574bd9a17",
+            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "a2222222-0000-0000-0000-000000000003",
+            tutorId: "0197b421-92cc-7854-a588-26af45c3cf3a", // Yohana Maria, S.Pd.
+            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "a2222222-0000-0000-0000-000000000004",
+            tutorId: "0197b421-92cc-7854-a588-26af45c3cf3a",
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "a2323232-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9", // Rudi Hartono, S.Or.
+            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "a2323232-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9",
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "a2424242-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-732e-b902-d6fb4363579e", // Diana Prameswari, S.Pd.
+            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "a2424242-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-732e-b902-d6fb4363579e",
+            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "a2525252-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-730c-9985-10f25a88fd83", // Erwin Saputra, S.Sn.
+            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "a2525252-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-730c-9985-10f25a88fd83",
+            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "a2626262-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-7ca6-b637-cb8f6eeead5c", // Maya Lestari, S.Sn.
+            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "a2626262-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-7ca6-b637-cb8f6eeead5c",
+            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "a2727272-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-7bfa-bec7-df624300ad89", // Anjar Widodo, S.Pd.
+            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "a2727272-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-7bfa-bec7-df624300ad89",
+            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "a2828282-0000-0000-0000-000000000001",
+            tutorId: "0197b421-92cc-776c-8070-d476ed031f5b", // Novi Rachmawati, S.Pd.
+            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "a2828282-0000-0000-0000-000000000002",
+            tutorId: "0197b421-92cc-776c-8070-d476ed031f5b",
             daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
         },
     ];
@@ -1098,7 +1546,188 @@ async function main() {
             userId: "01979a81-cc2d-76ff-8ec8-7ad40efe4999", // Ahmad Fadli, S.Pd.I
             discount: 0,
             isActive: true,
-        }
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f",
+            name: "Bahasa Indonesia",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "bahasa-indonesia-smp-1fauzi",
+            userId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e",
+            discount: 10,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb3",
+            name: "Matematika",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "matematika-smp-1lestari",
+            userId: "0197b421-92cc-7b38-8e52-f786b7603fb2",
+            discount: 5,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e3",
+            name: "Ilmu Pengetahuan Alam",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "ipa-smp-1dedi",
+            userId: "0197b421-92cc-717d-99d0-e595f2c5b6e2",
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c3",
+            name: "Ilmu Pengetahuan Sosial",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "ips-smp-1ratna",
+            userId: "0197b421-92cc-7e5b-addd-fe579bc048c2",
+            discount: 5,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee62",
+            name: "PPKn",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "ppkn-smp-1budi",
+            userId: "0197b421-92cc-70a9-ab90-c53667ebee61",
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6c5",
+            name: "Pendidikan Agama Islam",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "pai-smp-1nurhaliza",
+            userId: "0197b421-92cc-765b-a22a-ab51d0b2d6c4",
+            discount: 10,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a18",
+            name: "Pendidikan Agama Kristen",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "pak-smp-1agustinus",
+            userId: "0197b421-92cc-7085-88f1-366574bd9a17",
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf3b",
+            name: "Bahasa Inggris",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "bahasa-inggris-smp-1yohana",
+            userId: "0197b421-92cc-7854-a588-26af45c3cf3a",
+            discount: 5,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea",
+            name: "PJOK",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "pjok-smp-1rudi",
+            userId: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9",
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb4363579f",
+            name: "Informatika",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "informatika-smp-1diana",
+            userId: "0197b421-92cc-732e-b902-d6fb4363579e",
+            discount: 10,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd84",
+            name: "Seni Musik",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "seni-musik-smp-1erwin",
+            userId: "0197b421-92cc-730c-9985-10f25a88fd83",
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead5d",
+            name: "Seni Rupa",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "seni-rupa-smp-1maya",
+            userId: "0197b421-92cc-7ca6-b637-cb8f6eeead5c",
+            discount: 5,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad8a",
+            name: "Prakarya",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "prakarya-smp-1anjar",
+            userId: "0197b421-92cc-7bfa-bec7-df624300ad89",
+            discount: 0,
+            isActive: true,
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f5c",
+            name: "Muatan Lokal Bahasa Jawa",
+            level: "SMP",
+            totalMeetings: 24,
+            time: new Date("1970-01-01T15:00:00Z"),
+            duration: 90,
+            area: "Semarang",
+            slug: "bahasa-jawa-smp-1novi",
+            userId: "0197b421-92cc-776c-8070-d476ed031f5b",
+            discount: 10,
+            isActive: true,
+        },
     ];
 
     for (const bimbelPackage of bimbelPackages) {
@@ -1609,7 +2238,550 @@ async function main() {
             price: (5 * 12 * 60000) + 100000,
             packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a",
             maxStudent: 5,
-        }
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af70",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            discPrice: 1818000, // 10% discount
+            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af71",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            discPrice: 3546000, // 10% discount
+            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af72",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            discPrice: 5274000, // 10% discount
+            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af73",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            discPrice: 7002000, // 10% discount
+            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af74",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            discPrice: 8730000, // 10% discount
+            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb4",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            discPrice: 1929000, // 5% discount
+            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb5",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            discPrice: 3743000, // 5% discount
+            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb6",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            discPrice: 5567000, // 5% discount
+            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb7",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            discPrice: 7391000, // 5% discount
+            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb8",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            discPrice: 9215000, // 5% discount
+            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e4",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e5",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e6",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e7",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e8",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c4",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            discPrice: 1929000, // 5% discount
+            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c5",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            discPrice: 3743000, // 5% discount
+            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c6",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            discPrice: 5567000, // 5% discount
+            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c7",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            discPrice: 7391000, // 5% discount
+            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c8",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            discPrice: 9215000, // 5% discount
+            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee63",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee64",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee65",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee66",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee67",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6c6",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            discPrice: 1818000, // 10% discount
+            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6c7",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            discPrice: 3546000, // 10% discount
+            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6c8",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            discPrice: 5274000, // 10% discount
+            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6c9",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            discPrice: 7002000, // 10% discount
+            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6ca",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            discPrice: 8730000, // 10% discount
+            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a19",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            packageId: "0197b421-92cc-7085-88f1-366574bd9a18",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a1a",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            packageId: "0197b421-92cc-7085-88f1-366574bd9a18",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a1b",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            packageId: "0197b421-92cc-7085-88f1-366574bd9a18",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a1c",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            packageId: "0197b421-92cc-7085-88f1-366574bd9a18",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a1d",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            packageId: "0197b421-92cc-7085-88f1-366574bd9a18",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf3c",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            discPrice: 1929000, // 5% discount
+            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf3d",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            discPrice: 3743000, // 5% discount
+            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf3e",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            discPrice: 5567000, // 5% discount
+            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf3f",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            discPrice: 7391000, // 5% discount
+            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf40",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            discPrice: 9215000, // 5% discount
+            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3eb",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3ec",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3ed",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3ee",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3ef",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-732e-b902-d6fb436357a0",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            discPrice: 1818000, // 10% discount
+            packageId: "0197b421-92cc-732e-b902-d6fb4363579f",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb436357a1",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            discPrice: 3546000, // 10% discount
+            packageId: "0197b421-92cc-732e-b902-d6fb4363579f",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb436357a2",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            discPrice: 5274000, // 10% discount
+            packageId: "0197b421-92cc-732e-b902-d6fb4363579f",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb436357a3",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            discPrice: 7002000, // 10% discount
+            packageId: "0197b421-92cc-732e-b902-d6fb4363579f",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb436357a4",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            discPrice: 8730000, // 10% discount
+            packageId: "0197b421-92cc-732e-b902-d6fb4363579f",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd85",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            packageId: "0197b421-92cc-730c-9985-10f25a88fd84",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd86",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            packageId: "0197b421-92cc-730c-9985-10f25a88fd84",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd87",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            packageId: "0197b421-92cc-730c-9985-10f25a88fd84",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd88",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            packageId: "0197b421-92cc-730c-9985-10f25a88fd84",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd89",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            packageId: "0197b421-92cc-730c-9985-10f25a88fd84",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead5e",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            discPrice: 1929000, // 5% discount
+            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead5f",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            discPrice: 3743000, // 5% discount
+            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead60",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            discPrice: 5567000, // 5% discount
+            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead61",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            discPrice: 7391000, // 5% discount
+            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead62",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            discPrice: 9215000, // 5% discount
+            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad8b",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad8c",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad8d",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad8e",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad8f",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a",
+            maxStudent: 5,
+        },
+
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f5d",
+            type: "privat",
+            price: (1 * 24 * 80000) + 100000, // 2020000
+            discPrice: 1818000, // 10% discount
+            packageId: "0197b421-92cc-776c-8070-d476ed031f5c",
+            maxStudent: 1,
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f5e",
+            type: "grup2",
+            price: (2 * 24 * 80000) + 100000, // 3940000
+            discPrice: 3546000, // 10% discount
+            packageId: "0197b421-92cc-776c-8070-d476ed031f5c",
+            maxStudent: 2,
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f5f",
+            type: "grup3",
+            price: (3 * 24 * 80000) + 100000, // 5860000
+            discPrice: 5274000, // 10% discount
+            packageId: "0197b421-92cc-776c-8070-d476ed031f5c",
+            maxStudent: 3,
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f60",
+            type: "grup4",
+            price: (4 * 24 * 80000) + 100000, // 7780000
+            discPrice: 7002000, // 10% discount
+            packageId: "0197b421-92cc-776c-8070-d476ed031f5c",
+            maxStudent: 4,
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f61",
+            type: "grup5",
+            price: (5 * 24 * 80000) + 100000, // 9700000
+            discPrice: 8730000, // 10% discount
+            packageId: "0197b421-92cc-776c-8070-d476ed031f5c",
+            maxStudent: 5,
+        },
     ];
 
     for (const groupType of groupTypes) {
@@ -1764,7 +2936,152 @@ async function main() {
             id: "01979a81-cc2d-76ff-8ec8-7ad40efe499d",
             packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a", // Pendidikan Agama Islam & Budi Pekerti SD
             dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa (Ahmad Fadli, S.Pd.I)
-        }
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af80",
+            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f", // Bahasa Indonesia SMP
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af81",
+            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f", // Bahasa Indonesia SMP
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af82",
+            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f", // Bahasa Indonesia SMP
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fb9",
+            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3", // Matematika SMP
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "0197b421-92cc-7b38-8e52-f786b7603fba",
+            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3", // Matematika SMP
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6e9",
+            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3", // IPA SMP
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "0197b421-92cc-717d-99d0-e595f2c5b6ea",
+            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3", // IPA SMP
+            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048c9",
+            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3", // IPS SMP
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "0197b421-92cc-7e5b-addd-fe579bc048ca",
+            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3", // IPS SMP
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee68",
+            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62", // PPKn SMP
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "0197b421-92cc-70a9-ab90-c53667ebee69",
+            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62", // PPKn SMP
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6cb",
+            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5", // PAI SMP
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "0197b421-92cc-765b-a22a-ab51d0b2d6cc",
+            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5", // PAI SMP
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a1e",
+            packageId: "0197b421-92cc-7085-88f1-366574bd9a18", // PAK SMP
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "0197b421-92cc-7085-88f1-366574bd9a1f",
+            packageId: "0197b421-92cc-7085-88f1-366574bd9a18", // PAK SMP
+            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf41",
+            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b", // Bahasa Inggris SMP
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "0197b421-92cc-7854-a588-26af45c3cf42",
+            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b", // Bahasa Inggris SMP
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3f0",
+            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea", // PJOK SMP
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3f1",
+            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea", // PJOK SMP
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb436357a5",
+            packageId: "0197b421-92cc-732e-b902-d6fb4363579f", // Informatika SMP
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "0197b421-92cc-732e-b902-d6fb436357a6",
+            packageId: "0197b421-92cc-732e-b902-d6fb4363579f", // Informatika SMP
+            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd90",
+            packageId: "0197b421-92cc-730c-9985-10f25a88fd84", // Seni Musik SMP
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "0197b421-92cc-730c-9985-10f25a88fd91",
+            packageId: "0197b421-92cc-730c-9985-10f25a88fd84", // Seni Musik SMP
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead63",
+            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d", // Seni Rupa SMP
+            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
+        },
+        {
+            id: "0197b421-92cc-7ca6-b637-cb8f6eeead64",
+            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d", // Seni Rupa SMP
+            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad90",
+            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a", // Prakarya SMP
+            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
+        },
+        {
+            id: "0197b421-92cc-7bfa-bec7-df624300ad91",
+            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a", // Prakarya SMP
+            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f62",
+            packageId: "0197b421-92cc-776c-8070-d476ed031f5c", // Bahasa Jawa SMP
+            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
+        },
+        {
+            id: "0197b421-92cc-776c-8070-d476ed031f63",
+            packageId: "0197b421-92cc-776c-8070-d476ed031f5c", // Bahasa Jawa SMP
+            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
+        },
     ]
 
     for (const packageDay of packagesDays) {
@@ -2100,6 +3417,91 @@ async function main() {
             status: 'pending',
         }
     });
+
+    // Seed Tutor Applications
+    const tutorApplications = [
+        {
+            id: "01980001-0000-0000-0000-000000000001",
+            name: "Andi Saputra",
+            email: "andi.saputra@mail.com",
+            birthDate: new Date("1992-05-10"),
+            gender: "Male",
+            phone: "081234567800",
+            address: "Jl. Melati No. 10",
+            subjects: "Matematika",
+            status: "S1",
+            major: "Pendidikan Matematika",
+            school: "Universitas Negeri Semarang",
+            teachLevel: "SMP",
+            description: "Saya memiliki pengalaman mengajar Matematika SMP selama 3 tahun.",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000002",
+            name: "Budi Hartanto",
+            email: "budi.hartanto@mail.com",
+            birthDate: new Date("1990-08-21"),
+            gender: "Male",
+            phone: "081234567801",
+            address: "Jl. Kenanga No. 11",
+            subjects: "Fisika",
+            status: "S2",
+            major: "Fisika",
+            school: "Universitas Diponegoro",
+            teachLevel: "SMA",
+            description: "Berpengalaman mengajar Fisika SMA dan aktif dalam komunitas guru.",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000003",
+            name: "Citra Dewi",
+            email: "citra.dewi@mail.com",
+            birthDate: new Date("1995-03-15"),
+            gender: "Female",
+            phone: "081234567802",
+            address: "Jl. Anggrek No. 12",
+            subjects: "Bahasa Inggris",
+            status: "S1",
+            major: "Pendidikan Bahasa Inggris",
+            school: "Universitas Negeri Semarang",
+            teachLevel: "SMP",
+            description: "Lulusan S1 Pendidikan Bahasa Inggris, suka mengajar anak-anak.",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000004",
+            name: "Dewi Lestari",
+            email: "dewi.lestari@mail.com",
+            birthDate: new Date("1993-11-30"),
+            gender: "Female",
+            phone: "081234567803",
+            address: "Jl. Flamboyan No. 13",
+            subjects: "Biologi",
+            status: "S1",
+            major: "Pendidikan Biologi",
+            school: "Universitas Gadjah Mada",
+            teachLevel: "SMA",
+            description: "Berpengalaman mengajar Biologi SMA dan aktif di kegiatan sains.",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000005",
+            name: "Eko Prasetyo",
+            email: "eko.prasetyo@mail.com",
+            birthDate: new Date("1994-07-22"),
+            gender: "Male",
+            phone: "081234567804",
+            address: "Jl. Duku No. 14",
+            subjects: "Kimia",
+            status: "S1",
+            major: "Kimia",
+            school: "Universitas Indonesia",
+            teachLevel: "SMA",
+            description: "Pernah menjadi asisten dosen Kimia dan mengajar privat.",
+        },
+    ];
+
+    for (const tutorApplication of tutorApplications) {
+        await prisma.tutorApplication.create({
+            data: tutorApplication,
+        });
+    }
 
     console.log('Development data seeded successfully');
 }
