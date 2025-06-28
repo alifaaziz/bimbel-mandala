@@ -1,10 +1,14 @@
 <script setup>
-
+import DashboardBiaya from './DashboardBiaya.vue';
+import DetailProgramSelesai from './DetailProgramSelesai.vue';
 </script>
 
 <template>
     <div class="main-content">
-        Catatan & Biaya Dashboard
+        <DashboardBiaya />
+        <div>
+            <detail-program-selesai />
+        </div>
     </div>
 </template>
 

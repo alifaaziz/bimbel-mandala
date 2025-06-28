@@ -1,10 +1,16 @@
 <script setup>
-
+import JadwalAktif from './JadwalAktif.vue';
+import ProgramAktif from './ProgramAktif.vue';
+import DetailJadwal from './DetailJadwal.vue';
 </script>
 
 <template>
     <div class="main-content">
-        Jadwal Dashboard
+        <JadwalAktif />
+        <div>
+            <ProgramAktif />
+            <DetailJadwal />
+        </div>
     </div>
 </template>
 
