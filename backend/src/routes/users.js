@@ -46,4 +46,11 @@ export default (app) => {
         AuthMiddleware.hasRole('admin'),
         UserController.getNewStudents
     );
+
+    router.get(
+        '/:id',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        UserController.getUserById
+    );
 };

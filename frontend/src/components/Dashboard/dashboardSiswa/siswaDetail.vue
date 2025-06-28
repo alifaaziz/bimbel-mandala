@@ -114,8 +114,8 @@
 </template>
 
 <script setup>
-import { h, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { h, ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import {
   NSpace, NButton, NH1, NH2, NText, NIcon, NGrid, NGi, NDivider, NCard, NDataTable, NDropdown, NTag, NModal, useMessage
 } from 'naive-ui';
@@ -125,18 +125,45 @@ import {
 
 const message = useMessage();
 const router = useRouter();
+const route = useRoute();
 
 const profileData = ref({
-  name: 'John Due',
-  jenjang: 'SMA Kelas 12',
-  email: 'namaemail@gmail.com',
-  whatsapp: '085786234264',
-  telpWali: '085786234264',
-  sekolah: 'SMA Negeri 10 Semarang',
-  alamat: 'Jl Sekaran No.05 RT05/04, Gunung Pati, Kota Semarang'
+  name: '',
+  jenjang: '',
+  email: '',
+  whatsapp: '',
+  telpWali: '',
+  sekolah: '',
+  alamat: ''
 });
 
-// State untuk modal konfirmasi hapus akun
+async function fetchSiswaDetail() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/${route.params.id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    const data = json.data;
+    const student = data.students?.[0] || {};
+    profileData.value = {
+      name: data.name,
+      jenjang: student.level ? `${student.level}` : '',
+      email: data.email,
+      whatsapp: student.phone || '',
+      telpWali: student.parentPhone || '',
+      sekolah: student.schoolName || '',
+      alamat: student.address || ''
+    };
+  } catch (err) {
+    message.error('Gagal mengambil detail siswa');
+  }
+}
+
+onMounted(fetchSiswaDetail);
+
 const showDeleteConfirm = ref(false);
 
 const handleEdit = () => {

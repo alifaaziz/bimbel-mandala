@@ -91,7 +91,10 @@ async function getTopStudents(req, res) {
  * @returns {Promise<void>} Resolves with the list of new students.
  */
 async function getNewStudents(req, res) {
-    const newStudents = await UserService.getNewStudents();
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.limit, 10) || 10;
+    const searchText = req.query.search || '';
+    const newStudents = await UserService.getNewStudents({ page, pageSize, searchText });
     res.status(200).json({ data: newStudents });
 }
 
@@ -109,11 +112,27 @@ export async function getStatistics(req, res) {
   res.status(200).json({ data: stats });
 }
 
+/**
+ * Get User by ID
+ * 
+ * @async
+ * @function getUserById
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the user data.
+ */
+async function getUserById(req, res) {
+    const userId = req.params.id;
+    const user = await UserService.getUserById(userId);
+    res.status(200).json({ data: user });
+}
+
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
     updateCurrentUser: asyncWrapper(updateCurrentUser),
     getTutorsSortedByClassCount: asyncWrapper(getTutorsSortedByClassCount),
+    getUserById: asyncWrapper(getUserById),
     getTopStudents: asyncWrapper(getTopStudents),
     getNewStudents: asyncWrapper(getNewStudents),
     getStatistics: asyncWrapper(getStatistics)

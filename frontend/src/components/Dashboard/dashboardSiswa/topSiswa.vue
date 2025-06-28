@@ -22,17 +22,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { NCard, NSpace, NH3 } from 'naive-ui';
 
-// Data tiruan (mock data) untuk top siswa
-const topStudents = ref([
-  { id: 1, name: 'Arell Saverro Biyantoro', program: 2 },
-  { id: 2, name: 'Zyan Shainori', program: 2 },
-  { id: 3, name: 'Alif Abdul Aziz', program: 1 },
-  { id: 4, name: 'Raihan Muhammad R. R.', program: 1 },
-  { id: 5, name: 'Yulius Calvin', program: 1 },
-]);
+const topStudents = ref([]);
+
+async function fetchTopStudents() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:3000/users/students', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    topStudents.value = (json.data || []).map(student => ({
+      id: student.id,
+      name: student.name,
+      program: student.classCount,
+    }));
+  } catch (err) {
+    topStudents.value = [];
+  }
+}
+
+onMounted(fetchTopStudents);
 </script>
 
 <style scoped>

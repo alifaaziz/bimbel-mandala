@@ -400,7 +400,8 @@ async function getNewStudents({ page = 1, pageSize = 10 } = {}) {
                 createdAt: true,
                 students: {
                     select: {
-                        level: true
+                        level: true,
+                        phone: true,
                     }
                 },
                 _count: {
@@ -428,6 +429,7 @@ async function getNewStudents({ page = 1, pageSize = 10 } = {}) {
             name: student.name,
             createdAt: student.createdAt,
             level: student.students?.[0]?.level || null,
+            phone: student.students?.[0]?.phone || null,
             classCount: student._count?.studentClass || 0,
         })),
         total,

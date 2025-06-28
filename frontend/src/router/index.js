@@ -170,7 +170,7 @@ const routes = [
             component: siswaMain,
           },
           {
-            path: 'detail/:id',
+            path: ':id',
             name: 'DetailSiswa',
             component: DetailSiswa,
           },

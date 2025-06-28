@@ -28,30 +28,35 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { NCard, NSpace, NH2, NText, NTag } from 'naive-ui';
 
-// Data tiruan (mock data) untuk siswa terbaru
-const newStudents = ref([
-  {
-    id: 1,
-    name: 'Salasabila Vanessa',
-    level: 'SMA',
-    date: '12 Maret 2025',
-  },
-  {
-    id: 2,
-    name: 'Budiono Siregar',
-    level: 'SD',
-    date: '11 Maret 2025',
-  },
-  {
-    id: 3,
-    name: 'Aurora Wijayanti',
-    level: 'SMP',
-    date: '11 Maret 2025',
-  },
-]);
+const newStudents = ref([]);
+
+async function fetchNewStudents() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:3000/users/new-students?limit=5', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    // Pastikan struktur respons sesuai backend kamu
+    newStudents.value = (json.data?.data || []).map(student => ({
+      id: student.id,
+      name: student.name,
+      level: student.level,
+      date: new Date(student.createdAt).toLocaleDateString('id-ID', {
+        day: '2-digit', month: 'long', year: 'numeric'
+      }),
+    }));
+  } catch (err) {
+    newStudents.value = [];
+  }
+}
+
+onMounted(fetchNewStudents);
 </script>
 
 <style scoped>
