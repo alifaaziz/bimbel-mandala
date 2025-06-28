@@ -1037,11 +1037,17 @@ async function getRecommendations(user) {
 
   const packagesWithOrderCount = recommendedPackages.map(pkg => ({
     ...pkg,
-    orderCount: pkg.orders.length
+    orderCount: pkg.orders.length,
+    hasDiscPrice: pkg.groupType.some(gt => gt.discPrice !== null && gt.discPrice !== undefined)
   }));
 
   const sortedPackages = packagesWithOrderCount
-    .sort((a, b) => a.orderCount - b.orderCount)
+    .sort((a, b) => {
+      if (a.hasDiscPrice === b.hasDiscPrice) {
+        return a.orderCount - b.orderCount;
+      }
+      return a.hasDiscPrice ? -1 : 1;
+    })
     .slice(0, 4);
   
   return sortedPackages.map(pkg => ({
