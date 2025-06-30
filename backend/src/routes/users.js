@@ -53,4 +53,13 @@ export default (app) => {
         AuthMiddleware.hasRole('admin'),
         UserController.getUserById
     );
+
+    router.patch(
+        '/:id',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        upload.single('photo'),
+        UserValidation.isValidUserUpdatePayload,
+        UserController.updateUserById
+    );
 };

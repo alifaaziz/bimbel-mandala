@@ -54,6 +54,25 @@ async function updateCurrentUser(req, res) {
 }
 
 /**
+ * Updates a user by ID (admin only).
+ * 
+ * @async
+ * @function updateUserById
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with a success message.
+ */
+async function updateUserById(req, res) {
+    await UserService.updateUser(
+        { id: req.params.id, ...req.body, role: req.body.role }, // role bisa diambil dari body jika admin ingin ubah
+        req.file
+    );
+
+    console.log('payload', req.body);
+    res.status(200).json({ message: 'User updated successfully' });
+}
+
+/**
  * Retrieves tutors sorted by the number of classes they are associated with.
  *
  * @async
@@ -135,5 +154,6 @@ export const UserController = {
     getUserById: asyncWrapper(getUserById),
     getTopStudents: asyncWrapper(getTopStudents),
     getNewStudents: asyncWrapper(getNewStudents),
-    getStatistics: asyncWrapper(getStatistics)
+    getStatistics: asyncWrapper(getStatistics),
+    updateUserById: asyncWrapper(updateUserById),
 };

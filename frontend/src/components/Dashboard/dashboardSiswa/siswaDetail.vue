@@ -239,7 +239,7 @@ onMounted(() => {
 const showDeleteConfirm = ref(false);
 
 const handleEdit = () => {
-  router.push('/dashboardadmin/siswa/editprofilesiswa');
+  router.push(`/dashboardadmin/siswa/edit/${route.params.id}`);
 };
 const handleDelete = () => {
   showDeleteConfirm.value = true;
