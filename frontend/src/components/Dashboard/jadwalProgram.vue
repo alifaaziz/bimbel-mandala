@@ -93,7 +93,7 @@ export default {
             month: 'long',
             day: 'numeric'
           }),
-          jam: item.date.split('T')[1].slice(0, 5),
+          jam: new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
           slug: item.slug
         }));
         this.page = result.data.page;
