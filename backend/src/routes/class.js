@@ -14,4 +14,6 @@ export default (app) => {
   router.post('/join',AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['siswa']), ClassController.joinClass);
 
   router.get('/running', AuthMiddleware.isAuthorized, ClassController.getRunningClass);
+
+  router.get('/student/:userId', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ClassController.getStudentClassesByUserId);
 };

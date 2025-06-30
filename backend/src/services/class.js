@@ -196,7 +196,8 @@ async function getMyClass(userId, role) {
                 groupType: groupType?.type || null,
                 days,
                 time: bimbelPackage?.time || null,
-                duration: bimbelPackage?.duration || null
+                duration: bimbelPackage?.duration || null,
+                code: cls.code
             };
         });
     } else {
@@ -303,9 +304,69 @@ async function getRunningClass() {
     }));
 }
 
+/**
+ * Get all class details for a student by userId
+ * @param {string} userId
+ * @returns {Promise<Array>}
+ */
+async function getStudentClassesByUserId(userId) {
+    const studentClasses = await prisma.studentClass.findMany({
+        where: { userId },
+        include: {
+            class: {
+                select: {
+                    status: true,
+                    code: true,
+                    tutor: {
+                        select: { name: true }
+                    },
+                    order: {
+                        select: {
+                            groupType: { select: { type: true } },
+                            bimbelPackage: {
+                                select: {
+                                    name: true,
+                                    level: true,
+                                    time: true,
+                                    duration: true,
+                                    packageDay: {
+                                        select: {
+                                            day: { select: { daysName: true } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    return studentClasses.map(studentClass => {
+        const cls = studentClass.class;
+        const bimbelPackage = cls.order?.bimbelPackage;
+        const groupType = cls.order?.groupType;
+        const packageDays = bimbelPackage?.packageDay;
+
+        return {
+            programName: bimbelPackage?.name || null,
+            level: bimbelPackage?.level || null,
+            tutorName: cls.tutor?.name || null,
+            status: cls.status,
+            groupType: groupType?.type || null,
+            days: packageDays ? packageDays.map(day => day.day.daysName).join(', ') : null,
+            time: bimbelPackage?.time || null,
+            duration: bimbelPackage?.duration || null,
+            code: cls.code
+        };
+    });
+}
+
 export const ClassService = {
     createClass,
     joinClass,
     getMyClass,
-    getRunningClass
+    getRunningClass,
+    getStudentClassesByUserId
 };
