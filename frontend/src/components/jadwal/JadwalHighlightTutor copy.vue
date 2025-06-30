@@ -25,7 +25,8 @@ export default defineComponent({
     }
 
     function formatJam(dateStr) {
-      return dateStr.slice(11, 16).replace(':', '.');
+      const date = new Date(dateStr);
+      return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     }
 
     function statusLabel(status) {

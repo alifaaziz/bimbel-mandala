@@ -102,9 +102,8 @@ async function fetchData() {
 }
 
 function formatTime(dateTime) {
-  const time = dateTime.split('T')[1];
-  const [hour, minute] = time.split(':');
-  return `${hour}:${minute} WIB`;
+  const date = new Date(dateTime);
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
 }
 
 function truncateName(name) {
