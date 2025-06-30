@@ -82,7 +82,7 @@
       <div class="sidebar-bottom bodyr1">
         <ul>
           <li class="nav-item">
-            <a class="nav-but" href="#">
+            <a class="nav-but" href="#" @click.prevent="handleLogout">
               <img src="@/assets/icons/admin/logout.svg" alt="Logout Icon" class="icon-white">
               <span>Log Out</span>
             </a>
@@ -123,6 +123,10 @@ export default {
     },
     setActive(menu) {
       this.activeMenu = menu;
+    },
+    handleLogout() {
+      localStorage.removeItem('token');
+      this.$router.push('/auth');
     }
   },
   mounted() {

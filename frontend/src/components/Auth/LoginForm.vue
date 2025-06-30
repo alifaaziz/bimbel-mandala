@@ -43,24 +43,36 @@ async function handleLogin() {
     isLoading.value = true
     try {
       const response = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.value, password: password.value }),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value, password: password.value }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(
-          (data.error && data.error.message) ||
-          data.error ||
-          'Login gagal. Periksa kembali data Anda.'
-        )
+      throw new Error(
+        (data.error && data.error.message) ||
+        data.error ||
+        'Login gagal. Periksa kembali data Anda.'
+      )
       }
 
       localStorage.setItem('token', data.data.token)
       isLoggedIn.value = true
+
+      const userRes = await fetch('http://localhost:3000/users/me', {
+      headers: {
+        'Authorization': `Bearer ${data.data.token}`,
+        'Content-Type': 'application/json'
+      }
+      })
+      const userData = await userRes.json()
+      if (userRes.ok && userData.data && userData.data.role === 'admin') {
+      router.push('/dashboardadmin')
+      } else {
       router.push('/absen')
+      }
     } catch (error) {
       alert(error.message)
     } finally {
