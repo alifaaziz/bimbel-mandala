@@ -374,9 +374,22 @@ async function getSchedulesForStudent(userId, page = 1, limit = 10) {
     return { data: [], total: 0, page, limit, totalPages: 0 };
   }
 
+  const runningClasses = await prisma.class.findMany({
+    where: {
+      id: { in: classIds },
+      status: 'berjalan'
+    },
+    select: { id: true }
+  });
+  const runningClassIds = runningClasses.map(cls => cls.id);
+
+  if (runningClassIds.length === 0) {
+    return { data: [], total: 0, page, limit, totalPages: 0 };
+  }
+
   const [schedules, total] = await Promise.all([
     prisma.schedule.findMany({
-      where: { classId: { in: classIds } },
+      where: { classId: { in: runningClassIds } },
       include: {
         class: {
           include: {
@@ -401,7 +414,7 @@ async function getSchedulesForStudent(userId, page = 1, limit = 10) {
       take: limit,
     }),
     prisma.schedule.count({
-      where: { classId: { in: classIds } },
+      where: { classId: { in: runningClassIds } },
     }),
   ]);
 
@@ -455,9 +468,22 @@ async function getSchedulesForStudent(userId, page = 1, limit = 10) {
 async function getSchedulesForTutor(userId, page = 1, limit = 10) {
   const offset = (page - 1) * limit;
 
+  const runningClasses = await prisma.class.findMany({
+    where: {
+      tutorId: userId,
+      status: 'berjalan'
+    },
+    select: { id: true }
+  });
+  const runningClassIds = runningClasses.map(cls => cls.id);
+
+  if (runningClassIds.length === 0) {
+    return { data: [], total: 0, page, limit, totalPages: 0 };
+  }
+
   const [schedules, total] = await Promise.all([
     prisma.schedule.findMany({
-      where: { class: { tutorId: userId } },
+      where: { classId: { in: runningClassIds } },
       include: {
         class: {
           include: {
@@ -479,7 +505,7 @@ async function getSchedulesForTutor(userId, page = 1, limit = 10) {
       take: limit,
     }),
     prisma.schedule.count({
-      where: { class: { tutorId: userId } },
+      where: { classId: { in: runningClassIds } },
     }),
   ]);
 
@@ -632,12 +658,12 @@ async function getClosestScheduleBySlug(slug) {
       class: {
         order: {
           bimbelPackage: {
-            slug: slug // Cari berdasarkan slug bimbel package
+            slug: slug 
           }
         }
       },
       date: {
-        gte: today // Jadwal mulai dari hari ini
+        gte: today
       }
     },
     include: {
@@ -696,6 +722,74 @@ async function getClosestScheduleBySlug(slug) {
       photo: tutor?.tutors?.[0]?.photo || null,
       info: schedule.information || null,
       slug: bimbelPackage?.slug || null
+    };
+  });
+}
+
+/**
+ * Get all schedules for a student by userId (no pagination)
+ * @param {String} userId
+ * @returns {Promise<Array>}
+ */
+async function getScheduleByUserId(userId) {
+  const studentClasses = await prisma.studentClass.findMany({
+    where: { userId },
+    select: { classId: true }
+  });
+  const classIds = studentClasses.map(sc => sc.classId);
+
+  if (classIds.length === 0) return [];
+
+  const today = new Date();
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      classId: { in: classIds },
+      date: { gte: today }
+    },
+    include: {
+      class: {
+        include: {
+          order: {
+            include: {
+              bimbelPackage: true,
+              groupType: true,
+            }
+          },
+          tutor: {
+            include: { tutors: true }
+          }
+        }
+      },
+      attendances: {
+        where: { userId },
+        select: { status: true }
+      }
+    },
+    orderBy: { date: 'asc' },
+    take: 5
+  });
+
+  return schedules.map(schedule => {
+    const classData = schedule.class;
+    const order = classData?.order;
+    const bimbelPackage = order?.bimbelPackage;
+    const groupType = order?.groupType;
+    const tutor = classData?.tutor;
+    const tutorGender = tutor?.tutors?.[0]?.gender;
+    const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+    const attendance = schedule.attendances?.[0] || null;
+
+    return {
+      id: schedule.id,
+      classCode: classData.code,
+      packageName: bimbelPackage?.name || null,
+      level: bimbelPackage?.level || null,
+      tutorName: tutorName,
+      groupType: groupType?.type || null,
+      meet: schedule.meet,
+      date: schedule.date,
+      duration: bimbelPackage?.duration || null,
+      status: attendance ? attendance.status : schedule.status,
     };
   });
 }
