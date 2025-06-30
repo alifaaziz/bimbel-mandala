@@ -146,6 +146,21 @@ async function getUserById(req, res) {
     res.status(200).json({ data: user });
 }
 
+/**
+ * Deletes a user by ID.
+ * 
+ * @async
+ * @function deleteUser
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with a success message.
+ */
+async function deleteUser(req, res) {
+    const userId = req.params.id;
+    await UserService.deleteUser(userId);
+    res.status(200).json({ message: 'User deleted successfully' });
+}
+
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
@@ -156,4 +171,5 @@ export const UserController = {
     getNewStudents: asyncWrapper(getNewStudents),
     getStatistics: asyncWrapper(getStatistics),
     updateUserById: asyncWrapper(updateUserById),
+    deleteUser: asyncWrapper(deleteUser)
 };

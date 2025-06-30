@@ -41,9 +41,9 @@
 
 <script setup>
 import { computed } from 'vue';
-import { NModal, NCard, NSpace, NH2, NText, NButton } from 'naive-ui';
+import { NModal, NSpace, NH2, NText, NButton } from 'naive-ui';
 
-// Mendefinisikan props yang diterima dari komponen induk
+// Props dari parent
 const props = defineProps({
   show: {
     type: Boolean,
@@ -53,36 +53,51 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  studentId: {
+    type: String,
+    required: true,
+  },
 });
 
-// Mendefinisikan event yang akan dikirim ke komponen induk
+// Emit event ke parent
 const emit = defineEmits(['update:show', 'confirm']);
 
-// `computed` property untuk menyinkronkan status show/hide dengan parent
+// Sinkronisasi modal show/hide
 const showModal = computed({
   get: () => props.show,
   set: (value) => emit('update:show', value),
 });
 
-const handleConfirm = () => {
-  emit('confirm');
-  // Modal akan ditutup oleh parent setelah aksi konfirmasi selesai
+// Fungsi hapus user
+const handleConfirm = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/${props.studentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) throw new Error('Gagal menghapus user');
+    emit('confirm');
+  } catch (err) {
+    alert('Terjadi kesalahan saat menghapus user');
+  }
 };
 
+// Fungsi batal
 const handleCancel = () => {
-  emit('update:show', false); // Langsung menutup modal
+  emit('update:show', false);
 };
 </script>
 
 <style>
-/* Menggunakan style global agar bisa menargetkan n-card di dalam modal preset */
 .custom-card-modal .n-card {
   max-width: 420px;
   border-radius: 24px !important;
   padding: 24px 16px !important;
 }
 
-/* Menghilangkan header default dari modal preset="card" */
 .custom-card-modal .n-card-header {
   padding: 0 !important;
 }
@@ -91,12 +106,12 @@ const handleCancel = () => {
   margin: 0;
   font-weight: 700;
   font-size: 1.75rem;
-  color: #0F2C5A; /* Biru Tua */
+  color: #0F2C5A;
 }
 
 .modal-text {
   font-size: 1rem;
-  color: #64748B; /* Abu-abu */
+  color: #64748B;
 }
 
 .delete-button {

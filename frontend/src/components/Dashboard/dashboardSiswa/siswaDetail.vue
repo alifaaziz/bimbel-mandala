@@ -209,7 +209,6 @@ async function fetchProgramSchedule() {
       },
     });
     const json = await res.json();
-    // Ambil data dari json.data.data (lihat contoh respons)
     programScheduleData.value = (json.data?.data || []).map((item, idx) => ({
       key: idx + 1,
       program: `${item.packageName} ${item.level}`,
@@ -244,9 +243,22 @@ const handleEdit = () => {
 const handleDelete = () => {
   showDeleteConfirm.value = true;
 };
-const confirmDelete = () => {
-  showDeleteConfirm.value = false;
-  message.success('Akun berhasil dihapus!');
+const confirmDelete = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/${route.params.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) throw new Error('Gagal menghapus user');
+    showDeleteConfirm.value = false;
+    message.success('Akun berhasil dihapus!');
+    router.push('/dashboardadmin/siswa');
+  } catch (err) {
+    message.error('Gagal menghapus akun!');
+  }
 };
 const cancelDelete = () => {
   showDeleteConfirm.value = false;
@@ -254,7 +266,6 @@ const cancelDelete = () => {
 
 const handleDropdownSelect = (key) => message.info(`Memilih aksi: ${key}`);
 
-// --- Data & Kolom untuk Tabel "Program Terdaftar" ---
 const dropdownOptions = [
   { label: 'Lihat Detail', key: 'detail' },
   { label: 'Ubah Jadwal', key: 'ubah' },
@@ -296,7 +307,6 @@ const registeredProgramColumns = [
   }
 ];
 
-// --- Data & Kolom untuk Tabel "Jadwal Program" ---
 const programScheduleColumns = [
   {
     title: 'Jadwal',
@@ -355,7 +365,6 @@ const programScheduleColumns = [
     }
   },
 ];
-
 </script>
 
 <style scoped>

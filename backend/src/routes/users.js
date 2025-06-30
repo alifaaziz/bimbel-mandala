@@ -62,4 +62,11 @@ export default (app) => {
         UserValidation.isValidUserUpdatePayload,
         UserController.updateUserById
     );
+
+    router.delete(
+        '/:id',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        UserController.deleteUser
+    );
 };

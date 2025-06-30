@@ -461,6 +461,35 @@ async function getStatistics() {
   };
 }
 
+/**
+ * Delete a user and all related data by userId.
+ * 
+ * @async
+ * @function deleteUser
+ * @param {string} userId - The user's ID.
+ * @returns {Promise<void>}
+ */
+async function deleteUser(userId) {
+    await prisma.studentClass.deleteMany({ where: { userId } });
+    await prisma.attendance.deleteMany({ where: { userId } });
+    await prisma.student.deleteMany({ where: { userId } });
+
+    const tutor = await prisma.tutor.findUnique({ where: { userId } });
+    if (tutor) {
+        await prisma.tutorDay.deleteMany({ where: { tutorId: tutor.id } });
+        await prisma.tutor.deleteMany({ where: { userId } });
+    }
+
+    await prisma.order.deleteMany({ where: { userId } });
+    await prisma.notification.deleteMany({ where: { userId } });
+    await prisma.passwordReset.deleteMany({ where: { userId } });
+    await prisma.otp.deleteMany({ where: { userId } });
+    await prisma.salary.deleteMany({ where: { userId } });
+    await prisma.bimbelPackage.deleteMany({ where: { userId } });
+
+    await prisma.user.delete({ where: { id: userId } });
+}
+
 export const UserService = { 
     createStudent,
     createUserWithRole, 
@@ -470,4 +499,5 @@ export const UserService = {
     getTopStudents,
     getNewStudents,
     getStatistics,
+    deleteUser,
 };
