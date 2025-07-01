@@ -156,7 +156,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         </div>
         <div>
           <n-space vertical size="medium" class="space-detail bodyr2">
-            <InfoRow label="Area" :value="programData.area" />
+            <InfoRow label="Area/Lokasi" :value="programData.area" />
             <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
             <InfoRow label="Pukul" :value="formatTime(programData.time)" />
             <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />

@@ -137,7 +137,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
           <p class="bodyb1 type-program">
             Code Kelas: {{ classCode || 'Tidak Tersedia' }}
           </p>
-          <p v-if="!isTutor" class="bodyb1 price">
+          <p v-if="!isTutor" class="bodym3 price">
             Silahkan gunakan kode kelas ini untuk bergabung ke kelas.
           </p>
         </div>

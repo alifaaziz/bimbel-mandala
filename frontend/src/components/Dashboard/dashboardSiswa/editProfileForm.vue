@@ -122,6 +122,7 @@ const handleApplyClick = (e) => {
   formRef.value?.validate((errors) => {
     if (!errors) {
       console.log('Data yang akan dikirim:', formModel.value);
+      alert(JSON.stringify(formModel.value, null, 2)); // Tampilkan data di alert
       message.success('Profil berhasil diperbarui!');
     } else {
       console.log('Ditemukan error pada form:', errors);
