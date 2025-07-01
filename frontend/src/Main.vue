@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import navbar from './components/navbar.vue';
 
 const isAdmin = ref(false)
 const isLoading = ref(true)
+const router = useRouter()
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
@@ -19,6 +21,10 @@ onMounted(async () => {
   if (res.ok) {
     const data = await res.json()
     isAdmin.value = data.data?.role === 'admin'
+    if (isAdmin.value && router.currentRoute.value.path !== '/dashboardadmin') {
+      router.replace('/dashboardadmin')
+      return
+    }
   }
   isLoading.value = false
 })

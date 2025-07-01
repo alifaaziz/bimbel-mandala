@@ -25,37 +25,32 @@ export default (app) => {
     );
 
     router.post(
-        '/add-user',
-        AuthController.createUserWithRole
-    );
-
-    router.post(
         '/password-reset',
         CommonValidationMiddleware.isValidEmailPayload,
         AuthController.sendPasswordResetEmail
     );
-
+    
     router.get(
         '/password-reset/:token',
         AuthValidationMiddleware.isValidTokenParams,
         AuthController.verifyPasswordResetToken
     );
-
+    
     router.post(
         '/password-reset/confirm',
         AuthValidationMiddleware.isValidResetPasswordPayload,
         AuthController.resetPassword
     );
-
+    
     router.post(
         '/password-change',
         AuthMiddleware.isAuthorized,
         AuthController.changePassword
     );
-
+    
     router.get('/otp', (_req, res) => {
         res.status(200).json({ message: 'disini tempat otp nanti' });
-      });
+    });
     
     router.post(
         '/otp',
@@ -63,12 +58,26 @@ export default (app) => {
         UserValidation.isUnverifiedUserExistsPayload,
         AuthController.sendUserVerificationOtp
     );
-
+    
     router.post(
         '/otp/verify',
         OtpValidationMiddleware.isValidOtpPayload,
         UserValidation.isUnverifiedUserExistsPayload,
         AuthController.verifyUserVerificationOtp
+    );
+    
+    router.post(
+        '/add-user',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        AuthController.createUserWithRole
+    );
+    
+    router.post(
+        '/add-student',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        AuthController.addStudentByAdmin
     );
 
     router.get(

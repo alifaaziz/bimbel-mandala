@@ -18,19 +18,22 @@ import { savePhoto } from '../utils/helper.js';
  * @returns {Promise<Object>} The new user object.
  * @throws {HttpError} Throws an error if the user creation fails.
  */
-async function createStudent(payload) {
-    const { name, email, password, role, googleId } = payload;
-    const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
+async function createStudent(payload, options = {}) {
+    const encryptedPassword = payload.password ? await AuthService.hashPassword(payload.password) : null;
 
     const parsedUserWithEncryptedPassword = {
-        ...payload,
-        password: encryptedPassword
+        name: payload.name,
+        email: payload.email,
+        password: encryptedPassword,
+        role: payload.role,
+        googleId: payload.googleId || null,
+        ...(options.skipOtp ? { verified: true } : {})
     };
     
 
     const verifiedUser = await prisma.user.findFirst({
         where: {
-          email,
+          email: payload.email,
           verified: true
         }
       });
@@ -44,7 +47,7 @@ async function createStudent(payload) {
 
     const unverifiedUser = await prisma.user.findFirst({
         where: {
-          email,
+          email: payload.email,
           verified: false
         }
       });
@@ -60,10 +63,19 @@ async function createStudent(payload) {
     }
 
     await prisma.student.create({
-        data: { userId: user.id }
+        data: {
+            userId: user.id,
+            level: payload.level || null,
+            address: payload.address || null,
+            phone: payload.phone || null,
+            parentPhone: payload.parentPhone || null,
+        }
     });
 
-    await OtpService.sendUserVerificationOtp(user.name, user.email, user.id);
+    if (!options.skipOtp) {
+
+        await OtpService.sendUserVerificationOtp(user.name, user.email, user.id);
+    }
     return user;
 }
 
@@ -91,10 +103,11 @@ async function createUserWithRole(payload) {
     const encryptedPassword = await AuthService.hashPassword(password);
 
     const parsedUserWithEncryptedPassword = {
-        name,
-        email,
+        name: payload.name,
+        email: payload.email,
         password: encryptedPassword,
-        verified: true
+        role: payload.role,
+        googleId: payload.googleId || null,
     };
 
     let user = await prisma.user.findFirst({
