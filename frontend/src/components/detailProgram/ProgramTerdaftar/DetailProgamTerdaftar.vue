@@ -48,9 +48,8 @@ onMounted(async () => {
 
 function formatTime(isoString: string): string {
   if (!isoString) return '';
-  const time = isoString.split('T')[1];
-  const [hour, minute] = time.split(':');
-  return `${hour}:${minute} WIB`;
+  const date = new Date(isoString);
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) + ' WIB';
 }
 
 function formatCurrency(amount: number): string {

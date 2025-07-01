@@ -8,11 +8,11 @@
             <n-text :depth="3">{{ profileData.jenjang }}</n-text>
           </n-space>
           <n-space>
-            <n-button @click="handleEdit">
+            <n-button round @click="handleEdit">
               <template #icon><n-icon :component="PencilOutline" /></template>
               Edit Profil
             </n-button>
-            <n-button type="error" ghost @click="handleDelete">
+            <n-button type="error" ghost round @click="handleDelete">
               <template #icon><n-icon :component="TrashOutline" /></template>
               Hapus Akun
             </n-button>
@@ -114,8 +114,8 @@
 </template>
 
 <script setup>
-import { h, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { h, ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import {
   NSpace, NButton, NH1, NH2, NText, NIcon, NGrid, NGi, NDivider, NCard, NDataTable, NDropdown, NTag, NModal, useMessage
 } from 'naive-ui';
@@ -125,29 +125,140 @@ import {
 
 const message = useMessage();
 const router = useRouter();
+const route = useRoute();
 
 const profileData = ref({
-  name: 'John Due',
-  jenjang: 'SMA Kelas 12',
-  email: 'namaemail@gmail.com',
-  whatsapp: '085786234264',
-  telpWali: '085786234264',
-  sekolah: 'SMA Negeri 10 Semarang',
-  alamat: 'Jl Sekaran No.05 RT05/04, Gunung Pati, Kota Semarang'
+  name: '',
+  jenjang: '',
+  email: '',
+  whatsapp: '',
+  telpWali: '',
+  sekolah: '',
+  alamat: ''
+});
+function mapGroupType(type) {
+  switch (type) {
+    case 'privat': return 'Privat';
+    case 'grup2': return 'Kelompok 2 Peserta';
+    case 'grup3': return 'Kelompok 3 Peserta';
+    case 'grup4': return 'Kelompok 4 Peserta';
+    case 'grup5': return 'Kelompok 5 Peserta';
+    case 'kelas': return 'Kelas';
+    default: return type;
+  }
+}
+const registeredProgramsData = ref([]);
+const programScheduleData = ref([]);
+
+async function fetchSiswaDetail() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/${route.params.id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    const data = json.data;
+    const student = data.students?.[0] || {};
+    profileData.value = {
+      name: data.name,
+      jenjang: student.level ? `${student.level}` : '',
+      email: data.email,
+      whatsapp: student.phone || '',
+      telpWali: student.parentPhone || '',
+      sekolah: student.schoolName || '',
+      alamat: student.address || ''
+    };
+  } catch (err) {
+    message.error('Gagal mengambil detail siswa');
+  }
+}
+
+async function fetchRegisteredPrograms() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/classes/student/${route.params.id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    registeredProgramsData.value = (json.data || []).map((item, idx) => ({
+      key: idx + 1,
+      program: `${item.programName} ${item.level}`,
+      tutor: item.tutorName,
+      status: item.status === 'berjalan' ? 'Berjalan' : item.status,
+      type: mapGroupType(item.groupType),
+      schedule: item.days,
+      time: item.time ? new Date(item.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+      duration: item.duration ? `${item.duration} Menit` : '',
+      code: item.code
+    }));
+  } catch (err) {
+    registeredProgramsData.value = [];
+  }
+}
+
+async function fetchProgramSchedule() {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/schedules/user/${route.params.id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    programScheduleData.value = (json.data?.data || []).map((item, idx) => ({
+      key: idx + 1,
+      program: `${item.packageName} ${item.level}`,
+      tutor: item.tutorName,
+      type: mapGroupType(item.groupType),
+      session: item.meet,
+      date: item.date ? new Date(item.date).toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : '',
+      time: item.date ? new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+      duration: item.duration ? `${item.duration} Menit` : '',
+      status: item.status,
+      code: item.classCode,
+      photo: item.photo,
+      address: item.address,
+      slug: item.slug
+    }));
+  } catch (err) {
+    programScheduleData.value = [];
+  }
+}
+
+onMounted(() => {
+  fetchSiswaDetail();
+  fetchRegisteredPrograms();
+  fetchProgramSchedule();
 });
 
-// State untuk modal konfirmasi hapus akun
 const showDeleteConfirm = ref(false);
 
 const handleEdit = () => {
-  router.push('/dashboardadmin/siswa/editprofilesiswa');
+  router.push(`/dashboardadmin/siswa/edit/${route.params.id}`);
 };
 const handleDelete = () => {
   showDeleteConfirm.value = true;
 };
-const confirmDelete = () => {
-  showDeleteConfirm.value = false;
-  message.success('Akun berhasil dihapus!');
+const confirmDelete = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/${route.params.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) throw new Error('Gagal menghapus user');
+    showDeleteConfirm.value = false;
+    message.success('Akun berhasil dihapus!');
+    router.push('/dashboardadmin/siswa');
+  } catch (err) {
+    message.error('Gagal menghapus akun!');
+  }
 };
 const cancelDelete = () => {
   showDeleteConfirm.value = false;
@@ -155,18 +266,11 @@ const cancelDelete = () => {
 
 const handleDropdownSelect = (key) => message.info(`Memilih aksi: ${key}`);
 
-// --- Data & Kolom untuk Tabel "Program Terdaftar" ---
 const dropdownOptions = [
   { label: 'Lihat Detail', key: 'detail' },
   { label: 'Ubah Jadwal', key: 'ubah' },
   { label: 'Batalkan', key: 'batal' }
 ];
-
-const registeredProgramsData = ref([
-  { key: 1, program: 'Matematika SMA', tutor: 'Pak Dendy Wan S.Pd', status: 'Berjalan', type: 'Privat', schedule: 'Senin, Rabu, Sabtu', time: '15:00', duration: '90 Menit' },
-  { key: 2, program: 'Fisika SMA', tutor: 'Pak Venita S.Pd', status: 'Berjalan', type: 'Kelompok 5 Peserta', schedule: 'Selasa, Kamis', time: '15:00', duration: '120 Menit' },
-  { key: 3, program: 'Fokus UTBK', tutor: 'Pak Wendy S.Pd, M.Pd', status: 'Berjalan', type: 'Kelas', schedule: 'Senin', time: '15:00', duration: '120 Menit' },
-]);
 
 const registeredProgramColumns = [
   {
@@ -203,14 +307,6 @@ const registeredProgramColumns = [
   }
 ];
 
-// --- Data & Kolom untuk Tabel "Jadwal Program" ---
-const programScheduleData = ref([
-  { key: 1, program: 'Matematika SMA', tutor: 'Pak Dendy Wan S.Pd', type: 'Privat', session: 12, date: 'Rabu, 12 Maret 2025', time: '15:00', duration: '90 Menit', status: 'Masuk' },
-  { key: 2, program: 'Fisika SMA', tutor: 'Pak Venita S.Pd', type: 'Kelompok 5 Peserta', session: 7, date: 'Kamis, 13 Maret 2025', time: '15:00', duration: '120 Menit', status: 'Terjadwal' },
-  { key: 3, program: 'Matematika SMA', tutor: 'Pak Dendy Wan S.Pd', type: 'Privat', session: 13, date: 'Sabtu, 15 Maret 2025', time: '15:00', duration: '90 Menit', status: 'Terjadwal' },
-  { key: 4, program: 'Fokus UTBK', tutor: 'Pak Wendy S.Pd, M.Pd', type: 'Kelas', session: 3, date: 'Senin, 17 Maret 2025', time: '15:00', duration: '120 Menit', status: 'Jadwal Ulang' },
-]);
-
 const programScheduleColumns = [
   {
     title: 'Jadwal',
@@ -234,19 +330,41 @@ const programScheduleColumns = [
     key: 'status',
     render(row) {
       let type = 'default';
-      if (row.status === 'Masuk') type = 'primary';
-      if (row.status === 'Terjadwal') type = 'success';
-      if (row.status === 'Jadwal Ulang') type = 'warning';
-      
+      let label = row.status;
+      switch (row.status) {
+      case 'masuk':
+        type = 'primary';
+        label = 'Masuk';
+        break;
+      case 'terjadwal':
+        type = 'success';
+        label = 'Terjadwal';
+        break;
+      case 'jadwal_ulang':
+        type = 'warning';
+        label = 'Jadwal Ulang';
+        break;
+      case 'izin':
+        type = 'error';
+        label = 'Izin';
+        break;
+      case 'alpha':
+        type = 'error';
+        label = 'Alpha';
+        break;
+      default:
+        type = 'default';
+        label = row.status;
+      }
       return h(NTag, {
-        type: type,
-        bordered: false,
-        style: 'width: 100px; justify-content: center;'
-      }, { default: () => row.status });
+      type: type,
+      bordered: false,
+      round: true,
+      style: 'width: 100px; justify-content: center;'
+      }, { default: () => label });
     }
-  }
+  },
 ];
-
 </script>
 
 <style scoped>

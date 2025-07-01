@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useMessage } from 'naive-ui';
 
 // Gunakan 'useMessage' untuk menampilkan notifikasi saat tombol "Aksi" diklik
@@ -7,11 +7,25 @@ const message = useMessage();
 
 // --- 1. State Management ---
 // Data dummy untuk daftar pendaftar
-const registrantList = ref([
-  { id: 1, name: 'John Doe S.Pd' },
-  { id: 2, name: 'Jane Smith S.Kom' },
-  { id: 3, name: 'Peter Jones M.Pd' },
-]);
+const registrantList = ref([]);
+
+// Fetch data pendaftar dari backend
+const fetchRegistrants = async () => {
+  try {
+    const res = await fetch('http://localhost:3000/apply?page=1&limit=3', {
+      headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+      }
+    });
+    const json = await res.json();
+    registrantList.value = json.data || [];
+  } catch (e) {
+    registrantList.value = [];
+    message.error('Gagal mengambil data pendaftar');
+  }
+};
+
+onMounted(fetchRegistrants);
 
 // --- 2. Methods ---
 // Fungsi yang akan dipanggil saat tombol "Aksi" diklik

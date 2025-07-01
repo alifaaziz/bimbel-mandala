@@ -54,7 +54,26 @@ async function updateCurrentUser(req, res) {
 }
 
 /**
- * Retrieves tutors sorted by the number of classes they are associated with.
+ * Updates a user by ID (admin only).
+ * 
+ * @async
+ * @function updateUserById
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with a success message.
+ */
+async function updateUserById(req, res) {
+    await UserService.updateUser(
+        { id: req.params.id, ...req.body, role: req.body.role }, // role bisa diambil dari body jika admin ingin ubah
+        req.file
+    );
+
+    console.log('payload', req.body);
+    res.status(200).json({ message: 'User updated successfully' });
+}
+
+/**
+ * Retrieves tutors sorted by the number of classes they are associated with, with pagination.
  *
  * @async
  * @function getTutorsSortedByClassCount
@@ -63,8 +82,10 @@ async function updateCurrentUser(req, res) {
  * @returns {Promise<void>} Resolves with the list of tutors sorted by class count.
  */
 async function getTutorsSortedByClassCount(req, res) {
-    const tutors = await UserService.getTutorsSortedByClassCount();
-    res.status(200).json({ data: tutors });
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.limit, 10) || 10;
+    const result = await UserService.getTutorsSortedByClassCount({ page, pageSize });
+    res.status(200).json(result);
 }
 
 /**
@@ -91,7 +112,10 @@ async function getTopStudents(req, res) {
  * @returns {Promise<void>} Resolves with the list of new students.
  */
 async function getNewStudents(req, res) {
-    const newStudents = await UserService.getNewStudents();
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.limit, 10) || 10;
+    const searchText = req.query.search || '';
+    const newStudents = await UserService.getNewStudents({ page, pageSize, searchText });
     res.status(200).json({ data: newStudents });
 }
 
@@ -109,12 +133,45 @@ export async function getStatistics(req, res) {
   res.status(200).json({ data: stats });
 }
 
+/**
+ * Get User by ID
+ * 
+ * @async
+ * @function getUserById
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the user data.
+ */
+async function getUserById(req, res) {
+    const userId = req.params.id;
+    const user = await UserService.getUserById(userId);
+    res.status(200).json({ data: user });
+}
+
+/**
+ * Deletes a user by ID.
+ * 
+ * @async
+ * @function deleteUser
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with a success message.
+ */
+async function deleteUser(req, res) {
+    const userId = req.params.id;
+    await UserService.deleteUser(userId);
+    res.status(200).json({ message: 'User deleted successfully' });
+}
+
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
     updateCurrentUser: asyncWrapper(updateCurrentUser),
     getTutorsSortedByClassCount: asyncWrapper(getTutorsSortedByClassCount),
+    getUserById: asyncWrapper(getUserById),
     getTopStudents: asyncWrapper(getTopStudents),
     getNewStudents: asyncWrapper(getNewStudents),
-    getStatistics: asyncWrapper(getStatistics)
+    getStatistics: asyncWrapper(getStatistics),
+    updateUserById: asyncWrapper(updateUserById),
+    deleteUser: asyncWrapper(deleteUser)
 };

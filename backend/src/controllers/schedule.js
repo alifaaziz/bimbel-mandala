@@ -29,6 +29,8 @@ async function reschedule(req, res) {
   const { id: scheduleId } = req.params;
   const { newDate } = req.body;
 
+  console.log(`New Date: ${newDate}`);
+
   const loggedInUser = res.locals.user;
   const isAdmin = loggedInUser.role === 'admin';
   
@@ -115,6 +117,21 @@ async function getClosestScheduleBySlug(req, res) {
   res.status(200).json({ data: schedule });
 }
 
+/**
+ * Handles the request to get schedules by a specific user ID.
+ *
+ * @function getScheduleByUserId
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the user's schedules.
+ */
+async function getScheduleByUserId(req, res) {
+  const { userId } = req.params;
+  const schedules = await ScheduleService.getSchedulesByRole(userId, 1, 5);
+  res.status(200).json({ data: schedules });
+}
+
 export const ScheduleController = {
   createSchedules: asyncWrapper(createSchedules),
   reschedule: asyncWrapper(reschedule),
@@ -122,5 +139,6 @@ export const ScheduleController = {
   getSchedules: asyncWrapper(getSchedules),
   getScheduleBySlug: asyncWrapper(getScheduleBySlug),
   updateScheduleInformation: asyncWrapper(updateScheduleInformation),
-  getClosestScheduleBySlug: asyncWrapper(getClosestScheduleBySlug)
+  getClosestScheduleBySlug: asyncWrapper(getClosestScheduleBySlug),
+  getScheduleByUserId: asyncWrapper(getScheduleByUserId)
 };

@@ -15,7 +15,8 @@ function formatTanggal(dateStr) {
 }
 
 function formatJam(dateStr) {
-  return dateStr.slice(11, 16).replace(':', '.');
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace(':', '.');
 }
 
 function statusLabel(status) {
@@ -103,7 +104,9 @@ export default defineComponent({
         return;
       }
 
-      const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00.000Z`).toISOString();
+      const dateStr = `${rescheduleDate.value}T${rescheduleTime.value}:00+07:00`;
+      const utcDate = new Date(dateStr);
+      const newDate = utcDate.toISOString()
 
       fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
         method: 'PATCH',

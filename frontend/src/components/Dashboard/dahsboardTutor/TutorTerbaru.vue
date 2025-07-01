@@ -1,16 +1,18 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
-// --- 1. State Management ---
-// Data dummy untuk daftar tutor terbaru
-// Perhatikan bahwa tanggalnya sesuai dengan gambar: 12 Maret 2025
-const latestTutors = ref([
-  { id: 1, name: 'Pak Indra Jaya S.Pd', date: '12 Maret 2025', level: 'SMA' },
-  { id: 2, name: 'Bu Susi Wati S.Pd', date: '12 Maret 2025', level: 'SMP' },
-  { id: 3, name: 'Bu Luna S.Pd', date: '12 Maret 2025', level: 'SD' },
-]);
+// Format tanggal ke "DD MMMM YYYY" (contoh: 12 Maret 2025)
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
+}
 
-// Fungsi untuk memberikan tipe warna pada n-tag berdasarkan jenjang
+const latestTutors = ref([]);
+
 const getTagType = (level) => {
   switch (level) {
     case 'SMA':
@@ -23,6 +25,23 @@ const getTagType = (level) => {
       return 'default';
   }
 };
+
+const fetchLatestTutors = async () => {
+  try {
+    const res = await fetch('http://localhost:3000/users/tutors?page=1&limit=3');
+    const json = await res.json();
+    latestTutors.value = json.data.map(tutor => ({
+      id: tutor.id,
+      name: tutor.name,
+      date: formatDate(tutor.joinDate || tutor.createdAt),
+      level: tutor.teachLevel
+    }));
+  } catch (e) {
+    latestTutors.value = [];
+  }
+};
+
+onMounted(fetchLatestTutors);
 </script>
 
 <template>

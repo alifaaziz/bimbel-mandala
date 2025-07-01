@@ -46,4 +46,27 @@ export default (app) => {
         AuthMiddleware.hasRole('admin'),
         UserController.getNewStudents
     );
+
+    router.get(
+        '/:id',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        UserController.getUserById
+    );
+
+    router.patch(
+        '/:id',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        upload.single('photo'),
+        UserValidation.isValidUserUpdatePayload,
+        UserController.updateUserById
+    );
+
+    router.delete(
+        '/:id',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        UserController.deleteUser
+    );
 };

@@ -170,17 +170,12 @@ const routes = [
             component: siswaMain,
           },
           {
-            path: 'detail/:id',
+            path: ':id',
             name: 'DetailSiswa',
             component: DetailSiswa,
           },
           {
-            path: 'editprofilesiswa',
-            name: 'EditProfileSiswa',
-            component: EditProfileSiswa,
-          },
-          {
-            path: 'editprofilesiswa',
+            path: 'edit/:id',
             name: 'EditProfileSiswa',
             component: EditProfileSiswa,
           },

@@ -6,9 +6,10 @@
       <div class="search-tambah">
         <div class="search-container">
           <n-input
-          round
-          size="large"
-          placeholder="Cari siswa">
+            v-model:value="searchText"
+            round
+            size="large"
+            placeholder="Cari siswa">
             <template #prefix>
               <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
             </template>
@@ -16,20 +17,32 @@
         </div>
         <ButImgTambahSecondNormal label="Tambah Siswa" @click="handleTambahSiswa"/>
       </div>
-
       <n-data-table
         :columns="columns"
-        :data="filteredData"
-        :pagination="pagination"
+        :data="displayedData"
+        :pagination="false"
         :bordered="false"
         :single-line="false"
+        :loading="loading"
       />
+      <div class="pagination-wrapper">
+        <n-pagination
+          :page="page"
+          :page-size="pageSize"
+          :item-count="total"
+          :page-slot="7"
+          @update:page="handlePageChange"
+          @update:page-size="handlePageSizeChange"
+          :page-sizes="[10, 20, 50]"
+          v-model:page="page"
+        />
+      </div>
     </n-space>
   </div>
 </template>
 
 <script setup>
-import { ref, h, computed } from 'vue';
+import { ref, h, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { NButton, NIcon, NDataTable, NSpace, NH1, NInput, useMessage } from 'naive-ui';
 import {
@@ -40,96 +53,158 @@ import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondN
 const message = useMessage();
 const router = useRouter();
 const searchText = ref('');
+const loading = ref(false);
 
-// --- Definisi Kolom untuk n-data-table ---
-const createColumns = ({ viewDetails }) => {
-  return [
-    {
-      title: 'Nama',
-      key: 'name',
-      sorter: 'default',
-    },
-    {
-      title: 'Jenjang',
-      key: 'level',
-      filterOptions: [
-        { label: 'SMA', value: 'SMA' },
-        { label: 'SMP', value: 'SMP' },
-        { label: 'SD', value: 'SD' },
-      ],
-      filter(value, row) {
-        return row.level === value;
+const page = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
+
+const data = ref([]);
+
+const allData = ref([]); 
+
+async function fetchSiswa() {
+  loading.value = true;
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/new-students?page=${page.value}&limit=${pageSize.value}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
       },
-    },
-    {
-      title: 'No. WhatsApp',
-      key: 'whatsapp',
-      sorter: (rowA, rowB) => rowA.whatsapp.localeCompare(rowB.whatsapp),
-    },
-    {
-      title: 'Program',
-      key: 'program',
-      sorter: (rowA, rowB) => rowA.program - rowB.program,
-    },
-    {
-      title: 'Detail',
-      key: 'actions',
-      render(row) {
-        return h(
-          NButton,
-          {
-            tertiary: true,
-            circle: true,
-            disabled: !row.id, // Tombol nonaktif jika id tidak ada
-            onClick: () => row.id && viewDetails(row),
-          },
-          {
-            icon: () => h(NIcon, { component: EllipsisHorizontal }),
-          }
-        );
+    });
+    const json = await res.json();
+    const siswaArr = json.data.data.map((item, idx) => ({
+      id: item.id,
+      key: idx,
+      name: item.name,
+      level: item.level,
+      phone: item.phone,
+      classCount: item.classCount,
+    }));
+    data.value = siswaArr;
+    total.value = json.data.total;
+  } catch (err) {
+    message.error('Gagal mengambil data siswa');
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function fetchAllSiswa() {
+  loading.value = true;
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/new-students?page=1&limit=${total.value}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
       },
-    },
-  ];
-};
+    });
+    const json = await res.json();
+    allData.value = json.data.data.map((item, idx) => ({
+      id: item.id,
+      key: idx,
+      name: item.name,
+      level: item.level,
+      phone: item.phone,
+      classCount: item.classCount,
+    }));
+  } catch (err) {
+    allData.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
 
-// --- Data Siswa (Mock Data) ---
-const data = ref([
-  { id: 1, key: 0, name: 'Arell Saverro Biyanroto', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 2 },
-  { id: 2, key: 1, name: 'Alif Abdul Aziz', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { id: 3, key: 2, name: 'Raihan Muhammad R. R.', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { id: 4, key: 3, name: 'Zyan Shainori', level: 'SD', whatsapp: '085xxxxxxxxx', program: 2 },
-  { id: 5, key: 4, name: 'Yulius Calvin', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { id: 6, key: 5, name: 'Anina Adelia', level: 'SMP', whatsapp: '085xxxxxxxxx', program: 1 },
-  { id: 7, key: 6, name: 'Raihan Muhammad R. R.', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { id: 8, key: 7, name: 'Zyan Shainori', level: 'SD', whatsapp: '085xxxxxxxxx', program: 2 },
-  { id: 9, key: 8, name: 'Yulius Calvin', level: 'SMA', whatsapp: '085xxxxxxxxx', program: 1 },
-  { id: 10, key: 9, name: 'Anina Adelia', level: 'SMP', whatsapp: '085xxxxxxxxx', program: 1 },
-]);
+watch([page, pageSize], () => {
+  if (!searchText.value) {
+    fetchSiswa();
+  }
+}, { immediate: true });
 
-// --- Logika Pencarian ---
-const filteredData = computed(() => {
+
+watch(searchText, async (val) => {
+  if (val) {
+    await fetchAllSiswa();
+  } else {
+    fetchSiswa();
+  }
+});
+
+const displayedData = computed(() => {
   if (!searchText.value) {
     return data.value;
   }
-  return data.value.filter((student) =>
+  return allData.value.filter((student) =>
     student.name.toLowerCase().includes(searchText.value.toLowerCase())
   );
 });
 
-// --- Pengaturan Paginasi ---
-const pagination = {
-  pageSize: 10,
-};
+function handlePageChange(newPage) {
+  page.value = newPage;
+  if (!searchText.value) fetchSiswa();
+}
 
-// --- Fungsi Handler ---
+function handlePageSizeChange(newSize) {
+  pageSize.value = newSize;
+  page.value = 1;
+  if (!searchText.value) fetchSiswa();
+}
+
 const handleTambahSiswa = () => {
   router.push('/dashboardadmin/siswa/tambahsiswa');
 };
 
 const viewDetails = (row) => {
-  // Navigasi ke halaman detail dengan path sesuai permintaan
-  router.push(`/dashboardadmin/siswa/detail/:${row.id}`);
+  router.push(`/dashboardadmin/siswa/${row.id}`);
 };
+
+const createColumns = ({ viewDetails }) => [
+  {
+    title: 'Nama',
+    key: 'name',
+    sorter: 'default',
+  },
+  {
+    title: 'Jenjang',
+    key: 'level',
+    filterOptions: [
+      { label: 'SMA', value: 'SMA' },
+      { label: 'SMP', value: 'SMP' },
+      { label: 'SD', value: 'SD' },
+    ],
+    filter(value, row) {
+      return row.level === value;
+    },
+  },
+  {
+    title: 'No. WhatsApp',
+    key: 'phone',
+    sorter: (rowA, rowB) => rowA.phone.localeCompare(rowB.phone),
+  },
+  {
+    title: 'Program',
+    key: 'classCount',
+    sorter: (rowA, rowB) => rowA.classCount - rowB.classCount,
+  },
+  {
+    title: 'Detail',
+    key: 'actions',
+    render(row) {
+      return h(
+        NButton,
+        {
+          tertiary: true,
+          circle: true,
+          disabled: !row.id,
+          onClick: () => row.id && viewDetails(row),
+        },
+        {
+          icon: () => h(NIcon, { component: EllipsisHorizontal }),
+        }
+      );
+    },
+  },
+];
 
 // --- Inisialisasi Kolom ---
 const columns = createColumns({
@@ -192,5 +267,11 @@ const columns = createColumns({
 :deep(.n-button--tertiary-type) {
     border: 1px solid #f28e23;
     color: #f28e23;
+}
+
+.pagination-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-start;
 }
 </style>

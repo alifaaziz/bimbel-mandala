@@ -55,7 +55,8 @@ onMounted(async () => {
 
 function formatTime(timeStr) {
   if (!timeStr) return '-'
-  return timeStr.slice(11, 16)
+  const date = new Date(timeStr)
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatStatus(status) {

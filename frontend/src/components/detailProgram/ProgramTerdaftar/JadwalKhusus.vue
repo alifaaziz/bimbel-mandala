@@ -39,8 +39,14 @@ export default defineComponent({
             day: "numeric",
             month: "long",
             year: "numeric",
-          }),
-            jam: item.date ? item.date.split("T")[1]?.slice(0, 5) : "-",
+            }),
+            jam: item.date
+              ? new Date(item.date).toLocaleTimeString("id-ID", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })
+              : "-",
           durasi: `${item.duration} Menit`,
           status: [formatStatus(item.status)],
         }));

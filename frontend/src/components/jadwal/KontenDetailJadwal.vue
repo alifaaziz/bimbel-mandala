@@ -138,7 +138,8 @@ function formatTanggal(dateStr: string) {
 }
 
 function formatJam(dateStr: string) {
-  return dateStr.slice(11, 16).replace(':', '.');
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 const tagTypeMap = {

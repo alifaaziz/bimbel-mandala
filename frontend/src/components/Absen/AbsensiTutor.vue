@@ -43,7 +43,7 @@ onMounted(async () => {
           month: 'long',
           year: 'numeric'
         }),
-        time: item.date ? item.date.slice(11, 16).replace(':', '.') : '',
+        time: item.date ? new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
         duration: item.duration + ' menit',
         location: item.address,
         meetingNumber: item.meet,
