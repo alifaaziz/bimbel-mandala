@@ -111,7 +111,36 @@ async function verifyTutor(applicationId) {
   });
 }
 
+/**
+ * Get tutor applications with pagination.
+ *
+ * @async
+ * @function getTutorApplications
+ * @param {Object} [options] - Pagination options.
+ * @param {number} [options.page=1] - Page number (1-based).
+ * @param {number} [options.pageSize=10] - Number of items per page.
+ * @returns {Promise<Object>} The paginated list of tutor applications and total count.
+ */
+async function getTutorApplications({ page = 1, pageSize = 10 } = {}) {
+  const skip = (page - 1) * pageSize;
+  const [applications, total] = await Promise.all([
+    prisma.tutorApplication.findMany({
+      skip,
+      take: pageSize,
+      orderBy: { createdAt: 'asc' },
+    }),
+    prisma.tutorApplication.count(),
+  ]);
+  return {
+    data: applications,
+    total,
+    page,
+    pageSize,
+  };
+}
+
 export const TutorApplicationService = {
   applyTutor,
   verifyTutor,
+  getTutorApplications,
 };

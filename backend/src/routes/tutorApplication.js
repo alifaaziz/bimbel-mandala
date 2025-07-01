@@ -8,6 +8,8 @@ const router = Router();
 export default (app) => {
     app.use('/apply', router);
 
+    router.get('/', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole('admin'), TutorApplicationController.getTutorApplications);
+
     router.post('/', upload.single('photo'), TutorApplicationController.applyTutor);
 
     router.post('/verify/:id', AuthMiddleware.isAuthorized, TutorApplicationController.verifyTutor);
