@@ -1,5 +1,9 @@
 <script setup>
-
+import daftarProgram from './daftarProgram.vue';
+import OrderedProgram from './OrderedProgram.vue';
+import ProgramSummary from './ProgramSummary.vue';
+import ActivePrograms from './ActivePrograms.vue';
+  
 </script>
 
 <template>

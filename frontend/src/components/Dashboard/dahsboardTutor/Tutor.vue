@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import TutorView from './TutorView.vue';
 import listPendaftar from './listPendaftar.vue';
 import TutorTerbaru from './TutorTerbaru.vue';
