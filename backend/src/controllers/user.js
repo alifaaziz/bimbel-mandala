@@ -73,7 +73,7 @@ async function updateUserById(req, res) {
 }
 
 /**
- * Retrieves tutors sorted by the number of classes they are associated with.
+ * Retrieves tutors sorted by the number of classes they are associated with, with pagination.
  *
  * @async
  * @function getTutorsSortedByClassCount
@@ -82,8 +82,10 @@ async function updateUserById(req, res) {
  * @returns {Promise<void>} Resolves with the list of tutors sorted by class count.
  */
 async function getTutorsSortedByClassCount(req, res) {
-    const tutors = await UserService.getTutorsSortedByClassCount();
-    res.status(200).json({ data: tutors });
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.limit, 10) || 10;
+    const result = await UserService.getTutorsSortedByClassCount({ page, pageSize });
+    res.status(200).json(result);
 }
 
 /**

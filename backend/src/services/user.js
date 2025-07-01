@@ -26,6 +26,7 @@ async function createStudent(payload) {
         ...payload,
         password: encryptedPassword
     };
+    
 
     const verifiedUser = await prisma.user.findFirst({
         where: {
@@ -238,45 +239,44 @@ async function updateUser(payload, file) {
 }
 
 /**
- * Retrieves tutors sorted by the number of classes they are associated with.
+ * Retrieves tutors sorted by the number of classes they are associated with, with pagination.
  *
  * @async
  * @function getTutorsSortedByClassCount
- * @returns {Promise<Array>} The list of tutors sorted by class count.
+ * @param {Object} [options] - Pagination options.
+ * @param {number} [options.page=1] - Page number (1-based).
+ * @param {number} [options.pageSize=10] - Number of items per page.
+ * @returns {Promise<Object>} The paginated list of tutors and total count.
  */
-async function getTutorsSortedByClassCount() {
-    const tutors = await prisma.user.findMany({
-        where: {
-            role: 'tutor'
-        },
-        select: {
-            id: true,
-            name: true,
-            _count: {
-                select: {
-                    class: true // Count the number of classes associated with the tutor
-                }
-            }
-        },
-        orderBy: {
-            class: {
-                _count: 'desc' // Sort by class count in descending order
-            }
-        }
-    });
+async function getTutorsSortedByClassCount({ page = 1, pageSize = 10 } = {}) {
+    const skip = (page - 1) * pageSize;
+
+    const [tutors, total] = await Promise.all([
+        prisma.user.findMany({
+            where: { role: 'tutor' },
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                _count: { select: { class: true } }
+            },
+            orderBy: { class: { _count: 'desc' } },
+            skip,
+            take: pageSize
+        }),
+        prisma.user.count({ where: { role: 'tutor' } })
+    ]);
 
     const tutorDetails = await prisma.tutor.findMany({
-        where: {
-            userId: {
-                in: tutors.map(tutor => tutor.id)
-            }
-        },
+        where: { userId: { in: tutors.map(tutor => tutor.id) } },
         select: {
             userId: true,
             subjects: true,
             teachLevel: true,
             description: true,
-            photo: true
+            photo: true,
+            birthDate: true,
+            phone: true
         }
     });
 
@@ -285,15 +285,38 @@ async function getTutorsSortedByClassCount() {
         return map;
     }, {});
 
-    return tutors.map(tutor => ({
-        id: tutor.id,
-        name: tutor.name,
-        subject: tutorDetailsMap[tutor.id]?.subjects || null,
-        teachLevel: tutorDetailsMap[tutor.id]?.teachLevel || null,
-        description: tutorDetailsMap[tutor.id]?.description || null,
-        photo: tutorDetailsMap[tutor.id]?.photo || null,
-        classCount: tutor._count.class
-    }));
+    function getAge(birthDate) {
+        if (!birthDate) return null;
+        const today = new Date();
+        const dob = new Date(birthDate);
+        let age = today.getFullYear() - dob.getFullYear();
+        const m = today.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    return {
+        data: tutors.map(tutor => {
+            const detail = tutorDetailsMap[tutor.id] || {};
+            return {
+                id: tutor.id,
+                name: tutor.name,
+                joinDate: tutor.createdAt,
+                subject: detail.subjects || null,
+                teachLevel: detail.teachLevel || null,
+                description: detail.description || null,
+                photo: detail.photo || null,
+                classCount: tutor._count.class,
+                phone: detail.phone || null,
+                age: detail.birthDate ? getAge(detail.birthDate) : null
+            };
+        }),
+        total,
+        page,
+        pageSize
+    };
 }
 
 /**
@@ -385,7 +408,7 @@ async function getTopStudents() {
  * @param {Object} [options] - Pagination options.
  * @param {number} [options.page=1] - Page number (1-based).
  * @param {number} [options.pageSize=10] - Number of items per page.
- * @returns {Promise<Object>} The paginated list of newest students and total count.
+ * @returns {Promise<Object} The paginated list of newest students and total count.
  */
 async function getNewStudents({ page = 1, pageSize = 10 } = {}) {
     const skip = (page - 1) * pageSize;
@@ -470,23 +493,57 @@ async function getStatistics() {
  * @returns {Promise<void>}
  */
 async function deleteUser(userId) {
+    // Hapus student dan relasinya
     await prisma.studentClass.deleteMany({ where: { userId } });
     await prisma.attendance.deleteMany({ where: { userId } });
     await prisma.student.deleteMany({ where: { userId } });
 
+    // Hapus tutor dan relasinya
     const tutor = await prisma.tutor.findUnique({ where: { userId } });
     if (tutor) {
         await prisma.tutorDay.deleteMany({ where: { tutorId: tutor.id } });
+        // Tambahkan penghapusan relasi lain yang pakai tutorId jika ada
         await prisma.tutor.deleteMany({ where: { userId } });
     }
 
+    // Hapus semua package milik user
+    const packages = await prisma.bimbelPackage.findMany({ where: { userId } });
+    for (const pkg of packages) {
+        // Hapus groupType yang terhubung ke package
+        const groupTypes = await prisma.groupType.findMany({ where: { packageId: pkg.id } });
+        for (const gt of groupTypes) {
+            // Hapus order yang terhubung ke groupType
+            await prisma.order.deleteMany({ where: { groupTypeId: gt.id } });
+        }
+        await prisma.groupType.deleteMany({ where: { packageId: pkg.id } });
+
+        // Hapus packageDay yang terhubung ke package
+        await prisma.packageDay.deleteMany({ where: { packageId: pkg.id } });
+
+        // Hapus order yang terhubung ke package
+        await prisma.order.deleteMany({ where: { packageId: pkg.id } });
+
+        // Hapus class yang terhubung ke order (class.orderId)
+        const orders = await prisma.order.findMany({ where: { packageId: pkg.id } });
+        for (const order of orders) {
+            await prisma.class.deleteMany({ where: { orderId: order.id } });
+        }
+
+        // Hapus class yang tutorId-nya user ini (jaga-jaga)
+        await prisma.class.deleteMany({ where: { tutorId: userId } });
+
+        // Hapus bimbelPackage itu sendiri
+        await prisma.bimbelPackage.delete({ where: { id: pkg.id } });
+    }
+
+    // Hapus order, notification, passwordReset, otp, salary yang terhubung ke user
     await prisma.order.deleteMany({ where: { userId } });
     await prisma.notification.deleteMany({ where: { userId } });
     await prisma.passwordReset.deleteMany({ where: { userId } });
     await prisma.otp.deleteMany({ where: { userId } });
     await prisma.salary.deleteMany({ where: { userId } });
-    await prisma.bimbelPackage.deleteMany({ where: { userId } });
 
+    // Hapus user terakhir
     await prisma.user.delete({ where: { id: userId } });
 }
 
