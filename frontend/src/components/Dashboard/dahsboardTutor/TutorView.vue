@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, h } from 'vue';
+import { ref, computed, h, onMounted, watch } from 'vue';
 import { NButton, NIcon, NDropdown, useMessage } from 'naive-ui';
 import {
   EllipsisHorizontal as EllipsisIcon
@@ -7,34 +7,93 @@ import {
 
 import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
 
-// Gunakan 'useMessage' untuk menampilkan notifikasi saat aksi dropdown dipilih
 const message = useMessage();
 
-// --- 1. State Management ---
-// Ref untuk menampung teks dari input pencarian
 const searchQuery = ref('');
+const tutors = ref([]);
+const allTutors = ref([]);
+const total = ref(0);
+const page = ref(1);
+const pageSize = ref(10);
+const loading = ref(false);
 
-// Data dummy untuk para tutor
-const allTutors = ref([
-  { key: 1, nama: 'Pak Dendy Wan S.Pd', usia: 32, no_whatsapp: '085xxxxxxxxxx', program: 4 },
-  { key: 2, nama: 'Bu Luna S.Pd', usia: 23, no_whatsapp: '085xxxxxxxxxx', program: 2 },
-  { key: 3, nama: 'Bu Wendy S.Pd', usia: 28, no_whatsapp: '085xxxxxxxxxx', program: 5 },
-  { key: 4, nama: 'Bu Susi Wati S.Pd', usia: 28, no_whatsapp: '085xxxxxxxxxx', program: 1 },
-  { key: 5, nama: 'Pak Indra Jaya S.Pd', usia: 21, no_whatsapp: '085xxxxxxxxxx', program: 1 },
-]);
+const fetchTutors = async () => {
+  loading.value = true;
+  try {
+    const res = await fetch(`http://localhost:3000/users/tutors?page=${page.value}&limit=${pageSize.value}`);
+    const json = await res.json();
+    tutors.value = json.data.map(t => ({
+      key: t.id,
+      nama: t.name,
+      usia: t.age,
+      no_whatsapp: t.phone,
+      program: t.classCount,
+      subject: t.subject,
+      teachLevel: t.teachLevel,
+      description: t.description,
+      photo: t.photo,
+    }));
+    total.value = json.total;
+  } catch (e) {
+    message.error('Gagal mengambil data tutor');
+  }
+  loading.value = false;
+};
 
-// --- 2. Definisi Kolom untuk n-data-table ---
-// Fungsi untuk membuat kolom, agar bisa mengakses 'handleSelect'
+const fetchAllTutors = async () => {
+  loading.value = true;
+  try {
+    // Ambil semua data tutor untuk pencarian
+    const res = await fetch(`http://localhost:3000/users/tutors?page=1&limit=${total.value || 1000}`);
+    const json = await res.json();
+    allTutors.value = json.data.map(t => ({
+      key: t.id,
+      nama: t.name,
+      usia: t.age,
+      no_whatsapp: t.phone,
+      program: t.classCount,
+      subject: t.subject,
+      teachLevel: t.teachLevel,
+      description: t.description,
+      photo: t.photo,
+    }));
+  } catch (e) {
+    allTutors.value = [];
+  }
+  loading.value = false;
+};
+
+onMounted(fetchTutors);
+
+watch([page, pageSize], () => {
+  if (!searchQuery.value) fetchTutors();
+});
+
+watch(searchQuery, async (val) => {
+  if (val) {
+    await fetchAllTutors();
+  } else {
+    fetchTutors();
+  }
+});
+
+const filteredTutors = computed(() => {
+  if (!searchQuery.value) return tutors.value;
+  return allTutors.value.filter((tutor) =>
+    tutor.nama.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
 const createColumns = ({ handleSelect }) => [
   {
     title: 'Nama',
     key: 'nama',
-    sorter: 'default', // Mengaktifkan pengurutan untuk kolom ini
+    sorter: 'default',
   },
   {
     title: 'Usia',
     key: 'usia',
-    sorter: (a, b) => a.usia - b.usia, // Logika pengurutan kustom
+    sorter: (a, b) => a.usia - b.usia,
   },
   {
     title: 'No. WhatsApp',
@@ -48,25 +107,23 @@ const createColumns = ({ handleSelect }) => [
   {
     title: 'Detail',
     key: 'actions',
-    // 'render' digunakan untuk menampilkan komponen kustom di dalam sel tabel
     render(row) {
       return h(
         NDropdown,
         {
-          trigger: 'click', // Dropdown muncul saat diklik
+          trigger: 'click',
           options: [
             { label: 'Lihat Detail', key: 'view' },
             { label: 'Edit', key: 'edit' },
             { label: 'Hapus', key: 'delete', props: { style: { color: 'red' } } }
           ],
-          onSelect: (key) => handleSelect(key, row), // Memanggil fungsi handleSelect saat opsi dipilih
+          onSelect: (key) => handleSelect(key, row),
         },
-        // Ini adalah slot default dari NDropdown, yaitu tombol pemicunya
         {
           default: () =>
             h(
               NButton,
-              { text: true, style: { padding: '0 8px' } }, // Tombol teks tanpa background
+              { text: true, style: { padding: '0 8px' } },
               { default: () => h(NIcon, null, { default: () => h(EllipsisIcon) }) }
             ),
         }
@@ -76,36 +133,56 @@ const createColumns = ({ handleSelect }) => [
 ];
 
 const columns = createColumns({
-  handleSelect: (key, row) => {
-    // Menampilkan pesan berdasarkan aksi yang dipilih dari dropdown
-    message.info(`Aksi: ${key}, Tutor: ${row.nama}`);
-    // Di sini Anda bisa menambahkan logika lebih lanjut,
-    // seperti membuka modal, navigasi ke halaman lain, atau memanggil API.
+  handleSelect: async (key, row) => {
+    if (key === 'delete') {
+      if (confirm(`Yakin hapus tutor "${row.nama}"?`)) {
+        await handleDeleteTutor(row);
+      }
+    } else {
+      message.info(`Aksi: ${key}, Tutor: ${row.nama}`);
+    }
   },
 });
 
-// --- 3. Logika Tambahan ---
-// Computed property untuk memfilter data tutor berdasarkan 'searchQuery'
-const filteredTutors = computed(() => {
-  if (!searchQuery.value) {
-    return allTutors.value;
-  }
-  return allTutors.value.filter((tutor) =>
-    tutor.nama.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-});
-
-// Fungsi yang dipanggil saat tombol 'Tambah Tutor' diklik
 const handleAddTutor = () => {
   message.success('Membuka form tambah tutor...');
-  // Logika untuk menampilkan modal atau halaman tambah tutor bisa ditambahkan di sini
 };
 
-// Fungsi untuk me-render ikon pada tombol
+const handleDeleteTutor = async (row) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    message.error('Token tidak ditemukan');
+    return;
+  }
+  try {
+    loading.value = true;
+    const res = await fetch(`http://localhost:3000/users/${row.key}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Gagal menghapus tutor');
+    }
+    message.success('Tutor berhasil dihapus');
+    // Refresh data setelah hapus
+    if (searchQuery.value) {
+      await fetchAllTutors();
+    } else {
+      await fetchTutors();
+    }
+  } catch (e) {
+    message.error(e.message || 'Gagal menghapus tutor');
+  } finally {
+    loading.value = false;
+  }
+};
+
 const renderIcon = (icon) => {
   return () => h(NIcon, null, { default: () => h(icon) });
 };
-
 </script>
 
 <template>
@@ -116,9 +193,10 @@ const renderIcon = (icon) => {
       <div class="search-tambah">
         <div class="search-container">
           <n-input
-          round
-          size="large"
-          placeholder="Cari tutor...">
+            v-model:value="searchQuery"
+            round
+            size="large"
+            placeholder="Cari tutor...">
             <template #prefix>
               <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
             </template>
@@ -133,6 +211,14 @@ const renderIcon = (icon) => {
         :pagination="false"
         :bordered="false"
         :single-line="false"
+        :loading="loading"
+      />
+
+      <n-pagination
+        v-model:page="page"
+        :page-size="pageSize"
+        :item-count="total"
+        style="margin-top: 16px"
       />
     </n-space>
   </div>
