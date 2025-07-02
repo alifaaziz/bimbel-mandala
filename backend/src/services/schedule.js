@@ -588,6 +588,11 @@ async function getScheduleBySlug(slug) {
     include: {
       class: {
         include: {
+          studentClasses: {
+            include: {
+              user: true
+            }
+          },
           order: {
             include: {
               bimbelPackage: {
@@ -619,6 +624,7 @@ async function getScheduleBySlug(slug) {
   const tutor = classData?.tutor;
   const tutorGender = tutor?.tutors?.[0]?.gender;
   const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+  const studentNames = classData?.studentClasses?.map(sc => sc.user?.name).filter(Boolean) || [];
 
   return {
     id: schedule.id,
@@ -637,6 +643,7 @@ async function getScheduleBySlug(slug) {
     info: schedule.information || null,
     tutorPhone: tutor?.tutors?.[0]?.phone,
     tutorEmail: tutor?.email,
+    studentName: studentNames,
     slug: schedule.slug || null,
   };
 }
