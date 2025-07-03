@@ -88,11 +88,11 @@ async function markAlphaAttendance(req, res) {
  * @returns {Promise<void>} Resolves with the attendance statistics for the class.
  */
 async function getAttendanceStatistics(req, res) {
-    const stats = await AttendanceService.getAttendanceStatistics();
+    const { classId } = req.params;
+    const stats = await AttendanceService.getRekapKelasById(classId);
 
     res.status(200).json({
-        message: "Attendance statistics retrieved successfully",
-        data: stats,
+        data: stats
     });
 }
 

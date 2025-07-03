@@ -209,62 +209,6 @@ async function markAlphaForMissedSchedules() {
 }
 
 /**
- * Retrieves attendance statistics for all classes.
- *
- * @async
- * @function getAttendanceStatistics
- * @returns {Promise<Array>} The attendance statistics for all classes.
- */
-async function getAttendanceStatistics() {
-  const classes = await prisma.class.findMany({
-    where: {
-      status: 'selesai'
-    },
-    include: {
-      tutor: true,
-      studentClasses: {
-        include: {
-          user: true
-        }
-      },
-      schedules: {
-        include: {
-          attendances: true
-        }
-      }
-    }
-  });
-
-  return classes.map(classData => {
-    const { tutor, studentClasses, schedules } = classData;
-
-    const tutorStats = tutor
-      ? {
-          name: tutor.name,
-          ...calculateAttendanceStats(schedules.flatMap(s => s.attendances), tutor.id)
-        }
-      : null;
-
-    const studentStats = studentClasses.map(studentClass => {
-      return {
-        name: studentClass.user.name,
-        ...calculateAttendanceStats(
-          schedules.flatMap(s => s.attendances),
-          studentClass.user.id
-        )
-      };
-    });
-
-    return {
-      classId: classData.id,
-      classCode: classData.code,
-      tutorStats,
-      studentStats
-    };
-  });
-}
-
-/**
  * Retrieves attendance statistics for the logged-in user.
  *
  * @async
@@ -420,6 +364,7 @@ async function getRekapKelasById(classId) {
       tutor: true,
       order: {
         include: {
+          groupType: { select: { price: true } },
           bimbelPackage: {
             select: {
               name: true,
@@ -443,29 +388,19 @@ async function getRekapKelasById(classId) {
 
   if (!classData) throw new Error('Kelas tidak ditemukan');
 
-  // Tutor stats
-  const tutor = classData.tutor;
-  const schedules = classData.schedules;
-  const allAttendances = schedules.flatMap(s => s.attendances);
-
-  const tutorStats = tutor
-    ? {
-        tutorId: tutor.id,
-        name: tutor.name,
-        ...calculateAttendanceStats(allAttendances, tutor.id),
-        totalSchedules: schedules.length,
-        scheduleProgress: calculateAttendancePercentage(
-          allAttendances.filter(att => att.userId === tutor.id && att.status === 'masuk').length,
-          schedules.length
-        ),
-        totalAttendance: calculateAttendancePercentage(
-          allAttendances.filter(att => att.userId === tutor.id && att.status === 'masuk').length,
-          schedules.length
-        )
-      }
-    : null;
+  // Gunakan getTutorStats agar payload tutor konsisten
+  let tutorStats = null;
+  if (classData.tutor) {
+    tutorStats = await getTutorStats({
+      schedules: classData.schedules,
+      order: classData.order,
+      user: classData.tutor
+    });
+  }
 
   // Student stats
+  const schedules = classData.schedules;
+  const allAttendances = schedules.flatMap(s => s.attendances);
   const students = classData.studentClasses.map(sc => {
     const stats = calculateAttendanceStats(allAttendances, sc.user.id);
     return {
@@ -480,10 +415,7 @@ async function getRekapKelasById(classId) {
     name: classData.order?.bimbelPackage?.name || '',
     level: classData.order?.bimbelPackage?.level || '',
     classCode: classData.code,
-    tutorName: tutorStats?.name || '',
-    tutorMasuk: tutorStats?.masuk || 0,
-    tutorIzin: tutorStats?.izin || 0,
-    tutorAlpha: tutorStats?.alpha || 0,
+    tutorStats, // gunakan hasil getTutorStats
     students,
     pertemuan: tutorStats?.totalSchedules || 0,
     kosong: (tutorStats?.izin || 0) + (tutorStats?.alpha || 0),
@@ -625,7 +557,6 @@ async function createMasukNotification({ scheduleId, userId }) {
 export const AttendanceService = {
   createAttendance,
   markAlphaForMissedSchedules,
-  getAttendanceStatistics,
   getMyAttendanceStatistics,
   getRekapKelasById,
   createIzinNotification,

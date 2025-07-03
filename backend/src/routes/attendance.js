@@ -9,7 +9,7 @@ export default (app) => {
 
     router.get('/my', AuthMiddleware.isAuthorized, AttendanceController.getMyAttendanceStatistics);
 
-    router.get('/', AuthMiddleware.isAuthorized,AuthMiddleware.hasRole(['admin']), AttendanceController.getAttendanceStatistics);
+    router.get('/:classId', AuthMiddleware.isAuthorized,AuthMiddleware.hasRole(['admin']), AttendanceController.getAttendanceStatistics);
 
     router.post('/masuk', AuthMiddleware.isAuthorized, AttendanceController.absenMasuk);
 
