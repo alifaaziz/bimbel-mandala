@@ -123,25 +123,140 @@ async function updateOrderStatus(orderId, status) {
  * @returns {Promise<Array>} The list of orders.
  */
 async function getAllOrders() {
-  const orders = await prisma.order.findMany();
-  return orders;
+  const orders = await prisma.order.findMany({
+    include: {
+      bimbelPackage: {
+        select: {
+          name: true,
+          level: true,
+          user: {
+            select: {
+              name: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return orders.map(order => ({
+    id: order.id,
+    packageName: order.bimbelPackage?.name || null,
+    level: order.bimbelPackage?.level || null,
+    tutorName: order.bimbelPackage?.user?.name || null,
+    status: order.status,
+  }));
 }
 
 /**
- * Gets an order by ID (optional).
+ * Gets an order by ID (with detail).
  *
  * @async
  * @function getOrderById
  * @param {String} id - The ID of the order.
- * @returns {Promise<Object>} The order.
+ * @returns {Promise<Object>} The order detail.
  */
 async function getOrderById(id) {
   const order = await prisma.order.findUnique({
-    where: {
-      id: id
+    where: { id },
+    include: {
+      user: { select: { name: true } }, // siswa yang order
+      bimbelPackage: {
+        select: {
+          name: true,
+          level: true,
+          area: true,
+          totalMeetings: true,
+          time: true,
+          duration: true,
+          user: { select: { name: true } },
+          groupType: {
+            select: {
+              id: true,
+              type: true,
+              price: true,
+              discPrice: true
+            }
+          },
+          packageDay: {
+            select: {
+              day: { select: { daysName: true } }
+            }
+          }
+        }
+      },
+      groupType: {
+        select: {
+          id: true,
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      }
     }
   });
-  return order;
+
+  if (!order) return null;
+
+  // Ambil groupType yang dipilih (dari order)
+  const selectedGroupType = order.groupType;
+
+  let paid = null;
+  if (selectedGroupType) {
+    paid = selectedGroupType.discPrice != null ? selectedGroupType.discPrice : selectedGroupType.price;
+  }
+
+  // Nama siswa
+  const studentName = order.user?.name || null;
+
+  // Hari-hari paket
+  const packageDays = order.bimbelPackage?.packageDay?.map(pd => pd.day.daysName) || [];
+
+  // Cari hari terdekat dari hari ini
+  function getNextDateForDay(dayName) {
+    const daysMap = {
+      'Senin': 1, 'Selasa': 2, 'Rabu': 3, 'Kamis': 4, 'Jumat': 5, 'Sabtu': 6, 'Minggu': 0
+    };
+    const today = new Date();
+    const todayDay = today.getDay(); // 0 = Minggu, 1 = Senin, dst
+    const targetDay = daysMap[dayName];
+    let diff = (targetDay - todayDay + 7) % 7;
+    if (diff === 0) diff = 7; // ambil minggu depan jika hari ini sudah lewat
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + diff);
+    return nextDate;
+  }
+
+  let nearestDay = null;
+  let nearestDate = null;
+  if (packageDays.length > 0) {
+    let minDiff = 8;
+    packageDays.forEach(dayName => {
+      const date = getNextDateForDay(dayName);
+      const diff = (date - new Date()) / (1000 * 60 * 60 * 24);
+      if (diff < minDiff) {
+        minDiff = diff;
+        nearestDay = dayName;
+        nearestDate = date;
+      }
+    });
+  }
+
+  return {
+    id: order.id,
+    packageName: order.bimbelPackage?.name || null,
+    level: order.bimbelPackage?.level || null,
+    tutorName: order.bimbelPackage?.user?.name || null,
+    area: order.bimbelPackage?.area || null,
+    totalMeetings: order.bimbelPackage?.totalMeetings || null,
+    time: order.bimbelPackage?.time || null,
+    duration: order.bimbelPackage?.duration || null,
+    type: selectedGroupType?.type || null,
+    paid,
+    studentName,
+    address: order.address,
+    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null // format YYYY-MM-DD
+  };
 }
 
 /**

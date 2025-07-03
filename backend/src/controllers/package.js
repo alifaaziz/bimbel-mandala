@@ -10,11 +10,11 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
  * @param {Object} res - The response object.
  * @returns {Promise<void>} Resolves with the list of bimbel packages.
  */
-async function getAllBimbelPackages(_req, res) {
-    const { page = 1, limit = 8 } = _req.query;
+async function getAllBimbelPackages(req, res) {
+    const { page = 1, limit = 8 } = req.query;
     const paginationOptions = {
       page: parseInt(page, 10),
-      limit: parseInt(limit, 10),
+      pageSize: parseInt(limit, 10),
     };
     const packages = await BimbelPackageService.getAllBimbelPackages(paginationOptions);
     res.status(200).json(packages);
@@ -29,11 +29,11 @@ async function getAllBimbelPackages(_req, res) {
  * @param {Object} res - The response object.
  * @returns {Promise<void>} Resolves with the list of active bimbel packages. 
  */
-async function getActiveBimbelPackages(_req, res) {
-    const { page = 1, limit = 8 } = _req.query;
+async function getActiveBimbelPackages(req, res) {
+    const { page = 1, limit = 8 } = req.query;
     const paginationOptions = {
       page: parseInt(page, 10),
-      limit: parseInt(limit, 10),
+      pageSize: parseInt(limit, 10),
     };
     const packages = await BimbelPackageService.getActiveBimbelPackages(paginationOptions);
     res.status(200).json(packages);
