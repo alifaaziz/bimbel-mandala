@@ -1442,6 +1442,7 @@ async function main() {
             area: "Semarang",
             slug: "fokus-utbk-sma-9j8k7l",
             userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
+            startDate: new Date("2024-07-21T08:00:00Z"),
         },
         {
             id: "01979a8a-d5c8-71ba-9bd5-75e76b166430",

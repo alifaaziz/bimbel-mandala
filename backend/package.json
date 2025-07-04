@@ -4,6 +4,7 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
+    "start": "cross-env NODE_ENV=production node --experimental-vm-modules ./src/index.js",
     "dev": "cross-env NODE_ENV=development concurrently \"nodemon src/index.js\"",
     "db:migrate": "dotenv -e .env -- prisma migrate dev",
     "db:migrate:reset": "npm run db:reset && dotenv -e .env -- prisma migrate dev",
