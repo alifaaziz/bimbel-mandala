@@ -59,6 +59,10 @@ async function createClass(data) {
  */
 async function joinClass(data) {
     const { code, userId } = data;
+
+    if (code.startsWith('CLS')) {
+        throw new Error('You cannot join this class manually.');
+    }
   
     const classData = await prisma.class.findUnique({
       where: { code },

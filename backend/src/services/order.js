@@ -22,6 +22,10 @@ function getTutorDisplayName(tutor) {
  * @returns {Promise<Object>} The created order.
  */
 async function createOrder(userId, packageId, groupTypeId, address) {
+  const groupType = await prisma.groupType.findUnique({
+    where: { id: groupTypeId }
+  });
+  
   await prisma.order.create({
     data: {
       userId,
@@ -32,14 +36,16 @@ async function createOrder(userId, packageId, groupTypeId, address) {
     }
   });
 
-  await prisma.bimbelPackage.update({
-    where: {
-      id: packageId
-    },
-    data: {
-      isActive: false
-    }
-  });
+  if (groupType?.type !== 'kelas') {
+    await prisma.bimbelPackage.update({
+      where: {
+        id: packageId
+      },
+      data: {
+        isActive: false
+      }
+    });
+  }
 }
 
 /**
@@ -53,22 +59,53 @@ async function createOrder(userId, packageId, groupTypeId, address) {
  */
 async function updateOrderStatus(orderId, status) {
   const order = await prisma.order.update({
-    where: {
-      id: orderId
-    },
-    data: {
-      status
-    },
+    where: { id: orderId },
+    data: { status },
     include: {
-      bimbelPackage: {
-        include: {
-          user: true
-        }
-      }
+      bimbelPackage: { include: { user: true } },
+      groupType: true,
+      user: true
     }
   });
 
   if (status === 'paid') {
+    if (order.groupType.type === 'kelas') {
+      const dummyOrder = await prisma.order.findFirst({
+        where: {
+          packageId: order.packageId,
+          status: 'kelas'
+        }
+      });
+
+      if (!dummyOrder) throw new Error('Dummy order/class untuk paket ini tidak ditemukan.');
+
+      const kelas = await prisma.class.findFirst({
+        where: { orderId: dummyOrder.id }
+      });
+
+      if (!kelas) throw new Error('Class untuk paket ini tidak ditemukan.');
+
+      const existingStudent = await prisma.studentClass.findFirst({
+        where: {
+          userId: order.userId,
+          classId: kelas.id
+        }
+      });
+      if (!existingStudent) {
+        await prisma.studentClass.create({
+          data: {
+            userId: order.userId,
+            classId: kelas.id
+          }
+        });
+      }
+
+      // Notifikasi, dsb, bisa ditambahkan di sini
+
+      return order;
+    }
+
+    // --- Flow lama untuk non-kelas ---
     const newClass = await ClassService.createClass({ orderId });
     await ScheduleService.createSchedules(newClass.id);
 
