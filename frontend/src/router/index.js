@@ -36,10 +36,14 @@ import DetailSiswa from '@/components/Dashboard/dashboardSiswa/siswaDetail.vue';
 import EditProfileSiswa from '@/components/Dashboard/dashboardSiswa/editProfileForm.vue';
 import TambahSiswa from '@/components/Dashboard/dashboardSiswa/tambahSiswa.vue';
 
-import Tutor from '@/components/Dashboard/dahsboardTutor/Tutor.vue';
+import Tutor from '@/components/Dashboard/dashboardTutor/Tutor.vue';
+import TutorMain from '@/components/Dashboard/dashboardTutor/TutorMain.vue';
+import VerifikasiTutor from '@/components/Dashboard/dashboardTutor/TutorVerification.vue';
+
 import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
 import ProgramAdmin from '@/components/Dashboard/dashboardProgram/Program.vue';
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
+
 
 const routes = [
   { 
@@ -190,6 +194,23 @@ const routes = [
         path: 'tutor',
         name: 'Tutor',
         component: Tutor,
+        children: [
+          {
+            path: '',
+            name: 'TutorMain',
+            component: TutorMain
+          },
+          // {
+          //   path: ':id',
+          //   name: 'DetailTutor',
+          //   component: DetailTutor
+          // },
+          {
+            path: 'verifikasitutor',
+            name: 'VerifikasiTutor',
+            component: VerifikasiTutor
+          },
+        ]
       },
       {
         path: 'program',
