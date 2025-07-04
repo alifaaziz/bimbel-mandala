@@ -1,15 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useMessage } from 'naive-ui';
+import { useRouter } from 'vue-router'; // Tambahkan ini
 
-// Gunakan 'useMessage' untuk menampilkan notifikasi saat tombol "Aksi" diklik
 const message = useMessage();
+const router = useRouter(); // Tambahkan ini
 
-// --- 1. State Management ---
-// Data dummy untuk daftar pendaftar
 const registrantList = ref([]);
 
-// Fetch data pendaftar dari backend
 const fetchRegistrants = async () => {
   try {
     const res = await fetch('http://localhost:3000/apply?page=1&limit=3', {
@@ -27,14 +25,10 @@ const fetchRegistrants = async () => {
 
 onMounted(fetchRegistrants);
 
-// --- 2. Methods ---
 // Fungsi yang akan dipanggil saat tombol "Aksi" diklik
 const handleActionClick = (registrant) => {
   message.info(`Tombol Aksi untuk "${registrant.name}" diklik.`);
-  // Di sini Anda bisa menambahkan logika lain, misalnya:
-  // - Menampilkan modal dengan detail pendaftar
-  // - Menavigasi ke halaman profil pendaftar
-  // - Menandai pendaftar sebagai 'telah diproses'
+  router.push('/dashboardadmin/tutor/verifikasitutor'); // Navigasi ke rute
 };
 </script>
 

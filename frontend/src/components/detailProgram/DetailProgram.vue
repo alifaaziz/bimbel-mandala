@@ -157,6 +157,11 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         <div>
           <n-space vertical size="medium" class="space-detail bodyr2">
             <InfoRow label="Area/Lokasi" :value="programData.area" />
+            <InfoRow
+              label="Mulai"
+              :value="programData.startDate ? new Date(programData.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'"
+              v-if="programData.groupType && programData.groupType.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))"
+            />
             <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
             <InfoRow label="Pukul" :value="formatTime(programData.time)" />
             <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
@@ -166,9 +171,18 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
           <p class="bodyb1 type-program">
             {{ groupTypeLabel(programData.groupType) }}
           </p>
-          <p v-if="!isTutor" class="bodyb1 price">
+          <p 
+            v-if="!isTutor && groupTypeLabel(programData.groupType) === 'Privat/Kelompok'" 
+            class="bodyb1 price"
+          >
             {{ formatCurrency(Number(programData.groupType[0].price)) }} - 
             {{ formatCurrency(Number(programData.groupType[programData.groupType.length - 1].price)) }}
+          </p>
+          <p 
+            v-if="!isTutor && groupTypeLabel(programData.groupType) === 'Kelas'" 
+            class="bodyb1 price"
+          >
+            {{ formatCurrency(Number(programData.groupType[0].price)) }}
           </p>
         </div>
         <div>

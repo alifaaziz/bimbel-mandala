@@ -243,6 +243,7 @@ const renderIcon = (icon) => {
 }
 
 .tutor-container {
+  height: 100ch;
   padding: 20px;
   border-radius: 16px;
   width: 100%;

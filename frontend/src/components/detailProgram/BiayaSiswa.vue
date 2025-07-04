@@ -47,9 +47,25 @@ onMounted(async () => {
       program.value = data;
 
       const order = ['privat', 'grup2', 'grup3', 'grup4', 'grup5', 'kelas'];
-      groupTypes.value = (data.groupType || []).sort(
-        (a, b) => order.indexOf(a.type) - order.indexOf(b.type)
-      );
+      // Buat map dari data API
+      const typeMap = {};
+      (data.groupType || []).forEach((g) => {
+        typeMap[g.type] = g;
+      });
+
+      // Pastikan semua tipe ada, jika tidak isi dummy
+      const types = order.map((type) => {
+        if (typeMap[type]) {
+          return typeMap[type];
+        }
+        return {
+          type,
+          price: '...',
+          discPrice: null,
+        };
+      });
+
+      groupTypes.value = types;
     } else {
       console.error('Data tidak valid:', data);
     }
@@ -68,13 +84,13 @@ onMounted(async () => {
         <div class="detail-skema">
           <div>
             <span v-if="group.discPrice" class="price-normal">
-              Rp {{ formatPrice(group.price) }}
+              Rp {{ typeof group.price === 'number' ? formatPrice(group.price) : group.price }}
             </span>
             <span v-if="group.discPrice" class="price-discount">
-              Rp {{ formatPrice(group.discPrice) }}
+              Rp {{ typeof group.discPrice === 'number' ? formatPrice(group.discPrice) : group.discPrice }}
             </span>
             <span v-else>
-              Rp {{ formatPrice(group.price) }}
+              Rp {{ typeof group.price === 'number' ? formatPrice(group.price) : group.price }}
             </span>
           </div>
         </div>
@@ -107,9 +123,9 @@ onMounted(async () => {
 }
 
 .col-skema {
-  max-width: 200px;
+  max-width: 180px;
   flex: 1;
-  margin: 0 auto;
+  margin: 0 0.5rem;
 }
 
 .headersb4 {
