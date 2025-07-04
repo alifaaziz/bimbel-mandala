@@ -393,76 +393,19 @@ async function createClassBimbelPackage(data) {
 }
 
 /**
- * Updates a bimbel package by ID with new data.
+ * Updates a bimbel package by slug with new data.
  *
  * @async
  * @function updateBimbelPackage
- * @param {string} id - The package ID.
+ * @param {string} slug - The package slug.
  * @param {Object} data - The new package data.
  * @returns {Promise<Object>} The updated bimbel package.
  */
-async function updateBimbelPackage(id, data) {
+async function updateBimbelPackage(slug, data) {
   const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = data;
 
-  const dayIds = await prisma.day.findMany({
-    where: {
-      daysName: {
-        in: days
-      }
-    },
-    select: {
-      id: true
-    }
-  });
-
-  if (dayIds.length === 0) {
-    throw new Error('Invalid days provided');
-  }
-
-  const calculatedGroupType = groupType.map(gt => ({
-    ...gt,
-    discPrice: Math.round(gt.price * (1 - discount / 100)),
-    maxStudent: gt.type === 'privat' ? 1 :
-                gt.type === 'grup2' ? 2 :
-                gt.type === 'grup3' ? 3 :
-                gt.type === 'grup4' ? 4 :
-                gt.type === 'grup5' ? 5 :
-                gt.maxStudent
-  }));
-
-  const updatedPackage = await prisma.bimbelPackage.update({
-    where: {
-      id: id
-    },
-    data: {
-      name,
-      level,
-      totalMeetings,
-      time,
-      duration,
-      area,
-      userId: tutorId,
-      discount,
-      groupType: {
-        deleteMany: {},
-        create: calculatedGroupType.map(gt => ({
-          type: gt.type,
-          price: gt.price,
-          discPrice: gt.discPrice,
-          maxStudent: gt.maxStudent
-        }))
-      },
-      packageDay: {
-        deleteMany: {},
-        create: dayIds.map(day => ({
-          day: {
-            connect: {
-              id: day.id
-            }
-          }
-        }))
-      }
-    },
+  const existing = await prisma.bimbelPackage.findUnique({
+    where: { slug },
     include: {
       groupType: true,
       packageDay: {
@@ -470,92 +413,105 @@ async function updateBimbelPackage(id, data) {
           day: true
         }
       }
+    }
+  });
+
+  if (!existing) {
+    throw new Error('Package not found');
+  }
+
+  const updateData = {
+    name,
+    level,
+    totalMeetings,
+    time,
+    duration,
+    area,
+    userId: tutorId,
+    discount
+  };
+
+  if (data.groupType) {
+    const oldGroupTypes = await prisma.groupType.findMany({
+      where: { packageId: existing.id }
+    });
+
+    const oldGroupTypeMap = {};
+    for (const oldGt of oldGroupTypes) {
+      oldGroupTypeMap[oldGt.type] = oldGt;
+    }
+
+    for (const gt of data.groupType) {
+      const oldGt = oldGroupTypeMap[gt.type];
+      if (oldGt) {
+        let discPrice = null;
+        if (typeof discount === 'number' && discount > 0) {
+          discPrice = Math.round(gt.price * (1 - discount / 100));
+        }
+        await prisma.groupType.update({
+          where: { id: oldGt.id },
+          data: {
+            price: gt.price,
+            discPrice
+          }
+        });
+      }
+    }
+  }
+
+  if (data.days) {
+    await prisma.packageDay.deleteMany({
+      where: { packageId: existing.id }
+    });
+
+    const dayIds = await prisma.day.findMany({
+      where: {
+        daysName: { in: data.days }
+      },
+      select: { id: true }
+    });
+
+    for (const day of dayIds) {
+      await prisma.packageDay.create({
+        data: {
+          packageId: existing.id,
+          dayId: day.id
+        }
+      });
+    }
+  }
+
+  const updatedPackage = await prisma.bimbelPackage.update({
+    where: { slug },
+    data: updateData,
+    include: {
+      groupType: true,
+      packageDay: { include: { day: true } }
     }
   });
 
   return {
     message: 'Bimbel package updated successfully',
-    data: updatedPackage
-  };
-}
-
-/**
- * Updates a class bimbel package by ID with new data.
- *
- * @async
- * @function updateClassBimbelPackage
- * @param {string} id - The package ID.
- * @param {Object} data - The new package data.
- * @returns {Promise<Object>} The updated class bimbel package.
- */
-async function updateClassBimbelPackage(id, data) {
-  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = data;
-
-  const dayIds = await prisma.day.findMany({
-    where: {
-      daysName: {
-        in: days
-      }
-    },
-    select: {
-      id: true
-    }
-  });
-
-  if (dayIds.length === 0) {
-    throw new Error('Invalid days provided');
-  }
-
-  const updatedGroupType = [
-    {
-      type: 'kelas',
-      price: groupType.price,
-      discPrice: Math.round(groupType.price * (1 - discount / 100)),
-      maxStudent: groupType.maxStudent
-    }
-  ];
-
-  const updatedPackage = await prisma.bimbelPackage.update({
-    where: {
-      id: id
-    },
     data: {
-      name,
-      level,
-      totalMeetings,
-      time,
-      duration,
-      area,
-      userId: tutorId,
-      discount,
-      groupType: {
-        deleteMany: {},
-        create: updatedGroupType
-      },
-      packageDay: {
-        deleteMany: {},
-        create: dayIds.map(day => ({
-          day: {
-            connect: {
-              id: day.id
-            }
-          }
-        }))
-      }
-    },
-    include: {
-      groupType: true,
-      packageDay: {
-        include: {
-          day: true
-        }
-      }
+      id: updatedPackage.id,
+      name: updatedPackage.name,
+      level: updatedPackage.level,
+      totalMeetings: updatedPackage.totalMeetings,
+      time: updatedPackage.time,
+      duration: updatedPackage.duration,
+      area: updatedPackage.area,
+      slug: updatedPackage.slug,
+      isActive: updatedPackage.isActive,
+      discount: updatedPackage.discount,
+      tutorId: updatedPackage.userId,
+      groupType: updatedPackage.groupType.map(gt => ({
+        type: gt.type,
+        price: gt.price,
+        discPrice: gt.discPrice,
+        maxStudent: gt.maxStudent
+      })),
+      days: updatedPackage.packageDay.map(pd => pd.day.daysName)
     }
-  });
-
-  return {
-    message: 'Class bimbel package updated successfully',
-    data: updatedPackage
   };
 }
 
@@ -1169,7 +1125,7 @@ export const BimbelPackageService = {
   createBimbelPackage,
   createClassBimbelPackage,
   updateBimbelPackage,
-  updateClassBimbelPackage,
+  // updateClassBimbelPackage,
   deleteBimbelPackage,
   updateBimbelPackageStatus,
   getBimbelPackagesByPopularity,

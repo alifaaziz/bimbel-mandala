@@ -108,10 +108,10 @@ async function createClassBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the updated bimbel package.
  */
 async function updateBimbelPackage(req, res) {
-  const { id } = req.params;
+  const { slug } = req.params;
   const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
 
-  const updatedPackage = await BimbelPackageService.updateBimbelPackage(id, {
+  const updatedPackage = await BimbelPackageService.updateBimbelPackage(slug, {
     name,
     level,
     totalMeetings,
