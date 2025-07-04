@@ -19,19 +19,12 @@ onMounted(async () => {
   try {
     const token = localStorage.getItem('token');
 
-    // Fetch program berdasarkan slug
     const res = await fetch(`http://localhost:3000/packages/${slug}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
     programData.value = await res.json();
 
-    // Jika status program adalah "aktif", isRegisteredProgram tetap false
-    if (programData.value.status === 'aktif') {
-      return; // Langsung keluar dari fungsi tanpa mengubah isRegisteredProgram
-    }
-
-    // Cek role user
     const userRes = await fetch('http://localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -40,13 +33,11 @@ onMounted(async () => {
       isTutor.value = data.data?.role === 'tutor';
     }
 
-    // Cek apakah slug ada di /classes/my
     const classesRes = await fetch('http://localhost:3000/classes/my', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (classesRes.ok) {
       const classesData = await classesRes.json();
-      // Periksa apakah slug ada di salah satu data dari /classes/my
       isRegisteredProgram.value = classesData.data.some((cls: any) => cls.slug === slug);
     }
   } catch (err) {
@@ -58,10 +49,8 @@ onMounted(async () => {
 
 <template>
   <div>
-    <!-- Jika program terdaftar, tampilkan komponen ProgramTerdaftar -->
     <ProgramTerdaftar v-if="isRegisteredProgram" />
     
-    <!-- Jika tidak, gunakan template default -->
     <template v-else>
       <DetailProgram />
       <div class="padding-components detail-siswa">

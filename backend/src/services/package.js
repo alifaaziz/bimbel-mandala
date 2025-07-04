@@ -1,3 +1,4 @@
+import { startTime } from 'pino-http';
 import { prisma } from '../utils/db.js';
 import { ScheduleService } from './schedule.js';
 
@@ -219,6 +220,7 @@ async function getBimbelPackageBySlug(slug) {
     level: pkg.level,
     totalMeetings: pkg.totalMeetings,
     time: pkg.time,
+    startDate: pkg.startDate,
     duration: pkg.duration,
     area: pkg.area,
     slug: pkg.slug,
