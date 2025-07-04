@@ -1,149 +1,167 @@
 <template>
   <div class="form-container">
-    <n-card title="Edit Profil Siswa" class="edit-profile-card">
+    <div class="form-card">
+      <h1 class="headerb1">Edit Akun Siswa</h1>
+      <n-divider class="divider" />
       <n-form
         ref="formRef"
-        :model="formModel"
-        label-placement="top"
-        label-width="auto"
+        class="form"
+        inline
+        :model="formValue"
+        :rules="rules"
+        :size="size"
       >
-        <n-grid :x-gap="24" :cols="24">
-          <n-gi :span="12">
-            <n-form-item label="Nama Lengkap" path="namaLengkap">
-              <n-input
-                v-model="formModel.namaLengkap"
-                placeholder="Ubah Nama Siswa"
-              />
-            </n-form-item>
-          </n-gi>
-          <n-gi :span="12">
-            <n-form-item label="Jenjang" path="jenjang">
-              <n-select
-                v-model="formModel.jenjang"
-                :options="jenjangOptions"
-              />
-            </n-form-item>
-          </n-gi>
-
-          <n-gi :span="24">
-            <n-form-item label="Sekolah" path="sekolah">
-              <n-input
-                v-model="formModel.sekolah"
-                placeholder="Ubah Sekolah siswa"
-              />
-            </n-form-item>
-          </n-gi>
-
-          <n-gi :span="12">
-            <n-form-item label="No. WhatsApp" path="noWhatsApp">
-              <n-input
-                v-model="formModel.noWhatsApp"
-                placeholder="08xx xxxx xxxx"
-              />
-            </n-form-item>
-          </n-gi>
-          <n-gi :span="12">
-            <n-form-item label="No. Telp Wali" path="noTelpWali">
-              <n-input
-                v-model="formModel.noTelpWali"
-                placeholder="08xx xxxx xxxx"
-              />
-            </n-form-item>
-          </n-gi>
-
-          <n-gi :span="24">
-            <n-form-item label="Alamat" path="alamat">
-              <n-input
-                v-model="formModel.alamat"
-                type="textarea"
-                placeholder="Alamat tempat tinggal siswa"
-                :autosize="{
-                  minRows: 3,
-                  maxRows: 5,
-                }"
-              />
-            </n-form-item>
-          </n-gi>
-        </n-grid>
-
-        <n-space>
-          <n-button type="primary" @click="handleApplyClick">
-            Terapkan
-          </n-button>
-          <n-button @click="handleCancelClick">
-            Batal Edit
-          </n-button>
-        </n-space>
+        <div class="grid-form">
+          <n-form-item label="Nama Lengkap" path="user.name" class="col-span-3">
+            <n-input
+              v-model:value="formValue.user.name"
+              placeholder="Tuliskan nama siswa disini"
+            />
+          </n-form-item>
+          <n-form-item label="Jenjang" path="user.jenjang" class="col-span-1">
+            <n-select
+              v-model:value="formValue.user.jenjang"
+              :options="optionsjenjang"
+              placeholder="Pilih jenjang pendidikan"
+            />
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="No. WhatsApp Siswa" path="user.wa" class="col-span-2">
+           <n-input
+              v-model:value="formValue.user.wa"
+              placeholder="Tuliskan no. WhatsApp siswa disini"
+              type="tel"
+            />
+          </n-form-item> 
+          <n-form-item label="No. Telp Wali Siswa" path="user.wali" class="col-span-2">
+           <n-input
+              v-model:value="formValue.user.wali"
+              placeholder="Tuliskan no. telp wali siswa disini"
+              type="tel"
+            />
+          </n-form-item> 
+        </div>
+        <div class="grid-form">
+          <n-form-item label="Alamat Siswa" path="user.alamat" class="col-span-4">
+            <n-input
+              v-model:value="formValue.user.alamat"
+              placeholder="Tuliskan alamat siswa disini"
+            />
+          </n-form-item>
+        </div>
       </n-form>
-    </n-card>
+      <div class="confirmation-buttons">
+        <butPrimerNormal
+          @click="handleValidateClick"
+          label="Simpan Perubahan"
+        />
+        <butSecondNormal
+          label="Batal"
+          @click="goBack"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import {
-  NForm,
-  NFormItem,
-  NInput,
-  NSelect,
-  NButton,
-  NCard,
-  NGrid,
-  NGi,
-  NSpace,
-  useMessage,
-} from 'naive-ui';
-import { useRouter } from 'vue-router';
-
-const message = useMessage();
-const router = useRouter();
+import { ref } from "vue";
+import { useRouter } from 'vue-router'
+import { useMessage } from "naive-ui";
+import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 
 const formRef = ref(null);
+const message = useMessage();
+const size = ref("medium");
+const router = useRouter()
 
-const formModel = ref({
-  namaLengkap: '',
-  jenjang: 'SMA',
-  sekolah: '',
-  noWhatsApp: '',
-  noTelpWali: '',
-  alamat: '',
+function goBack() {
+  router.back()
+}
+
+const formValue = ref({
+  user: {
+    name: "",
+    jenjang: "",
+    wa: "",
+    wali: "",
+    alamat: ""
+  }
 });
 
-const jenjangOptions = ref([
-  { label: 'SD', value: 'SD' },
-  { label: 'SMP', value: 'SMP' },
-  { label: 'SMA', value: 'SMA' },
-  { label: 'SMK', value: 'SMK' },
-  { label: 'Universitas', value: 'Universitas' },
-]);
+const optionsjenjang = [
+  { label: "SD", value: "sd" },
+  { label: "SMP", value: "smp" },
+  { label: "SMA", value: "sma" }
+];
 
-const handleApplyClick = (e) => {
+function handleValidateClick(e) {
   e.preventDefault();
   formRef.value?.validate((errors) => {
     if (!errors) {
-      console.log('Data yang akan dikirim:', formModel.value);
-      alert(JSON.stringify(formModel.value, null, 2)); // Tampilkan data di alert
-      message.success('Profil berhasil diperbarui!');
+      message.success("Valid");
+      alert("Data yang dimasukkan:\n" + JSON.stringify(formValue.value, null, 2));
     } else {
-      console.log('Ditemukan error pada form:', errors);
-      message.error('Silakan periksa kembali data yang Anda isikan.');
+      console.log(errors);
+      message.error("Invalid");
     }
   });
-};
-
-const handleCancelClick = () => {
-  message.info('Perubahan dibatalkan.');
-  router.back();
-};
+}
 </script>
 
 <style scoped>
 .form-container {
   width: 100%;
-  padding: 1rem;
+  padding: 20px;
+  overflow-y: auto;
 }
-
-.edit-profile-card {
+.form-card {
   border-radius: 16px;
+  background-color: #fff;
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100vh;
+}
+.headerb1 {
+  color: #154484;
+}
+.divider {
+  border-top: 1px solid #FEEBD9 !important;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+}
+.grid-form {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+}
+.col-span-1 {
+  grid-column: span 1;
+}
+.col-span-2 {
+  grid-column: span 2;
+}
+.col-span-3 {
+  grid-column: span 3;
+}
+.col-span-4 {
+  grid-column: span 4;
+}
+.n-input {
+  width: 100%;
+  border-radius: 8px;
+}
+::v-deep(.n-base-selection) {
+  border-radius: 8px !important;
+}
+.confirmation-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
 }
 </style>
