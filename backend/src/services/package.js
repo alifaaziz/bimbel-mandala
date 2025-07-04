@@ -15,7 +15,8 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
   const [packages, total] = await Promise.all([
     prisma.bimbelPackage.findMany({
       where: {
-        isActive: true
+        isActive: true,
+        deletedAt: null
       },
       include: {
         user: {
@@ -97,6 +98,9 @@ async function getAllBimbelPackages({ page = 1, pageSize = 10 } = {}) {
   const skip = (page - 1) * pageSize;
   const [packages, total] = await Promise.all([
     prisma.bimbelPackage.findMany({
+      where: {
+        deletedAt: null
+      },
       include: {
         user: {
           select: {
@@ -170,7 +174,8 @@ async function getAllBimbelPackages({ page = 1, pageSize = 10 } = {}) {
 async function getBimbelPackageBySlug(slug) {
   const pkg = await prisma.bimbelPackage.findUnique({
     where: {
-      slug: slug
+      slug: slug,
+      deletedAt: null
     },
     include: {
       user: {
@@ -328,7 +333,7 @@ async function createBimbelPackage(data) {
  * @returns {Promise<Object>} The created bimbel package.
  */
 async function createClassBimbelPackage(data) {
-  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days } = data;
+  const { name, level, totalMeetings, time, duration, area, tutorId, price, maxStudent, days, discount, startDate } = data;
 
   const tutor = await prisma.user.findUnique({ where: { id: tutorId } });
   if (!tutor) {
@@ -336,19 +341,25 @@ async function createClassBimbelPackage(data) {
   }
 
   const dayIds = await prisma.day.findMany({
-    where: {
-      daysName: {
-        in: days
-      }
-    },
-    select: {
-      id: true
-    }
+    where: { daysName: { in: days } },
+    select: { id: true }
   });
 
   if (dayIds.length === 0) {
     throw new Error('Invalid days provided');
   }
+
+  let discPrice = null;
+  if (typeof discount === 'number' && discount > 0) {
+    discPrice = Math.round(price * (1 - discount / 100));
+  }
+
+  const slugBase = `${name.toLowerCase().replace(/\s+/g, '-')}-${level.toLowerCase().replace(/\s+/g, '-')}`;
+  let slug;
+  do {
+    const randomString = Math.random().toString(36).substring(2, 8);
+    slug = `${slugBase}-${randomString}`;
+  } while (await prisma.bimbelPackage.findUnique({ where: { slug } }));
 
   const createdPackage = await prisma.bimbelPackage.create({
     data: {
@@ -359,36 +370,52 @@ async function createClassBimbelPackage(data) {
       duration,
       area,
       userId: tutorId,
+      discount,
+      slug,
+      startDate,
       groupType: {
         create: {
           type: 'kelas',
-          price: groupType.price,
-          maxStudent: groupType.maxStudent 
+          price,
+          discPrice,
+          maxStudent
         }
       },
       packageDay: {
         create: dayIds.map(day => ({
-          day: {
-            connect: {
-              id: day.id
-            }
-          }
+          day: { connect: { id: day.id } }
         }))
       }
     },
     include: {
       groupType: true,
-      packageDay: {
-        include: {
-          day: true
-        }
-      }
+      packageDay: { include: { day: true } }
     }
   });
 
   return {
     message: 'Class bimbel package created successfully',
-    data: createdPackage
+    data: {
+      id: createdPackage.id,
+      name: createdPackage.name,
+      level: createdPackage.level,
+      totalMeetings: createdPackage.totalMeetings,
+      time: createdPackage.time,
+      duration: createdPackage.duration,
+      area: createdPackage.area,
+      slug: createdPackage.slug,
+      isActive: createdPackage.isActive,
+      discount: createdPackage.discount,
+      tutorId: createdPackage.userId,
+      startDate: createdPackage.startDate,
+      groupType: createdPackage.groupType.map(gt => ({
+        type: gt.type,
+        price: gt.price,
+        discPrice: gt.discPrice,
+        maxStudent: gt.maxStudent
+      })),
+      days: createdPackage.packageDay.map(pd => pd.day.daysName)
+    }
   };
 }
 
@@ -516,34 +543,129 @@ async function updateBimbelPackage(slug, data) {
 }
 
 /**
- * Deletes a bimbel package by ID.
+ * Updates a class bimbel package by slug with new data.
  *
  * @async
- * @function deleteBimbelPackage
- * @param {string} id - The package ID.
- * @returns {Promise<Object>} The deletion result.
+ * @function updateClassBimbelPackage
+ * @param {string} slug - The package slug.
+ * @param {Object} data - The new package data.
+ * @returns {Promise<Object>} The updated bimbel package.
  */
-async function deleteBimbelPackage(id) {
-  await prisma.groupType.deleteMany({
-    where: {
-      packageId: id
+async function updateClassBimbelPackage(slug, data) {
+  const { name, level, totalMeetings, time, duration, area, tutorId, price, maxStudent, days, discount, startDate } = data;
+
+  const existing = await prisma.bimbelPackage.findUnique({
+    where: { slug },
+    include: {
+      groupType: true,
+      packageDay: { include: { day: true } }
     }
   });
 
-  await prisma.packageDay.deleteMany({
-    where: {
-      packageId: id
-    }
-  });
+  if (!existing) throw new Error('Package not found');
 
-  await prisma.bimbelPackage.delete({
-    where: {
-      id: id
+  const updateData = {
+    name,
+    level,
+    totalMeetings,
+    time,
+    duration,
+    area,
+    userId: tutorId,
+    discount,
+    startDate
+  };
+
+  if (existing.groupType.length > 0) {
+    const kelasGroupType = existing.groupType.find(gt => gt.type === 'kelas');
+    if (kelasGroupType) {
+      let discPrice = null;
+      if (typeof discount === 'number' && discount > 0) {
+        discPrice = Math.round(price * (1 - discount / 100));
+      }
+      await prisma.groupType.update({
+        where: { id: kelasGroupType.id },
+        data: {
+          price,
+          discPrice,
+          maxStudent
+        }
+      });
+    }
+  }
+
+  if (days) {
+    await prisma.packageDay.deleteMany({ where: { packageId: existing.id } });
+
+    const dayIds = await prisma.day.findMany({
+      where: { daysName: { in: days } },
+      select: { id: true }
+    });
+
+    for (const day of dayIds) {
+      await prisma.packageDay.create({
+        data: {
+          packageId: existing.id,
+          dayId: day.id
+        }
+      });
+    }
+  }
+
+  const updatedPackage = await prisma.bimbelPackage.update({
+    where: { slug },
+    data: updateData,
+    include: {
+      groupType: true,
+      packageDay: { include: { day: true } }
     }
   });
 
   return {
-    message: 'Bimbel package deleted successfully'
+    message: 'Class bimbel package updated successfully',
+    data: {
+      id: updatedPackage.id,
+      name: updatedPackage.name,
+      level: updatedPackage.level,
+      totalMeetings: updatedPackage.totalMeetings,
+      time: updatedPackage.time,
+      duration: updatedPackage.duration,
+      area: updatedPackage.area,
+      slug: updatedPackage.slug,
+      isActive: updatedPackage.isActive,
+      discount: updatedPackage.discount,
+      tutorId: updatedPackage.userId,
+      startDate: updatedPackage.startDate,
+      groupType: updatedPackage.groupType.map(gt => ({
+        type: gt.type,
+        price: gt.price,
+        discPrice: gt.discPrice,
+        maxStudent: gt.maxStudent
+      })),
+      days: updatedPackage.packageDay.map(pd => pd.day.daysName)
+    }
+  };
+}
+
+/**
+ * Deletes a bimbel package by slug.
+ *
+ * @async
+ * @function deleteBimbelPackage
+ * @param {string} slug - The package slug.
+ * @returns {Promise<Object>} The deletion result.
+ */
+async function deleteBimbelPackage(slug) {
+  await prisma.bimbelPackage.update({
+    where: { slug },
+    data: { 
+      deletedAt: new Date(),
+      isActive: false
+    }
+  });
+
+  return {
+    message: 'Bimbel package soft deleted successfully'
   };
 }
 
@@ -612,7 +734,8 @@ async function getBimbelPackagesByPopularity() {
 
   const packages = await prisma.bimbelPackage.findMany({
     where: {
-      isActive: true
+      isActive: true,
+      deletedAt: null
     },
     include: {
       user: {
@@ -735,7 +858,8 @@ async function getMyPackages(user) {
   const packages = await prisma.bimbelPackage.findMany({
     where: {
       userId: user.id,
-      isActive: true
+      isActive: true,
+      deletedAt: null
     },
     include: {
       user: {
@@ -804,7 +928,8 @@ async function getMyPackageBySlug(slug, user) {
   const pkg = await prisma.bimbelPackage.findFirst({
     where: {
       slug: slug,
-      userId: user.id 
+      userId: user.id ,
+      deletedAt: null
     },
     include: {
       groupType: {
@@ -856,10 +981,15 @@ async function getMyPackageBySlug(slug, user) {
  * @returns {Promise<Object>} The statistics for bimbel packages.
  */
 async function getBimbelPackageStatistics() {
-  const totalPackages = await prisma.bimbelPackage.count();
+  const totalPackages = await prisma.bimbelPackage.count({
+    where: {
+      deletedAt: null
+    }
+  });
   const activePackages = await prisma.bimbelPackage.count({
     where: {
-      isActive: true
+      isActive: true,
+      deletedAt: null
     }
   });
   const inactivePackages = totalPackages - activePackages;
@@ -958,7 +1088,8 @@ async function getRecommendations(user) {
   const recommendedPackages = await prisma.bimbelPackage.findMany({
     where: {
       level: level,
-      isActive: true
+      isActive: true,
+      deletedAt: null
     },
     include: {
       user: {
@@ -1043,6 +1174,7 @@ async function getRecommendations(user) {
 async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {}) {
   const whereClause = {
     isActive: true,
+    deletedAt: null,
     ...(searchText && {
       OR: [
         { name: { contains: searchText } },
@@ -1062,13 +1194,12 @@ async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {
     })
   };
 
-  // Query utama untuk mengambil semua data
   const packages = await prisma.bimbelPackage.findMany({
     where: whereClause,
     include: {
       user: {
         select: {
-          name: true, // Nama tutor
+          name: true, 
           tutors: {
             select: {
               photo: true
@@ -1125,7 +1256,7 @@ export const BimbelPackageService = {
   createBimbelPackage,
   createClassBimbelPackage,
   updateBimbelPackage,
-  // updateClassBimbelPackage,
+  updateClassBimbelPackage,
   deleteBimbelPackage,
   updateBimbelPackageStatus,
   getBimbelPackagesByPopularity,

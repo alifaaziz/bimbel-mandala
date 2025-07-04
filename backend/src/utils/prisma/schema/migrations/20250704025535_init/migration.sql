@@ -23,7 +23,9 @@ CREATE TABLE `bimbel_packages` (
     `user_id` VARCHAR(191) NOT NULL,
     `discount` DECIMAL(10, 2) NULL,
     `slug` VARCHAR(191) NOT NULL,
+    `start_date` DATETIME(3) NULL,
     `is_active` BOOLEAN NOT NULL DEFAULT true,
+    `deleted_at` DATETIME(3) NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

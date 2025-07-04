@@ -109,20 +109,9 @@ async function createClassBimbelPackage(req, res) {
  */
 async function updateBimbelPackage(req, res) {
   const { slug } = req.params;
-  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+  const payload = req.body;
 
-  const updatedPackage = await BimbelPackageService.updateBimbelPackage(slug, {
-    name,
-    level,
-    totalMeetings,
-    time,
-    duration,
-    area,
-    tutorId,
-    groupType,
-    days,
-    discount
-  });
+  const updatedPackage = await BimbelPackageService.updateBimbelPackage(slug, payload);
 
   res.status(200).json(updatedPackage);
 }
@@ -137,21 +126,10 @@ async function updateBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the updated class bimbel package.
  */
 async function updateClassBimbelPackage(req, res) {
-  const { id } = req.params;
-  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+  const { slug } = req.params;
+  const payload = req.body;
 
-  const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(id, {
-    name,
-    level,
-    totalMeetings,
-    time,
-    duration,
-    area,
-    tutorId,
-    groupType,
-    days,
-    discount
-  });
+  const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(slug, payload);
 
   res.status(200).json(updatedPackage);
 }
@@ -166,8 +144,8 @@ async function updateClassBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the deletion result.
  */
 async function deleteBimbelPackage(req, res) {
-    const { id } = req.params;
-    await BimbelPackageService.deleteBimbelPackage(id);
+    const { slug } = req.params;
+    await BimbelPackageService.deleteBimbelPackage(slug);
     res.status(200).json({ message: 'Bimbel package deleted successfully' });
 }
 
