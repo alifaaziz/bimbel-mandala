@@ -23,7 +23,15 @@ onMounted(async () => {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
-    programData.value = await res.json();
+    const program = await res.json();
+    programData.value = program;
+
+    if (program.status === 'aktif') {
+      const hasKelas = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
+      if (!hasKelas) {
+        return;
+      }
+    }
 
     const userRes = await fetch('http://localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }

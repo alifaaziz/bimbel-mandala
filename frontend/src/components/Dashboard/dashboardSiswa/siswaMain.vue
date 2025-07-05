@@ -26,6 +26,6 @@ import topSiswa from './topSiswa.vue';
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-width: 280px;
+  min-width: 288px;
 }
 </style>

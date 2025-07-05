@@ -159,7 +159,7 @@ function handleValidateClick(e) {
   overflow-y: auto;
 }
 .form-card {
-  border-radius: 16px;
+  border-radius: 12px;
   background-color: #fff;
   padding: 1rem;
   overflow-y: auto;

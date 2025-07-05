@@ -75,7 +75,7 @@ onMounted(fetchLatestTutors);
 .latest-tutors-widget {
   background-color: #ffffff;
   padding: 24px;
-  border-radius: 20px;
+  border-radius: 12px;
   max-width: 400px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }

@@ -8,20 +8,22 @@ export default (app) => {
     app.use('/packages', router);
 
     router.get('/', BimbelPackageController.getActiveBimbelPackages);
-
-    router.get('/all', BimbelPackageController.getAllBimbelPackages);
-
+    
     router.get('/populer', BimbelPackageController.getBimbelPackagesByPopularity);
     
     router.get('/filtered', BimbelPackageController.getFilteredBimbelPackages);
     
     router.get('/running', AuthMiddleware.isAuthorized, BimbelPackageController.getRunningPrograms);
-
+    
     router.get('/recommendations', AuthMiddleware.isAuthorized, BimbelPackageController.getRecommendations);
     
     router.get('/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackages);
     
     router.get('/my/:slug', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackageBySlug);
+
+    router.get('/user/:userId', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.getBimbelPackagesByUserId);
+
+    router.get('/all', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.getAllBimbelPackages);
     
     router.get('/statistics', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.getBimbelPackageStatistics);
     

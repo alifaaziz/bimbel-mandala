@@ -6,6 +6,7 @@ import {
 } from '@vicons/ionicons5';
 
 import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
+import router from '@/router';
 
 const message = useMessage();
 
@@ -134,18 +135,26 @@ const createColumns = ({ handleSelect }) => [
 
 const columns = createColumns({
   handleSelect: async (key, row) => {
-    if (key === 'delete') {
-      if (confirm(`Yakin hapus tutor "${row.nama}"?`)) {
-        await handleDeleteTutor(row);
-      }
-    } else {
-      message.info(`Aksi: ${key}, Tutor: ${row.nama}`);
+    switch (key) {
+      case 'view':
+        router.push(`/dashboardadmin/tutor/profiltutor/${row.key}`);
+        break;
+      case 'edit':
+        router.push(`/dashboardadmin/tutor/edit/${row.key}`);
+        break;
+      case 'delete':
+        if (confirm(`Yakin hapus tutor "${row.nama}"?`)) {
+          await handleDeleteTutor(row);
+        }
+        break;
+      default:
+        message.info(`Aksi tidak dikenal: ${key}`);
     }
-  },
+  }
 });
 
 const handleAddTutor = () => {
-  message.success('Membuka form tambah tutor...');
+  router.push('/dashboardadmin/tutor/tambahtutor');
 };
 
 const handleDeleteTutor = async (row) => {
@@ -245,7 +254,7 @@ const renderIcon = (icon) => {
 .tutor-container {
   height: 100ch;
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 12px;
   width: 100%;
   background-color: #fff; /* Latar belakang soft-white/blue */
 }

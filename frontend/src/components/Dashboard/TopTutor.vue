@@ -65,7 +65,7 @@ export default {
 <style scoped>
 .top-tutor-card {
   background-color: #ffffff;
-  border-radius: 20px; /* Rounded corners for the card */
+  border-radius: 12px; /* Rounded corners for the card */
   padding: 24px;
   max-width: 360px; /* Maximum width of the card */
 }

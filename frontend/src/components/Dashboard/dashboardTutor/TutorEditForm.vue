@@ -1,148 +1,167 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import {
-  NForm,
-  NFormItem,
-  NFormItemGi,
-  NGrid,
-  NInput,
-  NSelect,
-  NCheckboxGroup,
-  NCheckbox,
-  NButton,
-  NSpace,
-  NH2,
-  NCard
-} from 'naive-ui';
-import type { SelectOption } from 'naive-ui';
-
-// --- Data Reaktif untuk Form ---
-// Data ini akan terikat dengan input form (v-model)
-// dan diisi dengan data awal dari gambar.
-const formData = ref({
-  fullName: 'Pak Dendy Wan S.Pd',
-  status: 'S1',
-  whatsapp: '085786234264',
-  address: 'Jl Sekaran No.05 RT05/04, Gunung Pati, Kota Semarang',
-  levels: 'SMP, SMA',
-  subjects: 'Matematika, Fisika, Kimia',
-  activeDays: ['Senin', 'Selasa', 'Rabu', 'Jum\'at'], // Data untuk checkbox group
-});
-
-// --- Opsi untuk Komponen Select ---
-const statusOptions: SelectOption[] = [
-  { label: 'Sarjana S1', value: 'S1' },
-  { label: 'Sarjana S2', value: 'S2' },
-  { label: 'Mahasiswa', value: 'Mahasiswa' },
-  { label: 'Lainnya', value: 'Lainnya' },
-];
-
-// --- Daftar Hari untuk Checkbox ---
-const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum\'at', 'Sabtu', 'Minggu'];
-
-// --- Fungsi untuk Tombol Aksi ---
-function handleApply() {
-  // Logika untuk menyimpan data form
-  // Misalnya, mengirim data ke API
-  console.log('Data yang akan diterapkan:', formData.value);
-  alert('Data berhasil diterapkan! (Cek console log)');
-}
-
-function handleCancel() {
-  // Logika untuk membatalkan edit
-  // Misalnya, kembali ke halaman sebelumnya atau reset form
-  console.log('Edit dibatalkan');
-  alert('Edit dibatalkan');
-}
-
-</script>
-
 <template>
-  <div style="padding: 24px; background-color: #f7f8fa;">
-    <NCard :bordered="false" style="max-width: 800px; margin: auto; border-radius: 12px;">
-      <NH2 style="font-weight: 600;">Edit Profil Tutor</NH2>
-      
-      <NForm :model="formData" label-placement="top" style="margin-top: 24px;">
-        <NGrid :cols="2" :x-gap="24">
-          <NFormItemGi :span="1" path="fullName" label="Nama Lengkap">
-            <NInput v-model="formData.fullName" placeholder="Masukkan nama lengkap" />
-          </NFormItemGi>
-
-          <NFormItemGi :span="1" path="status" label="Status">
-            <NSelect v-model="formData.status" :options="statusOptions" />
-          </NFormItemGi>
-        </NGrid>
-
-        <NFormItem path="whatsapp" label="No. WhatsApp">
-          <NInput v-model="formData.whatsapp" placeholder="Masukkan nomor WhatsApp" />
-        </NFormItem>
-
-        <NFormItem path="address" label="Alamat">
-          <NInput
-            v-model="formData.address"
-            placeholder="Masukkan alamat lengkap"
-            type="textarea"
-            :autosize="{ minRows: 2 }"
-          />
-        </NFormItem>
-
-        <NFormItem path="levels" label="Jenjang">
-          <NInput 
-            v-model="formData.levels" 
-            placeholder="Contoh: SMP, SMA, SMK" 
-          />
-        </NFormItem>
-
-        <NFormItem path="subjects" label="Mata Pelajaran">
-          <NInput 
-            v-model="formData.subjects"
-            placeholder="Contoh: Matematika, Fisika, Kimia"
-          />
-        </NFormItem>
-
-        <NFormItem label="Hari aktif">
-          <NCheckboxGroup v-model="formData.activeDays">
-            <NSpace>
-              <NCheckbox
-                v-for="day in allDays"
-                :key="day"
-                :value="day"
-                :label="day"
-                button
-              />
-            </NSpace>
-          </NCheckboxGroup>
-        </NFormItem>
-
-        <NSpace style="margin-top: 24px;">
-          <NButton type="primary" size="large" @click="handleApply" strong>
-            Terapkan
-          </NButton>
-          <NButton type="tertiary" size="large" @click="handleCancel" strong>
-            Batal Edit
-          </NButton>
-        </NSpace>
-      </NForm>
-    </NCard>
+  <div class="form-container">
+    <div class="form-card">
+      <h1 class="headerb1">Edit Akun Tutor</h1>
+      <n-divider class="divider" />
+      <n-form
+        ref="formRef"
+        class="form"
+        inline
+        :model="formValue"
+        :rules="rules"
+        :size="size"
+      >
+        <div class="grid-form">
+          <n-form-item label="Nama Lengkap" path="user.name" class="col-span-3">
+            <n-input
+              v-model:value="formValue.user.name"
+              placeholder="Tuliskan nama tutor disini"
+            />
+          </n-form-item>
+          <n-form-item label="Jenjang" path="user.jenjang" class="col-span-1">
+            <n-select
+              v-model:value="formValue.user.jenjang"
+              :options="optionsjenjang"
+              placeholder="Pilih jenjang pendidikan"
+            />
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="No. WhatsApp Tutor" path="user.wa" class="col-span-2">
+           <n-input
+              v-model:value="formValue.user.wa"
+              placeholder="Tuliskan no. WhatsApp tutor disini"
+              type="tel"
+            />
+          </n-form-item> 
+          <n-form-item label="No. Telp Wali Tutor" path="user.wali" class="col-span-2">
+           <n-input
+              v-model:value="formValue.user.wali"
+              placeholder="Tuliskan no. telp wali tutor disini"
+              type="tel"
+            />
+          </n-form-item> 
+        </div>
+        <div class="grid-form">
+          <n-form-item label="Alamat Tutor" path="user.alamat" class="col-span-4">
+            <n-input
+              v-model:value="formValue.user.alamat"
+              placeholder="Tuliskan alamat tutor disini"
+            />
+          </n-form-item>
+        </div>
+      </n-form>
+      <div class="confirmation-buttons">
+        <butPrimerNormal
+          @click="handleValidateClick"
+          label="Simpan Perubahan"
+        />
+        <butSecondNormal
+          label="Batal"
+          @click="goBack"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
+<script setup>
+import { ref } from "vue";
+import { useRouter } from 'vue-router'
+import { useMessage } from "naive-ui";
+import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
+
+const formRef = ref(null);
+const message = useMessage();
+const size = ref("medium");
+const router = useRouter()
+
+function goBack() {
+  router.back()
+}
+
+const formValue = ref({
+  user: {
+    name: "",
+    jenjang: "",
+    wa: "",
+    wali: "",
+    alamat: ""
+  }
+});
+
+const optionsjenjang = [
+  { label: "SD", value: "sd" },
+  { label: "SMP", value: "smp" },
+  { label: "SMA", value: "sma" }
+];
+
+function handleValidateClick(e) {
+  e.preventDefault();
+  formRef.value?.validate((errors) => {
+    if (!errors) {
+      message.success("Valid");
+      alert("Data yang dimasukkan:\n" + JSON.stringify(formValue.value, null, 2));
+    } else {
+      console.log(errors);
+      message.error("Invalid");
+    }
+  });
+}
+</script>
+
 <style scoped>
-/* Menyesuaikan gaya checkbox button agar lebih mirip dengan gambar */
-:deep(.n-checkbox.n-checkbox--button) {
-  border-radius: 9999px !important;
-  border: 1px solid #dcdfe6;
-  background-color: white;
+.form-container {
+  width: 100%;
+  padding: 20px;
+  overflow-y: auto;
 }
-:deep(.n-checkbox.n-checkbox--button.n-checkbox--checked) {
-  background-color: #182c61; /* Warna biru tua sesuai gambar */
-  border-color: #182c61;
+.form-card {
+  border-radius: 16px;
+  background-color: #fff;
+  padding: 1rem;
+  overflow-y: auto;
+  height: 100vh;
 }
-:deep(.n-checkbox.n-checkbox--button:not(.n-checkbox--checked):hover) {
-    border-color: #182c61;
-    color: #182c61;
+.headerb1 {
+  color: #154484;
 }
-:deep(.n-checkbox.n-checkbox--button .n-checkbox__label) {
-  padding: 6px 16px;
+.divider {
+  border-top: 1px solid #FEEBD9 !important;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+}
+.grid-form {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+}
+.col-span-1 {
+  grid-column: span 1;
+}
+.col-span-2 {
+  grid-column: span 2;
+}
+.col-span-3 {
+  grid-column: span 3;
+}
+.col-span-4 {
+  grid-column: span 4;
+}
+.n-input {
+  width: 100%;
+  border-radius: 8px;
+}
+::v-deep(.n-base-selection) {
+  border-radius: 8px !important;
+}
+.confirmation-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
 }
 </style>

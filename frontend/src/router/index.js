@@ -38,6 +38,9 @@ import TambahSiswa from '@/components/Dashboard/dashboardSiswa/tambahSiswa.vue';
 
 import Tutor from '@/components/Dashboard/dashboardTutor/Tutor.vue';
 import TutorMain from '@/components/Dashboard/dashboardTutor/TutorMain.vue';
+import TambahTutor from '@/components/Dashboard/dashboardTutor/TambahTutor.vue';
+import EditTutor from '@/components/Dashboard/dashboardTutor/TutorEditForm.vue';
+import TutorProfile from '@/components/Dashboard/dashboardTutor/TutorProfile.vue';
 import VerifikasiTutor from '@/components/Dashboard/dashboardTutor/TutorVerification.vue';
 
 import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
@@ -206,11 +209,21 @@ const routes = [
             name: 'TutorMain',
             component: TutorMain
           },
-          // {
-          //   path: ':id',
-          //   name: 'DetailTutor',
-          //   component: DetailTutor
-          // },
+          {
+            path: 'tambahtutor',
+            name: 'TambahTutor',
+            component: TambahTutor
+          },
+          {
+            path: 'profiltutor/:id',
+            name: 'TutorProfile',
+            component: TutorProfile
+          },
+          {
+            path: 'edittutor/:id',
+            name: 'EditTutor',
+            component: EditTutor
+          },
           {
             path: 'verifikasitutor',
             name: 'VerifikasiTutor',

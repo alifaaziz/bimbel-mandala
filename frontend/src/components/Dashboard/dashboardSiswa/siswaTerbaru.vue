@@ -61,7 +61,7 @@ onMounted(fetchNewStudents);
 
 <style scoped>
 .siswa-terbaru-widget {
-  border-radius: 16px; /* Sudut yang lebih bulat sesuai gambar */
+  border-radius: 12px; /* Sudut yang lebih bulat sesuai gambar */
   background-color: #f8faff; /* Latar belakang soft-white/blue */
   padding: 24px; /* Padding internal untuk widget */
 }
