@@ -6833,7 +6833,7 @@
         }
       }
     },
-    "/packages/{id}": {
+    "/packages/{slug}": {
       "get": {
         "tags": [
           "Package"
@@ -6843,7 +6843,7 @@
         "operationId": "getAPackagesBySlug",
         "responses": {
           "200": {
-            "description": "200 - Get a Packages by Id",
+            "description": "200 - Get a Packages by Slug",
             "headers": {
               "Access-Control-Allow-Credentials": {
                 "schema": {
@@ -6866,19 +6866,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "807"
+                  "example": "819"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Sat, 05 Jul 2025 03:39:21 GMT"
+                  "example": "Sat, 05 Jul 2025 05:14:15 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"327-1HP5lSeQRC3/u+Rm6I1cDqN/3fw\""
+                  "example": "W/\"333-Q85u8doMPA7iALJtBy8xVn9jeNc\""
                 }
               },
               "Keep-Alive": {
@@ -6913,16 +6913,16 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "example": "Selasa"
+                        "example": "Senin"
                       },
                       "example": [
-                        "Selasa",
-                        "Jumat"
+                        "Senin",
+                        "Rabu"
                       ]
                     },
                     "duration": {
                       "type": "number",
-                      "example": 120
+                      "example": 90
                     },
                     "groupType": {
                       "type": "array",
@@ -6930,59 +6930,59 @@
                         "type": "object",
                         "properties": {
                           "discPrice": {
-                            "nullable": true,
-                            "example": null
+                            "type": "string",
+                            "example": "2250000"
                           },
                           "id": {
                             "type": "string",
-                            "example": "019618a1-68a4-7a75-948f-e8df29d3bb9c"
+                            "example": "0196b294-4791-7b00-8000-000000000101"
                           },
                           "price": {
                             "type": "string",
-                            "example": "1020000"
+                            "example": "2500000"
                           },
                           "type": {
                             "type": "string",
-                            "example": "grup2"
+                            "example": "privat"
                           }
                         }
                       },
                       "example": [
                         {
-                          "discPrice": null,
-                          "id": "019618a1-68a4-7a75-948f-e8df29d3bb9c",
-                          "price": "1020000",
-                          "type": "grup2"
-                        },
-                        {
-                          "discPrice": null,
-                          "id": "019618a1-68a4-7ddc-ad78-9f9e43be8ffb",
-                          "price": "1460000",
-                          "type": "grup3"
-                        },
-                        {
-                          "discPrice": null,
-                          "id": "019618a1-68a4-7fbd-adfa-b4f55c9c5d5c",
-                          "price": "580000",
+                          "discPrice": "2250000",
+                          "id": "0196b294-4791-7b00-8000-000000000101",
+                          "price": "2500000",
                           "type": "privat"
                         },
                         {
-                          "discPrice": null,
-                          "id": "01963714-7d72-73a8-adf1-ba8ac656ca62",
-                          "price": "1900000",
+                          "discPrice": "4410000",
+                          "id": "0196b294-4791-7b00-8000-000000000102",
+                          "price": "4900000",
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": "6570000",
+                          "id": "0196b294-4791-7b00-8000-000000000103",
+                          "price": "7300000",
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": "8730000",
+                          "id": "0196b294-4791-7b00-8000-000000000104",
+                          "price": "9700000",
                           "type": "grup4"
                         },
                         {
-                          "discPrice": null,
-                          "id": "01963714-a4a0-7260-b049-1aedc3b832f1",
-                          "price": "2340000",
+                          "discPrice": "10890000",
+                          "id": "0196b294-4791-7b00-8000-000000000105",
+                          "price": "12100000",
                           "type": "grup5"
                         }
                       ]
                     },
                     "id": {
                       "type": "string",
-                      "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                      "example": "0196b294-4791-7b00-8000-000000000011"
                     },
                     "level": {
                       "type": "string",
@@ -6990,15 +6990,15 @@
                     },
                     "name": {
                       "type": "string",
-                      "example": "Bahasa Inggris"
+                      "example": "Kimia"
                     },
                     "photo": {
                       "type": "string",
-                      "example": "/public/2.png"
+                      "example": "/public/4.png"
                     },
                     "slug": {
                       "type": "string",
-                      "example": "bahasa-inggris-sma-14klui"
+                      "example": "kimia-sma-dg67ty"
                     },
                     "startDate": {
                       "nullable": true,
@@ -7014,65 +7014,65 @@
                     },
                     "totalMeetings": {
                       "type": "number",
-                      "example": 8
+                      "example": 24
                     },
                     "tutorName": {
                       "type": "string",
-                      "example": "Venita S.Pd"
+                      "example": "Ratna Dewi M.Pd"
                     }
                   }
                 },
                 "examples": {
-                  "200 - Get a Packages by Id": {
+                  "200 - Get a Packages by Slug": {
                     "value": {
                       "area": "Semarang",
                       "days": [
-                        "Selasa",
-                        "Jumat"
+                        "Senin",
+                        "Rabu"
                       ],
-                      "duration": 120,
+                      "duration": 90,
                       "groupType": [
                         {
-                          "discPrice": null,
-                          "id": "019618a1-68a4-7a75-948f-e8df29d3bb9c",
-                          "price": "1020000",
-                          "type": "grup2"
-                        },
-                        {
-                          "discPrice": null,
-                          "id": "019618a1-68a4-7ddc-ad78-9f9e43be8ffb",
-                          "price": "1460000",
-                          "type": "grup3"
-                        },
-                        {
-                          "discPrice": null,
-                          "id": "019618a1-68a4-7fbd-adfa-b4f55c9c5d5c",
-                          "price": "580000",
+                          "discPrice": "2250000",
+                          "id": "0196b294-4791-7b00-8000-000000000101",
+                          "price": "2500000",
                           "type": "privat"
                         },
                         {
-                          "discPrice": null,
-                          "id": "01963714-7d72-73a8-adf1-ba8ac656ca62",
-                          "price": "1900000",
+                          "discPrice": "4410000",
+                          "id": "0196b294-4791-7b00-8000-000000000102",
+                          "price": "4900000",
+                          "type": "grup2"
+                        },
+                        {
+                          "discPrice": "6570000",
+                          "id": "0196b294-4791-7b00-8000-000000000103",
+                          "price": "7300000",
+                          "type": "grup3"
+                        },
+                        {
+                          "discPrice": "8730000",
+                          "id": "0196b294-4791-7b00-8000-000000000104",
+                          "price": "9700000",
                           "type": "grup4"
                         },
                         {
-                          "discPrice": null,
-                          "id": "01963714-a4a0-7260-b049-1aedc3b832f1",
-                          "price": "2340000",
+                          "discPrice": "10890000",
+                          "id": "0196b294-4791-7b00-8000-000000000105",
+                          "price": "12100000",
                           "type": "grup5"
                         }
                       ],
-                      "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                      "id": "0196b294-4791-7b00-8000-000000000011",
                       "level": "SMA",
-                      "name": "Bahasa Inggris",
-                      "photo": "/public/2.png",
-                      "slug": "bahasa-inggris-sma-14klui",
+                      "name": "Kimia",
+                      "photo": "/public/4.png",
+                      "slug": "kimia-sma-dg67ty",
                       "startDate": null,
                       "status": "aktif",
                       "time": "1970-01-01T08:00:00.000Z",
-                      "totalMeetings": 8,
-                      "tutorName": "Venita S.Pd"
+                      "totalMeetings": 24,
+                      "tutorName": "Ratna Dewi M.Pd"
                     }
                   }
                 }
@@ -7086,19 +7086,142 @@
           }
         ]
       },
-      "delete": {
+      "patch": {
         "tags": [
           "Package"
         ],
-        "summary": "Delete a Bimbel Package",
-        "description": "Delete a Bimbel Package",
-        "operationId": "deleteABimbelPackage",
+        "summary": "Update a Bimbel Package with new data",
+        "description": "Update a Bimbel Package with new data",
+        "operationId": "updateABimbelPackageWithNewData",
         "requestBody": {
           "content": {
             "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "area": {
+                    "type": "string",
+                    "example": "Semarang"
+                  },
+                  "days": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "Selasa"
+                    },
+                    "example": [
+                      "Selasa",
+                      "Kamis",
+                      "Sabtu"
+                    ]
+                  },
+                  "discount": {
+                    "type": "number",
+                    "example": 10
+                  },
+                  "duration": {
+                    "type": "number",
+                    "example": 120
+                  },
+                  "groupType": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "price": {
+                          "type": "number",
+                          "example": 580000
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "privat"
+                        }
+                      }
+                    },
+                    "example": [
+                      {
+                        "price": 580000,
+                        "type": "privat"
+                      },
+                      {
+                        "price": 980000,
+                        "type": "grup2"
+                      },
+                      {
+                        "price": 1380000,
+                        "type": "grup3"
+                      },
+                      {
+                        "price": 1900000,
+                        "type": "grup4"
+                      },
+                      {
+                        "price": 2340000,
+                        "type": "grup5"
+                      }
+                    ]
+                  },
+                  "level": {
+                    "type": "string",
+                    "example": "SMA"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "English Language and Literacy"
+                  },
+                  "time": {
+                    "type": "string",
+                    "example": "2025-03-24T19:00:00.000Z"
+                  },
+                  "totalMeetings": {
+                    "type": "number",
+                    "example": 4
+                  },
+                  "tutorId": {
+                    "type": "string",
+                    "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                  }
+                }
+              },
               "examples": {
-                "Delete a Bimbel Package": {
-                  "value": ""
+                "Update a Bimbel Package with new data": {
+                  "value": {
+                    "area": "Semarang",
+                    "days": [
+                      "Selasa",
+                      "Kamis",
+                      "Sabtu"
+                    ],
+                    "discount": 10,
+                    "duration": 120,
+                    "groupType": [
+                      {
+                        "price": 580000,
+                        "type": "privat"
+                      },
+                      {
+                        "price": 980000,
+                        "type": "grup2"
+                      },
+                      {
+                        "price": 1380000,
+                        "type": "grup3"
+                      },
+                      {
+                        "price": 1900000,
+                        "type": "grup4"
+                      },
+                      {
+                        "price": 2340000,
+                        "type": "grup5"
+                      }
+                    ],
+                    "level": "SMA",
+                    "name": "English Language and Literacy",
+                    "time": "2025-03-24T19:00:00.000Z",
+                    "totalMeetings": 4,
+                    "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                  }
                 }
               }
             }
@@ -7106,7 +7229,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 - Delete a Bimbel Package",
+            "description": "200 - Update a Bimbel Package with new data",
             "headers": {
               "Access-Control-Allow-Credentials": {
                 "schema": {
@@ -7129,19 +7252,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "49"
+                  "example": "771"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Fri, 04 Jul 2025 03:02:02 GMT"
+                  "example": "Fri, 04 Jul 2025 02:00:16 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"31-oA36Ljeq17MPDoyGQyviXUD0AqU\""
+                  "example": "W/\"303-bB2XCxLtUA1cCYSn+ea32xt97e8\""
                 }
               },
               "Keep-Alive": {
@@ -7168,16 +7291,183 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "area": {
+                          "type": "string",
+                          "example": "Semarang"
+                        },
+                        "days": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "example": "Kamis"
+                          },
+                          "example": [
+                            "Kamis",
+                            "Selasa",
+                            "Sabtu"
+                          ]
+                        },
+                        "discount": {
+                          "type": "string",
+                          "example": "10"
+                        },
+                        "duration": {
+                          "type": "number",
+                          "example": 120
+                        },
+                        "groupType": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "discPrice": {
+                                "type": "string",
+                                "example": "882000"
+                              },
+                              "maxStudent": {
+                                "type": "string",
+                                "example": "2"
+                              },
+                              "price": {
+                                "type": "string",
+                                "example": "980000"
+                              },
+                              "type": {
+                                "type": "string",
+                                "example": "grup2"
+                              }
+                            }
+                          },
+                          "example": [
+                            {
+                              "discPrice": "882000",
+                              "maxStudent": "2",
+                              "price": "980000",
+                              "type": "grup2"
+                            },
+                            {
+                              "discPrice": "1242000",
+                              "maxStudent": "3",
+                              "price": "1380000",
+                              "type": "grup3"
+                            },
+                            {
+                              "discPrice": "522000",
+                              "maxStudent": "1",
+                              "price": "580000",
+                              "type": "privat"
+                            },
+                            {
+                              "discPrice": "1710000",
+                              "maxStudent": "4",
+                              "price": "1900000",
+                              "type": "grup4"
+                            },
+                            {
+                              "discPrice": "2106000",
+                              "maxStudent": "5",
+                              "price": "2340000",
+                              "type": "grup5"
+                            }
+                          ]
+                        },
+                        "id": {
+                          "type": "string",
+                          "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
+                        },
+                        "isActive": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "level": {
+                          "type": "string",
+                          "example": "SMA"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "English Language and Literacy"
+                        },
+                        "slug": {
+                          "type": "string",
+                          "example": "bahasa-inggris-sma-14klui"
+                        },
+                        "time": {
+                          "type": "string",
+                          "example": "2025-03-24T19:00:00.000Z"
+                        },
+                        "totalMeetings": {
+                          "type": "number",
+                          "example": 4
+                        },
+                        "tutorId": {
+                          "type": "string",
+                          "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                        }
+                      }
+                    },
                     "message": {
                       "type": "string",
-                      "example": "Bimbel package deleted successfully"
+                      "example": "Bimbel package updated successfully"
                     }
                   }
                 },
                 "examples": {
-                  "200 - Delete a Bimbel Package": {
+                  "200 - Update a Bimbel Package with new data": {
                     "value": {
-                      "message": "Bimbel package deleted successfully"
+                      "data": {
+                        "area": "Semarang",
+                        "days": [
+                          "Kamis",
+                          "Selasa",
+                          "Sabtu"
+                        ],
+                        "discount": "10",
+                        "duration": 120,
+                        "groupType": [
+                          {
+                            "discPrice": "882000",
+                            "maxStudent": "2",
+                            "price": "980000",
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": "1242000",
+                            "maxStudent": "3",
+                            "price": "1380000",
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": "522000",
+                            "maxStudent": "1",
+                            "price": "580000",
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": "1710000",
+                            "maxStudent": "4",
+                            "price": "1900000",
+                            "type": "grup4"
+                          },
+                          {
+                            "discPrice": "2106000",
+                            "maxStudent": "5",
+                            "price": "2340000",
+                            "type": "grup5"
+                          }
+                        ],
+                        "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
+                        "isActive": true,
+                        "level": "SMA",
+                        "name": "English Language and Literacy",
+                        "slug": "bahasa-inggris-sma-14klui",
+                        "time": "2025-03-24T19:00:00.000Z",
+                        "totalMeetings": 4,
+                        "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                      },
+                      "message": "Bimbel package updated successfully"
                     }
                   }
                 }
@@ -7193,12 +7483,12 @@
       },
       "parameters": [
         {
-          "name": "id",
+          "name": "slug",
           "in": "path",
           "required": true,
           "schema": {
             "type": "string",
-            "example": "01963333-5012-7e00-91dd-96e860ee1faf"
+            "example": "bahasa-inggris-sma-14klui"
           }
         }
       ]
@@ -8670,414 +8960,6 @@
         ]
       }
     },
-    "/packages/{slug}": {
-      "patch": {
-        "tags": [
-          "Package"
-        ],
-        "summary": "Update a Bimbel Package with new data",
-        "description": "Update a Bimbel Package with new data",
-        "operationId": "updateABimbelPackageWithNewData",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "area": {
-                    "type": "string",
-                    "example": "Semarang"
-                  },
-                  "days": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "example": "Selasa"
-                    },
-                    "example": [
-                      "Selasa",
-                      "Kamis",
-                      "Sabtu"
-                    ]
-                  },
-                  "discount": {
-                    "type": "number",
-                    "example": 10
-                  },
-                  "duration": {
-                    "type": "number",
-                    "example": 120
-                  },
-                  "groupType": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "price": {
-                          "type": "number",
-                          "example": 580000
-                        },
-                        "type": {
-                          "type": "string",
-                          "example": "privat"
-                        }
-                      }
-                    },
-                    "example": [
-                      {
-                        "price": 580000,
-                        "type": "privat"
-                      },
-                      {
-                        "price": 980000,
-                        "type": "grup2"
-                      },
-                      {
-                        "price": 1380000,
-                        "type": "grup3"
-                      },
-                      {
-                        "price": 1900000,
-                        "type": "grup4"
-                      },
-                      {
-                        "price": 2340000,
-                        "type": "grup5"
-                      }
-                    ]
-                  },
-                  "level": {
-                    "type": "string",
-                    "example": "SMA"
-                  },
-                  "name": {
-                    "type": "string",
-                    "example": "English Language and Literacy"
-                  },
-                  "time": {
-                    "type": "string",
-                    "example": "2025-03-24T19:00:00.000Z"
-                  },
-                  "totalMeetings": {
-                    "type": "number",
-                    "example": 4
-                  },
-                  "tutorId": {
-                    "type": "string",
-                    "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
-                  }
-                }
-              },
-              "examples": {
-                "Update a Bimbel Package with new data": {
-                  "value": {
-                    "area": "Semarang",
-                    "days": [
-                      "Selasa",
-                      "Kamis",
-                      "Sabtu"
-                    ],
-                    "discount": 10,
-                    "duration": 120,
-                    "groupType": [
-                      {
-                        "price": 580000,
-                        "type": "privat"
-                      },
-                      {
-                        "price": 980000,
-                        "type": "grup2"
-                      },
-                      {
-                        "price": 1380000,
-                        "type": "grup3"
-                      },
-                      {
-                        "price": 1900000,
-                        "type": "grup4"
-                      },
-                      {
-                        "price": 2340000,
-                        "type": "grup5"
-                      }
-                    ],
-                    "level": "SMA",
-                    "name": "English Language and Literacy",
-                    "time": "2025-03-24T19:00:00.000Z",
-                    "totalMeetings": 4,
-                    "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "200 - Update a Bimbel Package with new data",
-            "headers": {
-              "Access-Control-Allow-Credentials": {
-                "schema": {
-                  "type": "string",
-                  "example": "true"
-                }
-              },
-              "Access-Control-Allow-Origin": {
-                "schema": {
-                  "type": "string",
-                  "example": "*"
-                }
-              },
-              "Connection": {
-                "schema": {
-                  "type": "string",
-                  "example": "keep-alive"
-                }
-              },
-              "Content-Length": {
-                "schema": {
-                  "type": "string",
-                  "example": "771"
-                }
-              },
-              "Date": {
-                "schema": {
-                  "type": "string",
-                  "example": "Fri, 04 Jul 2025 02:00:16 GMT"
-                }
-              },
-              "ETag": {
-                "schema": {
-                  "type": "string",
-                  "example": "W/\"303-bB2XCxLtUA1cCYSn+ea32xt97e8\""
-                }
-              },
-              "Keep-Alive": {
-                "schema": {
-                  "type": "string",
-                  "example": "timeout=5"
-                }
-              },
-              "Vary": {
-                "schema": {
-                  "type": "string",
-                  "example": "Origin"
-                }
-              },
-              "X-Powered-By": {
-                "schema": {
-                  "type": "string",
-                  "example": "Express"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "area": {
-                          "type": "string",
-                          "example": "Semarang"
-                        },
-                        "days": {
-                          "type": "array",
-                          "items": {
-                            "type": "string",
-                            "example": "Kamis"
-                          },
-                          "example": [
-                            "Kamis",
-                            "Selasa",
-                            "Sabtu"
-                          ]
-                        },
-                        "discount": {
-                          "type": "string",
-                          "example": "10"
-                        },
-                        "duration": {
-                          "type": "number",
-                          "example": 120
-                        },
-                        "groupType": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "discPrice": {
-                                "type": "string",
-                                "example": "882000"
-                              },
-                              "maxStudent": {
-                                "type": "string",
-                                "example": "2"
-                              },
-                              "price": {
-                                "type": "string",
-                                "example": "980000"
-                              },
-                              "type": {
-                                "type": "string",
-                                "example": "grup2"
-                              }
-                            }
-                          },
-                          "example": [
-                            {
-                              "discPrice": "882000",
-                              "maxStudent": "2",
-                              "price": "980000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": "1242000",
-                              "maxStudent": "3",
-                              "price": "1380000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": "522000",
-                              "maxStudent": "1",
-                              "price": "580000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": "1710000",
-                              "maxStudent": "4",
-                              "price": "1900000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": "2106000",
-                              "maxStudent": "5",
-                              "price": "2340000",
-                              "type": "grup5"
-                            }
-                          ]
-                        },
-                        "id": {
-                          "type": "string",
-                          "example": "019618a1-68a4-7f67-acd4-aeccf37ca7c7"
-                        },
-                        "isActive": {
-                          "type": "boolean",
-                          "example": true
-                        },
-                        "level": {
-                          "type": "string",
-                          "example": "SMA"
-                        },
-                        "name": {
-                          "type": "string",
-                          "example": "English Language and Literacy"
-                        },
-                        "slug": {
-                          "type": "string",
-                          "example": "bahasa-inggris-sma-14klui"
-                        },
-                        "time": {
-                          "type": "string",
-                          "example": "2025-03-24T19:00:00.000Z"
-                        },
-                        "totalMeetings": {
-                          "type": "number",
-                          "example": 4
-                        },
-                        "tutorId": {
-                          "type": "string",
-                          "example": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
-                        }
-                      }
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Bimbel package updated successfully"
-                    }
-                  }
-                },
-                "examples": {
-                  "200 - Update a Bimbel Package with new data": {
-                    "value": {
-                      "data": {
-                        "area": "Semarang",
-                        "days": [
-                          "Kamis",
-                          "Selasa",
-                          "Sabtu"
-                        ],
-                        "discount": "10",
-                        "duration": 120,
-                        "groupType": [
-                          {
-                            "discPrice": "882000",
-                            "maxStudent": "2",
-                            "price": "980000",
-                            "type": "grup2"
-                          },
-                          {
-                            "discPrice": "1242000",
-                            "maxStudent": "3",
-                            "price": "1380000",
-                            "type": "grup3"
-                          },
-                          {
-                            "discPrice": "522000",
-                            "maxStudent": "1",
-                            "price": "580000",
-                            "type": "privat"
-                          },
-                          {
-                            "discPrice": "1710000",
-                            "maxStudent": "4",
-                            "price": "1900000",
-                            "type": "grup4"
-                          },
-                          {
-                            "discPrice": "2106000",
-                            "maxStudent": "5",
-                            "price": "2340000",
-                            "type": "grup5"
-                          }
-                        ],
-                        "id": "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
-                        "isActive": true,
-                        "level": "SMA",
-                        "name": "English Language and Literacy",
-                        "slug": "bahasa-inggris-sma-14klui",
-                        "time": "2025-03-24T19:00:00.000Z",
-                        "totalMeetings": 4,
-                        "tutorId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
-                      },
-                      "message": "Bimbel package updated successfully"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "parameters": [
-        {
-          "name": "slug",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "example": "bahasa-inggris-sma-14klui"
-          }
-        }
-      ]
-    },
     "/packages/class": {
       "post": {
         "tags": [
@@ -9704,6 +9586,330 @@
           "schema": {
             "type": "string",
             "example": "persiapan-utbk-sma-uz35fk"
+          }
+        }
+      ]
+    },
+    "/packages/{id}": {
+      "delete": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Delete a Bimbel Package",
+        "description": "Delete a Bimbel Package",
+        "operationId": "deleteABimbelPackage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "Delete a Bimbel Package": {
+                  "value": ""
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 - Delete a Bimbel Package",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "49"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 04 Jul 2025 03:02:02 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"31-oA36Ljeq17MPDoyGQyviXUD0AqU\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Bimbel package deleted successfully"
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Delete a Bimbel Package": {
+                    "value": {
+                      "message": "Bimbel package deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "01963333-5012-7e00-91dd-96e860ee1faf"
+          }
+        }
+      ]
+    },
+    "/packages/{userId}": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get Package by User Id",
+        "description": "Get Package by User Id",
+        "operationId": "getPackageByUserId",
+        "responses": {
+          "200": {
+            "description": "200 - Get package by userId",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "253"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 05 Jul 2025 05:01:47 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"fd-kKM6K8VijxvMOACQewOVtilGbuA\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "days": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "example": "Senin"
+                            },
+                            "example": [
+                              "Senin",
+                              "Rabu"
+                            ]
+                          },
+                          "duration": {
+                            "type": "number",
+                            "example": 90
+                          },
+                          "groupType": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "kelas"
+                                }
+                              }
+                            },
+                            "example": [
+                              {
+                                "type": "kelas"
+                              }
+                            ]
+                          },
+                          "id": {
+                            "type": "string",
+                            "example": "0196b294-4791-7b00-8000-000000000014"
+                          },
+                          "level": {
+                            "type": "string",
+                            "example": "SMA"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "FOKUS UTBK"
+                          },
+                          "slug": {
+                            "type": "string",
+                            "example": "fokus-utbk-sma-9j8k7l"
+                          },
+                          "time": {
+                            "type": "string",
+                            "example": "1970-01-01T08:00:00.000Z"
+                          },
+                          "tutorName": {
+                            "type": "string",
+                            "example": "Dendy Wan S.Pd"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "days": [
+                            "Senin",
+                            "Rabu"
+                          ],
+                          "duration": 90,
+                          "groupType": [
+                            {
+                              "type": "kelas"
+                            }
+                          ],
+                          "id": "0196b294-4791-7b00-8000-000000000014",
+                          "level": "SMA",
+                          "name": "FOKUS UTBK",
+                          "slug": "fokus-utbk-sma-9j8k7l",
+                          "time": "1970-01-01T08:00:00.000Z",
+                          "tutorName": "Dendy Wan S.Pd"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Get package by userId": {
+                    "value": {
+                      "data": [
+                        {
+                          "days": [
+                            "Senin",
+                            "Rabu"
+                          ],
+                          "duration": 90,
+                          "groupType": [
+                            {
+                              "type": "kelas"
+                            }
+                          ],
+                          "id": "0196b294-4791-7b00-8000-000000000014",
+                          "level": "SMA",
+                          "name": "FOKUS UTBK",
+                          "slug": "fokus-utbk-sma-9j8k7l",
+                          "time": "1970-01-01T08:00:00.000Z",
+                          "tutorName": "Dendy Wan S.Pd"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "0195c5ed-3fc9-771d-bced-9c4b10afd9a2"
           }
         }
       ]
