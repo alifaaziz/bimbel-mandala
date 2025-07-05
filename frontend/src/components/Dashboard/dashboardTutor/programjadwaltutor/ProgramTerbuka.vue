@@ -1,12 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { NButton, NIcon } from 'naive-ui'
 
 const programs = ref([])
+const route = useRoute()
+const router = useRouter()
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
-  const res = await fetch('http://localhost:3000/classes/my', {
+  const userId = route.params.id // pastikan route ada param id
+  const res = await fetch(`http://localhost:3000/packages/user/${userId}`, {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await res.json()
@@ -19,20 +23,11 @@ function formatTime(timeStr) {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-function formatStatus(status) {
-  if (status === 'berjalan') return 'Berjalan'
-  if (status === 'selesai') return 'Selesai'
-  return status
-}
-
-function formatGroupType(type) {
-  if (type === 'privat') return 'Privat'
-  if (type === 'kelas') return 'Kelas'
-  if (type?.startsWith('grup')) {
-    const jumlah = type.replace('grup', '')
-    return `Kelompok ${jumlah} Peserta`
-  }
-  return type
+// Jika ada groupType bertype 'kelas' maka return 'Kelas', jika tidak ada maka 'Privat/Kelompok'
+function formatGroupType(groupTypeArr) {
+  if (!Array.isArray(groupTypeArr) || groupTypeArr.length === 0) return '-'
+  if (groupTypeArr.some(gt => gt.type === 'kelas')) return 'Kelas'
+  return 'Privat/Kelompok'
 }
 </script>
 
@@ -44,12 +39,11 @@ function formatGroupType(type) {
           <tbody>
             <tr v-for="(program, index) in programs" :key="index">
               <td data-label="Program">
-                <span class="bodysb3">{{ program.programName }}</span><br />
+                <span class="bodysb3">{{ program.name }} {{ program.level }}</span><br />
                 <span class="bodyr3">{{ program.tutorName }}</span>
               </td>
-              <td class="bodyr3" data-label="Status">{{ formatStatus(program.status) }}</td>
               <td class="bodyr3" data-label="Jenis">{{ formatGroupType(program.groupType) }}</td>
-              <td class="bodyr3" data-label="Hari">{{ program.days }}</td>
+              <td class="bodyr3" data-label="Hari">{{ program.days.join(', ') }}</td>
               <td class="bodyr3" data-label="Jam">{{ formatTime(program.time) }}</td>
               <td class="bodyr3" data-label="Durasi">{{ program.duration }} Menit</td>
               <td data-label="Aksi">
@@ -57,7 +51,7 @@ function formatGroupType(type) {
                   ghost
                   color="#154484"
                   class="but-table"
-                  @click="$router.push(`/detailprogram/${program.slug}`)"
+                  @click="router.push(`/detailprogram/${program.slug}`)"
                 >
                   <n-icon>
                     <img src="@/assets/icons/more-horizontal.svg" alt="">

@@ -20,7 +20,9 @@ export default (app) => {
     router.get('/my', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackages);
     
     router.get('/my/:slug', AuthMiddleware.isAuthorized, BimbelPackageController.getMyPackageBySlug);
-    
+
+    router.get('/user/:userId', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.getBimbelPackagesByUserId);
+
     router.get('/all', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.getAllBimbelPackages);
     
     router.get('/statistics', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), BimbelPackageController.getBimbelPackageStatistics);

@@ -1,11 +1,13 @@
 <script>
 import { NTag } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
+import { useRoute } from "vue-router"; 
 
 export default defineComponent({
   setup() {
     const isMobile = ref(false);
     const data = ref([]);
+    const route = useRoute(); 
 
     const updateIsMobile = () => {
       isMobile.value = window.innerWidth <= 600;
@@ -16,7 +18,8 @@ export default defineComponent({
       window.addEventListener("resize", updateIsMobile);
 
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/schedules', {
+      const userId = route.params.id;
+      const res = await fetch(`http://localhost:3000/schedules/user/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await res.json();

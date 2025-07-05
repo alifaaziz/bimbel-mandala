@@ -6,11 +6,11 @@ const programs = ref([])
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
-  const res = await fetch('http://localhost:3000/classes/my', {
+  const res = await fetch('http://localhost:3000/packages/my', {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await res.json()
-  programs.value = data.data || []
+  programs.value = data || []
 })
 
 function formatTime(timeStr) {
@@ -19,56 +19,44 @@ function formatTime(timeStr) {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-function formatStatus(status) {
-  if (status === 'berjalan') return 'Berjalan'
-  if (status === 'selesai') return 'Selesai'
-  return status
-}
-
-function formatGroupType(type) {
-  if (type === 'privat') return 'Privat'
-  if (type === 'kelas') return 'Kelas'
-  if (type?.startsWith('grup')) {
-    const jumlah = type.replace('grup', '')
-    return `Kelompok ${jumlah} Peserta`
-  }
-  return type
+function formatGroupType(groupTypeArr) {
+  if (!Array.isArray(groupTypeArr) || groupTypeArr.length === 0) return '-'
+  if (groupTypeArr.some(gt => gt.type === 'kelas')) return 'Kelas'
+  return 'Privat/Kelompok'
 }
 </script>
 
 <template>
-    <div class="program-card">
-        <div class="card-header headerb3">Program Terbuka</div>
-      <div class="card-body">
-        <table class="program-table">
-          <tbody>
-            <tr v-for="(program, index) in programs" :key="index">
-              <td data-label="Program">
-                <span class="bodysb3">{{ program.programName }}</span><br />
-                <span class="bodyr3">{{ program.tutorName }}</span>
-              </td>
-              <td class="bodyr3" data-label="Status">{{ formatStatus(program.status) }}</td>
-              <td class="bodyr3" data-label="Jenis">{{ formatGroupType(program.groupType) }}</td>
-              <td class="bodyr3" data-label="Hari">{{ program.days }}</td>
-              <td class="bodyr3" data-label="Jam">{{ formatTime(program.time) }}</td>
-              <td class="bodyr3" data-label="Durasi">{{ program.duration }} Menit</td>
-              <td data-label="Aksi">
-                <n-button
-                  ghost
-                  color="#154484"
-                  class="but-table"
-                  @click="$router.push(`/detailprogram/${program.slug}`)"
-                >
-                  <n-icon>
-                    <img src="@/assets/icons/more-horizontal.svg" alt="">
-                  </n-icon>
-                </n-button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="program-card">
+    <div class="card-header headerb3">Program Terbuka</div>
+    <div class="card-body">
+      <table class="program-table">
+        <tbody>
+          <tr v-for="(program, index) in programs" :key="index">
+            <td data-label="Program">
+              <span class="bodysb3">{{ program.name }} {{ program.level }}</span><br />
+            </td>
+            <td class="bodyr3" data-label="Jenis">{{ formatGroupType(program.groupType) }}</td>
+            <td class="bodyr3" data-label="Hari">{{ program.days.join(', ') }}</td>
+            <td class="bodyr3" data-label="Jam">{{ formatTime(program.time) }}</td>
+            <td class="bodyr3" data-label="Durasi">{{ program.duration }} Menit</td>
+            <td data-label="Aksi">
+              <n-button
+                ghost
+                color="#154484"
+                class="but-table"
+                @click="$router.push(`/detailprogram/${program.slug}`)"
+              >
+                <n-icon>
+                  <img src="@/assets/icons/more-horizontal.svg" alt="">
+                </n-icon>
+              </n-button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 </template>
   
 <style scoped>

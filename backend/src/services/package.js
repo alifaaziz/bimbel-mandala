@@ -1276,6 +1276,60 @@ async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {
   }));
 }
 
+/**
+ * Retrieves all bimbel packages by tutor userId.
+ *
+ * @async
+ * @function getBimbelPackagesByUserId
+ * @param {string} userId - The tutor's userId.
+ * @returns {Promise<Array>} The list of bimbel packages for the tutor.
+ */
+async function getBimbelPackagesByUserId(userId) {
+  const packages = await prisma.bimbelPackage.findMany({
+    where: {
+      userId,
+      deletedAt: null,
+      isActive: true
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          tutors: {
+            select: { photo: true }
+          }
+        }
+      },
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: { select: { daysName: true } }
+        }
+      }
+    }
+  });
+
+  return packages.map(pkg => ({
+    id: pkg.id,
+    name: pkg.name,
+    level: pkg.level,
+    time: pkg.time,
+    duration: pkg.duration,
+    slug: pkg.slug,
+    tutorName: pkg.user.name,
+    groupType: pkg.groupType.map(gt => ({
+      type: gt.type,
+    })),
+    days: pkg.packageDay.map(day => day.day.daysName)
+  }));
+}
+
 export const BimbelPackageService = {
   getActiveBimbelPackages,
   getAllBimbelPackages,
@@ -1293,5 +1347,6 @@ export const BimbelPackageService = {
   getBimbelPackageStatistics,
   getMyProgramsStatistics,
   getRecommendations,
-  getFilteredBimbelPackages
+  getFilteredBimbelPackages,
+  getBimbelPackagesByUserId,
 };
