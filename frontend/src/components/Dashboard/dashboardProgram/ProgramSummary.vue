@@ -1,128 +1,210 @@
 <template>
-  <n-card class="widget-card" title="Ringkasan Program">
-    <div class="progress-chart-container">
-      <n-progress
-        type="circle"
-        :percentage="activePercentage"
-        :color="colors.active"
-        :rail-style="{ stroke: colors.open }"
-        :stroke-width="12"
-      >
-        </n-progress>
+  <div class="donut-chart-container">
+    <svg :viewBox="`0 0 ${svgSize} ${svgSize}`" :width="containerWidth" :height="containerHeight" class="donut-svg">
+      <circle
+        v-if="percentDibuka > 0"
+        :cx="center"
+        :cy="center"
+        :r="radius"
+        fill="none"
+        :stroke="colorDibuka"
+        :stroke-width="strokeWidth"
+        :stroke-dasharray="strokeDashArrayDibuka"
+        :transform="transformDibuka"
+      />
+      <circle
+        v-if="percentAktif > 0"
+        :cx="center"
+        :cy="center"
+        :r="radius"
+        fill="none"
+        :stroke="colorAktif"
+        :stroke-width="strokeWidth"
+        :stroke-dasharray="strokeDashArrayAktif"
+        :transform="transformAktif"
+      />
+    </svg>
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-dot" :style="{ backgroundColor: colorAktif }"></span>
+        <div class="legend-text-group">
+          <span class="bodym2 legend-value">{{ programAktif }} Program</span>
+          <span class="bodyr3 legend-label">Aktif</span>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot" :style="{ backgroundColor: colorDibuka }"></span>
+        <div class="legend-text-group">
+          <span class="bodym2 legend-value">{{ programDibuka }} Program</span>
+          <span class="bodyr3 legend-label">Dibuka</span>
+        </div>
+      </div>
     </div>
-
-    <n-divider />
-
-    <n-space justify="space-around" align="start" class="legend-container">
-      <div class="legend-item">
-        <span class="legend-dot" :style="{ backgroundColor: colors.active }"></span>
-        <n-statistic>
-          <template #label>
-            <span class="legend-label">Aktif</span>
-          </template>
-          {{ activePrograms }}
-          <template #suffix>
-            <span class="legend-unit">Program</span>
-          </template>
-        </n-statistic>
-      </div>
-
-      <div class="legend-item">
-        <span class="legend-dot" :style="{ backgroundColor: colors.open }"></span>
-        <n-statistic>
-          <template #label>
-            <span class="legend-label">Dibuka</span>
-          </template>
-          {{ openPrograms }}
-          <template #suffix>
-            <span class="legend-unit">Program</span>
-          </template>
-        </n-statistic>
-      </div>
-    </n-space>
-  </n-card>
+  </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue';
-import { NCard, NProgress, NSpace, NStatistic, NDivider } from 'naive-ui';
-
-// Definisikan warna agar mudah diubah
-const colors = {
-  active: '#1d4ed8', // Biru tua
-  open: '#f97316'    // Oranye
+<script>
+export default {
+  name: 'DonutChart',
+  props: {
+    colorAktif: {
+      type: String,
+      default: '#1e3a8a', // Biru Tua
+    },
+    colorDibuka: {
+      type: String,
+      default: '#f97316', // Oranye
+    },
+    containerWidth: {
+      type: [String, Number],
+      default: 220,
+    },
+    containerHeight: {
+      type: [String, Number],
+    },
+    strokeWidth: {
+      type: Number,
+      default: 18,
+    },
+    svgSize: {
+      type: Number,
+      default: 100,
+    },
+  },
+  data() {
+    return {
+      programAktif: 0, // Nilai awal
+      programDibuka: 0, // Nilai awal
+    };
+  },
+  computed: {
+    center() {
+      return this.svgSize / 2;
+    },
+    radius() {
+      return (this.svgSize / 2) - (this.strokeWidth / 2) - (this.svgSize * 0.02);
+    },
+    totalPrograms() {
+      return this.programAktif + this.programDibuka;
+    },
+    percentAktif() {
+      if (this.totalPrograms === 0) return 0;
+      return this.programAktif / this.totalPrograms;
+    },
+    percentDibuka() {
+      if (this.totalPrograms === 0) return 0;
+      return this.programDibuka / this.totalPrograms;
+    },
+    circumference() {
+      return 2 * Math.PI * this.radius;
+    },
+    strokeDashArrayAktif() {
+      const dashLength = this.percentAktif * this.circumference;
+      return `${dashLength} ${this.circumference}`;
+    },
+    transformAktif() {
+      return `rotate(-90 ${this.center} ${this.center})`;
+    },
+    strokeDashArrayDibuka() {
+      const dashLength = this.percentDibuka * this.circumference;
+      return `${dashLength} ${this.circumference}`;
+    },
+    transformDibuka() {
+      const rotationAngle = (this.percentAktif * 360) - 90;
+      return `rotate(${rotationAngle} ${this.center} ${this.center})`;
+    },
+  },
+  methods: {
+    async fetchStatistics() {
+      try {
+        const token = localStorage.getItem('token'); // Ambil token dari localStorage
+        if (!token) {
+          throw new Error('Token tidak ditemukan. Silakan login kembali.');
+        }
+        const response = await fetch('http://localhost:3000/users/statistics', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        this.programAktif = result.data.activePackageCount; // Isi programAktif
+        this.programDibuka = result.data.packageCount; // Isi programDibuka
+      } catch (error) {
+        console.error('Error fetching statistics:', error);
+        alert('Gagal mengambil data statistik.');
+      }
+    },
+  },
+  mounted() {
+    this.fetchStatistics(); // Panggil fetch saat komponen dimuat
+  },
 };
-
-// Data reaktif untuk jumlah program
-const activePrograms = ref(15);
-const openPrograms = ref(85);
-
-// Hitung total program untuk kalkulasi persentase
-const totalPrograms = computed(() => activePrograms.value + openPrograms.value);
-
-// Hitung persentase program aktif secara dinamis
-const activePercentage = computed(() => {
-  if (totalPrograms.value === 0) {
-    return 0;
-  }
-  return (activePrograms.value / totalPrograms.value) * 100;
-});
 </script>
 
 <style scoped>
-.widget-card {
-  max-width: 350px;
-  border-radius: 16px; /* Sesuai dengan gambar */
-  text-align: center;
-}
-
-:deep(.n-card-header) {
-  text-align: left;
-  font-weight: 600;
-}
-
-.progress-chart-container {
+.donut-chart-container {
   display: flex;
-  justify-content: center;
-  padding: 20px 0;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 12px; /* Sesuai lengkungan kartu pada gambar */
+  padding: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); /* Shadow halus */
+  width: 280px;
+  box-sizing: border-box;
 }
 
-:deep(.n-progress.n-progress--circle .n-progress-graph) {
-  transform: rotate(-90deg); /* Opsi: memutar agar start dari atas */
+.donut-svg {
+  display: block;
+  margin-bottom: 20px; /* Jarak antara chart dan legenda */
+  width: 70%; /* Agar SVG responsif di dalam container */
+  height: auto; /* Menjaga rasio aspek SVG */
 }
 
-.legend-container {
-  padding-top: 10px;
+.legend {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .legend-item {
   display: flex;
+  flex-direction: column; /* Dot di atas, teks di bawah */
   align-items: center;
-  gap: 10px;
-  text-align: left;
+  text-align: center;
 }
 
 .legend-dot {
-  width: 14px;
+  width: 14px; /* Ukuran dot */
   height: 14px;
   border-radius: 50%;
-  flex-shrink: 0; /* Mencegah dot mengecil */
+  margin-bottom: 8px; /* Jarak dot ke teks */
 }
 
-:deep(.n-statistic-value) {
-  font-size: 1.1rem;
-  font-weight: 600;
+.legend-text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.legend-unit {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-left: 0.4em;
+.legend-value {
+  color: #061222; /* Warna teks gelap */
+  line-height: 1.3;
 }
 
 .legend-label {
-  color: #64748b; /* Warna abu-abu untuk sub-teks */
-  font-size: 0.9rem;
-  font-weight: 500;
+  color: #7f8c8d; /* Warna teks abu-abu */
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+ .donut-chart-container {
+    max-width: 100%;
+  }
 }
 </style>
