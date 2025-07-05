@@ -1439,7 +1439,7 @@ async function main() {
             totalMeetings: 4,
             time: new Date("1970-01-01T08:00:00Z"),
             duration: 90,
-            area: "Semarang",
+            area: "Jl. Pemuda No.150, Sekayu, Kec. Semarang Tengah",
             slug: "fokus-utbk-sma-9j8k7l",
             userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
             startDate: new Date("2024-07-21T08:00:00Z"),
@@ -3117,6 +3117,14 @@ async function main() {
             address: 'Jl. Merdeka No. 3',
             status: 'pending',
         },
+        {
+            id: "0197d446-707c-76a7-8021-d1364ebf1e47",
+            userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan
+            packageId: "0196b294-4791-7b00-8000-000000000014", // FOKUS UTBK
+            groupTypeId: "0196b294-4791-7b00-8000-000000000401", // kelas
+            address: 'Jl. Pemuda No.150, Sekayu, Kec. Semarang Tengah, Kota Semarang',
+            status: 'kelas',
+        },
     ];
     for (const order of orders) {
         await prisma.order.create({
@@ -3142,6 +3150,14 @@ async function main() {
             orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",// Ma Tor Nu Won - Bahasa Inggris
             maxStudents: 2,
         },
+        {
+            id: "0197d448-6d6a-7183-a1d1-ce1979666720",
+            code: 'CLS-DEF456',
+            status: 'berjalan',
+            tutorId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan
+            orderId: "0197d446-707c-76a7-8021-d1364ebf1e47", // Dendy Wan - FOKUS UTBK
+            maxStudents: 20,
+        }
     ];
     for (const classData of classes) {
         await prisma.class.create({
@@ -3241,6 +3257,38 @@ async function main() {
             meet: 8,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-l4pa11',
+        },
+        {
+            id: "0197d449-8bd0-7e6f-a77f-0b9be7400001",
+            classId: "0197d448-6d6a-7183-a1d1-ce1979666720",
+            date: new Date('2025-07-21T08:00:00Z'),
+            meet: 1,
+            status: 'terjadwal',
+            slug: 'fokus-utbk-sma-ask123',
+        },
+        {
+            id: "0197d449-8bd0-7e6f-a77f-0b9be7400002",
+            classId: "0197d448-6d6a-7183-a1d1-ce1979666720",
+            date: new Date('2025-07-23T08:00:00Z'),
+            meet: 2,
+            status: 'terjadwal',
+            slug: 'fokus-utbk-sma-ask456',
+        },
+        {
+            id: "0197d449-8bd0-7e6f-a77f-0b9be7400003",
+            classId: "0197d448-6d6a-7183-a1d1-ce1979666720",
+            date: new Date('2025-07-28T08:00:00Z'),
+            meet: 3,
+            status: 'terjadwal',
+            slug: 'fokus-utbk-sma-ask789',
+        },
+        {
+            id: "0197d449-8bd0-7e6f-a77f-0b9be7400004",
+            classId: "0197d448-6d6a-7183-a1d1-ce1979666720",
+            date: new Date('2025-07-30T08:00:00Z'),
+            meet: 4,
+            status: 'terjadwal',
+            slug: 'fokus-utbk-sma-ask987',
         },
     ];
     for (const schedule of schedulesClass) {

@@ -64,11 +64,10 @@ async function updateCurrentUser(req, res) {
  */
 async function updateUserById(req, res) {
     await UserService.updateUser(
-        { id: req.params.id, ...req.body, role: req.body.role }, // role bisa diambil dari body jika admin ingin ubah
+        { id: req.params.id, ...req.body, role: req.body.role },
         req.file
     );
 
-    console.log('payload', req.body);
     res.status(200).json({ message: 'User updated successfully' });
 }
 

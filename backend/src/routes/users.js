@@ -58,8 +58,6 @@ export default (app) => {
         '/:id',
         AuthMiddleware.isAuthorized,
         AuthMiddleware.hasRole('admin'),
-        upload.single('photo'),
-        UserValidation.isValidUserUpdatePayload,
         UserController.updateUserById
     );
 

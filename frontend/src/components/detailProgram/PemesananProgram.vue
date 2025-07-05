@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ButPrimerNormal from '../dirButton/butPrimerNormal.vue';
 
@@ -55,7 +55,6 @@ const totalBiaya = computed(() => {
 
   if (!selectedGroup) return 'Rp0';
 
-  // Gunakan discPrice jika ada, fallback ke price
   const price = Number(selectedGroup.discPrice || selectedGroup.price);
   return formatCurrency(price);
 });
@@ -67,13 +66,19 @@ function formatCurrency(amount: number): string {
 function getPriceRange(groupType: any[]): string {
   if (!groupType || groupType.length === 0) return '0';
 
-  // Konversi harga menjadi angka menggunakan `Number`
+  const kelasGroup = groupType.find(group => group.type === 'kelas');
+  if (kelasGroup) {
+    const price = Number(kelasGroup.discPrice || kelasGroup.price);
+    return formatCurrency(price);
+  }
+
   const prices = groupType.map(group => Number(group.discPrice || group.price));
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
 
-  // Format harga menjadi string
-  return `${formatCurrency(minPrice)} - ${formatCurrency(maxPrice)}`;
+  return minPrice === maxPrice
+    ? formatCurrency(minPrice)
+    : `${formatCurrency(minPrice)} - ${formatCurrency(maxPrice)}`;
 }
 
 async function handleConfirm() {
@@ -167,6 +172,41 @@ const badgeClass = (level: string) => {
 
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 // Data peserta (contoh, bisa diganti dengan data dinamis)
+
+const hasKelasGroupType = computed(() => {
+  return programData.value?.groupType?.some((group: any) => group.type === 'kelas');
+});
+
+watch(
+  () => programData.value,
+  (val) => {
+    if (val && hasKelasGroupType.value && val.area) {
+      address.value = val.area;
+    }
+  },
+  { immediate: true }
+);
+
+const InfoRow = defineComponent({
+  name: 'InfoRow',
+  props: {
+    label: {
+      type: String,
+      required: true,
+    },
+    value: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    return () =>
+      h('div', { style: { display: 'flex', gap: '12px' } }, [
+        h('span', { style: { fontWeight: 'bold', width: '100px' } }, props.label),
+        h('span', null, `: ${props.value}`),
+      ]);
+  },
+});
 </script>
 
 <template>
@@ -209,7 +249,12 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
           </div>
           <div>
             <n-space vertical size="medium" class="space-detail bodyr2">
-              <InfoRow label="Area" :value="programData.area" />
+              <InfoRow label="Area/Lokasi" :value="programData.area" />
+              <InfoRow
+                label="Mulai"
+                :value="programData.startDate ? new Date(programData.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'"
+                v-if="programData.groupType && programData.groupType.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))"
+              />
               <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
               <InfoRow label="Pukul" :value="formatTime(programData.time)" />
               <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
@@ -237,6 +282,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
           v-model:value="address"
           placeholder="Alamat Lokasi Bimbing"
           class="input-custom mb-2 bodyr2"
+          :disabled="hasKelasGroupType"
         />
       </div>
       <div class="input-pemesanan">

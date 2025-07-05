@@ -34,7 +34,7 @@ async function createSchedules(classId) {
 
   const { order } = classData;
   const { bimbelPackage } = order;
-  const { packageDay, totalMeetings, time, name, level } = bimbelPackage;
+  const { packageDay, totalMeetings, time, name, level, startDate } = bimbelPackage;
 
   if (!totalMeetings || totalMeetings <= 0) {
     throw new Error('Invalid totalMeetings in bimbelPackage');
@@ -44,12 +44,22 @@ async function createSchedules(classId) {
     throw new Error('Invalid time format in bimbelPackage');
   }
 
-  const days = packageDay.map((pd) => pd.day.daysName);
+  // Urutkan hari sesuai urutan dunia (Minggu, Senin, ..., Sabtu)
+  const weekDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  let days = packageDay.map((pd) => pd.day.daysName);
+  days = days.sort((a, b) => weekDays.indexOf(a) - weekDays.indexOf(b));
 
-  const startDate = new Date();
+  // Jika kode kelas diawali "CLS" dan ada startDate di bimbelPackage, gunakan startDate
+  let startDateObj;
+  if (classData.code && classData.code.startsWith('CLS') && startDate && !isNaN(new Date(startDate).getTime())) {
+    startDateObj = new Date(startDate);
+  } else {
+    startDateObj = new Date();
+  }
+
   const schedules = [];
   let meet = 1;
-  let currentDate = new Date(startDate);
+  let currentDate = new Date(startDateObj);
 
   while (meet <= totalMeetings) {
     for (const dayName of days) {
@@ -58,7 +68,7 @@ async function createSchedules(classId) {
       const dayIndex = getDayIndex(dayName);
       const scheduleDate = getNextDate(currentDate, dayIndex);
 
-      if (scheduleDate > currentDate) {
+      if (scheduleDate > currentDate || (currentDate.getDay() === dayIndex && meet === 1)) {
         const scheduleWithTime = new Date(scheduleDate);
         const timeDate = new Date(time);
         scheduleWithTime.setHours(timeDate.getHours(), timeDate.getMinutes(), 0, 0);

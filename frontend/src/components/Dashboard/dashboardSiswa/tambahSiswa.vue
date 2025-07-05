@@ -131,15 +131,61 @@ const rules = {
   }
 };
 
+async function submitStudent() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    message.error("Token tidak ditemukan, silakan login ulang.");
+    return;
+  }
+
+  const user = formValue.value.user;
+  const payload = {};
+  if (user.name) payload.name = user.name;
+  if (user.email) payload.email = user.email;
+  if (user.pass) payload.password = user.pass;
+  payload.role = "siswa";
+  if (user.jenjang) payload.level = user.jenjang.toUpperCase();
+  if (user.alamat) payload.address = user.alamat;
+  if (user.wa) payload.phone = user.wa;
+  if (user.wali) payload.parentPhone = user.wali;
+
+  try {
+    const res = await fetch("http://localhost:3000/auth/add-student", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      message.success("Siswa berhasil ditambahkan!");
+      formRef.value?.restoreValidation();
+      formValue.value.user = {
+        name: "",
+        jenjang: "",
+        email: "",
+        pass: "",
+        wa: "",
+        wali: "",
+        alamat: ""
+      };
+    } else {
+      message.error(data.message || "Gagal menambah siswa.");
+    }
+  } catch (err) {
+    message.error("Terjadi kesalahan jaringan.");
+  }
+}
+
 function handleValidateClick(e) {
   e.preventDefault();
   formRef.value?.validate((errors) => {
     if (!errors) {
-      message.success("Valid");
-      alert("Data yang dimasukkan:\n" + JSON.stringify(formValue.value, null, 2));
+      submitStudent();
     } else {
-      console.log(errors);
-      message.error("Invalid");
+      message.error("Data belum lengkap/valid.");
     }
   });
 }

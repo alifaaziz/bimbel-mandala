@@ -1,4 +1,6 @@
+import { startTime } from 'pino-http';
 import { prisma } from '../utils/db.js';
+import { ScheduleService } from './schedule.js';
 
 /**
  * Retrieves all active bimbel packages with pagination.
@@ -218,6 +220,7 @@ async function getBimbelPackageBySlug(slug) {
     level: pkg.level,
     totalMeetings: pkg.totalMeetings,
     time: pkg.time,
+    startDate: pkg.startDate,
     duration: pkg.duration,
     area: pkg.area,
     slug: pkg.slug,
@@ -336,18 +339,13 @@ async function createClassBimbelPackage(data) {
   const { name, level, totalMeetings, time, duration, area, tutorId, price, maxStudent, days, discount, startDate } = data;
 
   const tutor = await prisma.user.findUnique({ where: { id: tutorId } });
-  if (!tutor) {
-    throw new Error('Tutor (user) tidak ditemukan');
-  }
+  if (!tutor) throw new Error('Tutor (user) tidak ditemukan');
 
   const dayIds = await prisma.day.findMany({
     where: { daysName: { in: days } },
     select: { id: true }
   });
-
-  if (dayIds.length === 0) {
-    throw new Error('Invalid days provided');
-  }
+  if (dayIds.length === 0) throw new Error('Invalid days provided');
 
   let discPrice = null;
   if (typeof discount === 'number' && discount > 0) {
@@ -361,6 +359,7 @@ async function createClassBimbelPackage(data) {
     slug = `${slugBase}-${randomString}`;
   } while (await prisma.bimbelPackage.findUnique({ where: { slug } }));
 
+  // 1. Buat bimbel package
   const createdPackage = await prisma.bimbelPackage.create({
     data: {
       name,
@@ -393,6 +392,33 @@ async function createClassBimbelPackage(data) {
     }
   });
 
+  // 2. Buat dummy order untuk relasi class
+  const dummyOrder = await prisma.order.create({
+    data: {
+      userId: tutorId,
+      packageId: createdPackage.id,
+      groupTypeId: createdPackage.groupType[0].id,
+      address: createdPackage.area,
+      status: 'kelas'
+    }
+  });
+
+  // 3. Buat class dengan orderId dummy
+  const classCode = `CLS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+  const createdClass = await prisma.class.create({
+    data: {
+      code: classCode,
+      status: 'berjalan',
+      maxStudents: maxStudent,
+      order: { connect: { id: dummyOrder.id } },
+      tutor: { connect: { id: tutorId } }
+    }
+  });
+
+  // 4. Buat jadwal otomatis
+  await ScheduleService.createSchedules(createdClass.id);
+
+  // 5. Return hasil
   return {
     message: 'Class bimbel package created successfully',
     data: {
@@ -414,7 +440,8 @@ async function createClassBimbelPackage(data) {
         discPrice: gt.discPrice,
         maxStudent: gt.maxStudent
       })),
-      days: createdPackage.packageDay.map(pd => pd.day.daysName)
+      days: createdPackage.packageDay.map(pd => pd.day.daysName),
+      classId: createdClass.id
     }
   };
 }

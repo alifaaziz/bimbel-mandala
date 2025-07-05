@@ -90,7 +90,7 @@ CREATE TABLE `orders` (
     `package_id` VARCHAR(191) NOT NULL,
     `group_type_id` VARCHAR(191) NOT NULL,
     `address` VARCHAR(191) NULL,
-    `status` ENUM('pending', 'paid', 'cancel') NOT NULL DEFAULT 'pending',
+    `status` ENUM('pending', 'paid', 'cancel', 'kelas') NOT NULL DEFAULT 'pending',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

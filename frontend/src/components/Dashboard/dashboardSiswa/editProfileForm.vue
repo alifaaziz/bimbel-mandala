@@ -67,7 +67,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useMessage } from "naive-ui";
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
@@ -76,6 +76,8 @@ const formRef = ref(null);
 const message = useMessage();
 const size = ref("medium");
 const router = useRouter()
+const route = useRoute();
+const userId = route.params.id;
 
 function goBack() {
   router.back()
@@ -97,15 +99,54 @@ const optionsjenjang = [
   { label: "SMA", value: "sma" }
 ];
 
+async function submitEditProfile() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    message.error("Token tidak ditemukan, silakan login ulang.");
+    return;
+  }
+  if (!userId) {
+    message.error("ID siswa tidak ditemukan.");
+    return;
+  }
+
+  const user = formValue.value.user;
+  const payload = {};
+  if (user.name) payload.name = user.name;
+  if (user.jenjang) payload.level = user.jenjang.toUpperCase();
+  if (user.alamat) payload.address = user.alamat;
+  if (user.wa) payload.phone = user.wa;
+  if (user.wali) payload.parentPhone = user.wali;
+  payload.role = "siswa"; 
+
+  try {
+    const res = await fetch(`http://localhost:3000/users/${userId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      message.success("Profil siswa berhasil diupdate!");
+      router.push(`/dashboardadmin/siswa/${userId}`);
+    } else {
+      message.error(data.message || "Gagal update profil siswa.");
+    }
+  } catch (err) {
+    message.error("Terjadi kesalahan jaringan.");
+  }
+}
+
 function handleValidateClick(e) {
   e.preventDefault();
   formRef.value?.validate((errors) => {
     if (!errors) {
-      message.success("Valid");
-      alert("Data yang dimasukkan:\n" + JSON.stringify(formValue.value, null, 2));
+      submitEditProfile();
     } else {
-      console.log(errors);
-      message.error("Invalid");
+      message.error("Data belum lengkap/valid.");
     }
   });
 }
