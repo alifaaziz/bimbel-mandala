@@ -29,6 +29,6 @@ import TopTutor from '../TopTutor.vue';
 }
 
 .right-side {
-  min-width: 280px;
+  min-width: 288px;
 }
 </style>

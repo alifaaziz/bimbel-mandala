@@ -155,7 +155,7 @@ export default {
   border-radius: 12px; /* Sesuai lengkungan kartu pada gambar */
   padding: 12px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); /* Shadow halus */
-  width: 280px;
+  width: 288px;
   box-sizing: border-box;
 }
 

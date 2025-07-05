@@ -59,7 +59,7 @@ const handleActionClick = (registrant) => {
   /* Memberi padding dan membatasi lebar container */
   background-color: #ffffff;
   padding: 24px;
-  border-radius: 20px; /* Sudut membulat seperti pada container di gambar */
+  border-radius: 12px; /* Sudut membulat seperti pada container di gambar */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Memberi sedikit bayangan */
 }
 
