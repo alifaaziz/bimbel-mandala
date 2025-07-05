@@ -8148,7 +8148,7 @@
         "operationId": "getUserStatisticsProgram",
         "responses": {
           "200": {
-            "description": "200 - Get User Statistics Program",
+            "description": "200 - Get User Statistics Program / 200 - Get User Statistics Program",
             "headers": {
               "Access-Control-Allow-Credentials": {
                 "schema": {

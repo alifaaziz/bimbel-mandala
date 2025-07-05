@@ -1,16 +1,71 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { NSpace, NTag } from 'naive-ui';
 import butEditProfile from '@/components/dirButton/butEditProfile.vue';
 
 import JadwalTutor from './programjadwaltutor/JadwalTutor.vue';
 import ProgramTerbuka from './programjadwaltutor/ProgramTerbuka.vue';
 
+const route = useRoute();
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
-const programData = ref({
-  days: ['Senin', 'Rabu', 'Jumat'] // bisa diubah sesuai kebutuhan
-})
+const tutorProfile = ref({
+  name: '',
+  email: '',
+  phone: '',
+  address: '',
+  gender: '',
+  school: '',
+  status: '',
+  major: '',
+  teachLevel: '',
+  subjects: '',
+  photo: '',
+  days: [],
+  birthDate: '',
+});
+
+const statistics = ref({
+  activePackages: 0,
+  runningClasses: 0,
+  completedClasses: 0
+});
+
+onMounted(async () => {
+  const id = route.params.id;
+  const token = localStorage.getItem('token');
+  // Fetch profile
+  const res = await fetch(`http://localhost:3000/users/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const { data } = await res.json();
+  const tutor = data.tutors?.[0] || {};
+  tutorProfile.value = {
+    name: data.name,
+    email: data.email,
+    phone: tutor.phone || '-',
+    address: tutor.address || '-',
+    gender: tutor.gender || '-',
+    school: tutor.school || '-',
+    status: tutor.status || '-',
+    major: tutor.major || '-',
+    teachLevel: tutor.teachLevel || '-',
+    subjects: tutor.subjects || '-',
+    photo: tutor.photo || '/tutor/1.png',
+    days: tutor.daysName || [],
+    birthDate: tutor.birthDate || '-',
+  };
+
+  // Fetch statistics
+  const statRes = await fetch(`http://localhost:3000/packages/statistics/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (statRes.ok) {
+    const statData = await statRes.json();
+    statistics.value = statData;
+  }
+});
 </script>
 
 <template>
@@ -18,15 +73,15 @@ const programData = ref({
     <div class="form-card">
       <div class="header-tutorprofile">
         <div class="header-part">
-          <img
-            class="img-tutor"
-            src="/tutor/1.png"
-          />
+            <img
+              class="img-tutor"
+              :src="tutorProfile.photo ? `http://localhost:3000${tutorProfile.photo}` : '/tutor/1.png'"
+            />
           <div class="datadiri">
             <div class="headersb2">
-              Dendy Wan S.Pd
+              {{ tutorProfile.name }}
             </div>
-            <p class="bodyr2">35 Tahun</p>
+            <p class="bodyr2">{{ tutorProfile.birthDate ? new Date(tutorProfile.birthDate).getFullYear() ? (new Date().getFullYear() - new Date(tutorProfile.birthDate).getFullYear()) + ' Tahun' : '' : '' }}</p>
           </div>
         </div>
         <div class="headeer-part">
@@ -37,15 +92,15 @@ const programData = ref({
       <div class="statistik">
         <div class="statistik-item">
           <h3 class="headersb3">Program Terbuka</h3>
-          <p class="hero">04</p>
+          <p class="hero">{{ statistics.activePackages }}</p>
         </div>
         <div class="statistik-item">
           <h3 class="headersb3">Program Berjalan</h3>
-          <p class="hero">04</p>
+          <p class="hero">{{ statistics.runningClasses }}</p>
         </div>
         <div class="statistik-item">
           <h3 class="headersb3">Program Selesai</h3>
-          <p class="hero">04</p>
+          <p class="hero">{{ statistics.completedClasses }}</p>
         </div>
       </div>
       <n-divider class="divider" />
@@ -56,21 +111,21 @@ const programData = ref({
               <img src="@/assets/icons/mail.svg" alt="">
               <p>Alamat E-mail</p>
             </div>  
-            <p>: (email)</p>
+            <p>: {{ tutorProfile.email }}</p>
           </div>
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/whatsapp.svg" alt="">
               <p>No. WhatsApp</p>
             </div>
-            <p>: (nomor telp)</p>
+            <p>: {{ tutorProfile.phone }}</p>
           </div>
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/home.svg" alt="Gender">
               <p>Alamat Rumah</p>
             </div>
-            <p>: (alamat rumah)</p>
+            <p>: {{ tutorProfile.address }}</p>
           </div>
         </n-space>
         <n-space vertical>
@@ -79,28 +134,28 @@ const programData = ref({
               <img src="@/assets/icons/admin/gender.svg" alt="">
               <p>Gender</p>
             </div>
-            <p>: (gender)</p>
+            <p>: {{ tutorProfile.gender }}</p>
           </div>
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/building.svg" alt="">
               <p>Asal Kampus</p>
             </div>
-            <p>: (Universitas xxx xxxx xxxxx xxxxxx)</p>
+            <p>: {{ tutorProfile.school }}</p>
           </div>
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/admin/status.svg" alt="">
               <p>Status</p>
             </div>
-            <p>: (status)</p>
+            <p>: {{ tutorProfile.status }}</p>
           </div>
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/admin/prodi.svg" alt="">
               <p>Prodi</p>
             </div>
-            <p>: (prodi)</p>
+            <p>: {{ tutorProfile.major }}</p>
           </div>
         </n-space>
       </div>
@@ -112,13 +167,13 @@ const programData = ref({
             <div class="detail-profile">
               <p>Jenjang</p>
             </div>  
-            <p>: SMP, SMA</p>
+            <p>: {{ tutorProfile.teachLevel }}</p>
           </div>
           <div class="detail-separator">
             <div class="detail-profile">
               <p>Mata Pelajaran</p>
             </div>
-            <p>: Matematika, Fisika, Kimia</p>
+            <p>: {{ tutorProfile.subjects }}</p>
           </div>
         </n-space>
       </div>
@@ -131,7 +186,7 @@ const programData = ref({
               v-for="(day, index) in allDays"
               :key="index"
               class="tag"
-              :class="{ 'tag-unselected': !programData.days.includes(day) }"
+              :class="{ 'tag-unselected': !tutorProfile.days.includes(day) }"
             >
               {{ day }}
             </n-tag>

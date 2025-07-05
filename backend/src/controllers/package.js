@@ -251,7 +251,7 @@ async function getBimbelPackageStatistics(_req, res) {
  * @param {Object} res - The response object.
  */
 async function getMyProgramsStatistics(req, res) {
-  const user = res.locals.user; // Retrieve user from auth middleware
+  const user = res.locals.user.id; // Retrieve user from auth middleware
   const statistics = await BimbelPackageService.getMyProgramsStatistics(user);
   res.status(200).json(statistics);
 }
@@ -314,6 +314,21 @@ async function getBimbelPackagesByUserId(req, res) {
   res.status(200).json({ data: packages });
 }
 
+/**
+ * Handles the request to get statistics for programs by userId.
+ * 
+ * @async
+ * @function getProgramsStatisticsByUserId
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the statistics data for the specified user.
+ */
+async function getProgramsStatisticsByUserId(req, res) {
+  const { userId } = req.params;
+  const statistics = await BimbelPackageService.getMyProgramsStatistics(userId);
+  res.status(200).json(statistics);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
     getActiveBimbelPackages: asyncWrapper(getActiveBimbelPackages),
@@ -332,5 +347,6 @@ export const BimbelPackageController = {
     getMyProgramsStatistics: asyncWrapper(getMyProgramsStatistics),
     getRecommendations: asyncWrapper(getRecommendations),
     getFilteredBimbelPackages: asyncWrapper(getFilteredBimbelPackages),
-    getBimbelPackagesByUserId: asyncWrapper(getBimbelPackagesByUserId)
+    getBimbelPackagesByUserId: asyncWrapper(getBimbelPackagesByUserId),
+    getProgramsStatisticsByUserId: asyncWrapper(getProgramsStatisticsByUserId)
 };

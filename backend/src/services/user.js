@@ -362,10 +362,13 @@ async function getUserById(id) {
     }
 
     if (user.role === 'tutor' && user.tutors?.length) {
-        user.tutors = user.tutors.map(tutor => ({
-            ...tutor,
-            daysName: tutor.tutorDay.map(td => td.day?.daysName).filter(Boolean)
-        }));
+        user.tutors = user.tutors.map(tutor => {
+            const { tutorDay, ...rest } = tutor;
+            return {
+            ...rest,
+            daysName: tutorDay.map(td => td.day?.daysName).filter(Boolean)
+            };
+        });
     }
 
     return user;

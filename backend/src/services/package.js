@@ -1029,27 +1029,27 @@ async function getBimbelPackageStatistics() {
 }
 
 /**
- * Retrieves programs statistics for the logged-in user.
+ * Retrieves programs statistics for the user by id.
  * 
  * @async
  * @function getMyProgramsStatistics
- * @param {Object} user - The logged-in user object.
+ * @param {string} id - The user id.
  * @returns {Promise<Object>} The statistics for the user's programs.
  */
-async function getMyProgramsStatistics(user) {
+async function getMyProgramsStatistics(id) {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { role: true }
+  });
+  if (!user) throw new Error('User not found');
+
   if (user.role === 'siswa') {
     const studentClasses = await prisma.studentClass.findMany({
-      where: {
-        userId: user.id
-      },
-      include: {
-        class: true
-      }
+      where: { userId: id },
+      include: { class: true }
     });
-
-    const runningClasses = studentClasses.filter(sc => sc.class.status === 'berjalan').length;
-    const completedClasses = studentClasses.filter(sc => sc.class.status === 'selesai').length;
-
+    const runningClasses = studentClasses.filter(sc => sc.class?.status === 'berjalan').length;
+    const completedClasses = studentClasses.filter(sc => sc.class?.status === 'selesai').length;
     return {
       runningClasses,
       completedClasses
@@ -1057,23 +1057,19 @@ async function getMyProgramsStatistics(user) {
   } else if (user.role === 'tutor') {
     const classes = await prisma.class.findMany({
       where: {
-        tutorId: user.id,
-        status: {
-          in: ['berjalan', 'selesai']
-        }
+        tutorId: id,
+        status: { in: ['berjalan', 'selesai'] }
       }
     });
-
     const activePackagesCount = await prisma.bimbelPackage.count({
       where: {
-        userId: user.id,
-        isActive: true
+        userId: id,
+        isActive: true,
+        deletedAt: null
       }
     });
-
     const runningClasses = classes.filter(cls => cls.status === 'berjalan').length;
     const completedClasses = classes.filter(cls => cls.status === 'selesai').length;
-
     return {
       runningClasses,
       completedClasses,
