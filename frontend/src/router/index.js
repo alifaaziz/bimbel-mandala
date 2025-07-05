@@ -44,7 +44,13 @@ import TutorProfile from '@/components/Dashboard/dashboardTutor/TutorProfile.vue
 import VerifikasiTutor from '@/components/Dashboard/dashboardTutor/TutorVerification.vue';
 
 import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
-import ProgramAdmin from '@/components/Dashboard/dashboardProgram/Program.vue';
+
+import ProgramAdmin from '@/components/Dashboard/dashboardProgram/ProgramAdmin.vue';
+import ProgramMain from '@/components/Dashboard/dashboardProgram/ProgramMain.vue';
+import ProgramAdd from '@/components/Dashboard/dashboardProgram/ProgramAdd.vue';
+
+
+
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
 
 
@@ -226,9 +232,21 @@ const routes = [
         ]
       },
       {
-        path: 'program',
+        path: 'programadmin',
         name: 'ProgramAdmin',
         component: ProgramAdmin,
+        children: [
+          {
+            path: '',
+            name: 'ProgramMain',
+            component: ProgramMain,
+          },
+          {
+            path: 'tambahprogram',
+            name: 'ProgramAdd',
+            component: ProgramAdd,
+          },
+        ]
       },
       {
         path: 'jadwal',

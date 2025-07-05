@@ -1,43 +1,6 @@
-<template>
-  <div class="program-container">
-    <n-card content-style="padding: 24px;">
-      <div class="header-section">
-        <n-h2 style="margin: 0;">Program</n-h2>
-        <n-space>
-          <n-input
-            v-model="searchTerm"
-            placeholder="Cari tutor..."
-            style="width: 240px;"
-            clearable
-          >
-            <template #prefix>
-              <n-icon :component="SearchOutline" />
-            </template>
-          </n-input>
-          <n-button type="primary" @click="handleTambahProgram">
-            <template #icon>
-              <n-icon :component="Add" />
-            </template>
-            Tambah Program
-          </n-button>
-        </n-space>
-      </div>
-
-      <n-divider />
-
-      <n-data-table
-        :columns="columns"
-        :data="filteredData"
-        :pagination="false"
-        :bordered="false"
-        :single-line="false"
-      />
-    </n-card>
-  </div>
-</template>
-
 <script setup>
 import { ref, h, computed } from 'vue';
+import { useRouter } from 'vue-router'; // Tambahkan ini
 import {
   NCard,
   NDataTable,
@@ -47,20 +10,19 @@ import {
   NInput,
   NIcon,
   NDivider,
-  useMessage // Opsional, untuk menampilkan notifikasi
+  useMessage
 } from 'naive-ui';
 import { SearchOutline, Add, EllipsisHorizontal } from '@vicons/ionicons5';
+import butSecondNormal from '@/components/dirButton/butSecondNormal.vue';
 
-// Opsional: untuk menampilkan pesan saat tombol di klik
+const router = useRouter(); // Tambahkan ini
+
 const message = useMessage();
-
-// State untuk kolom pencarian
 const searchTerm = ref('');
 
-// Fungsi placeholder saat tombol tambah di klik
+// Fungsi tambah program
 const handleTambahProgram = () => {
-  message.success('Fungsi "Tambah Program" dipanggil!');
-  console.log('Tambah program baru...');
+  router.push('/dashboardadmin/programadmin/tambahprogram');
 };
 
 // Fungsi placeholder saat tombol detail di klik
@@ -198,6 +160,39 @@ const filteredData = computed(() => {
 });
 
 </script>
+
+<template>
+  <div class="program-container">
+    <n-card content-style="padding: 24px;">
+      <div class="header-section">
+        <n-h2 style="margin: 0;">Program</n-h2>
+        <n-space>
+          <n-input
+            v-model="searchTerm"
+            placeholder="Cari tutor..."
+            style="width: 240px;"
+            clearable
+          >
+            <template #prefix>
+              <n-icon :component="SearchOutline" />
+            </template>
+          </n-input>
+          <butSecondNormal label="Tambah Program" @click="handleTambahProgram" />
+        </n-space>
+      </div>
+
+      <n-divider />
+
+      <n-data-table
+        :columns="columns"
+        :data="filteredData"
+        :pagination="false"
+        :bordered="false"
+        :single-line="false"
+      />
+    </n-card>
+  </div>
+</template>
 
 <style scoped>
 .program-container {
