@@ -132,15 +132,30 @@ async function getTutorApplications({ page = 1, pageSize = 10 } = {}) {
     prisma.tutorApplication.count(),
   ]);
   return {
-    data: applications,
+    data: applications.map(app => ({ id: app.id, name: app.name })),
     total,
     page,
     pageSize,
   };
 }
 
+/**
+ * Get a single tutor application by ID.
+ *
+ * @async
+ * @function getTutorApplicationById
+ * @param {string} id - The tutor application ID.
+ * @returns {Promise<Object|null>} The tutor application or null if not found.
+ */
+async function getTutorApplicationById(id) {
+  return await prisma.tutorApplication.findUnique({
+    where: { id },
+  });
+}
+
 export const TutorApplicationService = {
   applyTutor,
   verifyTutor,
   getTutorApplications,
+  getTutorApplicationById,
 };

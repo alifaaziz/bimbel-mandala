@@ -50,8 +50,29 @@ async function getTutorApplications(req, res) {
     res.status(200).json(result);
 }
 
+/**
+ * Get a single tutor application by ID.
+ * 
+ * @function getTutorApplicationById
+ * @async
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the tutor application data.
+ */
+async function getTutorApplicationById(req, res) {
+    const { id } = req.params;
+    const application = await TutorApplicationService.getTutorApplicationById(id);
+    if (!application) {
+        return res.status(404).json({ message: 'Tutor application not found' });
+    }
+    res.status(200).json({ data: application });
+}
+
+
+
 export const TutorApplicationController = {
     applyTutor: asyncWrapper(applyTutor),
     verifyTutor: asyncWrapper(verifyTutor),
     getTutorApplications: asyncWrapper(getTutorApplications),
+    getTutorApplicationById: asyncWrapper(getTutorApplicationById),
 };

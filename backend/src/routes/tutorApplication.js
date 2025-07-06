@@ -13,4 +13,6 @@ export default (app) => {
     router.post('/', upload.single('photo'), TutorApplicationController.applyTutor);
 
     router.post('/verify/:id', AuthMiddleware.isAuthorized, TutorApplicationController.verifyTutor);
+
+    router.get('/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole('admin'), TutorApplicationController.getTutorApplicationById);
 };
