@@ -1,204 +1,286 @@
 <template>
-  <n-card content-style="padding: 24px;">
-    <n-h1>
-      <n-text type="default">
-        Jadwal Program Aktif
-      </n-text>
-    </n-h1>
+  <div class="siswa-container">
+    <n-space vertical :size="24">
+      <h1 class="headlineb2">Jadwal Program Aktif</h1>
 
-    <n-space justify="space-between" align="center" style="margin-bottom: 20px;">
-      <n-input
-        v-model="searchTerm"
-        placeholder="Cari Jadwal..."
-        clearable
-        style="max-width: 400px;"
-      >
-        <template #prefix>
-          <n-icon :component="Search" />
-        </template>
-      </n-input>
-      <n-date-picker
-        v-model="selectedDate"
-        type="date"
-        placeholder="Cari tanggal"
-        clearable
-        style="width: 200px;"
+      <div class="search-tambah">
+        <div class="search-container">
+          <n-input
+            v-model="searchText"
+            round
+            size="large"
+            placeholder="Cari Jadwal">
+            <template #prefix>
+              <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
+            </template>
+          </n-input>
+        </div>
+        <n-date-picker
+          v-model="selectedDate"
+          round
+          size="large"
+          type="date"
+          placeholder="Cari tanggal"
+          clearable
+          style="width: 220px;"
+        />
+      </div>
+      <n-data-table
+        :columns="columns"
+        :data="displayedData"
+        :pagination="false"
+        :bordered="false"
+        :single-line="false"
+        :loading="loading"
       />
+      <div class="pagination-wrapper">
+        <n-pagination
+          :page="page"
+          :page-size="pageSize"
+          :item-count="total"
+          :page-slot="7"
+          @update:page="handlePageChange"
+          @update:page-size="handlePageSizeChange"
+          :page-sizes="[10, 20, 50]"
+          v-model="page"
+        />
+      </div>
     </n-space>
-
-    <n-space justify="space-between" align="center" style="padding: 0 16px; margin-bottom: 8px;">
-      <n-text :depth="3" class="column-header" style="width: 25%;">Bimbel</n-text>
-      <n-text :depth="3" class="column-header" style="width: 15%;">Kode</n-text>
-      <n-text :depth="3" class="column-header" style="width: 25%;">Tanggal</n-text>
-      <n-text :depth="3" class="column-header" style="width: 15%;">Jam</n-text>
-      <n-text :depth="3" class="column-header" style="width: 10%; text-align: center;">Detail</n-text>
-    </n-space>
-    <n-divider style="margin-top: 0; margin-bottom: 16px;" />
-
-    <n-space vertical>
-      <template v-if="filteredSchedule.length > 0">
-        <n-card
-          v-for="item in filteredSchedule"
-          :key="item.kode"
-          size="small"
-          hoverable
-        >
-          <n-space justify="space-between" align="center">
-            <div style="width: 25%;">
-              <n-text strong>{{ item.bimbel }}</n-text><br>
-              <n-text :depth="3">{{ item.pengajar }}</n-text>
-            </div>
-            <n-text style="width: 15%;">{{ item.kode }}</n-text>
-            <n-text style="width: 25%;">{{ item.tanggal }}</n-text>
-            <n-text style="width: 15%;">{{ item.jam }}</n-text>
-            <div style="width: 10%; text-align: center;">
-              <n-button tertiary circle @click="handleDetailClick(item)">
-                <template #icon>
-                  <n-icon :component="EllipsisHorizontal" />
-                </template>
-              </n-button>
-            </div>
-          </n-space>
-        </n-card>
-      </template>
-      <template v-else>
-        <n-empty description="Tidak ada jadwal yang sesuai dengan pencarian Anda." style="padding: 40px 0;"></n-empty>
-      </template>
-    </n-space>
-
-  </n-card>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, h, computed, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { NButton, NIcon, NDataTable, NSpace, NH1, NInput, useMessage } from 'naive-ui';
 import {
-  NCard,
-  NH1,
-  NText,
-  NInput,
-  NDatePicker,
-  NSpace,
-  NIcon,
-  NDivider,
-  NButton,
-  NEmpty,
-} from 'naive-ui';
-import { Search, EllipsisHorizontal } from '@vicons/ionicons5';
+  EllipsisHorizontal,
+} from '@vicons/ionicons5';
+import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
 
-// --- Data Reaktif ---
-const searchTerm = ref('');
-const selectedDate = ref(null); // Nilai akan berupa timestamp
+const message = useMessage();
+const router = useRouter();
+const searchText = ref('');
+const loading = ref(false);
 
-// --- Data Jadwal Statis ---
-// Dalam aplikasi nyata, data ini akan diambil dari API
-const scheduleData = ref([
-  {
-    bimbel: 'Matematika SMA',
-    pengajar: 'Pak Dendy Wan S.Pd',
-    kode: '#11234',
-    tanggal: 'Sabtu, 15 Maret 2025',
-    dateValue: new Date('2025-03-15').setHours(0, 0, 0, 0),
-    jam: '15:00',
-  },
-  {
-    bimbel: 'Matematika SD',
-    pengajar: 'Bu Luna S.Pd',
-    kode: '#11355',
-    tanggal: 'Sabtu, 15 Maret 2025',
-    dateValue: new Date('2025-03-15').setHours(0, 0, 0, 0),
-    jam: '15:00',
-  },
-  {
-    bimbel: 'Fisika SMA',
-    pengajar: 'Bu Wendy S.Pd',
-    kode: '#11237',
-    tanggal: 'Sabtu, 15 Maret 2025',
-    dateValue: new Date('2025-03-15').setHours(0, 0, 0, 0),
-    jam: '15:00',
-  },
-  {
-    bimbel: 'Seni SMA',
-    pengajar: 'Pak Wahyu Hendi S.Pd',
-    kode: '#11244',
-    tanggal: 'Sabtu, 15 Maret 2025',
-    dateValue: new Date('2025-03-15').setHours(0, 0, 0, 0),
-    jam: '15:00',
-  },
-  {
-    bimbel: 'Fokus UTBK',
-    pengajar: 'Pak Indra Jaya S.Pd',
-    kode: '#101',
-    tanggal: 'Sabtu, 15 Maret 2025',
-    dateValue: new Date('2025-03-15').setHours(0, 0, 0, 0),
-    jam: '15:00',
-  },
-  {
-    bimbel: 'English SMP',
-    pengajar: 'Bu Susi Wati S.Pd',
-    kode: '#11199',
-    tanggal: 'Sabtu, 15 Maret 2025',
-    dateValue: new Date('2025-03-15').setHours(0, 0, 0, 0),
-    jam: '15:00',
-  },
-  {
-    bimbel: 'Matematika SMA',
-    pengajar: 'Pak Dendy Wan S.Pd',
-    kode: '#11234',
-    tanggal: 'Senin, 17 Maret 2025',
-    dateValue: new Date('2025-03-17').setHours(0, 0, 0, 0),
-    jam: '15:00',
-  },
-  {
-    bimbel: 'Matematika SD',
-    pengajar: 'Bu Luna S.Pd',
-    kode: '#11355',
-    tanggal: 'Senin, 17 Maret 2025',
-    dateValue: new Date('2025-03-17').setHours(0, 0, 0, 0),
-    jam: '15:00',
-  },
-]);
+const page = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
 
-// --- Logika Filter ---
-const filteredSchedule = computed(() => {
-  let data = scheduleData.value;
+const data = ref([]);
 
-  // Filter berdasarkan Teks Pencarian
-  if (searchTerm.value) {
-    const lowerCaseSearch = searchTerm.value.toLowerCase();
-    data = data.filter(item =>
-      item.bimbel.toLowerCase().includes(lowerCaseSearch) ||
-      item.kode.toLowerCase().includes(lowerCaseSearch) ||
-      item.pengajar.toLowerCase().includes(lowerCaseSearch)
-    );
+const allData = ref([]); 
+
+async function fetchSiswa() {
+  loading.value = true;
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/new-students?page=${page.value}&limit=${pageSize.value}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    const siswaArr = json.data.data.map((item, idx) => ({
+      id: item.id,
+      key: idx,
+      name: item.name,
+      level: item.level,
+      phone: item.phone,
+      classCount: item.classCount,
+    }));
+    data.value = siswaArr;
+    total.value = json.data.total;
+  } catch (err) {
+    message.error('Gagal mengambil data siswa');
+  } finally {
+    loading.value = false;
   }
+}
 
-  // Filter berdasarkan Tanggal
-  if (selectedDate.value) {
-    data = data.filter(item => item.dateValue === selectedDate.value);
+async function fetchAllSiswa() {
+  loading.value = true;
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/new-students?page=1&limit=${total.value}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    allData.value = json.data.data.map((item, idx) => ({
+      id: item.id,
+      key: idx,
+      name: item.name,
+      level: item.level,
+      phone: item.phone,
+      classCount: item.classCount,
+    }));
+  } catch (err) {
+    allData.value = [];
+  } finally {
+    loading.value = false;
   }
+}
 
-  return data;
+watch([page, pageSize], () => {
+  if (!searchText.value) {
+    fetchSiswa();
+  }
+}, { immediate: true });
+
+
+watch(searchText, async (val) => {
+  if (val) {
+    await fetchAllSiswa();
+  } else {
+    fetchSiswa();
+  }
 });
 
-// --- Methods ---
-const handleDetailClick = (item) => {
-  // Ganti dengan logika yang Anda inginkan, misal membuka modal
-  alert(`Melihat detail untuk: ${item.bimbel} (${item.kode})`);
+const displayedData = computed(() => {
+  if (!searchText.value) {
+    return data.value;
+  }
+  return allData.value.filter((student) =>
+    student.name.toLowerCase().includes(searchText.value.toLowerCase())
+  );
+});
+
+function handlePageChange(newPage) {
+  page.value = newPage;
+  if (!searchText.value) fetchSiswa();
+}
+
+function handlePageSizeChange(newSize) {
+  pageSize.value = newSize;
+  page.value = 1;
+  if (!searchText.value) fetchSiswa();
+}
+
+const handleTambahSiswa = () => {
+  router.push('/dashboardadmin/siswa/tambahsiswa');
 };
+
+const viewDetails = (row) => {
+  router.push(`/dashboardadmin/siswa/${row.id}`);
+};
+
+const createColumns = ({ viewDetails }) => [
+  {
+    title: 'Nama',
+    key: 'name',
+    sorter: 'default',
+  },
+  {
+    title: 'Jenjang',
+    key: 'level',
+    filterOptions: [
+      { label: 'SMA', value: 'SMA' },
+      { label: 'SMP', value: 'SMP' },
+      { label: 'SD', value: 'SD' },
+    ],
+    filter(value, row) {
+      return row.level === value;
+    },
+  },
+  {
+    title: 'No. WhatsApp',
+    key: 'phone',
+    sorter: (rowA, rowB) => rowA.phone.localeCompare(rowB.phone),
+  },
+  {
+    title: 'Program',
+    key: 'classCount',
+    sorter: (rowA, rowB) => rowA.classCount - rowB.classCount,
+  },
+  {
+    title: 'Detail',
+    key: 'actions',
+    render(row) {
+      return h(
+        NButton,
+        {
+          tertiary: true,
+          circle: true,
+          disabled: !row.id,
+          onClick: () => row.id && viewDetails(row),
+        },
+        {
+          icon: () => h(NIcon, { component: EllipsisHorizontal }),
+        }
+      );
+    },
+  },
+];
+
+// --- Inisialisasi Kolom ---
+const columns = createColumns({
+  viewDetails,
+});
 </script>
 
 <style scoped>
-.column-header {
-  font-weight: bold;
-  font-size: 14px;
+.headlineb2 {
+  color: #154484;
+}
+.siswa-container {
+  background-color: #fff;
+  width: 100%;
+  border-radius: 12px;
+  padding: 20px;
+  height: fit-content;
 }
 
-/* Menambahkan sedikit padding pada setiap item jadwal untuk tampilan yang lebih baik */
-.n-card {
-  border-radius: 8px;
+.n-input-wrapper {
+  width: 100%;
 }
 
-.n-card:not(:last-child) {
-    margin-bottom: 12px;
+.search-tambah {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.img-search {
+  width: 16px;
+  height: auto;
+   margin-right: 8px;
+}
+
+/* Kustomisasi gaya tombol Tambah Siswa agar sesuai dengan gambar */
+:deep(.n-button--primary-type.n-button--ghost) {
+  border-color: #f28e23;
+  color: #f28e23;
+}
+:deep(.n-button--primary-type.n-button--ghost:hover) {
+  border-color: #d6791a;
+  background-color: #fef4e9;
+  color: #d6791a;
+}
+:deep(.n-button--primary-type.n-button--ghost .n-icon) {
+  color: #f28e23;
+}
+:deep(.n-button--primary-type.n-button--ghost:hover .n-icon) {
+  color: #d6791a;
+}
+
+/* Kustomisasi tombol detail (...) */
+:deep(.n-button--tertiary-type) {
+    border: 1px solid #f28e23;
+    color: #f28e23;
+}
+
+.pagination-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-start;
 }
 </style>
+

@@ -279,15 +279,15 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from, next) => {
-  const userRole = localStorage.getItem('role'); // contoh: 'admin' atau 'user'
+ router.beforeEach((to, from, next) => {
+   const userRole = localStorage.getItem('role'); // contoh: 'admin' atau 'user'
 
-  // Cek jika ingin akses dashboardadmin tapi bukan admin
-  if (to.path.startsWith('/dashboardadmin') && userRole !== 'admin') {
-    next({ name: 'Error403' });
-  } else {
-    next();
-  }
-});
+   // Cek jika ingin akses dashboardadmin tapi bukan admin
+   if (to.path.startsWith('/dashboardadmin') && userRole !== 'admin') {
+     next({ name: 'Error403' });
+   } else {
+     next();
+   }
+ });
 
 export default router

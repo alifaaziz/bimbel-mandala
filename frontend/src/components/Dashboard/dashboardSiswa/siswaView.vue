@@ -6,7 +6,7 @@
       <div class="search-tambah">
         <div class="search-container">
           <n-input
-            v-model:value="searchText"
+            v-model="searchText"
             round
             size="large"
             placeholder="Cari siswa">
@@ -34,7 +34,7 @@
           @update:page="handlePageChange"
           @update:page-size="handlePageSizeChange"
           :page-sizes="[10, 20, 50]"
-          v-model:page="page"
+          v-model="page"
         />
       </div>
     </n-space>

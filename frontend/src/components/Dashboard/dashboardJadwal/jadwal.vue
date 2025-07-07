@@ -1,15 +1,13 @@
 <script setup>
 import JadwalAktif from './JadwalAktif.vue';
 import ProgramAktif from './ProgramAktif.vue';
-import DetailJadwal from './DetailJadwal.vue';
 </script>
 
 <template>
     <div class="main-content">
         <JadwalAktif />
-        <div>
+        <div class="right-side">
             <ProgramAktif />
-            <DetailJadwal />
         </div>
     </div>
 </template>
