@@ -49,9 +49,10 @@ import ProgramAdmin from '@/components/Dashboard/dashboardProgram/ProgramAdmin.v
 import ProgramMain from '@/components/Dashboard/dashboardProgram/ProgramMain.vue';
 import ProgramAdd from '@/components/Dashboard/dashboardProgram/ProgramAdd.vue';
 
-
-
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
+
+import Error404 from '@/components/error404.vue';
+import Error403 from '@/components/error403.vue';
 
 
 const routes = [
@@ -63,6 +64,16 @@ const routes = [
         path: '', 
         name: 'Beranda', 
         component: Home,
+      },
+      {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: Error404
+      },
+      {
+        path: '/error403',
+        name: 'Error403',
+        component: Error403
       },
       { 
         path: 'detailprogram/:id', 
@@ -166,6 +177,7 @@ const routes = [
   {
     path: '/dashboardadmin', 
     component: Dashboardadmin,
+    meta: { requiresAdmin: true },
     children: [
       {
         path: '',
@@ -266,5 +278,16 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
+
+router.beforeEach((to, from, next) => {
+  const userRole = localStorage.getItem('role'); // contoh: 'admin' atau 'user'
+
+  // Cek jika ingin akses dashboardadmin tapi bukan admin
+  if (to.path.startsWith('/dashboardadmin') && userRole !== 'admin') {
+    next({ name: 'Error403' });
+  } else {
+    next();
+  }
+});
 
 export default router

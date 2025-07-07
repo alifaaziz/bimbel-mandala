@@ -2,12 +2,13 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { NSpace, NTag } from 'naive-ui';
-import butEditProfile from '@/components/dirButton/butEditProfile.vue';
 
 import JadwalTutor from './programjadwaltutor/JadwalTutor.vue';
 import ProgramTerbuka from './programjadwaltutor/ProgramTerbuka.vue';
+import ButEditProfileAdmin from '@/components/dirButton/butEditProfileAdmin.vue';
 
 const route = useRoute();
+const id = route.params.id;
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
 const tutorProfile = ref({
@@ -85,7 +86,7 @@ onMounted(async () => {
           </div>
         </div>
         <div class="headeer-part">
-          <butEditProfile />
+          <ButEditProfileAdmin :id="id"/>
         </div>
       </div>
       <n-divider class="divider" />
@@ -212,8 +213,7 @@ onMounted(async () => {
   border-radius: 12px;
   background-color: #fff;
   padding: 1rem;
-  overflow-y: auto;
-  height: 100vh;
+  height: fit-content;
 }
 .header-tutorprofile {
   display: flex;

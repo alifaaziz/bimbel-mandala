@@ -222,6 +222,7 @@ export default {
         <button
           v-for="(day, index) in days"
           :key="index"
+          type="button"
           :class="['day-button', { active: selectedDays.includes(day) }]"
           @click="toggleDay(day)"
         >

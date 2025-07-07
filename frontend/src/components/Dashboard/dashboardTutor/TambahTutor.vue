@@ -32,41 +32,33 @@
             />
           </n-form-item>
           <n-form-item label="Foto Diri" path="user.photo" class="col-span-2">
-            <n-input
-              readonly
-              placeholder="Masukkan foto tutor"
-              v-model:value="photoName"
-              @click="triggerFileInput"
-              class="custom-upload-input"
-            >
-              <template #suffix>
-                <n-icon>
-                  <i class="fas fa-folder"></i> <!-- Gunakan ikon folder -->
-                </n-icon>
-              </template>
-            </n-input>
-            <input
-              ref="fileInput"
-              type="file"
-              accept="image/*"
-              style="display: none"
-              @change="handleFileChange"
-            />
-          </n-form-item>
-          <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-2">
-            <n-date-picker v-model:value="formValue.user.ttg" type="date" />
+            <div class="form-group third-width">
+              <n-upload
+                :show-file-list="false"
+                :custom-request="handleCustomUpload"
+              >
+                <n-button>Upload Foto</n-button>
+              </n-upload>
+              <p class="bodyr3" v-if="formValue.user.photo">File dipilih: {{ formValue.user.photo.name }}</p>
+            </div>
           </n-form-item>
         </div>
         <div class="grid-form">
-          <n-form-item label="E-mail Tutor" path="user.email" class="col-span-4">
+          <n-form-item label="E-mail Tutor" path="user.email" class="col-span-3">
             <n-input
               v-model:value="formValue.user.email"
               placeholder="Tuliskan email tutor disini"
             />
           </n-form-item>
+          <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-3">
+            <n-input
+              v-model:value="formValue.user.wa"
+              placeholder="Tuliskan No. WhatsApp tutor disini"
+            />
+          </n-form-item>
         </div>
         <div class="grid-form">
-          <n-form-item label="Password Tutor" path="user.pass" class="col-span-4">
+          <n-form-item label="Password Tutor" path="user.pass" class="col-span-6">
             <n-input
               v-model:value="formValue.user.pass"
               placeholder="Tuliskan password tutor disini"
@@ -75,28 +67,61 @@
             />
           </n-form-item>
         </div>
+        <n-divider class="divider" />
+        <h2 class="headersb3">Pendidikan</h2>
         <div class="grid-form">
-          <n-form-item label="No. WhatsApp Tutor" path="user.wa" class="col-span-2">
-           <n-input
-              v-model:value="formValue.user.wa"
-              placeholder="Tuliskan no. WhatsApp tutor disini"
-              type="tel"
+          <n-form-item label="Asal Universitas" path="user.univ" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.univ"
+              placeholder="Tuliskan asal universitas tutor disini"
             />
-          </n-form-item> 
-          <n-form-item label="No. Telp Wali Tutor" path="user.wali" class="col-span-2">
-           <n-input
-              v-model:value="formValue.user.wali"
-              placeholder="Tuliskan no. telp wali tutor disini"
-              type="tel"
-            />
-          </n-form-item> 
+          </n-form-item>
         </div>
         <div class="grid-form">
-          <n-form-item label="Alamat Tutor" path="user.alamat" class="col-span-4">
+          <n-form-item label="Program Studi" path="user.prodi" class="col-span-4">
             <n-input
-              v-model:value="formValue.user.alamat"
-              placeholder="Tuliskan alamat tutor disini"
+              v-model:value="formValue.user.prodi"
+              placeholder="Tuliskan program studi tutor disini"
             />
+          </n-form-item>
+          <n-form-item label="Status" path="user.status" class="col-span-2">
+            <n-select
+              v-model:value="formValue.user.status"
+              :options="optionsStatus"
+              placeholder="Pilih status"
+            />
+          </n-form-item>
+        </div>
+        <n-divider class="divider" />
+        <h2 class="headersb3">Mengajar</h2>
+        <div class="grid-form">
+          <n-form-item label="Jenjang" path="user.jenjangAjar" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.jenjangAjar"
+              placeholder="SD, SMP, atau SMA"
+            />
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="Mata Pelajaran" path="user.pelajaran" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.pelajaran"
+              placeholder="Matematika, Bahasa Inggris, Fisika, dll."
+            />
+          </n-form-item>
+          <n-form-item label="Hari Aktif Mengajar" path="user.days" class="col-span-6">
+              <div class="hari-mengajar">
+                <div class="days">
+                  <button
+                    v-for="(day, index) in days"
+                    :key="index"
+                    :class="['day-button', { active: selectedDays.includes(day) }]"
+                    @click="toggleDay(day)"
+                  >
+                    {{ day }}
+                  </button>
+                </div>
+              </div>
           </n-form-item>
         </div>
       </n-form>
@@ -111,24 +136,9 @@
 
 <script setup>
 import { ref } from "vue";
-import { useMessage, NFormItem, NInput, NIcon } from "naive-ui";
+import { useMessage, NFormItem, NInput } from "naive-ui";
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 
-const triggerFileInput = () => {
-  fileInput.value?.click()
-}
-
-const handleFileChange = (e) => {
-  const file = e.target.files[0]
-  if (file) {
-    photoName.value = file.name
-    photoFile.value = file
-  }
-}
-
-const fileInput = ref(null)
-const photoName = ref('')
-const photoFile = ref(null)
 const formRef = ref(null);
 const message = useMessage();
 const size = ref("medium");
@@ -136,19 +146,34 @@ const size = ref("medium");
 const formValue = ref({
   user: {
     name: "",
-    jenjang: "",
+    ttg: null,
+    gender: "",
+    photo: null,
     email: "",
-    pass: "",
     wa: "",
-    wali: "",
-    alamat: ""
-
+    pass: "",
+    univ: "",
+    prodi: "",
+    status: "",
+    jenjangAjar: "",
+    pelajaran: "",
+    days:[],
   }
 });
 
 const optionsgender = [
   { label: "Laki-laki", value: "laki" },
   { label: "Perempuan", value: "perempuan" }
+];
+const optionsStatus = [
+  { label: "Semester 1-2", value: "tahun1" },
+  { label: "Semester 3-4", value: "tahun2" },
+  { label: "Semester 5-6", value: "tahun3" },
+  { label: "Semester 7-8", value: "tahun4" },
+  { label: "Semester 8<", value: "tahunakhir" },
+  { label: "Sarjana S1", value: "S1" },
+  { label: "Sarjana S2", value: "S2" },
+  { label: "Sarjana S3", value: "S3" },
 ];
 
 const rules = {
@@ -157,10 +182,20 @@ const rules = {
       required: true,
       message: "Wajib memasukkan nama tutor",
       trigger: "blur"
+    },  
+    gender: {
+      required: true,
+      message: "Wajib memasukkan jenis kelamin tutor",
+      trigger: "blur"
     },
     email: {
       required: true,
       message: "Wajib memasukkan email tutor",
+      trigger: "blur"
+    },
+    wa: {
+      required: true,
+      message: "Wajib memasukkan nomor WhatsApp tutor",
       trigger: "blur"
     },
     pass: {
@@ -168,11 +203,37 @@ const rules = {
       message: "Wajib memasukkan password tutor",
       trigger: "blur"
     },
-    jenjang: {
+    univ: {
       required: true,
-      message: "Pilih jenjang pendidikan tutor",
+      message: "Wajib memasukkan asal universitas tutor",
+      trigger: "blur"
+    },
+    prodi: {
+      required: true,
+      message: "Wajib memasukkan asal program studi tutor",
+      trigger: "blur"
+    },
+    status: {
+      required: true,
+      message: "Pilih status pendidikan tutor",
       trigger: ["blur", "change"]
     },
+    pelajaran: {
+      required: true,
+      message: "Wajib memasukkan mata pelajaran yang akan diajar tutor",
+      trigger: "blur"
+    },
+    jenjangAjar: {
+      required: true,
+      message: "Pilih jenjang ajar pendidikan tutor",
+      trigger: ["blur", "change"]
+    },
+    days: {
+      required: true,
+      validator: () => selectedDays.value.length > 0,
+      message: "Pilih minimal 1 hari aktif",
+      trigger: "change"
+    }
   }
 };
 
@@ -180,14 +241,38 @@ function handleValidateClick(e) {
   e.preventDefault();
   formRef.value?.validate((errors) => {
     if (!errors) {
+      const dataToShow = {
+        ...formValue.value,
+        user: {
+          ...formValue.value.user,
+          photo: formValue.value.user.photo?.name || null
+        }
+      };
+      alert("Data yang dimasukkan:\n" + JSON.stringify(dataToShow, null, 2));
       message.success("Valid");
-      alert("Data yang dimasukkan:\n" + JSON.stringify(formValue.value, null, 2));
     } else {
       console.log(errors);
       message.error("Invalid");
     }
   });
 }
+
+const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
+const selectedDays = ref([])
+
+function handleCustomUpload({ file }) {
+  formValue.value.user.photo = file.file;
+}
+
+function toggleDay(day) {
+  if (selectedDays.value.includes(day)) {
+    selectedDays.value = selectedDays.value.filter(d => d !== day)
+  } else {
+    selectedDays.value.push(day)
+  }
+  formValue.value.user.days = [...selectedDays.value];
+}
+
 </script>
 
 <style scoped>
@@ -200,15 +285,14 @@ function handleValidateClick(e) {
   border-radius: 16px;
   background-color: #fff;
   padding: 1rem;
-  overflow-y: auto;
-  height: 100vh;
+  height: fit-content;
 }
 .headerb1 {
   color: #154484;
 }
 .headersb3 {
   color: #154484;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 .divider {
   border-top: 1px solid #FEEBD9 !important;
@@ -247,5 +331,31 @@ function handleValidateClick(e) {
 }
 ::v-deep(.n-base-selection) {
   border-radius: 8px !important;
+}
+.days {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.day-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #154484;
+  border-radius: 20px;
+  background-color: white;
+  color: #154484;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.day-button.active,
+.day-button:hover {
+  background-color: #154484;
+  color: white;
+}
+
+.bodyr3{
+  color: #061222;
+  margin-top: 0.5rem;
 }
 </style>

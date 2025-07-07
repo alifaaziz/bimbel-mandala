@@ -140,7 +140,7 @@ const columns = createColumns({
         router.push(`/dashboardadmin/tutor/profiltutor/${row.key}`);
         break;
       case 'edit':
-        router.push(`/dashboardadmin/tutor/edit/${row.key}`);
+        router.push(`/dashboardadmin/tutor/edittutor/${row.key}`);
         break;
       case 'delete':
         if (confirm(`Yakin hapus tutor "${row.nama}"?`)) {
