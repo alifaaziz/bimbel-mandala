@@ -76,7 +76,10 @@ describe('AuthController', () => {
 
       await AuthController.createUserWithRole(req, res);
 
-      expect(UserService.createUserWithRole).toHaveBeenCalledWith({ name: 'Admin', role: 'admin' });
+      expect(UserService.createUserWithRole).toHaveBeenCalledWith(
+        { name: 'Admin', role: 'admin' },
+        undefined
+      );
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({ data: userMock });
     });

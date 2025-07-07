@@ -7,6 +7,7 @@ import { CommonValidationMiddleware } from '../middlewares/validation/common.js'
 import { OtpValidationMiddleware } from '../middlewares/validation/otp.js';
 import { AuthMiddleware } from '../middlewares/auth.js';
 import { appEnv } from '../utils/env.js';
+import { upload } from '../middlewares/upload.js';
 
 export default (app) => {
     const router = Router();
@@ -69,6 +70,7 @@ export default (app) => {
     router.post(
         '/add-user',
         AuthMiddleware.isAuthorized,
+        upload.single('photo'),
         AuthMiddleware.hasRole('admin'),
         AuthController.createUserWithRole
     );
