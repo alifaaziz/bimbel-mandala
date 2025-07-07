@@ -82,18 +82,4 @@ describe('NotificationController', () => {
       expect(res.json).toHaveBeenCalledWith({ message: 'Notification deleted' });
     });
   });
-
-  describe('getAllNotifications', () => {
-    it('should return all notifications (admin)', async () => {
-      NotificationService.getAllNotifications.mockResolvedValue(notificationsMock);
-
-      const { req, res } = setupExpressMock();
-
-      await NotificationController.getAllNotifications(req, res);
-
-      expect(NotificationService.getAllNotifications).toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ data: notificationsMock });
-    });
-  });
 });

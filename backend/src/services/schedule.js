@@ -823,5 +823,6 @@ export const ScheduleService = {
   getScheduleBySlug,
   getNextDate,
   getTutorName,
-  getClosestScheduleBySlug
+  getClosestScheduleBySlug,
+  getScheduleByUserId
 };
