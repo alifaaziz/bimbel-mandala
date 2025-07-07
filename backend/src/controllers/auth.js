@@ -49,7 +49,7 @@ async function register(req, res) {
  * @throws {Error} Throws an error if admin user creation fails.
  */
 async function createUserWithRole(req, res) {
-    const adminUser = await UserService.createUserWithRole(req.body);
+    const adminUser = await UserService.createUserWithRole(req.body, req.file);
     res.status(201).json({ data: adminUser });
 }
 

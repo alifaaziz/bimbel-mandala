@@ -33,7 +33,13 @@
           </n-form-item>
           <n-form-item label="Foto Diri" path="user.photo" class="col-span-2">
             <div class="form-group third-width">
-              <n-input placeholder="" type="file" id="foto" @change="e => formData.foto = e.target.files[0]" />
+              <n-upload
+                :show-file-list="false"
+                :custom-request="handleCustomUpload"
+              >
+                <n-button>Upload Foto</n-button>
+              </n-upload>
+              <p class="bodyr3" v-if="formValue.user.photo">File dipilih: {{ formValue.user.photo.name }}</p>
             </div>
           </n-form-item>
         </div>
@@ -107,6 +113,7 @@
               <div class="hari-mengajar">
                 <div class="days">
                   <button
+                    type="button"
                     v-for="(day, index) in days"
                     :key="index"
                     :class="['day-button', { active: selectedDays.includes(day) }]"
@@ -119,9 +126,8 @@
           </n-form-item>
         </div>
       </n-form>
-
       <butPrimerNormal
-        @click="handleValidateClick"
+        type="submit"
         label="Simpan Akun Tutor"
       />
     </div>
@@ -130,24 +136,9 @@
 
 <script setup>
 import { ref } from "vue";
-import { useMessage, NFormItem, NInput, NIcon } from "naive-ui";
+import { useMessage, NFormItem, NInput } from "naive-ui";
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 
-const triggerFileInput = () => {
-  fileInput.value?.click()
-}
-
-const handleFileChange = (e) => {
-  const file = e.target.files[0]
-  if (file) {
-    photoName.value = file.name
-    photoFile.value = file
-  }
-}
-
-const fileInput = ref(null)
-const photoName = ref('')
-const photoFile = ref(null)
 const formRef = ref(null);
 const message = useMessage();
 const size = ref("medium");
@@ -155,24 +146,20 @@ const size = ref("medium");
 const formValue = ref({
   user: {
     name: "",
-    jenjang: "",
+    ttg: null,
+    gender: "",
+    photo: null,
     email: "",
-    pass: "",
     wa: "",
-    wali: "",
-    alamat: ""
-
+    pass: "",
+    univ: "",
+    prodi: "",
+    status: "",
+    jenjangAjar: "",
+    pelajaran: "",
+    days:[],
   }
 });
-
-const optionsDays = [
-  { label: "Senin", value: "Senin" },
-  { label: "Selasa", value: "Selasa" },
-  { label: "Rabu", value: "Rabu" },
-  { label: "Kamis", value: "Kamis" },
-  { label: "Jum'at", value: "Jum'at" },
-  { label: "Sabtu", value: "Sabtu" },
-];
 
 const optionsgender = [
   { label: "Laki-laki", value: "laki" },
@@ -195,10 +182,20 @@ const rules = {
       required: true,
       message: "Wajib memasukkan nama tutor",
       trigger: "blur"
+    },  
+    gender: {
+      required: true,
+      message: "Wajib memasukkan jenis kelamin tutor",
+      trigger: "blur"
     },
     email: {
       required: true,
       message: "Wajib memasukkan email tutor",
+      trigger: "blur"
+    },
+    wa: {
+      required: true,
+      message: "Wajib memasukkan nomor WhatsApp tutor",
       trigger: "blur"
     },
     pass: {
@@ -206,29 +203,60 @@ const rules = {
       message: "Wajib memasukkan password tutor",
       trigger: "blur"
     },
-    jenjang: {
+    univ: {
       required: true,
-      message: "Pilih jenjang pendidikan tutor",
+      message: "Wajib memasukkan asal universitas tutor",
+      trigger: "blur"
+    },
+    prodi: {
+      required: true,
+      message: "Wajib memasukkan asal program studi tutor",
+      trigger: "blur"
+    },
+    status: {
+      required: true,
+      message: "Pilih status pendidikan tutor",
       trigger: ["blur", "change"]
     },
+    pelajaran: {
+      required: true,
+      message: "Wajib memasukkan mata pelajaran yang akan diajar tutor",
+      trigger: "blur"
+    },
+    jenjangAjar: {
+      required: true,
+      message: "Pilih jenjang ajar pendidikan tutor",
+      trigger: ["blur", "change"]
+    },
+    days: {
+      required: true,
+      validator: () => selectedDays.value.length > 0,
+      message: "Pilih minimal 1 hari aktif",
+      trigger: "change"
+    }
   }
 };
 
-function handleValidateClick(e) {
-  e.preventDefault();
+function handleValidateClick() {
   formRef.value?.validate((errors) => {
     if (!errors) {
-      message.success("Valid");
-      alert("Data yang dimasukkan:\n" + JSON.stringify(formValue.value, null, 2));
+      message.success("Data valid, mengarahkan...");
+      router.push(''); 
+      // KOSONGAN
     } else {
       console.log(errors);
-      message.error("Invalid");
+      message.error("Data tidak valid");
     }
   });
 }
 
+
 const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
 const selectedDays = ref([])
+
+function handleCustomUpload({ file }) {
+  formValue.value.user.photo = file.file;
+}
 
 function toggleDay(day) {
   if (selectedDays.value.includes(day)) {
@@ -236,6 +264,7 @@ function toggleDay(day) {
   } else {
     selectedDays.value.push(day)
   }
+  formValue.value.user.days = [...selectedDays.value];
 }
 
 </script>
@@ -301,7 +330,6 @@ function toggleDay(day) {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
 }
 .day-button {
   padding: 0.5rem 1rem;
@@ -318,5 +346,10 @@ function toggleDay(day) {
 .day-button:hover {
   background-color: #154484;
   color: white;
+}
+
+.bodyr3{
+  color: #061222;
+  margin-top: 0.5rem;
 }
 </style>

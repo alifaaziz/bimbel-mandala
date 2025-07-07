@@ -93,8 +93,8 @@ async function createStudent(payload, options = {}) {
  * @returns {Promise<Object>} The new user object.
  * @throws {HttpError} Throws an error if the user creation fails.
  */
-async function createUserWithRole(payload) {
-    const { name, email, password, role, ...additionalData } = payload;
+async function createUserWithRole(payload, file) {
+    const { name, email, password, role, days, ...additionalData } = payload;
 
     if (role !== 'tutor' && role !== 'admin') {
         throw new HttpError(400, { message: 'Invalid role for this function' });
@@ -103,22 +103,24 @@ async function createUserWithRole(payload) {
     const encryptedPassword = await AuthService.hashPassword(password);
 
     const parsedUserWithEncryptedPassword = {
-        name: payload.name,
-        email: payload.email,
+        name,
+        email,
         password: encryptedPassword,
-        role: payload.role,
+        role,
         googleId: payload.googleId || null,
     };
 
     let user = await prisma.user.findFirst({
-        where: {
-            email
-        }
+        where: { email }
     });
 
     if (user) {
-        let errorMessage = 'Email already exists';
-        throw new HttpError(409, { message: errorMessage });
+        throw new HttpError(409, { message: 'Email already exists' });
+    }
+
+    if (file) {
+        const photoPath = await savePhoto(file, name || 'tutor');
+        additionalData.photo = photoPath;
     }
 
     const newUser = await prisma.user.create({
@@ -130,13 +132,28 @@ async function createUserWithRole(payload) {
 
     user = newUser;
 
+    let tutor;
     if (role === 'tutor') {
-        await prisma.tutor.create({
+        tutor = await prisma.tutor.create({
             data: {
                 userId: user.id,
                 ...additionalData,
             }
         });
+
+        if (Array.isArray(days)) {
+            for (const dayName of days) {
+                const day = await prisma.day.findFirst({ where: { daysName: dayName } });
+                if (day) {
+                    await prisma.tutorDay.create({
+                        data: {
+                            tutorId: tutor.id,
+                            daysId: day.id
+                        }
+                    });
+                }
+            }
+        }
 
         await prisma.notification.create({
             data: {
@@ -509,57 +526,44 @@ async function getStatistics() {
  * @returns {Promise<void>}
  */
 async function deleteUser(userId) {
-    // Hapus student dan relasinya
     await prisma.studentClass.deleteMany({ where: { userId } });
     await prisma.attendance.deleteMany({ where: { userId } });
     await prisma.student.deleteMany({ where: { userId } });
 
-    // Hapus tutor dan relasinya
     const tutor = await prisma.tutor.findUnique({ where: { userId } });
     if (tutor) {
         await prisma.tutorDay.deleteMany({ where: { tutorId: tutor.id } });
-        // Tambahkan penghapusan relasi lain yang pakai tutorId jika ada
         await prisma.tutor.deleteMany({ where: { userId } });
     }
 
-    // Hapus semua package milik user
     const packages = await prisma.bimbelPackage.findMany({ where: { userId } });
     for (const pkg of packages) {
-        // Hapus groupType yang terhubung ke package
         const groupTypes = await prisma.groupType.findMany({ where: { packageId: pkg.id } });
         for (const gt of groupTypes) {
-            // Hapus order yang terhubung ke groupType
             await prisma.order.deleteMany({ where: { groupTypeId: gt.id } });
         }
         await prisma.groupType.deleteMany({ where: { packageId: pkg.id } });
 
-        // Hapus packageDay yang terhubung ke package
         await prisma.packageDay.deleteMany({ where: { packageId: pkg.id } });
 
-        // Hapus order yang terhubung ke package
         await prisma.order.deleteMany({ where: { packageId: pkg.id } });
 
-        // Hapus class yang terhubung ke order (class.orderId)
         const orders = await prisma.order.findMany({ where: { packageId: pkg.id } });
         for (const order of orders) {
             await prisma.class.deleteMany({ where: { orderId: order.id } });
         }
 
-        // Hapus class yang tutorId-nya user ini (jaga-jaga)
         await prisma.class.deleteMany({ where: { tutorId: userId } });
 
-        // Hapus bimbelPackage itu sendiri
         await prisma.bimbelPackage.delete({ where: { id: pkg.id } });
     }
 
-    // Hapus order, notification, passwordReset, otp, salary yang terhubung ke user
     await prisma.order.deleteMany({ where: { userId } });
     await prisma.notification.deleteMany({ where: { userId } });
     await prisma.passwordReset.deleteMany({ where: { userId } });
     await prisma.otp.deleteMany({ where: { userId } });
     await prisma.salary.deleteMany({ where: { userId } });
 
-    // Hapus user terakhir
     await prisma.user.delete({ where: { id: userId } });
 }
 

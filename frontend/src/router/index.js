@@ -42,6 +42,7 @@ import TambahTutor from '@/components/Dashboard/dashboardTutor/TambahTutor.vue';
 import EditTutor from '@/components/Dashboard/dashboardTutor/TutorEditForm.vue';
 import TutorProfile from '@/components/Dashboard/dashboardTutor/TutorProfile.vue';
 import VerifikasiTutor from '@/components/Dashboard/dashboardTutor/TutorVerification.vue';
+import VerificationSuccess from '@/components/Dashboard/dashboardTutor/VerificationSuccess.vue';
 
 import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
 
@@ -241,6 +242,12 @@ const routes = [
             name: 'VerifikasiTutor',
             component: VerifikasiTutor
           },
+          {
+            path: 'verifikasisukses',
+            name: 'VerificationSuccess',
+            component: VerificationSuccess
+          },
+
         ]
       },
       {

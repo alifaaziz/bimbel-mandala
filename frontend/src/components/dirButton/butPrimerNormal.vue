@@ -4,6 +4,7 @@
           class="custom-button buttonm3"
           tertiary
           round
+          :type="type"
         >
           {{ label }}
         </n-button>
@@ -15,6 +16,10 @@ defineProps({
   label: {
     type: String,
     default: 'Submit'
+  },
+  type: {
+    type: String,
+    default: 'button'
   }
 });
 </script>

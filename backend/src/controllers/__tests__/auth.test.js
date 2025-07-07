@@ -76,7 +76,10 @@ describe('AuthController', () => {
 
       await AuthController.createUserWithRole(req, res);
 
-      expect(UserService.createUserWithRole).toHaveBeenCalledWith({ name: 'Admin', role: 'admin' });
+      expect(UserService.createUserWithRole).toHaveBeenCalledWith(
+        { name: 'Admin', role: 'admin' },
+        undefined
+      );
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({ data: userMock });
     });
@@ -183,6 +186,44 @@ describe('AuthController', () => {
       });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ message: 'Password changed successfully' });
+    });
+  });
+
+  describe('addStudentByAdmin', () => {
+    it('should add student with skipOtp true if user is admin', async () => {
+      UserService.createStudent.mockResolvedValue({ id: 2, name: 'Student' });
+
+      const { req, res } = setupExpressMock({
+        req: { body: { name: 'Student', email: 'student@mail.com' } },
+      });
+      res.locals.user = { id: 1, role: 'admin' };
+
+      await AuthController.addStudentByAdmin(req, res);
+
+      expect(UserService.createStudent).toHaveBeenCalledWith(
+        { name: 'Student', email: 'student@mail.com' },
+        { skipOtp: true }
+      );
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Student added successfully' });
+    });
+
+    it('should add student with skipOtp false if user is not admin', async () => {
+      UserService.createStudent.mockResolvedValue({ id: 2, name: 'Student' });
+
+      const { req, res } = setupExpressMock({
+        req: { body: { name: 'Student', email: 'student@mail.com' } },
+      });
+      res.locals.user = { id: 1, role: 'student' };
+
+      await AuthController.addStudentByAdmin(req, res);
+
+      expect(UserService.createStudent).toHaveBeenCalledWith(
+        { name: 'Student', email: 'student@mail.com' },
+        { skipOtp: false }
+      );
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Student added successfully' });
     });
   });
 });

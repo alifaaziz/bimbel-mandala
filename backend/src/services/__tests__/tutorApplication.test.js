@@ -4,54 +4,56 @@ const mockPrisma = {
   tutorApplication: {
     findUnique: jest.fn(),
     create: jest.fn(),
-    delete: jest.fn(),
+    findMany: jest.fn(),
+    count: jest.fn(),
+    delete: jest.fn()
   },
   user: {
     findUnique: jest.fn(),
-    create: jest.fn(),
+    create: jest.fn()
   },
   tutor: {
-    create: jest.fn(),
+    create: jest.fn()
   },
   notification: {
-    create: jest.fn(),
+    create: jest.fn()
   },
-  $transaction: jest.fn(),
+  $transaction: jest.fn()
 };
 
 const mockBcrypt = {
-  hash: jest.fn(),
+  hash: jest.fn(async pw => 'hashed_' + pw)
 };
 
 const mockSendTutorVerificationEmail = jest.fn();
-const mockSavePhoto = jest.fn();
+const mockSavePhoto = jest.fn(async () => '/photo/path.jpg');
+const mockHttpError = class HttpError extends Error {
+  constructor(status, data) {
+    super(data?.message || 'error');
+    this.statusCode = status;
+    this.data = data;
+  }
+};
 
 jest.unstable_mockModule('../../utils/db.js', () => ({
-  prisma: mockPrisma,
+  prisma: mockPrisma
 }));
 jest.unstable_mockModule('bcrypt', () => ({
   __esModule: true,
   default: mockBcrypt,
-  ...mockBcrypt,
+  ...mockBcrypt
 }));
 jest.unstable_mockModule('../../utils/emails/core/tutor.js', () => ({
-  sendTutorVerificationEmail: mockSendTutorVerificationEmail,
-}));
-jest.unstable_mockModule('../../utils/error.js', () => ({
-  HttpError: class HttpError extends Error {
-    constructor(status, data) {
-      super(data?.message || 'error');
-      this.statusCode = status;
-      this.data = data;
-    }
-  },
+  sendTutorVerificationEmail: mockSendTutorVerificationEmail
 }));
 jest.unstable_mockModule('../../utils/helper.js', () => ({
-  savePhoto: mockSavePhoto,
+  savePhoto: mockSavePhoto
+}));
+jest.unstable_mockModule('../../utils/error.js', () => ({
+  HttpError: mockHttpError
 }));
 
 const { TutorApplicationService } = await import('../tutorApplication.js');
-const { HttpError } = await import('../../utils/error.js');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -59,95 +61,173 @@ beforeEach(() => {
 
 describe('TutorApplicationService', () => {
   describe('applyTutor', () => {
-    it('should throw if email already used in tutorApplication', async () => {
+    it('throws if email already used in tutorApplication', async () => {
       mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce({ id: 1 });
-      await expect(
-        TutorApplicationService.applyTutor({ email: 'a@mail.com', name: 'A' })
-      ).rejects.toThrow(HttpError);
+      await expect(TutorApplicationService.applyTutor({ email: 'a@mail.com' }))
+        .rejects.toThrow('Email sudah digunakan untuk pendaftaran tutor.');
     });
 
-    it('should throw if email already used in user', async () => {
+    it('throws if email already used in user', async () => {
       mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 2 });
-      await expect(
-        TutorApplicationService.applyTutor({ email: 'a@mail.com', name: 'A' })
-      ).rejects.toThrow(HttpError);
+      await expect(TutorApplicationService.applyTutor({ email: 'a@mail.com' }))
+        .rejects.toThrow('Email sudah terdaftar sebagai pengguna.');
     });
 
-    it('should create tutor application without photo', async () => {
+    it('saves photo if file provided', async () => {
       mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-      mockPrisma.tutorApplication.create.mockResolvedValueOnce({ id: 3, email: 'a@mail.com' });
-
-      const result = await TutorApplicationService.applyTutor({ email: 'a@mail.com', name: 'A' });
-      expect(mockPrisma.tutorApplication.create).toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining({ email: 'a@mail.com' }) })
-      );
-      expect(result).toHaveProperty('id', 3);
+      mockPrisma.tutorApplication.create.mockResolvedValueOnce({ id: 3, name: 'A' });
+      const file = { buffer: Buffer.from('img'), originalname: 'img.jpg' };
+      const result = await TutorApplicationService.applyTutor({ email: 'a@mail.com', name: 'A' }, file);
+      expect(mockSavePhoto).toHaveBeenCalled();
+      expect(result).toMatchObject({ id: 3, name: 'A' });
     });
 
-    it('should create tutor application with photo', async () => {
+    it('creates application if email not used', async () => {
       mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-      mockPrisma.tutorApplication.create.mockResolvedValueOnce({ id: 4, email: 'b@mail.com', photo: '/public/photo.jpg' });
-      mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
+      mockPrisma.tutorApplication.create.mockResolvedValueOnce({ id: 4, name: 'B' });
+      const result = await TutorApplicationService.applyTutor({ email: 'b@mail.com', name: 'B' });
+      expect(mockPrisma.tutorApplication.create).toHaveBeenCalled();
+      expect(result).toMatchObject({ id: 4, name: 'B' });
+    });
 
-      const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
-
-      const result = await TutorApplicationService.applyTutor({ email: 'b@mail.com', name: 'B' }, file);
-      expect(mockSavePhoto).toHaveBeenCalledWith(file, 'B');
-      expect(result).toHaveProperty('photo', '/public/photo.jpg');
+    it('saves photo with "tutor" if data.name is not provided', async () => {
+      mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.tutorApplication.create.mockResolvedValueOnce({ id: 5, name: undefined, photo: '/photo/path.jpg' });
+      const file = { buffer: Buffer.from('img'), originalname: 'img.jpg' };
+      await TutorApplicationService.applyTutor({ email: 'c@mail.com' }, file);
+      expect(mockSavePhoto).toHaveBeenCalledWith(file, 'tutor');
     });
   });
 
   describe('verifyTutor', () => {
-    it('should throw if tutor application not found', async () => {
-      mockPrisma.$transaction.mockImplementationOnce(async (cb) =>
-        cb({
-          tutorApplication: { findUnique: jest.fn().mockResolvedValueOnce(null) },
-        })
-      );
-      await expect(TutorApplicationService.verifyTutor(123)).rejects.toThrow(HttpError);
+    it('throws if application not found', async () => {
+      mockPrisma.$transaction.mockImplementationOnce(async fn => {
+        return await fn({
+          tutorApplication: { findUnique: jest.fn().mockResolvedValueOnce(null) }
+        });
+      });
+      await expect(TutorApplicationService.verifyTutor('notfound'))
+        .rejects.toThrow('Tutor application not found');
     });
 
-    it('should create user, tutor, delete application, notify, and send email', async () => {
+    it('creates user, tutor, deletes application, sends email and notification', async () => {
       const fakeApp = {
-        id: 5,
-        name: 'Tutor',
-        email: 'tutor@mail.com',
+        id: 'app1',
+        name: 'T',
+        email: 't@mail.com',
         birthDate: '2000-01-01',
-        gender: 'L',
-        phone: '123',
+        gender: 'Male',
+        phone: '0812',
         subjects: 'Math',
         status: 'active',
         major: 'Math',
-        school: 'School',
+        school: 'SMA',
         teachLevel: 'SMA',
         description: 'desc',
-        photo: '/public/photo.jpg',
+        photo: '/photo.jpg'
       };
-      const fakeUser = { id: 10, email: fakeApp.email, name: fakeApp.name };
-
-      mockBcrypt.hash.mockResolvedValueOnce('hashedpw');
-      mockPrisma.$transaction.mockImplementationOnce(async (cb) =>
-        cb({
+      const fakeUser = { id: 10, email: 't@mail.com', name: 'T' };
+      mockPrisma.$transaction.mockImplementationOnce(async fn => {
+        return await fn({
           tutorApplication: {
             findUnique: jest.fn().mockResolvedValueOnce(fakeApp),
-            delete: jest.fn(),
+            delete: jest.fn().mockResolvedValueOnce({})
           },
-          user: { create: jest.fn().mockResolvedValueOnce(fakeUser) },
-          tutor: { create: jest.fn() },
-          notification: { create: jest.fn() },
-        })
-      );
+          user: {
+            create: jest.fn().mockResolvedValueOnce(fakeUser)
+          },
+          tutor: {
+            create: jest.fn().mockResolvedValueOnce({})
+          },
+          notification: {
+            create: jest.fn().mockResolvedValueOnce({})
+          }
+        });
+      });
+      mockBcrypt.hash.mockResolvedValueOnce('hashed_pw');
+      const result = await TutorApplicationService.verifyTutor('app1');
+      expect(result).toMatchObject({ id: 10, email: 't@mail.com', name: 'T' });
+      expect(mockSendTutorVerificationEmail).toHaveBeenCalledWith('t@mail.com', 'bimbelmandala');
+    });
+  });
 
-      const result = await TutorApplicationService.verifyTutor(5);
-      expect(result).toHaveProperty('id', 10);
-      expect(mockBcrypt.hash).toHaveBeenCalledWith('bimbelmandala', 10);
-      expect(mockSendTutorVerificationEmail).toHaveBeenCalledWith(
-        fakeApp.email,
-        'bimbelmandala'
-      );
+  describe('getTutorApplications', () => {
+    it('returns paginated applications', async () => {
+      mockPrisma.tutorApplication.findMany.mockResolvedValueOnce([
+        { id: 1, name: 'A' },
+        { id: 2, name: 'B' }
+      ]);
+      mockPrisma.tutorApplication.count.mockResolvedValueOnce(2);
+      const result = await TutorApplicationService.getTutorApplications({ page: 1, pageSize: 2 });
+      expect(result.data).toEqual([
+        { id: 1, name: 'A' },
+        { id: 2, name: 'B' }
+      ]);
+      expect(result.total).toBe(2);
+      expect(result.page).toBe(1);
+      expect(result.pageSize).toBe(2);
+    });
+
+    it('returns empty array if no applications', async () => {
+      mockPrisma.tutorApplication.findMany.mockResolvedValueOnce([]);
+      mockPrisma.tutorApplication.count.mockResolvedValueOnce(0);
+      const result = await TutorApplicationService.getTutorApplications({ page: 1, pageSize: 2 });
+      expect(result.data).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+
+    it('uses default pagination if no parameter is given', async () => {
+      mockPrisma.tutorApplication.findMany.mockResolvedValueOnce([]);
+      mockPrisma.tutorApplication.count.mockResolvedValueOnce(0);
+      const result = await TutorApplicationService.getTutorApplications();
+      expect(mockPrisma.tutorApplication.findMany).toHaveBeenCalledWith({
+        skip: 0,
+        take: 10,
+        orderBy: { createdAt: 'asc' },
+      });
+      expect(result).toMatchObject({ data: [], total: 0, page: 1, pageSize: 10 });
+    });
+    
+    it('uses default pagination if empty object is given', async () => {
+      mockPrisma.tutorApplication.findMany.mockResolvedValueOnce([]);
+      mockPrisma.tutorApplication.count.mockResolvedValueOnce(0);
+      const result = await TutorApplicationService.getTutorApplications({});
+      expect(mockPrisma.tutorApplication.findMany).toHaveBeenCalledWith({
+        skip: 0,
+        take: 10,
+        orderBy: { createdAt: 'asc' },
+      });
+      expect(result).toMatchObject({ data: [], total: 0, page: 1, pageSize: 10 });
+    });
+    
+    it('uses provided page and pageSize', async () => {
+      mockPrisma.tutorApplication.findMany.mockResolvedValueOnce([{ id: 1, name: 'A' }]);
+      mockPrisma.tutorApplication.count.mockResolvedValueOnce(1);
+      const result = await TutorApplicationService.getTutorApplications({ page: 2, pageSize: 5 });
+      expect(mockPrisma.tutorApplication.findMany).toHaveBeenCalledWith({
+        skip: 5,
+        take: 5,
+        orderBy: { createdAt: 'asc' },
+      });
+      expect(result).toMatchObject({ data: [{ id: 1, name: 'A' }], total: 1, page: 2, pageSize: 5 });
+    });
+  });
+
+  describe('getTutorApplicationById', () => {
+    it('returns application if found', async () => {
+      mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce({ id: 1, name: 'A' });
+      const result = await TutorApplicationService.getTutorApplicationById(1);
+      expect(result).toMatchObject({ id: 1, name: 'A' });
+    });
+
+    it('returns null if not found', async () => {
+      mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
+      const result = await TutorApplicationService.getTutorApplicationById('notfound');
+      expect(result).toBeNull();
     });
   });
 });
