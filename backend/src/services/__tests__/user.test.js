@@ -1,598 +1,788 @@
 import { jest } from '@jest/globals';
 
-// ==== MOCK DATA ====
-const mockUser = {
-    id: 1,
-    name: 'Test User',
-    email: 'test@mail.com',
-    password: 'hashedpass',
-    role: 'siswa',
-    googleId: null,
-    verified: true,
-    createdAt: new Date(),
-    students: [{ level: 'SMA' }],
-    tutors: [],
-    _count: { class: 2, studentClass: 3 }
-};
-
-const mockTutor = {
-    id: 2,
-    name: 'Tutor User',
-    email: 'tutor@mail.com',
-    password: 'hashedpass',
-    role: 'tutor',
-    googleId: null,
-    verified: true,
-    createdAt: new Date(),
-    students: [],
-    tutors: [{
-        subjects: 'Math',
-        teachLevel: 'SMA',
-        description: 'desc',
-        photo: 'photo.jpg',
-        tutorDay: [{ day: { daysName: 'Senin' } }]
-    }],
-    _count: { class: 5 }
-};
-
-const mockStudent = {
-    id: 3,
-    name: 'Student User',
-    email: 'student@mail.com',
-    password: 'hashedpass',
-    role: 'siswa',
-    googleId: null,
-    verified: true,
-    createdAt: new Date(),
-    students: [{ level: 'SMP' }],
-    tutors: [],
-    _count: { studentClass: 4 }
-};
-
-// ==== MOCK PRISMA ====
 const mockPrisma = {
-    user: {
-        findFirst: jest.fn(),
-        findUnique: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-        findMany: jest.fn(),
-        count: jest.fn()
-    },
-    student: {
-        create: jest.fn(),
-        update: jest.fn()
-    },
-    tutor: {
-        create: jest.fn(),
-        update: jest.fn(),
-        findMany: jest.fn(),
-        findUnique: jest.fn()
-    },
-    notification: {
-        create: jest.fn()
-    },
-    tutorDay: {
-        deleteMany: jest.fn(),
-        create: jest.fn()
-    },
-    day: {
-        findFirst: jest.fn()
-    },
-    bimbelPackage: {
-        count: jest.fn()
-    }
+  user: {
+    findFirst: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
+    count: jest.fn(),
+    delete: jest.fn()
+  },
+  student: {
+    create: jest.fn(),
+    update: jest.fn(),
+    deleteMany: jest.fn()
+  },
+  tutor: {
+    create: jest.fn(),
+    update: jest.fn(),
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+    deleteMany: jest.fn()
+  },
+  notification: {
+    create: jest.fn(),
+    deleteMany: jest.fn()
+  },
+  tutorDay: {
+    deleteMany: jest.fn(),
+    create: jest.fn()
+  },
+  day: {
+    findFirst: jest.fn()
+  },
+  attendance: { deleteMany: jest.fn() },
+  studentClass: { deleteMany: jest.fn() },
+  bimbelPackage: {
+    count: jest.fn(),
+    findMany: jest.fn(),
+    delete: jest.fn()
+  },
+  groupType: { findMany: jest.fn(), deleteMany: jest.fn() },
+  order: { deleteMany: jest.fn(), findMany: jest.fn() },
+  packageDay: { deleteMany: jest.fn() },
+  passwordReset: { deleteMany: jest.fn() },
+  otp: { deleteMany: jest.fn() },
+  salary: { deleteMany: jest.fn() },
+  class: { deleteMany: jest.fn() }
 };
 
-// ==== MOCK MODULES ====
+const mockAuthService = {
+  hashPassword: jest.fn(async pw => 'hashed_' + pw)
+};
+const mockOtpService = { sendUserVerificationOtp: jest.fn() };
+const mockSavePhoto = jest.fn(async () => '/photo/path.jpg');
+const mockHttpError = class HttpError extends Error {
+  constructor(status, data) {
+    super(data?.message || 'error');
+    this.statusCode = status;
+    this.data = data;
+  }
+};
+
 jest.unstable_mockModule('../../utils/db.js', () => ({
-    prisma: mockPrisma
+  prisma: mockPrisma
 }));
-
-const mockHashPassword = jest.fn(async (pw) => 'hashed_' + pw);
-const mockSendUserVerificationOtp = jest.fn();
-const mockSavePhoto = jest.fn();
-
 jest.unstable_mockModule('../auth.js', () => ({
-    AuthService: {
-        hashPassword: mockHashPassword
-    }
+  AuthService: mockAuthService
 }));
-
 jest.unstable_mockModule('../otp.js', () => ({
-    OtpService: {
-        sendUserVerificationOtp: mockSendUserVerificationOtp
-    }
+  OtpService: mockOtpService
 }));
-
-jest.unstable_mockModule('../../utils/error.js', () => ({
-    HttpError: class HttpError extends Error {
-        constructor(status, data) {
-            super(data?.message || 'error');
-            this.statusCode = status;
-            this.data = data;
-        }
-    }
-}));
-
 jest.unstable_mockModule('../../utils/helper.js', () => ({
-    savePhoto: mockSavePhoto
+  savePhoto: mockSavePhoto
+}));
+jest.unstable_mockModule('../../utils/error.js', () => ({
+  HttpError: mockHttpError
 }));
 
-// ==== IMPORTS ====
 const { UserService } = await import('../user.js');
-const { HttpError } = await import('../../utils/error.js');
 
-// ==== SETUP ====
 beforeEach(() => {
-    jest.clearAllMocks();
+  jest.clearAllMocks();
 });
 
-// ==== TESTS ====
 describe('UserService', () => {
-    // --- createStudent ---
-    describe('createStudent', () => {
-        it('should throw if verified user exists', async () => {
-            mockPrisma.user.findFirst.mockResolvedValueOnce({ ...mockUser, verified: true });
-            await expect(UserService.createStudent({
-                name: 'A', email: 'a@mail.com', password: 'pw'
-            })).rejects.toThrow(HttpError);
-        });
-
-        it('should throw if unverified user exists', async () => {
-            mockPrisma.user.findFirst
-                .mockResolvedValueOnce(null)
-                .mockResolvedValueOnce({ ...mockUser, verified: false });
-            await expect(UserService.createStudent({
-                name: 'A', email: 'a@mail.com', password: 'pw'
-            })).rejects.toThrow(HttpError);
-        });
-
-        it('should create user, student, and send OTP', async () => {
-            mockPrisma.user.findFirst
-                .mockResolvedValueOnce(null)
-                .mockResolvedValueOnce(null);
-            mockPrisma.user.create.mockResolvedValueOnce({ ...mockUser, id: 10 });
-            mockPrisma.student.create.mockResolvedValueOnce({});
-            mockSendUserVerificationOtp.mockResolvedValueOnce();
-
-            const result = await UserService.createStudent({
-                name: 'A', email: 'a@mail.com', password: 'pw'
-            });
-
-            expect(mockPrisma.user.create).toHaveBeenCalled();
-            expect(mockPrisma.student.create).toHaveBeenCalledWith({ data: { userId: 10 } });
-            expect(mockSendUserVerificationOtp).toHaveBeenCalled();
-            expect(result).toHaveProperty('id', 10);
-        });
-
-        it('should create user and student with password null if password not provided', async () => {
-            mockPrisma.user.findFirst.mockResolvedValueOnce(null);
-            mockPrisma.user.findFirst.mockResolvedValueOnce(null);
-            mockPrisma.user.create.mockResolvedValueOnce({ ...mockUser, id: 11, password: null });
-            mockPrisma.student.create.mockResolvedValueOnce({});
-            mockSendUserVerificationOtp.mockResolvedValueOnce();
-
-            const result = await UserService.createStudent({
-                name: 'NoPass', email: 'nopass@mail.com'
-            });
-
-            expect(mockPrisma.user.create).toHaveBeenCalledWith(expect.objectContaining({
-                data: expect.objectContaining({ password: null })
-            }));
-            expect(result).toHaveProperty('id', 11);
-        });
+  describe('createStudent', () => {
+    it('throws if verified user exists', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce({ id: 1 }); // verified user
+      await expect(UserService.createStudent({
+        name: 'A', email: 'a@mail.com', password: 'pw', role: 'siswa'
+      })).rejects.toThrow('Email already exists');
     });
 
-    // --- createUserWithRole ---
-    describe('createUserWithRole', () => {
-        it('should throw if role is not tutor or admin', async () => {
-            await expect(UserService.createUserWithRole({
-                name: 'A', email: 'a@mail.com', password: 'pw', role: 'siswa'
-            })).rejects.toThrow(HttpError);
-        });
-
-        it('should throw if user already exists', async () => {
-            mockPrisma.user.findFirst.mockResolvedValueOnce({ ...mockUser });
-            await expect(UserService.createUserWithRole({
-                name: 'A', email: 'a@mail.com', password: 'pw', role: 'admin'
-            })).rejects.toThrow(HttpError);
-        });
-
-        it('should create admin user', async () => {
-            mockPrisma.user.findFirst.mockResolvedValueOnce(null);
-            mockPrisma.user.create.mockResolvedValueOnce({ ...mockUser, role: 'admin', id: 20 });
-
-            const result = await UserService.createUserWithRole({
-                name: 'A', email: 'a@mail.com', password: 'pw', role: 'admin'
-            });
-
-            expect(mockPrisma.user.create).toHaveBeenCalledWith(expect.objectContaining({
-                data: expect.objectContaining({ name: 'A', email: 'a@mail.com', role: 'admin' })
-            }));
-            expect(result).toHaveProperty('role', 'admin');
-        });
-
-        it('should create tutor user and related data', async () => {
-            mockPrisma.user.findFirst.mockResolvedValueOnce(null);
-            mockPrisma.user.create.mockResolvedValueOnce({ ...mockTutor, id: 30 });
-            mockPrisma.tutor.create.mockResolvedValueOnce({});
-            mockPrisma.notification.create.mockResolvedValueOnce({});
-
-            const result = await UserService.createUserWithRole({
-                name: 'Tutor', email: 'tutor@mail.com', password: 'pw', role: 'tutor', subjects: 'Math'
-            });
-
-            expect(mockPrisma.tutor.create).toHaveBeenCalledWith(expect.objectContaining({
-                data: expect.objectContaining({ userId: 30, subjects: 'Math' })
-            }));
-            expect(mockPrisma.notification.create).toHaveBeenCalled();
-            expect(result).toHaveProperty('role', 'tutor');
-        });
+    it('throws if unverified user exists', async () => {
+      mockPrisma.user.findFirst
+        .mockResolvedValueOnce(null) // verified
+        .mockResolvedValueOnce({ id: 2 }); // unverified
+      await expect(UserService.createStudent({
+        name: 'A', email: 'a@mail.com', password: 'pw', role: 'siswa'
+      })).rejects.toThrow('Email already exists but not verified');
     });
 
-    // --- updateUser ---
-    describe('updateUser', () => {
-        it('should update user and student if role siswa', async () => {
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.student.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
-
-            const result = await UserService.updateUser({
-                id: 1, name: 'Updated', email: 'updated@mail.com', role: 'siswa', level: 'SMA'
-            });
-
-            expect(mockPrisma.user.update).toHaveBeenCalled();
-            expect(mockPrisma.student.update).toHaveBeenCalled();
-            expect(result).toHaveProperty('id', 1);
-        });
-
-        it('should update user and tutor if role tutor', async () => {
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.tutor.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
-
-            const result = await UserService.updateUser({
-                id: 2, name: 'Tutor', email: 'tutor@mail.com', role: 'tutor', subjects: 'Math'
-            });
-
-            expect(mockPrisma.user.update).toHaveBeenCalled();
-            expect(mockPrisma.tutor.update).toHaveBeenCalled();
-            expect(result).toHaveProperty('id', 2);
-        });
-
-        it('should update only user if no role', async () => {
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
-
-            const result = await UserService.updateUser({
-                id: 1, name: 'Updated', email: 'updated@mail.com'
-            });
-
-            expect(mockPrisma.user.update).toHaveBeenCalled();
-            expect(result).toHaveProperty('id', 1);
-        });
-
-        it('should remove undefined fields from update payload', async () => {
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
-
-            const result = await UserService.updateUser({
-                id: 1,
-                name: undefined,
-                email: 'updated@mail.com'
-            });
-
-            expect(mockPrisma.user.update).toHaveBeenCalledWith({
-                where: { id: 1 },
-                data: {
-                    email: 'updated@mail.com'
-                }
-            });
-            expect(result).toHaveProperty('id', 1);
-        });
-
-        it('should update tutor days if daysName is provided', async () => {
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.tutor.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
-            mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 2 });
-            mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
-            mockPrisma.day.findFirst.mockResolvedValueOnce({ id: 1, daysName: 'Senin' });
-            mockPrisma.tutorDay.create.mockResolvedValueOnce({});
-
-            const result = await UserService.updateUser({
-                id: 2,
-                name: 'Tutor',
-                email: 'tutor@mail.com',
-                role: 'tutor',
-                subjects: 'Math',
-                daysName: ['Senin']
-            });
-
-            expect(mockPrisma.tutorDay.deleteMany).toHaveBeenCalled();
-            expect(mockPrisma.day.findFirst).toHaveBeenCalledWith({ where: { daysName: 'Senin' } });
-            expect(mockPrisma.tutorDay.create).toHaveBeenCalledWith({
-                data: { tutorId: 2, daysId: 1 }
-            });
-            expect(result).toHaveProperty('id', 2);
-        });
-
-        it('should update photo if file is provided', async () => {
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.tutor.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
-            mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
-
-            const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
-
-            const result = await UserService.updateUser({
-                id: 2,
-                name: 'Tutor',
-                email: 'tutor@mail.com',
-                role: 'tutor',
-                subjects: 'Math'
-            }, file);
-
-            expect(mockSavePhoto).toHaveBeenCalled();
-            expect(result).toHaveProperty('id', 2);
-        });
-
-        it('should use userDb.name as userName if not provided when saving photo', async () => {
-            // Simulate no name in payload, so userDb.name is used
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ name: 'DbName' });
-            mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.tutor.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
-
-            const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
-
-            const result = await UserService.updateUser({
-            id: 2,
-            email: 'tutor@mail.com',
-            role: 'tutor',
-            subjects: 'Math'
-            // no name in payload
-            }, file);
-
-            expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 2 } });
-            expect(mockSavePhoto).toHaveBeenCalledWith(file, 'DbName');
-            expect(result).toHaveProperty('id', 2);
-        });
-
-        it('should use id as userName if userDb.name is falsy when saving photo', async () => {
-            // Simulate userDb.name is undefined, so id is used
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ name: undefined });
-            mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.tutor.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
-
-            const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
-
-            const result = await UserService.updateUser({
-            id: 2,
-            email: 'tutor@mail.com',
-            role: 'tutor',
-            subjects: 'Math'
-            // no name in payload
-            }, file);
-
-            expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 2 } });
-            expect(mockSavePhoto).toHaveBeenCalledWith(file, 2);
-            expect(result).toHaveProperty('id', 2);
-        });
-
-        it('should use "tutor" as userName if userDb.name and id are falsy when saving photo', async () => {
-            // Simulate userDb.name and id are undefined/null, so 'tutor' is used
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ name: undefined });
-            mockSavePhoto.mockResolvedValueOnce('/public/photo.jpg');
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.tutor.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: undefined });
-
-            const file = { originalname: 'photo.jpg', path: '/tmp/photo.jpg' };
-
-            const result = await UserService.updateUser({
-            id: undefined,
-            email: 'tutor@mail.com',
-            role: 'tutor',
-            subjects: 'Math'
-            // no name in payload
-            }, file);
-
-            expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: undefined } });
-            expect(mockSavePhoto).toHaveBeenCalledWith(file, 'tutor');
-            expect(result).toHaveProperty('id', undefined);
-        });
+    it('creates user and student, sends OTP if not skipOtp', async () => {
+      mockPrisma.user.findFirst
+        .mockResolvedValueOnce(null) // verified
+        .mockResolvedValueOnce(null); // unverified
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 3, name: 'A', email: 'a@mail.com' });
+      mockPrisma.student.create.mockResolvedValueOnce({});
+      await UserService.createStudent({
+        name: 'A', email: 'a@mail.com', password: 'pw', role: 'siswa'
+      });
+      expect(mockPrisma.user.create).toHaveBeenCalled();
+      expect(mockPrisma.student.create).toHaveBeenCalled();
+      expect(mockOtpService.sendUserVerificationOtp).toHaveBeenCalled();
     });
 
-    // --- updateUser branch coverage ---
-    describe('updateUser branch coverage', () => {
-        it('should NOT update user if no name, email, googleId, or password', async () => {
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
-
-            const result = await UserService.updateUser({ id: 1, role: 'admin' });
-            expect(mockPrisma.user.update).not.toHaveBeenCalled();
-            expect(result).toHaveProperty('id', 1);
-        });
-
-        it('should not update student/tutor if role is not siswa/tutor', async () => {
-            mockPrisma.user.update.mockResolvedValueOnce({});
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockUser, id: 1 });
-
-            const result = await UserService.updateUser({ id: 1, name: 'A', role: 'admin' });
-            expect(mockPrisma.student.update).not.toHaveBeenCalled();
-            expect(mockPrisma.tutor.update).not.toHaveBeenCalled();
-            expect(result).toHaveProperty('id', 1);
-        });
+    it('creates user and student, does not send OTP if skipOtp', async () => {
+      mockPrisma.user.findFirst
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 4, name: 'A', email: 'a@mail.com' });
+      mockPrisma.student.create.mockResolvedValueOnce({});
+      await UserService.createStudent({
+        name: 'A', email: 'a@mail.com', password: 'pw', role: 'siswa'
+      }, { skipOtp: true });
+      expect(mockOtpService.sendUserVerificationOtp).not.toHaveBeenCalled();
     });
 
-    // --- getTutorsSortedByClassCount ---
-    describe('getTutorsSortedByClassCount', () => {
-        it('should return tutors sorted by class count', async () => {
-            mockPrisma.user.findMany.mockResolvedValueOnce([
-                { id: 2, name: 'Tutor', _count: { class: 5 } }
-            ]);
-            mockPrisma.tutor.findMany.mockResolvedValueOnce([
-                { userId: 2, subjects: 'Math', teachLevel: 'SMA', description: 'desc', photo: 'photo.jpg' }
-            ]);
-            const result = await UserService.getTutorsSortedByClassCount();
-            expect(result[0]).toMatchObject({
-                id: 2,
-                name: 'Tutor',
-                subject: 'Math',
-                teachLevel: 'SMA',
-                description: 'desc',
-                photo: 'photo.jpg',
-                classCount: 5
-            });
-        });
+    it('creates user with hashed password if password is provided', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null); // verified
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null); // unverified
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 10, name: 'A', email: 'a@mail.com' });
+      mockPrisma.student.create.mockResolvedValueOnce({});
+      await UserService.createStudent({
+        name: 'A', email: 'a@mail.com', password: 'pw', role: 'siswa'
+      });
+      expect(mockAuthService.hashPassword).toHaveBeenCalledWith('pw');
+      expect(mockPrisma.user.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({ password: 'hashed_pw' })
+      }));
+    });
+    
+    it('creates user with null password if password is not provided', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null); // verified
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null); // unverified
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 11, name: 'B', email: 'b@mail.com' });
+      mockPrisma.student.create.mockResolvedValueOnce({});
+      await UserService.createStudent({
+        name: 'B', email: 'b@mail.com', role: 'siswa'
+      });
+      expect(mockAuthService.hashPassword).not.toHaveBeenCalled();
+      expect(mockPrisma.user.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({ password: null })
+      }));
+    });
+  });
 
-        it('should return null for tutor details if not found', async () => {
-            mockPrisma.user.findMany.mockResolvedValueOnce([
-                { id: 99, name: 'NoDetailTutor', _count: { class: 0 } }
-            ]);
-            mockPrisma.tutor.findMany.mockResolvedValueOnce([]);
-
-            const result = await UserService.getTutorsSortedByClassCount();
-            expect(result[0]).toMatchObject({
-                id: 99,
-                name: 'NoDetailTutor',
-                subject: null,
-                teachLevel: null,
-                description: null,
-                photo: null,
-                classCount: 0
-            });
-        });
+  describe('createUserWithRole', () => {
+    it('throws if role is not tutor or admin', async () => {
+      await expect(UserService.createUserWithRole({
+        name: 'A', email: 'a@mail.com', password: 'pw', role: 'siswa'
+      })).rejects.toThrow('Invalid role for this function');
     });
 
-    // --- getUserById ---
-    describe('getUserById', () => {
-        it('should return user if found', async () => {
-            mockPrisma.user.findUnique.mockResolvedValueOnce({ ...mockTutor, id: 2 });
-            const result = await UserService.getUserById(2);
-            expect(result).toHaveProperty('id', 2);
-            expect(result.tutors[0]).toHaveProperty('daysName', ['Senin']);
-        });
-
-        it('should throw if user not found', async () => {
-            mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-            await expect(UserService.getUserById(999)).rejects.toThrow(HttpError);
-        });
+    it('throws if email already exists', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce({ id: 1 });
+      await expect(UserService.createUserWithRole({
+        name: 'A', email: 'a@mail.com', password: 'pw', role: 'tutor'
+      })).rejects.toThrow('Email already exists');
     });
 
-    // --- getTopStudents ---
-    describe('getTopStudents', () => {
-        it('should return top students', async () => {
-            mockPrisma.user.findMany.mockResolvedValueOnce([
-                { id: 3, name: 'Student', students: [{ level: 'SMP' }], _count: { studentClass: 4 } }
-            ]);
-            const result = await UserService.getTopStudents();
-            expect(result[0]).toMatchObject({
-                id: 3,
-                name: 'Student',
-                level: 'SMP',
-                classCount: 4
-            });
-        });
-
-        it('should handle student with no students or classCount', async () => {
-            mockPrisma.user.findMany.mockResolvedValueOnce([
-                { id: 5, name: 'NoClassStudent', students: [], _count: {} }
-            ]);
-            const result = await UserService.getTopStudents();
-            expect(result[0]).toMatchObject({
-                id: 5,
-                name: 'NoClassStudent',
-                level: null,
-                classCount: 0
-            });
-        });
+    it('creates tutor and notification if role is tutor', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 2, name: 'T', email: 't@mail.com' });
+      mockPrisma.tutor.create.mockResolvedValueOnce({});
+      mockPrisma.notification.create.mockResolvedValueOnce({});
+      const result = await UserService.createUserWithRole({
+        name: 'T', email: 't@mail.com', password: 'pw', role: 'tutor', school: 'SMA'
+      });
+      expect(mockPrisma.tutor.create).toHaveBeenCalled();
+      expect(mockPrisma.notification.create).toHaveBeenCalled();
+      expect(result).toMatchObject({ id: 2, name: 'T' });
     });
 
-    // --- getNewStudents ---
-    describe('getNewStudents', () => {
-        it('should return paginated new students', async () => {
-            mockPrisma.user.findMany.mockResolvedValueOnce([
-                { id: 4, name: 'New Student', createdAt: new Date(), students: [{ level: 'SMA' }], _count: { studentClass: 2 } }
-            ]);
-            mockPrisma.user.count.mockResolvedValueOnce(1);
+    it('creates user only if role is admin', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 3, name: 'Admin', email: 'admin@mail.com' });
+      const result = await UserService.createUserWithRole({
+        name: 'Admin', email: 'admin@mail.com', password: 'pw', role: 'admin'
+      });
+      expect(mockPrisma.tutor.create).not.toHaveBeenCalled();
+      expect(result).toMatchObject({ id: 3, name: 'Admin' });
+    });
+  });
 
-            const result = await UserService.getNewStudents({ page: 1, pageSize: 1 });
-            expect(result.data[0]).toMatchObject({
-                id: 4,
-                name: 'New Student',
-                level: 'SMA',
-                classCount: 2
-            });
-            expect(result.total).toBe(1);
-            expect(result.page).toBe(1);
-            expect(result.pageSize).toBe(1);
-        });
-
-        it('should use default pagination when no params given', async () => {
-            mockPrisma.user.findMany.mockResolvedValueOnce([]);
-            mockPrisma.user.count.mockResolvedValueOnce(0);
-
-            const result = await UserService.getNewStudents();
-            expect(result.data).toEqual([]);
-            expect(result.total).toBe(0);
-            expect(result.page).toBe(1);
-            expect(result.pageSize).toBe(10);
-        });
-
-        it('should handle new student with no students or classCount', async () => {
-            mockPrisma.user.findMany.mockResolvedValueOnce([
-                { id: 6, name: 'NoClassStudent', createdAt: new Date(), students: [], _count: {} }
-            ]);
-            mockPrisma.user.count.mockResolvedValueOnce(1);
-
-            const result = await UserService.getNewStudents({ page: 1, pageSize: 1 });
-            expect(result.data[0]).toMatchObject({
-                id: 6,
-                name: 'NoClassStudent',
-                level: null,
-                classCount: 0
-            });
-        });
+  describe('updateUser', () => {
+    it('updates user fields if provided', async () => {
+      mockPrisma.user.update.mockResolvedValueOnce({});
+      mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 1, name: 'A' });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 1, name: 'A', students: [], tutors: [] });
+      const result = await UserService.updateUser({
+        id: 1, name: 'A', email: 'a@mail.com', password: 'pw', role: 'siswa', level: 'Dasar'
+      });
+      expect(mockPrisma.user.update).toHaveBeenCalled();
+      expect(result).toMatchObject({ id: 1, name: 'A' });
     });
 
-    // --- getStatistics ---
-    describe('getStatistics', () => {
-        it('should return correct statistics', async () => {
-            mockPrisma.user.count.mockResolvedValueOnce(10); // tutorCount
-            mockPrisma.user.count.mockResolvedValueOnce(20); // studentCount
-            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(30); // packageCount
-            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(15); // activePackageCount
-
-            const result = await UserService.getStatistics();
-
-            expect(result).toEqual({
-                tutorCount: 10,
-                studentCount: 20,
-                packageCount: 30,
-                activePackageCount: 15
-            });
-        });
-
-        it('should handle zero counts gracefully', async () => {
-            mockPrisma.user.count.mockResolvedValueOnce(0); // tutorCount
-            mockPrisma.user.count.mockResolvedValueOnce(0); // studentCount
-            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(0); // packageCount
-            mockPrisma.bimbelPackage.count.mockResolvedValueOnce(0); // activePackageCount
-
-            const result = await UserService.getStatistics();
-
-            expect(result).toEqual({
-                tutorCount: 0,
-                studentCount: 0,
-                packageCount: 0,
-                activePackageCount: 0
-            });
-        });
+    it('updates student if role is siswa', async () => {
+      mockPrisma.user.findUnique.mockReset();
+      mockPrisma.user.findUnique
+        .mockResolvedValueOnce({ id: 2, name: 'B' }) // untuk ambil nama user (jika perlu)
+        .mockResolvedValueOnce({ id: 2, name: 'B', students: [], tutors: [] }); // untuk return akhir
+      mockPrisma.student.update.mockResolvedValueOnce({});
+      const result = await UserService.updateUser({
+        id: 2, role: 'siswa', level: 'Dasar', address: 'Jl. A'
+      });
+      expect(mockPrisma.student.update).toHaveBeenCalled();
+      expect(result).toMatchObject({ id: 2, name: 'B' });
     });
+
+    it('updates tutor and tutorDay if role is tutor and daysName provided', async () => {
+      mockPrisma.user.findUnique.mockReset();
+      mockPrisma.user.findUnique
+        .mockResolvedValueOnce({ id: 3, name: 'C' }) // untuk ambil nama user (jika perlu)
+        .mockResolvedValueOnce({ id: 3, name: 'C', students: [], tutors: [] }); // untuk return akhir
+      mockPrisma.tutor.update.mockResolvedValueOnce({});
+      mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.day.findFirst.mockResolvedValueOnce({ id: 20 });
+      mockPrisma.tutorDay.create.mockResolvedValueOnce({});
+      const result = await UserService.updateUser({
+        id: 3, role: 'tutor', school: 'SMA', daysName: ['Senin']
+      });
+      expect(mockPrisma.tutor.update).toHaveBeenCalled();
+      expect(mockPrisma.tutorDay.create).toHaveBeenCalled();
+      expect(result).toMatchObject({ id: 3, name: 'C' });
+    });
+
+    it('updates photo if file provided', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 4, name: 'D' });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 4, name: 'D', students: [], tutors: [] });
+      const file = { buffer: Buffer.from('img'), originalname: 'img.jpg' };
+      await UserService.updateUser({ id: 4, role: 'tutor', school: 'SMA' }, file);
+      expect(mockSavePhoto).toHaveBeenCalled();
+    });
+
+    it('creates tutorDay only for days that exist', async () => {
+      mockPrisma.user.findUnique.mockReset();
+      mockPrisma.user.findUnique
+        .mockResolvedValueOnce({ id: 5, name: 'Tutor5' })
+        .mockResolvedValueOnce({ id: 5, name: 'Tutor5', students: [], tutors: [] });
+      mockPrisma.tutor.update.mockResolvedValueOnce({});
+      mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 50 });
+      mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.day.findFirst
+        .mockResolvedValueOnce({ id: 100, daysName: 'Senin' }) 
+        .mockResolvedValueOnce(null); 
+      mockPrisma.tutorDay.create.mockResolvedValueOnce({});
+      await UserService.updateUser({
+        id: 5, role: 'tutor', school: 'SMA', daysName: ['Senin', 'Selasa']
+      });
+      expect(mockPrisma.tutorDay.create).toHaveBeenCalledWith({
+        data: { tutorId: 50, daysId: 100 }
+      });
+      expect(mockPrisma.tutorDay.create).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getTutorsSortedByClassCount', () => {
+    it('returns tutors with class count and details', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        { id: 1, name: 'T1', createdAt: new Date(), _count: { class: 2 } },
+        { id: 2, name: 'T2', createdAt: new Date(), _count: { class: 1 } }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(2);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([
+        { userId: 1, subjects: 'Math', teachLevel: 'SMA', description: 'desc', photo: 'p.jpg', birthDate: '2000-01-01', phone: '0812' },
+        { userId: 2, subjects: 'Bio', teachLevel: 'SMP', description: null, photo: null, birthDate: null, phone: null }
+      ]);
+      const result = await UserService.getTutorsSortedByClassCount({ page: 1, pageSize: 2 });
+      expect(result.data.length).toBe(2);
+      expect(result.data[0]).toMatchObject({ id: 1, subject: 'Math', classCount: 2, age: expect.any(Number) });
+      expect(result.data[1]).toMatchObject({ id: 2, subject: 'Bio', classCount: 1, age: null });
+    });
+
+    it('returns correct age if birthday already passed this year', async () => {
+      const now = new Date();
+      const birthDate = new Date(now.getFullYear() - 30, now.getMonth() - 1, now.getDate());
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        { id: 1, name: 'T1', createdAt: now, _count: { class: 2 } }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([
+        { userId: 1, subjects: 'Math', teachLevel: 'SMA', description: 'desc', photo: 'p.jpg', birthDate: birthDate.toISOString(), phone: '0812' }
+      ]);
+      const result = await UserService.getTutorsSortedByClassCount({ page: 1, pageSize: 1 });
+      expect(result.data[0].age).toBe(30);
+    });
+    
+    it('returns correct age if birthday not yet passed this year', async () => {
+      const now = new Date();
+      const birthDate = new Date(now.getFullYear() - 30, now.getMonth() + 1, now.getDate());
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        { id: 2, name: 'T2', createdAt: now, _count: { class: 1 } }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([
+        { userId: 2, subjects: 'Bio', teachLevel: 'SMP', description: null, photo: null, birthDate: birthDate.toISOString(), phone: null }
+      ]);
+      const result = await UserService.getTutorsSortedByClassCount({ page: 1, pageSize: 1 });
+      expect(result.data[0].age).toBe(29);
+    });
+    
+    it('returns correct age if birthday month is this month but day not yet passed', async () => {
+      const now = new Date();
+      const birthDate = new Date(now.getFullYear() - 25, now.getMonth(), now.getDate() + 1);
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        { id: 3, name: 'T3', createdAt: now, _count: { class: 1 } }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([
+        { userId: 3, subjects: 'Kimia', teachLevel: 'SMA', description: null, photo: null, birthDate: birthDate.toISOString(), phone: null }
+      ]);
+      const result = await UserService.getTutorsSortedByClassCount({ page: 1, pageSize: 1 });
+      expect(result.data[0].age).toBe(24);
+    });
+    
+    it('returns null age if birthDate is undefined', async () => {
+        const now = new Date();
+        mockPrisma.user.findMany.mockResolvedValueOnce([
+            { id: 5, name: 'T5', createdAt: now, _count: { class: 1 } }
+        ]);
+        mockPrisma.user.count.mockResolvedValueOnce(1);
+        mockPrisma.tutor.findMany.mockResolvedValueOnce([
+            { userId: 5, subjects: 'Geo', teachLevel: 'SMA', description: null, photo: null, birthDate: null,  phone: null }
+        ]);
+        const result = await UserService.getTutorsSortedByClassCount({ page: 1, pageSize: 1 });
+        expect(result.data[0].age).toBeNull();
+        });
+
+    it('returns null for all detail fields if tutorDetailsMap[tutor.id] is undefined', async () => {
+      const now = new Date();
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        { id: 99, name: 'NoDetail', createdAt: now, _count: { class: 0 } }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([]); // Tidak ada detail sama sekali
+      const result = await UserService.getTutorsSortedByClassCount({ page: 1, pageSize: 1 });
+      expect(result.data[0]).toMatchObject({
+        id: 99,
+        name: 'NoDetail',
+        joinDate: now,
+        subject: null,
+        teachLevel: null,
+        description: null,
+        photo: null,
+        classCount: 0,
+        phone: null,
+        age: null
+      });
+    });
+
+    it('returns null for missing fields in detail', async () => {
+      const now = new Date();
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        { id: 100, name: 'Partial', createdAt: now, _count: { class: 1 } }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([
+        { userId: 100, subjects: null, teachLevel: undefined, description: null, photo: undefined, birthDate: null, phone: undefined }
+      ]);
+      const result = await UserService.getTutorsSortedByClassCount({ page: 1, pageSize: 1 });
+      expect(result.data[0]).toMatchObject({
+        id: 100,
+        name: 'Partial',
+        subject: null,
+        teachLevel: null,
+        description: null,
+        photo: null,
+        phone: null,
+        age: null
+      });
+    });
+
+    it('returns all detail fields if present', async () => {
+      const now = new Date();
+      const birthDate = new Date(now.getFullYear() - 20, now.getMonth(), now.getDate());
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        { id: 101, name: 'Full', createdAt: now, _count: { class: 2 } }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([
+        {
+          userId: 101,
+          subjects: 'Math',
+          teachLevel: 'SMA',
+          description: 'desc',
+          photo: '/photo.jpg',
+          birthDate: birthDate.toISOString(),
+          phone: '0812'
+        }
+      ]);
+      const result = await UserService.getTutorsSortedByClassCount({ page: 1, pageSize: 1 });
+      expect(result.data[0]).toMatchObject({
+        id: 101,
+        name: 'Full',
+        subject: 'Math',
+        teachLevel: 'SMA',
+        description: 'desc',
+        photo: '/photo.jpg',
+        phone: '0812',
+        age: 20
+      });
+    });
+
+    it('uses default pagination if no parameter is given', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockResolvedValueOnce(0);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([]);
+      const result = await UserService.getTutorsSortedByClassCount();
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        skip: 0,
+        take: 10,
+      }));
+      expect(result).toMatchObject({ data: [], total: 0, page: 1, pageSize: 10 });
+    });
+    
+    it('uses default pagination if empty object is given', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockResolvedValueOnce(0);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([]);
+      const result = await UserService.getTutorsSortedByClassCount({});
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        skip: 0,
+        take: 10,
+      }));
+      expect(result).toMatchObject({ data: [], total: 0, page: 1, pageSize: 10 });
+    });
+    
+    it('uses provided page and pageSize', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        { id: 1, name: 'T1', createdAt: new Date(), _count: { class: 2 } }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      mockPrisma.tutor.findMany.mockResolvedValueOnce([
+        { userId: 1, subjects: 'Math', teachLevel: 'SMA', description: 'desc', photo: 'p.jpg', birthDate: '2000-01-01', phone: '0812' }
+      ]);
+      const result = await UserService.getTutorsSortedByClassCount({ page: 2, pageSize: 5 });
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        skip: 5,
+        take: 5,
+      }));
+      expect(result.page).toBe(2);
+      expect(result.pageSize).toBe(5);
+    });
+  });
+
+  describe('getUserById', () => {
+    it('throws if user not found', async () => {
+      mockPrisma.user.findUnique.mockReset();
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      await expect(UserService.getUserById('notfound')).rejects.toThrow('User not found');
+    });
+
+    it('returns user with tutor daysName if role tutor', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 1,
+        role: 'tutor',
+        tutors: [
+          {
+            tutorDay: [
+              { day: { daysName: 'Senin' } },
+              { day: { daysName: 'Selasa' } }
+            ]
+          }
+        ],
+        students: [] 
+      });
+      const result = await UserService.getUserById(1);
+      expect(result.tutors[0].daysName).toEqual(['Senin', 'Selasa']);
+    });
+
+    it('returns user with students if role siswa', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 2,
+        role: 'siswa',
+        students: [{ level: 'Dasar' }],
+        tutors: []
+      });
+      const result = await UserService.getUserById(2);
+      expect(result.students[0].level).toBe('Dasar');
+    });
+  });
+
+  describe('getTopStudents', () => {
+    it('returns students sorted by class count', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        {
+          id: 1,
+          name: 'S1',
+          students: [{ level: 'Dasar' }],
+          _count: { studentClass: 2 }
+        },
+        {
+          id: 2,
+          name: 'S2',
+          students: [],
+          _count: { studentClass: 0 }
+        }
+      ]);
+      const result = await UserService.getTopStudents();
+      expect(result[0]).toMatchObject({ id: 1, name: 'S1', level: 'Dasar', classCount: 2 });
+      expect(result[1]).toMatchObject({ id: 2, name: 'S2', level: null, classCount: 0 });
+    });
+  });
+
+  describe('getNewStudents', () => {
+    it('uses default pagination if no parameter is given', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockResolvedValueOnce(0);
+      const result = await UserService.getNewStudents();
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        skip: 0,
+        take: 10,
+      }));
+      expect(result).toMatchObject({ data: [], total: 0, page: 1, pageSize: 10 });
+    });
+    
+    it('uses default pagination if empty object is given', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockResolvedValueOnce(0);
+      const result = await UserService.getNewStudents({});
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        skip: 0,
+        take: 10,
+      }));
+      expect(result).toMatchObject({ data: [], total: 0, page: 1, pageSize: 10 });
+    });
+    
+    it('uses provided page and pageSize', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([{ id: 1, name: 'A', createdAt: new Date(), students: [{ level: 'Dasar', phone: '0812' }], _count: { studentClass: 2 } }]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      const result = await UserService.getNewStudents({ page: 2, pageSize: 5 });
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        skip: 5,
+        take: 5,
+      }));
+      expect(result).toMatchObject({ data: [expect.any(Object)], total: 1, page: 2, pageSize: 5 });
+    });
+
+    it('returns paginated newest students', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        {
+          id: 1,
+          name: 'S1',
+          createdAt: new Date(),
+          students: [{ level: 'Dasar', phone: '0812' }],
+          _count: { studentClass: 2 }
+        }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      const result = await UserService.getNewStudents({ page: 1, pageSize: 1 });
+      expect(result.data[0]).toMatchObject({
+        id: 1,
+        name: 'S1',
+        level: 'Dasar',
+        phone: '0812',
+        classCount: 2
+      });
+      expect(result.total).toBe(1);
+    });
+
+    it('returns level and phone if students[0] exists and has value', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        {
+          id: 1,
+          name: 'S1',
+          createdAt: new Date(),
+          students: [{ level: 'Dasar', phone: '0812' }],
+          _count: { studentClass: 2 }
+        }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      const result = await UserService.getNewStudents({ page: 1, pageSize: 1 });
+      expect(result.data[0]).toMatchObject({
+        level: 'Dasar',
+        phone: '0812',
+        classCount: 2
+      });
+    });
+
+    it('returns null for level and phone if students array is empty', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        {
+          id: 2,
+          name: 'S2',
+          createdAt: new Date(),
+          students: [],
+          _count: { studentClass: 1 }
+        }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      const result = await UserService.getNewStudents({ page: 1, pageSize: 1 });
+      expect(result.data[0]).toMatchObject({
+        level: null,
+        phone: null,
+        classCount: 1
+      });
+    });
+
+    it('returns null for level and phone if students[0] is missing level/phone', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        {
+          id: 3,
+          name: 'S3',
+          createdAt: new Date(),
+          students: [{}],
+          _count: { studentClass: 3 }
+        }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      const result = await UserService.getNewStudents({ page: 1, pageSize: 1 });
+      expect(result.data[0]).toMatchObject({
+        level: null,
+        phone: null,
+        classCount: 3
+      });
+    });
+
+    it('returns classCount 0 if _count.studentClass is missing', async () => {
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        {
+          id: 4,
+          name: 'S4',
+          createdAt: new Date(),
+          students: [{ level: 'Dasar', phone: '0812' }],
+          _count: {}
+        }
+      ]);
+      mockPrisma.user.count.mockResolvedValueOnce(1);
+      const result = await UserService.getNewStudents({ page: 1, pageSize: 1 });
+      expect(result.data[0]).toMatchObject({
+        classCount: 0
+      });
+    });
+  });
+
+  describe('getStatistics', () => {
+    it('returns statistics', async () => {
+      mockPrisma.user.count.mockResolvedValueOnce(2); // tutor
+      mockPrisma.user.count.mockResolvedValueOnce(3); // siswa
+      mockPrisma.bimbelPackage.count.mockResolvedValueOnce(4); // package
+      mockPrisma.bimbelPackage.count.mockResolvedValueOnce(2); // active
+      const result = await UserService.getStatistics();
+      expect(result).toMatchObject({
+        tutorCount: 2,
+        studentCount: 3,
+        packageCount: 4,
+        activePackageCount: 2
+      });
+    });
+  });
+
+  describe('deleteUser', () => {
+    it('deletes all related data for student', async () => {
+      mockPrisma.tutor.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.delete.mockResolvedValueOnce({});
+      await UserService.deleteUser('student1');
+      expect(mockPrisma.studentClass.deleteMany).toHaveBeenCalled();
+      expect(mockPrisma.attendance.deleteMany).toHaveBeenCalled();
+      expect(mockPrisma.student.deleteMany).toHaveBeenCalled();
+      expect(mockPrisma.user.delete).toHaveBeenCalled();
+    });
+
+    it('deletes all related data for tutor and packages', async () => {
+      mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        { id: 1 }, { id: 2 }
+      ]);
+      mockPrisma.groupType.findMany.mockResolvedValue([]); 
+      mockPrisma.groupType.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.packageDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.order.deleteMany.mockResolvedValue({});
+      mockPrisma.class.deleteMany.mockResolvedValue({});
+      mockPrisma.bimbelPackage.delete.mockResolvedValue({});
+      mockPrisma.user.delete.mockResolvedValue({});
+      mockPrisma.order.findMany.mockResolvedValue([]);
+      await UserService.deleteUser('tutor1');
+      expect(mockPrisma.tutorDay.deleteMany).toHaveBeenCalled();
+      expect(mockPrisma.bimbelPackage.delete).toHaveBeenCalled();
+      expect(mockPrisma.user.delete).toHaveBeenCalled();
+    });
+
+    it('deletes class for each order in package', async () => {
+      mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        { id: 1 }
+      ]);
+      mockPrisma.groupType.findMany.mockResolvedValue([]); 
+      mockPrisma.groupType.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.packageDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.order.deleteMany.mockResolvedValue({});
+      mockPrisma.class.deleteMany.mockResolvedValue({});
+      mockPrisma.bimbelPackage.delete.mockResolvedValue({});
+      mockPrisma.user.delete.mockResolvedValue({});
+      // orders array berisi dua order
+      mockPrisma.order.findMany.mockResolvedValueOnce([
+        { id: 'order1' },
+        { id: 'order2' }
+      ]);
+      await UserService.deleteUser('tutor1');
+      // Harus dipanggil dua kali, satu untuk setiap order
+      expect(mockPrisma.class.deleteMany).toHaveBeenCalledWith({ where: { orderId: 'order1' } });
+      expect(mockPrisma.class.deleteMany).toHaveBeenCalledWith({ where: { orderId: 'order2' } });
+    });
+
+    it('does not delete class if orders is empty', async () => {
+      mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        { id: 2 }
+      ]);
+      mockPrisma.groupType.findMany.mockResolvedValue([]); 
+      mockPrisma.groupType.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.packageDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.order.deleteMany.mockResolvedValue({});
+      mockPrisma.class.deleteMany.mockResolvedValue({});
+      mockPrisma.bimbelPackage.delete.mockResolvedValue({});
+      mockPrisma.user.delete.mockResolvedValue({});
+      // orders array kosong
+      mockPrisma.order.findMany.mockResolvedValueOnce([]);
+      await UserService.deleteUser('tutor2');
+      // Tidak ada pemanggilan class.deleteMany dengan orderId
+      expect(mockPrisma.class.deleteMany).not.toHaveBeenCalledWith({ where: { orderId: expect.any(String) } });
+    });
+
+    it('deletes order for each groupType in package', async () => {
+      mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        { id: 1 }
+      ]);
+      // groupTypes array berisi dua groupType
+      mockPrisma.groupType.findMany.mockResolvedValueOnce([
+        { id: 'gt1' },
+        { id: 'gt2' }
+      ]);
+      mockPrisma.order.deleteMany.mockResolvedValue({});
+      mockPrisma.groupType.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.packageDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.order.deleteMany.mockResolvedValue({});
+      mockPrisma.order.findMany.mockResolvedValueOnce([]);
+      mockPrisma.class.deleteMany.mockResolvedValue({});
+      mockPrisma.bimbelPackage.delete.mockResolvedValue({});
+      mockPrisma.user.delete.mockResolvedValue({});
+      await UserService.deleteUser('tutor1');
+      // Harus dipanggil dua kali, satu untuk setiap groupType
+      expect(mockPrisma.order.deleteMany).toHaveBeenCalledWith({ where: { groupTypeId: 'gt1' } });
+      expect(mockPrisma.order.deleteMany).toHaveBeenCalledWith({ where: { groupTypeId: 'gt2' } });
+    });
+
+    it('does not delete order if groupTypes is empty', async () => {
+      mockPrisma.tutor.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockPrisma.tutorDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.bimbelPackage.findMany.mockResolvedValueOnce([
+        { id: 2 }
+      ]);
+      // groupTypes array kosong
+      mockPrisma.groupType.findMany.mockResolvedValueOnce([]);
+      mockPrisma.order.deleteMany.mockResolvedValue({});
+      mockPrisma.groupType.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.packageDay.deleteMany.mockResolvedValueOnce({});
+      mockPrisma.order.deleteMany.mockResolvedValue({});
+      mockPrisma.order.findMany.mockResolvedValueOnce([]);
+      mockPrisma.class.deleteMany.mockResolvedValue({});
+      mockPrisma.bimbelPackage.delete.mockResolvedValue({});
+      mockPrisma.user.delete.mockResolvedValue({});
+      await UserService.deleteUser('tutor2');
+      // Tidak ada pemanggilan order.deleteMany dengan groupTypeId
+      expect(mockPrisma.order.deleteMany).not.toHaveBeenCalledWith({ where: { groupTypeId: expect.any(String) } });
+    });
+  });
 });

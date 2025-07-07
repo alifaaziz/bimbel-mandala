@@ -98,6 +98,7 @@ describe('AttendanceController', () => {
     });
   });
 
+
   describe('markAlphaAttendance', () => {
     it('should mark alpha attendance for missed schedules', async () => {
       AttendanceService.markAlphaForMissedSchedules.mockResolvedValue();
@@ -115,18 +116,19 @@ describe('AttendanceController', () => {
   });
 
   describe('getAttendanceStatistics', () => {
-    it('should return attendance statistics', async () => {
+    it('should return attendance statistics for a class', async () => {
       const statsMock = [{ classId: 'class1', attendance: 'statistics' }];
-      AttendanceService.getAttendanceStatistics.mockResolvedValue(statsMock);
+      AttendanceService.getRekapKelasById.mockResolvedValue(statsMock);
 
-      const { req, res } = setupExpressMock();
+      const { req, res } = setupExpressMock({
+        req: { params: { classId: 'class1' } },
+      });
 
       await AttendanceController.getAttendanceStatistics(req, res);
 
-      expect(AttendanceService.getAttendanceStatistics).toHaveBeenCalled();
+      expect(AttendanceService.getRekapKelasById).toHaveBeenCalledWith('class1');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
-        message: 'Attendance statistics retrieved successfully',
         data: statsMock,
       });
     });
@@ -143,9 +145,7 @@ describe('AttendanceController', () => {
 
       await AttendanceController.getMyAttendanceStatistics(req, res);
 
-      expect(AttendanceService.getMyAttendanceStatistics).toHaveBeenCalledWith({
-        id: 'user1',
-      });
+      expect(AttendanceService.getMyAttendanceStatistics).toHaveBeenCalledWith({ id: 'user1' });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(statsMock);
     });

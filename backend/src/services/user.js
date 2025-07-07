@@ -509,57 +509,44 @@ async function getStatistics() {
  * @returns {Promise<void>}
  */
 async function deleteUser(userId) {
-    // Hapus student dan relasinya
     await prisma.studentClass.deleteMany({ where: { userId } });
     await prisma.attendance.deleteMany({ where: { userId } });
     await prisma.student.deleteMany({ where: { userId } });
 
-    // Hapus tutor dan relasinya
     const tutor = await prisma.tutor.findUnique({ where: { userId } });
     if (tutor) {
         await prisma.tutorDay.deleteMany({ where: { tutorId: tutor.id } });
-        // Tambahkan penghapusan relasi lain yang pakai tutorId jika ada
         await prisma.tutor.deleteMany({ where: { userId } });
     }
 
-    // Hapus semua package milik user
     const packages = await prisma.bimbelPackage.findMany({ where: { userId } });
     for (const pkg of packages) {
-        // Hapus groupType yang terhubung ke package
         const groupTypes = await prisma.groupType.findMany({ where: { packageId: pkg.id } });
         for (const gt of groupTypes) {
-            // Hapus order yang terhubung ke groupType
             await prisma.order.deleteMany({ where: { groupTypeId: gt.id } });
         }
         await prisma.groupType.deleteMany({ where: { packageId: pkg.id } });
 
-        // Hapus packageDay yang terhubung ke package
         await prisma.packageDay.deleteMany({ where: { packageId: pkg.id } });
 
-        // Hapus order yang terhubung ke package
         await prisma.order.deleteMany({ where: { packageId: pkg.id } });
 
-        // Hapus class yang terhubung ke order (class.orderId)
         const orders = await prisma.order.findMany({ where: { packageId: pkg.id } });
         for (const order of orders) {
             await prisma.class.deleteMany({ where: { orderId: order.id } });
         }
 
-        // Hapus class yang tutorId-nya user ini (jaga-jaga)
         await prisma.class.deleteMany({ where: { tutorId: userId } });
 
-        // Hapus bimbelPackage itu sendiri
         await prisma.bimbelPackage.delete({ where: { id: pkg.id } });
     }
 
-    // Hapus order, notification, passwordReset, otp, salary yang terhubung ke user
     await prisma.order.deleteMany({ where: { userId } });
     await prisma.notification.deleteMany({ where: { userId } });
     await prisma.passwordReset.deleteMany({ where: { userId } });
     await prisma.otp.deleteMany({ where: { userId } });
     await prisma.salary.deleteMany({ where: { userId } });
 
-    // Hapus user terakhir
     await prisma.user.delete({ where: { id: userId } });
 }
 
