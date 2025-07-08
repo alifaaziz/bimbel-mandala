@@ -10,7 +10,6 @@ const formRef = ref(null);
 const message = useMessage();
 const size = ref("medium");
 
-// GANTI DATA TUTOR SEBELUM EDIT
 const formValue = ref({
   user: {
     name: "",
@@ -32,35 +31,15 @@ function handleBackClick() {
 }
 
 const optionsStatus = [
-  { label: "Semester 1-2", value: "tahun1" },
-  { label: "Semester 3-4", value: "tahun2" },
-  { label: "Semester 5-6", value: "tahun3" },
-  { label: "Semester 7-8", value: "tahun4" },
-  { label: "Semester 8<", value: "tahunakhir" },
+  { label: "Semester 1-2", value: "TH1" },
+  { label: "Semester 3-4", value: "TH2" },
+  { label: "Semester 5-6", value: "TH3" },
+  { label: "Semester 7-8", value: "TH4" },
+  { label: "Semester 8", value: "TH5" },
   { label: "Sarjana S1", value: "S1" },
   { label: "Sarjana S2", value: "S2" },
   { label: "Sarjana S3", value: "S3" },
 ];
-
-function handleValidateClick(e) {
-  e.preventDefault();
-  formRef.value?.validate((errors) => {
-    if (!errors) {
-      const dataToShow = {
-        ...formValue.value,
-        user: {
-          ...formValue.value.user,
-          photo: formValue.value.user.photo?.name || null
-        }
-      };
-      alert("Data yang dimasukkan:\n" + JSON.stringify(dataToShow, null, 2));
-      message.success("Valid");
-    } else {
-      console.log(errors);
-      message.error("Invalid");
-    }
-  });
-}
 
 const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
 const selectedDays = ref([])
@@ -74,13 +53,59 @@ function toggleDay(day) {
   formValue.value.user.days = [...selectedDays.value];
 }
 
+async function handleUpdateTutor() {
+  const id = router.currentRoute.value.params.id;
+  const token = localStorage.getItem("token");
+  if (!id) return;
+
+  const userPayload = {};
+  const tutorPayload = {};
+  const daysName = [...selectedDays.value];
+
+  if (formValue.value.user.name) userPayload.name = formValue.value.user.name;
+  if (formValue.value.user.email) userPayload.email = formValue.value.user.email;
+
+  if (formValue.value.user.status) tutorPayload.status = formValue.value.user.status;
+  if (formValue.value.user.univ) tutorPayload.school = formValue.value.user.univ;
+  if (formValue.value.user.wa) tutorPayload.phone = formValue.value.user.wa;
+  if (formValue.value.user.alamat) tutorPayload.address = formValue.value.user.alamat;
+  if (formValue.value.user.jenjangAjar) tutorPayload.teachLevel = formValue.value.user.jenjangAjar;
+  if (formValue.value.user.pelajaran) tutorPayload.subjects = formValue.value.user.pelajaran;
+  if (formValue.value.user.prodi) tutorPayload.major = formValue.value.user.prodi;
+
+  const payload = {
+    ...userPayload,
+    ...tutorPayload,
+    daysName, 
+    role: "tutor"
+  };
+
+  try {
+    const res = await fetch(`http://localhost:3000/users/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Gagal update data tutor.");
+    }
+    message.success("Data tutor berhasil diupdate.");
+    router.push("/dashboardadmin/tutor");
+  } catch (err) {
+    message.error(err.message || "Terjadi kesalahan.");
+  }
+}
 </script>
 
 
 <template>
   <div class="form-container">
     <div class="form-card">
-      <h1 class="headerb1">Tambah Akun Tutor</h1>
+      <h1 class="headerb1">Edit Akun Tutor</h1>
       <n-divider class="divider" />
       <n-form
       ref="formRef"
@@ -156,7 +181,7 @@ function toggleDay(day) {
       </n-form>
       <div class="button">
         <butPrimerNormal
-          @click="handleValidateClick"
+          @click="handleUpdateTutor"
           label="Simpan Akun Tutor"
         />
         <butSecondNormal

@@ -15,4 +15,6 @@ export default (app) => {
     router.post('/verify/:id', AuthMiddleware.isAuthorized, TutorApplicationController.verifyTutor);
 
     router.get('/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole('admin'), TutorApplicationController.getTutorApplicationById);
+
+    router.delete('/reject/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole('admin'), TutorApplicationController.rejectTutorApplication);
 };

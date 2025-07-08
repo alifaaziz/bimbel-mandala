@@ -101,6 +101,25 @@ describe('TutorApplicationService', () => {
       await TutorApplicationService.applyTutor({ email: 'c@mail.com' }, file);
       expect(mockSavePhoto).toHaveBeenCalledWith(file, 'tutor');
     });
+
+    it('saves days as JSON string if array is given', async () => {
+      mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.tutorApplication.create.mockResolvedValueOnce({ id: 6, days: '["Senin","Kamis"]' });
+      const result = await TutorApplicationService.applyTutor({
+        email: 'd@mail.com',
+        name: 'D',
+        days: ['Senin', 'Kamis']
+      });
+      expect(mockPrisma.tutorApplication.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            days: JSON.stringify(['Senin', 'Kamis'])
+          })
+        })
+      );
+      expect(result).toMatchObject({ id: 6, days: '["Senin","Kamis"]' });
+    });
   });
 
   describe('verifyTutor', () => {
@@ -152,6 +171,110 @@ describe('TutorApplicationService', () => {
       const result = await TutorApplicationService.verifyTutor('app1');
       expect(result).toMatchObject({ id: 10, email: 't@mail.com', name: 'T' });
       expect(mockSendTutorVerificationEmail).toHaveBeenCalledWith('t@mail.com', 'bimbelmandala');
+    });
+
+    it('creates tutorDay for each valid day in application.days', async () => {
+      const fakeApp = {
+        id: 'app2',
+        name: 'T',
+        email: 't@mail.com',
+        birthDate: '2000-01-01',
+        gender: 'Male',
+        phone: '0812',
+        subjects: 'Math',
+        status: 'active',
+        major: 'Math',
+        school: 'SMA',
+        teachLevel: 'SMA',
+        description: 'desc',
+        photo: '/photo.jpg',
+        days: JSON.stringify(['Senin', 'Kamis'])
+      };
+      const fakeUser = { id: 11, email: 't@mail.com', name: 'T' };
+      const mockDayFindFirst = jest.fn()
+        .mockResolvedValueOnce({ id: 1, daysName: 'Senin' })
+        .mockResolvedValueOnce({ id: 2, daysName: 'Kamis' });
+      const mockTutorDayCreate = jest.fn();
+
+      mockPrisma.$transaction.mockImplementationOnce(async fn => {
+        return await fn({
+          tutorApplication: {
+            findUnique: jest.fn().mockResolvedValueOnce(fakeApp),
+            delete: jest.fn().mockResolvedValueOnce({})
+          },
+          user: {
+            create: jest.fn().mockResolvedValueOnce(fakeUser)
+          },
+          tutor: {
+            create: jest.fn().mockResolvedValueOnce({id : 123})
+          },
+          day: {
+            findFirst: mockDayFindFirst
+          },
+          tutorDay: {
+            create: mockTutorDayCreate
+          },
+          notification: {
+            create: jest.fn().mockResolvedValueOnce({})
+          }
+        });
+      });
+      mockBcrypt.hash.mockResolvedValueOnce('hashed_pw');
+      await TutorApplicationService.verifyTutor('app2');
+      expect(mockDayFindFirst).toHaveBeenCalledWith({ where: { daysName: 'Senin' } });
+      expect(mockDayFindFirst).toHaveBeenCalledWith({ where: { daysName: 'Kamis' } });
+      expect(mockTutorDayCreate).toHaveBeenCalledWith({ data: { tutorId: expect.anything(), daysId: 1 } });
+      expect(mockTutorDayCreate).toHaveBeenCalledWith({ data: { tutorId: expect.anything(), daysId: 2 } });
+    });
+
+    it('handles invalid days JSON gracefully', async () => {
+      const fakeApp = {
+        id: 'app3',
+        name: 'T',
+        email: 't@mail.com',
+        birthDate: '2000-01-01',
+        gender: 'Male',
+        phone: '0812',
+        subjects: 'Math',
+        status: 'active',
+        major: 'Math',
+        school: 'SMA',
+        teachLevel: 'SMA',
+        description: 'desc',
+        photo: '/photo.jpg',
+        days: 'not-a-json'
+      };
+      const fakeUser = { id: 12, email: 't@mail.com', name: 'T' };
+    
+      const mockTutorDayCreate = jest.fn();
+    
+      mockPrisma.$transaction.mockImplementationOnce(async fn => {
+        return await fn({
+          tutorApplication: {
+            findUnique: jest.fn().mockResolvedValueOnce(fakeApp),
+            delete: jest.fn().mockResolvedValueOnce({})
+          },
+          user: {
+            create: jest.fn().mockResolvedValueOnce(fakeUser)
+          },
+          tutor: {
+            create: jest.fn().mockResolvedValueOnce({ id: 124 })
+          },
+          day: {
+            findFirst: jest.fn()
+          },
+          tutorDay: {
+            create: mockTutorDayCreate
+          },
+          notification: {
+            create: jest.fn().mockResolvedValueOnce({})
+          }
+        });
+      });
+      mockBcrypt.hash.mockResolvedValueOnce('hashed_pw');
+      await TutorApplicationService.verifyTutor('app3');
+      // Tidak ada pemanggilan ke tutorDay.create karena daysArr = []
+      expect(mockTutorDayCreate).not.toHaveBeenCalled();
     });
   });
 
@@ -215,6 +338,106 @@ describe('TutorApplicationService', () => {
       });
       expect(result).toMatchObject({ data: [{ id: 1, name: 'A' }], total: 1, page: 2, pageSize: 5 });
     });
+
+    it('skips tutorDay creation if day not found', async () => {
+      const fakeApp = {
+        id: 'app4',
+        name: 'T',
+        email: 't@mail.com',
+        birthDate: '2000-01-01',
+        gender: 'Male',
+        phone: '0812',
+        subjects: 'Math',
+        status: 'active',
+        major: 'Math',
+        school: 'SMA',
+        teachLevel: 'SMA',
+        description: 'desc',
+        photo: '/photo.jpg',
+        days: JSON.stringify(['Senin', 'Kamis'])
+      };
+      const fakeUser = { id: 13, email: 't@mail.com', name: 'T' };
+      const mockDayFindFirst = jest.fn().mockResolvedValue(null);
+      const mockTutorDayCreate = jest.fn();
+    
+      mockPrisma.$transaction.mockImplementationOnce(async fn => {
+        return await fn({
+          tutorApplication: {
+            findUnique: jest.fn().mockResolvedValueOnce(fakeApp),
+            delete: jest.fn().mockResolvedValueOnce({})
+          },
+          user: {
+            create: jest.fn().mockResolvedValueOnce(fakeUser)
+          },
+          tutor: {
+            create: jest.fn().mockResolvedValueOnce({ id: 125 })
+          },
+          day: {
+            findFirst: mockDayFindFirst
+          },
+          tutorDay: {
+            create: mockTutorDayCreate
+          },
+          notification: {
+            create: jest.fn().mockResolvedValueOnce({})
+          }
+        });
+      });
+      mockBcrypt.hash.mockResolvedValueOnce('hashed_pw');
+      await TutorApplicationService.verifyTutor('app4');
+      expect(mockDayFindFirst).toHaveBeenCalledTimes(2);
+      expect(mockTutorDayCreate).not.toHaveBeenCalled();
+    });
+
+    it('does not call tutorDay.create if daysArr is not an array', async () => {
+      const fakeApp = {
+        id: 'app5',
+        name: 'T',
+        email: 't@mail.com',
+        birthDate: '2000-01-01',
+        gender: 'Male',
+        phone: '0812',
+        subjects: 'Math',
+        status: 'active',
+        major: 'Math',
+        school: 'SMA',
+        teachLevel: 'SMA',
+        description: 'desc',
+        photo: '/photo.jpg',
+        days: JSON.stringify("Senin") // <-- ini string, bukan array!
+      };
+      const fakeUser = { id: 14, email: 't@mail.com', name: 'T' };
+      const mockDayFindFirst = jest.fn();
+      const mockTutorDayCreate = jest.fn();
+    
+      mockPrisma.$transaction.mockImplementationOnce(async fn => {
+        return await fn({
+          tutorApplication: {
+            findUnique: jest.fn().mockResolvedValueOnce(fakeApp),
+            delete: jest.fn().mockResolvedValueOnce({})
+          },
+          user: {
+            create: jest.fn().mockResolvedValueOnce(fakeUser)
+          },
+          tutor: {
+            create: jest.fn().mockResolvedValueOnce({ id: 126 })
+          },
+          day: {
+            findFirst: mockDayFindFirst
+          },
+          tutorDay: {
+            create: mockTutorDayCreate
+          },
+          notification: {
+            create: jest.fn().mockResolvedValueOnce({})
+          }
+        });
+      });
+      mockBcrypt.hash.mockResolvedValueOnce('hashed_pw');
+      await TutorApplicationService.verifyTutor('app5');
+      expect(mockTutorDayCreate).not.toHaveBeenCalled();
+      expect(mockDayFindFirst).not.toHaveBeenCalled();
+    });
   });
 
   describe('getTutorApplicationById', () => {
@@ -228,6 +451,21 @@ describe('TutorApplicationService', () => {
       mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
       const result = await TutorApplicationService.getTutorApplicationById('notfound');
       expect(result).toBeNull();
+    });
+  });
+
+  describe('rejectTutorApplication', () => {
+    it('deletes application if found', async () => {
+      mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce({ id: 7 });
+      mockPrisma.tutorApplication.delete.mockResolvedValueOnce({});
+      await TutorApplicationService.rejectTutorApplication(7);
+      expect(mockPrisma.tutorApplication.delete).toHaveBeenCalledWith({ where: { id: 7 } });
+    });
+
+    it('throws if application not found', async () => {
+      mockPrisma.tutorApplication.findUnique.mockResolvedValueOnce(null);
+      await expect(TutorApplicationService.rejectTutorApplication(8))
+        .rejects.toThrow('Tutor application not found');
     });
   });
 });

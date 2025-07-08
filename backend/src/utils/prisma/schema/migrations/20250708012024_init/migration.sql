@@ -202,6 +202,7 @@ CREATE TABLE `tutor_application` (
     `teach_level` VARCHAR(191) NULL,
     `description` VARCHAR(191) NULL,
     `photo` VARCHAR(191) NULL,
+    `days` VARCHAR(191) NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

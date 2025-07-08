@@ -1,22 +1,26 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useMessage } from 'naive-ui';
-import { useRouter } from 'vue-router'; // Tambahkan ini
+import { useRouter } from 'vue-router';
 
 const message = useMessage();
-const router = useRouter(); // Tambahkan ini
+const router = useRouter();
 
 const registrantList = ref([]);
+const page = ref(1);
+const pageSize = 3;
+const total = ref(0);
 
 const fetchRegistrants = async () => {
   try {
-    const res = await fetch('http://localhost:3000/apply?page=1&limit=3', {
+    const res = await fetch(`http://localhost:3000/apply?page=${page.value}&limit=${pageSize}`, {
       headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
       }
     });
     const json = await res.json();
     registrantList.value = json.data || [];
+    total.value = json.total || 0; // Pastikan backend mengirim total data
   } catch (e) {
     registrantList.value = [];
     message.error('Gagal mengambil data pendaftar');
@@ -25,18 +29,42 @@ const fetchRegistrants = async () => {
 
 onMounted(fetchRegistrants);
 
-// Fungsi yang akan dipanggil saat tombol "Aksi" diklik
 const handleActionClick = (registrant) => {
-  message.info(`Tombol Aksi untuk "${registrant.name}" diklik.`);
-  router.push('/dashboardadmin/tutor/verifikasitutor'); // Navigasi ke rute
+  router.push(`/dashboardadmin/tutor/verifikasitutor/${registrant.id}`);
 };
+
+function handlePrev() {
+  if (page.value > 1) {
+    page.value--;
+    fetchRegistrants();
+  }
+}
+function handleNext() {
+  if (page.value < Math.ceil(total.value / pageSize)) {
+    page.value++;
+    fetchRegistrants();
+  }
+}
 </script>
 
 <template>
   <div class="registrant-container">
     <n-space vertical :size="20">
-      <h1 class="headerb2" style="margin: 0; color: #154484;">Pendaftar</h1>
-
+      <div class="header-row">
+        <h1 class="headerb2" style="margin: 0; color: #154484;">Pendaftar</h1>
+        <div class="pagination-wrapper">
+          <button
+            class="pagination-btn"
+            :disabled="page === 1"
+            @click="handlePrev"
+          >&lt;</button>
+          <button
+            class="pagination-btn"
+            :disabled="page >= Math.ceil(total / pageSize)"
+            @click="handleNext"
+          >&gt;</button>
+        </div>
+      </div>
       <n-space vertical size="medium">
         <div
           v-for="registrant in registrantList"
@@ -44,7 +72,6 @@ const handleActionClick = (registrant) => {
           class="registrant-item"
         >
           <span class="registrant-name">{{ registrant.name }}</span>
-
           <n-button secondary strong @click="handleActionClick(registrant)">
             Aksi
           </n-button>
@@ -85,5 +112,36 @@ const handleActionClick = (registrant) => {
 .n-button {
   border-radius: 20px !important; /* Membuat tombol lebih membulat */
   font-weight: 600;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.pagination-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.pagination-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid #154484;
+  background: #fff;
+  color: #154484;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

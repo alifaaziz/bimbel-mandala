@@ -3,13 +3,21 @@
     <div class="form-card">
       <h1 class="headerb1">Verifikasi Pendaftaran Tutor</h1>
       <n-divider class="divider" />
+      <!-- Foto Profil Bulat -->
+      <div class="profile-photo-wrapper">
+        <img
+          :src="photoUrl"
+          alt="Foto Tutor"
+          class="profile-photo"
+        />
+      </div>
       <n-form
-      ref="formRef"
-      class="form"
-      inline
-      :model="formValue"
-      :rules="rules"
-      :size="size"
+        ref="formRef"
+        class="form"
+        inline
+        :model="formValue"
+        :rules="rules"
+        :size="size"
       >
         <h2 class="headersb3">Informasi Pribadi</h2>
         <div class="grid-form">
@@ -17,28 +25,25 @@
             <n-input
               v-model:value="formValue.user.name"
               placeholder="Tuliskan nama tutor disini"
+              disabled
             />
           </n-form-item>
         </div>
         <div class="grid-form">
           <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-2">
-            <n-date-picker v-model:value="formValue.user.ttg" type="date" />
+            <n-date-picker v-model:value="formValue.user.ttg" type="date" disabled />
           </n-form-item>
           <n-form-item label="Jenis Kelamin" path="user.gender" class="col-span-2">
             <n-select
               v-model:value="formValue.user.gender"
               :options="optionsgender"
               placeholder="Pilih jenis kelamin"
+              disabled
             />
           </n-form-item>
           <n-form-item label="Foto Diri" path="user.photo" class="col-span-2">
             <div class="form-group third-width">
-              <n-upload
-                :show-file-list="false"
-                :custom-request="handleCustomUpload"
-              >
-                <n-button>Upload Foto</n-button>
-              </n-upload>
+              <!-- Upload dihilangkan, hanya info nama file jika ada -->
               <p class="bodyr3" v-if="formValue.user.photo">File dipilih: {{ formValue.user.photo.name }}</p>
             </div>
           </n-form-item>
@@ -48,24 +53,19 @@
             <n-input
               v-model:value="formValue.user.email"
               placeholder="Tuliskan email tutor disini"
+              disabled
             />
           </n-form-item>
           <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-3">
             <n-input
               v-model:value="formValue.user.wa"
               placeholder="Tuliskan No. WhatsApp tutor disini"
+              disabled
             />
           </n-form-item>
         </div>
         <div class="grid-form">
-          <n-form-item label="Password Tutor" path="user.pass" class="col-span-6">
-            <n-input
-              v-model:value="formValue.user.pass"
-              placeholder="Tuliskan password tutor disini"
-              type="password"
-              show-password-on="mousedown"
-            />
-          </n-form-item>
+          <!-- Hapus password -->
         </div>
         <n-divider class="divider" />
         <h2 class="headersb3">Pendidikan</h2>
@@ -74,6 +74,7 @@
             <n-input
               v-model:value="formValue.user.univ"
               placeholder="Tuliskan asal universitas tutor disini"
+              disabled
             />
           </n-form-item>
         </div>
@@ -82,6 +83,7 @@
             <n-input
               v-model:value="formValue.user.prodi"
               placeholder="Tuliskan program studi tutor disini"
+              disabled
             />
           </n-form-item>
           <n-form-item label="Status" path="user.status" class="col-span-2">
@@ -89,6 +91,7 @@
               v-model:value="formValue.user.status"
               :options="optionsStatus"
               placeholder="Pilih status"
+              disabled
             />
           </n-form-item>
         </div>
@@ -99,6 +102,7 @@
             <n-input
               v-model:value="formValue.user.jenjangAjar"
               placeholder="SD, SMP, atau SMA"
+              disabled
             />
           </n-form-item>
         </div>
@@ -107,6 +111,7 @@
             <n-input
               v-model:value="formValue.user.pelajaran"
               placeholder="Matematika, Bahasa Inggris, Fisika, dll."
+              disabled
             />
           </n-form-item>
           <n-form-item label="Hari Aktif Mengajar" path="user.days" class="col-span-6">
@@ -117,7 +122,7 @@
                     v-for="(day, index) in days"
                     :key="index"
                     :class="['day-button', { active: selectedDays.includes(day) }]"
-                    @click="toggleDay(day)"
+                    disabled
                   >
                     {{ day }}
                   </button>
@@ -126,22 +131,34 @@
           </n-form-item>
         </div>
       </n-form>
-      <butPrimerNormal
-        type="submit"
-        label="Simpan Akun Tutor"
-      />
+      <div class="action-row">
+        <butPrimerNormal
+          label="Simpan Akun Tutor"
+          @click="handleVerify"
+        />
+        <butSecondNormal
+          label="Tolak Lamaran"
+          @click="handleReject"
+          class="reject-btn"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useMessage, NFormItem, NInput } from "naive-ui";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useMessage } from "naive-ui";
+const TutorDefault = "/tutor/Tutor_Default.png";
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 
 const formRef = ref(null);
 const message = useMessage();
 const size = ref("medium");
+const route = useRoute();
+const router = useRouter();
 
 const formValue = ref({
   user: {
@@ -157,7 +174,50 @@ const formValue = ref({
     status: "",
     jenjangAjar: "",
     pelajaran: "",
-    days:[],
+    days: [],
+  }
+});
+
+const photoUrl = ref(""); 
+
+onMounted(async () => {
+  const id = route.params.id;
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`http://localhost:3000/apply/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const { data } = await res.json();
+
+    formValue.value.user.name = data.name || "";
+    formValue.value.user.ttg = data.birthDate ? new Date(data.birthDate) : null;
+    formValue.value.user.gender = data.gender === "Male" ? "laki" : "perempuan";
+    formValue.value.user.email = data.email || "";
+    formValue.value.user.wa = data.phone || "";
+    formValue.value.user.univ = data.school || "";
+    formValue.value.user.prodi = data.major || "";
+    formValue.value.user.status = data.status || "";
+    formValue.value.user.jenjangAjar = data.teachLevel || "";
+    formValue.value.user.pelajaran = data.subjects || "";
+
+    if (data.photo) {
+      photoUrl.value = `http://localhost:3000${data.photo}`;
+    } else {
+      photoUrl.value = TutorDefault;
+    }
+
+    let daysArr = [];
+    if (data.days) {
+      try {
+        daysArr = JSON.parse(data.days);
+      } catch {
+        daysArr = [];
+      }
+    }
+    selectedDays.value = daysArr;
+    formValue.value.user.days = daysArr;
+  } catch (err) {
+    message.error("Gagal mengambil data tutor.");
   }
 });
 
@@ -198,11 +258,6 @@ const rules = {
       message: "Wajib memasukkan nomor WhatsApp tutor",
       trigger: "blur"
     },
-    pass: {
-      required: true,
-      message: "Wajib memasukkan password tutor",
-      trigger: "blur"
-    },
     univ: {
       required: true,
       message: "Wajib memasukkan asal universitas tutor",
@@ -237,36 +292,48 @@ const rules = {
   }
 };
 
-function handleValidateClick() {
-  formRef.value?.validate((errors) => {
-    if (!errors) {
-      message.success("Data valid, mengarahkan...");
-      router.push(''); 
-      // KOSONGAN
-    } else {
-      console.log(errors);
-      message.error("Data tidak valid");
-    }
-  });
-}
-
-
 const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
 const selectedDays = ref([])
 
-function handleCustomUpload({ file }) {
-  formValue.value.user.photo = file.file;
-}
-
-function toggleDay(day) {
-  if (selectedDays.value.includes(day)) {
-    selectedDays.value = selectedDays.value.filter(d => d !== day)
-  } else {
-    selectedDays.value.push(day)
+async function handleReject() {
+  const id = route.params.id;
+  const token = localStorage.getItem("token");
+  if (!id) return;
+  try {
+    const res = await fetch(`http://localhost:3000/apply/reject/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Gagal menolak lamaran.");
+    }
+    message.success("Lamaran berhasil ditolak.");
+    router.push("/dashboardadmin/tutor"); 
+  } catch (err) {
+    message.error(err.message || "Terjadi kesalahan.");
   }
-  formValue.value.user.days = [...selectedDays.value];
 }
 
+async function handleVerify() {
+  const id = route.params.id;
+  const token = localStorage.getItem("token");
+  if (!id) return;
+  try {
+    const res = await fetch(`http://localhost:3000/apply/verify/${id}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Gagal verifikasi tutor.");
+    }
+    message.success("Akun tutor berhasil diverifikasi.");
+    router.push("/dashboardadmin/tutor");
+  } catch (err) {
+    message.error(err.message || "Terjadi kesalahan.");
+  }
+}
 </script>
 
 <style scoped>
@@ -351,5 +418,23 @@ function toggleDay(day) {
 .bodyr3{
   color: #061222;
   margin-top: 0.5rem;
+}
+.profile-photo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.profile-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #154484;
+}
+.action-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  margin-top: 1.5rem;
 }
 </style>

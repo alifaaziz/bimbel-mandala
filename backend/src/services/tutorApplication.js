@@ -36,6 +36,10 @@ async function applyTutor(data, file) {
     data.photo = photoPath;
   }
 
+  if (data.days && Array.isArray(data.days)) {
+    data.days = JSON.stringify(data.days);
+  }
+
   const application = await prisma.tutorApplication.create({
     data: {
       ...data,
@@ -77,7 +81,7 @@ async function verifyTutor(applicationId) {
       },
     });
 
-    await tx.tutor.create({
+    const tutor = await tx.tutor.create({
       data: {
         userId: user.id,
         birthDate: application.birthDate,
@@ -92,6 +96,28 @@ async function verifyTutor(applicationId) {
         photo: application.photo,
       },
     });
+
+    if (application.days) {
+      let daysArr;
+      try {
+        daysArr = JSON.parse(application.days);
+      } catch {
+        daysArr = [];
+      }
+      if (Array.isArray(daysArr)) {
+        for (const dayName of daysArr) {
+          const day = await tx.day.findFirst({ where: { daysName: dayName } });
+          if (day) {
+            await tx.tutorDay.create({
+              data: {
+                tutorId: tutor.id,
+                daysId: day.id,
+              },
+            });
+          }
+        }
+      }
+    }
 
     await tx.tutorApplication.delete({
       where: { id: applicationId },
@@ -153,9 +179,33 @@ async function getTutorApplicationById(id) {
   });
 }
 
+/**
+ * Rejects (deletes) a tutor application by ID.
+ *
+ * @async
+ * @function rejectTutorApplication
+ * @param {string} applicationId - The ID of the tutor application to reject.
+ * @returns {Promise<void>}
+ * @throws {HttpError} If the tutor application is not found.
+ */
+async function rejectTutorApplication(applicationId) {
+  const application = await prisma.tutorApplication.findUnique({
+    where: { id: applicationId },
+  });
+
+  if (!application) {
+    throw new HttpError(404, { message: 'Tutor application not found' });
+  }
+
+  await prisma.tutorApplication.delete({
+    where: { id: applicationId },
+  });
+}
+
 export const TutorApplicationService = {
   applyTutor,
   verifyTutor,
   getTutorApplications,
   getTutorApplicationById,
+  rejectTutorApplication,
 };

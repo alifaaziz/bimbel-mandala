@@ -68,11 +68,25 @@ async function getTutorApplicationById(req, res) {
     res.status(200).json({ data: application });
 }
 
-
+/**
+ * Rejects (deletes) a tutor application by ID.
+ *
+ * @function rejectTutorApplication
+ * @async
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with a success message.
+ */
+async function rejectTutorApplication(req, res) {
+    const { id } = req.params;
+    await TutorApplicationService.rejectTutorApplication(id);
+    res.status(200).json({ message: 'Tutor application rejected successfully' });
+}
 
 export const TutorApplicationController = {
     applyTutor: asyncWrapper(applyTutor),
     verifyTutor: asyncWrapper(verifyTutor),
     getTutorApplications: asyncWrapper(getTutorApplications),
     getTutorApplicationById: asyncWrapper(getTutorApplicationById),
+    rejectTutorApplication: asyncWrapper(rejectTutorApplication),
 };

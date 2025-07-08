@@ -3483,6 +3483,7 @@ async function main() {
             school: "Universitas Negeri Semarang",
             teachLevel: "SMP",
             description: "Saya memiliki pengalaman mengajar Matematika SMP selama 3 tahun.",
+            days: JSON.stringify(["Senin", "Kamis"])
         },
         {
             id: "01980001-0000-0000-0000-000000000002",
@@ -3498,6 +3499,7 @@ async function main() {
             school: "Universitas Diponegoro",
             teachLevel: "SMA",
             description: "Berpengalaman mengajar Fisika SMA dan aktif dalam komunitas guru.",
+            days: JSON.stringify(["Selasa", "Jumat"])
         },
         {
             id: "01980001-0000-0000-0000-000000000003",
@@ -3513,6 +3515,7 @@ async function main() {
             school: "Universitas Negeri Semarang",
             teachLevel: "SMP",
             description: "Lulusan S1 Pendidikan Bahasa Inggris, suka mengajar anak-anak.",
+            days: JSON.stringify(["Rabu", "Sabtu"])
         },
         {
             id: "01980001-0000-0000-0000-000000000004",
@@ -3528,6 +3531,7 @@ async function main() {
             school: "Universitas Gadjah Mada",
             teachLevel: "SMA",
             description: "Berpengalaman mengajar Biologi SMA dan aktif di kegiatan sains.",
+            days: JSON.stringify(["Jumat", "Sabtu"])
         },
         {
             id: "01980001-0000-0000-0000-000000000005",
@@ -3543,6 +3547,7 @@ async function main() {
             school: "Universitas Indonesia",
             teachLevel: "SMA",
             description: "Pernah menjadi asisten dosen Kimia dan mengajar privat.",
+            days: JSON.stringify(["Rabu", "Kamis"])
         },
     ];
 

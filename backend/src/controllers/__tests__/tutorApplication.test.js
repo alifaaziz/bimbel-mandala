@@ -7,6 +7,7 @@ jest.unstable_mockModule('../../services/tutorApplication.js', () => ({
     verifyTutor: jest.fn(),
     getTutorApplications: jest.fn(),
     getTutorApplicationById: jest.fn(),
+    rejectTutorApplication: jest.fn(),
   },
 }));
 
@@ -124,6 +125,22 @@ describe('TutorApplicationController', () => {
       expect(TutorApplicationService.getTutorApplicationById).toHaveBeenCalledWith(99);
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ message: 'Tutor application not found' });
+    });
+  });
+
+  describe('rejectTutorApplication', () => {
+    it('should reject (delete) a tutor application and return 200', async () => {
+      TutorApplicationService.rejectTutorApplication.mockResolvedValue();
+
+      const { req, res } = setupExpressMock({
+        req: { params: { id: 1 } },
+      });
+
+      await TutorApplicationController.rejectTutorApplication(req, res);
+
+      expect(TutorApplicationService.rejectTutorApplication).toHaveBeenCalledWith(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Tutor application rejected successfully' });
     });
   });
 });
