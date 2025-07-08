@@ -10,8 +10,32 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
  * @param {Object} res - The response object.
  * @returns {Promise<void>} Resolves with the list of bimbel packages.
  */
-async function getAllBimbelPackages(_req, res) {
-    const packages = await BimbelPackageService.getAllBimbelPackages();
+async function getAllBimbelPackages(req, res) {
+    const { page = 1, limit = 8 } = req.query;
+    const paginationOptions = {
+      page: parseInt(page, 10),
+      pageSize: parseInt(limit, 10),
+    };
+    const packages = await BimbelPackageService.getAllBimbelPackages(paginationOptions);
+    res.status(200).json(packages);
+}
+
+/**
+ * Handles only active bimbel packages.
+ * 
+ * @async
+ * @function getActiveBimbelPackages
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of active bimbel packages. 
+ */
+async function getActiveBimbelPackages(req, res) {
+    const { page = 1, limit = 8 } = req.query;
+    const paginationOptions = {
+      page: parseInt(page, 10),
+      pageSize: parseInt(limit, 10),
+    };
+    const packages = await BimbelPackageService.getActiveBimbelPackages(paginationOptions);
     res.status(200).json(packages);
 }
 
@@ -19,14 +43,14 @@ async function getAllBimbelPackages(_req, res) {
  * Handles the request to get a bimbel package by ID.
  *
  * @async
- * @function getBimbelPackageById
+ * @function getBimbelPackageBySlug
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  * @returns {Promise<void>} Resolves with the bimbel package.
  */
-async function getBimbelPackageById(req, res) {
-    const { id } = req.params;
-    const packages = await BimbelPackageService.getBimbelPackageById(id);
+async function getBimbelPackageBySlug(req, res) {
+    const { slug } = req.params;
+    const packages = await BimbelPackageService.getBimbelPackageBySlug(slug);
     res.status(200).json(packages);
 }
 
@@ -84,21 +108,10 @@ async function createClassBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the updated bimbel package.
  */
 async function updateBimbelPackage(req, res) {
-  const { id } = req.params;
-  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+  const { slug } = req.params;
+  const payload = req.body;
 
-  const updatedPackage = await BimbelPackageService.updateBimbelPackage(id, {
-    name,
-    level,
-    totalMeetings,
-    time,
-    duration,
-    area,
-    tutorId,
-    groupType,
-    days,
-    discount
-  });
+  const updatedPackage = await BimbelPackageService.updateBimbelPackage(slug, payload);
 
   res.status(200).json(updatedPackage);
 }
@@ -113,25 +126,10 @@ async function updateBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the updated class bimbel package.
  */
 async function updateClassBimbelPackage(req, res) {
-  const { id } = req.params;
-  const { name, level, totalMeetings, time, duration, area, tutorId, groupType, days, discount } = req.body;
+  const { slug } = req.params;
+  const payload = req.body;
 
-  if (!groupType || !groupType.price) {
-    return res.status(400).json({ message: 'Group type price is required' });
-  }
-
-  const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(id, {
-    name,
-    level,
-    totalMeetings,
-    time,
-    duration,
-    area,
-    tutorId,
-    groupType,
-    days,
-    discount
-  });
+  const updatedPackage = await BimbelPackageService.updateClassBimbelPackage(slug, payload);
 
   res.status(200).json(updatedPackage);
 }
@@ -146,8 +144,8 @@ async function updateClassBimbelPackage(req, res) {
  * @returns {Promise<void>} Resolves with the deletion result.
  */
 async function deleteBimbelPackage(req, res) {
-    const { id } = req.params;
-    await BimbelPackageService.deleteBimbelPackage(id);
+    const { slug } = req.params;
+    await BimbelPackageService.deleteBimbelPackage(slug);
     res.status(200).json({ message: 'Bimbel package deleted successfully' });
 }
 
@@ -180,9 +178,161 @@ async function getBimbelPackagesByPopularity(_req, res) {
   res.status(200).json(packages);
 }
 
+/**
+ * Handles the request to get running programs with incomplete schedules.
+ *
+ * @async
+ * @function getRunningPrograms
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of running programs.
+ */
+async function getRunningPrograms(_req, res) {
+  const runningPrograms = await BimbelPackageService.getRunningPrograms();
+  res.status(200).json(runningPrograms);
+}
+
+/**
+ * Handles the request to get bimbel packages associated with the logged-in tutor.
+ *
+ * @async
+ * @function getMyPackages
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of bimbel packages for the tutor.
+ */
+async function getMyPackages(req, res) {
+  const user = res.locals.user;
+  const packages = await BimbelPackageService.getMyPackages(user);
+  res.status(200).json(packages);
+}
+
+/**
+ * Handles the request to get a bimbel package by ID associated with the logged-in user.
+ *
+ * @async
+ * @function getMyPackageBySlug
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the bimbel package or an error if not found.
+ */
+async function getMyPackageBySlug(req, res) {
+  const { slug } = req.params;
+  const user = res.locals.user;
+  const pkg = await BimbelPackageService.getMyPackageBySlug(slug, user);
+
+  if (!pkg) {
+    return res.status(404).json({ error: 'Bimbel package not found or not associated with the user' });
+  }
+
+  res.status(200).json(pkg);
+}
+
+/**
+ * Handles the request to get statistics for bimbel packages.
+ *
+ * @async
+ * @function getBimbelPackageStatistics
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the statistics data.
+ */
+async function getBimbelPackageStatistics(_req, res) {
+  const statistics = await BimbelPackageService.getBimbelPackageStatistics();
+  res.status(200).json(statistics);
+}
+
+/**
+ * Handles the request to get statistics for logged-in user.
+ * 
+ * @async
+ * @function getMyProgramsStatistics
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+async function getMyProgramsStatistics(req, res) {
+  const user = res.locals.user.id; // Retrieve user from auth middleware
+  const statistics = await BimbelPackageService.getMyProgramsStatistics(user);
+  res.status(200).json(statistics);
+}
+
+/**
+ * Handles the request to get recommended bimbel packages for the logged-in user.
+ *
+ * @async
+ * @function getRecommendations
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of recommended bimbel packages or null if not a student.
+ */
+async function getRecommendations(req, res) {
+  const user = res.locals.user;
+  const recommendations = await BimbelPackageService.getRecommendations(user);
+
+  if (!recommendations) {
+    return res.status(200).json({ message: 'No recommendations available for this user.' });
+  }
+
+  res.status(200).json(recommendations);
+}
+
+/**
+ * Handles the request to get all bimbel packages that match the filters without pagination.
+ *
+ * @async
+ * @function getFilteredBimbelPackages
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of filtered bimbel packages.
+ */
+async function getFilteredBimbelPackages(req, res) {
+  const { searchText, level, hari, durasi } = req.query;
+
+  const filters = {
+    searchText,
+    level,
+    hari: hari ? hari.split(',') : undefined,
+    durasi: durasi ? parseInt(durasi, 10) : undefined
+  };
+
+  const packages = await BimbelPackageService.getFilteredBimbelPackages(filters);
+  res.status(200).json({ data: packages });
+}
+
+/**
+ * Handles the request to get all bimbel packages by tutor userId.
+ *
+ * @async
+ * @function getBimbelPackagesByUserId
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of bimbel packages for the tutor.
+ */
+async function getBimbelPackagesByUserId(req, res) {
+  const { userId } = req.params;
+  const packages = await BimbelPackageService.getBimbelPackagesByUserId(userId);
+  res.status(200).json({ data: packages });
+}
+
+/**
+ * Handles the request to get statistics for programs by userId.
+ * 
+ * @async
+ * @function getProgramsStatisticsByUserId
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the statistics data for the specified user.
+ */
+async function getProgramsStatisticsByUserId(req, res) {
+  const { userId } = req.params;
+  const statistics = await BimbelPackageService.getMyProgramsStatistics(userId);
+  res.status(200).json(statistics);
+}
+
 export const BimbelPackageController = {
     getAllBimbelPackages: asyncWrapper(getAllBimbelPackages),
-    getBimbelPackageById: asyncWrapper(getBimbelPackageById),
+    getActiveBimbelPackages: asyncWrapper(getActiveBimbelPackages),
+    getBimbelPackageBySlug: asyncWrapper(getBimbelPackageBySlug),
     createBimbelPackage: asyncWrapper(createBimbelPackage),
     createClassBimbelPackage: asyncWrapper(createClassBimbelPackage),
     updateBimbelPackage: asyncWrapper(updateBimbelPackage),
@@ -190,4 +340,13 @@ export const BimbelPackageController = {
     deleteBimbelPackage: asyncWrapper(deleteBimbelPackage),
     updateBimbelPackageStatus: asyncWrapper(updateBimbelPackageStatus),
     getBimbelPackagesByPopularity: asyncWrapper(getBimbelPackagesByPopularity),
+    getRunningPrograms: asyncWrapper(getRunningPrograms),
+    getMyPackages: asyncWrapper(getMyPackages),
+    getMyPackageBySlug: asyncWrapper(getMyPackageBySlug),
+    getBimbelPackageStatistics: asyncWrapper(getBimbelPackageStatistics),
+    getMyProgramsStatistics: asyncWrapper(getMyProgramsStatistics),
+    getRecommendations: asyncWrapper(getRecommendations),
+    getFilteredBimbelPackages: asyncWrapper(getFilteredBimbelPackages),
+    getBimbelPackagesByUserId: asyncWrapper(getBimbelPackagesByUserId),
+    getProgramsStatisticsByUserId: asyncWrapper(getProgramsStatisticsByUserId)
 };

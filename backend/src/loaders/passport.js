@@ -2,7 +2,6 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { prisma } from '../utils/db.js';
 import { appEnv } from '../utils/env.js';
-import axios from 'axios';
 import { AuthService } from '../services/auth.js';
 
 const googleStrategy = new GoogleStrategy(
@@ -32,23 +31,27 @@ const googleStrategy = new GoogleStrategy(
         if (user.googleId === profile.id) {
           // Generate token
           const token = await AuthService.generateToken(user.id);
-          done(null, { user, token });
+          done(null, { user, token, isNew: false }); // <-- tambahkan isNew
         } else {
           throw new Error('Google ID does not match');
         }
       } else {
         // User does not exist, register with null password and role 'siswa'
-        const registerResponse = await axios.post(`${appEnv.BASE_URL}/auth/register`, {
-          email: profile.emails[0].value,
-          name: profile.displayName,
-          password: null,
-          role: 'siswa',
-          googleId: profile.id,
+        user = await prisma.user.create({
+          data: {
+            email: profile.emails[0].value,
+            name: profile.displayName,
+            password: null,
+            role: 'siswa',
+            googleId: profile.id,
+            verified: true,
+          }
         });
-
-        user = registerResponse.data.user;
-        // Redirect to OTP verification page
-        done(null, { user, redirect: '/auth/otp' });
+        await prisma.student.create({
+          data: { userId: user.id }
+        });
+        const token = await AuthService.generateToken(user.id);
+        done(null, { user, token, isNew: true }); // <-- tambahkan isNew
       }
     } catch (error) {
       done(error, null);

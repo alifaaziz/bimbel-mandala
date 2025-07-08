@@ -3,6 +3,8 @@ model Notification {
     type       String
     viewed      Boolean  @default(false)
     description  String?
+    reason      String?
+    photo       String?
 
     userId String @map("user_id")
 

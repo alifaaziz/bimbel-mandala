@@ -2,6 +2,7 @@ import { prisma } from '../utils/db.js';
 import { HttpError } from '../utils/error.js';
 import { AuthService } from './auth.js';
 import { OtpService } from './otp.js';
+import { savePhoto } from '../utils/helper.js';
 
 /**
  * Creates a new user.
@@ -17,18 +18,22 @@ import { OtpService } from './otp.js';
  * @returns {Promise<Object>} The new user object.
  * @throws {HttpError} Throws an error if the user creation fails.
  */
-async function createStudent(payload) {
-    const { name, email, password, role, googleId } = payload;
-    const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
+async function createStudent(payload, options = {}) {
+    const encryptedPassword = payload.password ? await AuthService.hashPassword(payload.password) : null;
 
     const parsedUserWithEncryptedPassword = {
-        ...payload,
-        password: encryptedPassword
+        name: payload.name,
+        email: payload.email,
+        password: encryptedPassword,
+        role: payload.role,
+        googleId: payload.googleId || null,
+        ...(options.skipOtp ? { verified: true } : {})
     };
+    
 
     const verifiedUser = await prisma.user.findFirst({
         where: {
-          email,
+          email: payload.email,
           verified: true
         }
       });
@@ -42,7 +47,7 @@ async function createStudent(payload) {
 
     const unverifiedUser = await prisma.user.findFirst({
         where: {
-          email,
+          email: payload.email,
           verified: false
         }
       });
@@ -58,10 +63,19 @@ async function createStudent(payload) {
     }
 
     await prisma.student.create({
-        data: { userId: user.id }
+        data: {
+            userId: user.id,
+            level: payload.level || null,
+            address: payload.address || null,
+            phone: payload.phone || null,
+            parentPhone: payload.parentPhone || null,
+        }
     });
 
-    await OtpService.sendUserVerificationOtp(user.name, user.email, user.id);
+    if (!options.skipOtp) {
+
+        await OtpService.sendUserVerificationOtp(user.name, user.email, user.id);
+    }
     return user;
 }
 
@@ -79,8 +93,8 @@ async function createStudent(payload) {
  * @returns {Promise<Object>} The new user object.
  * @throws {HttpError} Throws an error if the user creation fails.
  */
-async function createUserWithRole(payload) {
-    const { name, email, password, role, ...additionalData } = payload;
+async function createUserWithRole(payload, file) {
+    const { name, email, password, role, days, ...additionalData } = payload;
 
     if (role !== 'tutor' && role !== 'admin') {
         throw new HttpError(400, { message: 'Invalid role for this function' });
@@ -92,18 +106,21 @@ async function createUserWithRole(payload) {
         name,
         email,
         password: encryptedPassword,
-        verified: true
+        role,
+        googleId: payload.googleId || null,
     };
 
     let user = await prisma.user.findFirst({
-        where: {
-            email
-        }
+        where: { email }
     });
 
     if (user) {
-        let errorMessage = 'Email already exists';
-        throw new HttpError(409, { message: errorMessage });
+        throw new HttpError(409, { message: 'Email already exists' });
+    }
+
+    if (file) {
+        const photoPath = await savePhoto(file, name || 'tutor');
+        additionalData.photo = photoPath;
     }
 
     const newUser = await prisma.user.create({
@@ -115,19 +132,35 @@ async function createUserWithRole(payload) {
 
     user = newUser;
 
+    let tutor;
     if (role === 'tutor') {
-        await prisma.tutor.create({
+        tutor = await prisma.tutor.create({
             data: {
                 userId: user.id,
                 ...additionalData,
             }
         });
 
+        if (Array.isArray(days)) {
+            for (const dayName of days) {
+                const day = await prisma.day.findFirst({ where: { daysName: dayName } });
+                if (day) {
+                    await prisma.tutorDay.create({
+                        data: {
+                            tutorId: tutor.id,
+                            daysId: day.id
+                        }
+                    });
+                }
+            }
+        }
+
         await prisma.notification.create({
             data: {
                 userId: user.id,
                 type: 'Pendaftaran Akun',
-                description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.'
+                description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
+                photo: '/public/mandala.png'
             }
         });
     }
@@ -151,45 +184,77 @@ async function createUserWithRole(payload) {
  * @returns {Promise<Object>} The updated user object.
  * @throws {Error} Throws an error if the update fails.
  */
-async function updateUser(payload) {
-    const { id, password, role, ...additionalData } = payload;
+async function updateUser(payload, file) {
+    const { id, password, role, daysName, ...additionalData } = payload;
     const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
 
-    const parsedUserWithEncryptedPassword = {
-        ...additionalData,
-        password: encryptedPassword
-    };
-
-    Object.keys(parsedUserWithEncryptedPassword).forEach(key => {
-        if (parsedUserWithEncryptedPassword[key] === undefined) {
-            delete parsedUserWithEncryptedPassword[key];
+    // Gunakan id jika name tidak ada
+    if (file) {
+        // Ambil nama user dari database jika ada
+        let userName = additionalData.name;
+        if (!userName) {
+            const userDb = await prisma.user.findUnique({ where: { id } });
+            userName = userDb?.name || id || 'tutor';
         }
-    });
+        const photoPath = await savePhoto(file, userName);
+        additionalData.photo = photoPath;
+    }
 
-    const { name, email, googleId, password: userPassword, ...additionalUserData } = parsedUserWithEncryptedPassword;
+    // Pisahkan field user dan tutor
+    const { name, email, googleId, password: userPassword, ...maybeTutorData } = additionalData;
 
+    // Update user jika ada perubahan
     if (name || email || googleId || userPassword) {
         await prisma.user.update({
             where: { id: id },
             data: {
-                name,
-                email,
-                googleId,
-                password: userPassword
+                ...(name && { name }),
+                ...(email && { email }),
+                ...(googleId && { googleId }),
+                ...(userPassword && { password: userPassword })
             }
         });
     }
 
     if (role === 'siswa') {
+        // Hanya kirim field yang tidak null/undefined
+        const studentData = Object.fromEntries(
+            Object.entries(maybeTutorData).filter(([_, v]) => v !== null && v !== undefined)
+        );
         await prisma.student.update({
             where: { userId: id },
-            data: additionalUserData
+            data: studentData
         });
     } else if (role === 'tutor') {
+        // Hanya kirim field yang tidak null/undefined DAN memang field Tutor
+        const allowedTutorFields = [
+            'status', 'school', 'phone', 'address', 'teachLevel', 'subjects', 'major', 'description', 'photo'
+        ];
+        const tutorData = Object.fromEntries(
+            Object.entries(maybeTutorData)
+                .filter(([k, v]) => allowedTutorFields.includes(k) && v !== null && v !== undefined)
+        );
         await prisma.tutor.update({
             where: { userId: id },
-            data: additionalUserData
+            data: tutorData
         });
+
+        // Update hari aktif jika ada
+        if (Array.isArray(daysName)) {
+            const tutor = await prisma.tutor.findUnique({ where: { userId: id } });
+            await prisma.tutorDay.deleteMany({ where: { tutorId: tutor.id } });
+            for (const dayName of daysName) {
+                const day = await prisma.day.findFirst({ where: { daysName: dayName } });
+                if (day) {
+                    await prisma.tutorDay.create({
+                        data: {
+                            tutorId: tutor.id,
+                            daysId: day.id
+                        }
+                    });
+                }
+            }
+        }
     }
 
     const user = await prisma.user.findUnique({
@@ -204,45 +269,44 @@ async function updateUser(payload) {
 }
 
 /**
- * Retrieves tutors sorted by the number of classes they are associated with.
+ * Retrieves tutors sorted by the number of classes they are associated with, with pagination.
  *
  * @async
  * @function getTutorsSortedByClassCount
- * @returns {Promise<Array>} The list of tutors sorted by class count.
+ * @param {Object} [options] - Pagination options.
+ * @param {number} [options.page=1] - Page number (1-based).
+ * @param {number} [options.pageSize=10] - Number of items per page.
+ * @returns {Promise<Object>} The paginated list of tutors and total count.
  */
-async function getTutorsSortedByClassCount() {
-    const tutors = await prisma.user.findMany({
-        where: {
-            role: 'tutor'
-        },
-        select: {
-            id: true,
-            name: true,
-            _count: {
-                select: {
-                    class: true // Count the number of classes associated with the tutor
-                }
-            }
-        },
-        orderBy: {
-            class: {
-                _count: 'desc' // Sort by class count in descending order
-            }
-        }
-    });
+async function getTutorsSortedByClassCount({ page = 1, pageSize = 10 } = {}) {
+    const skip = (page - 1) * pageSize;
+
+    const [tutors, total] = await Promise.all([
+        prisma.user.findMany({
+            where: { role: 'tutor' },
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                _count: { select: { class: true } }
+            },
+            orderBy: { class: { _count: 'desc' } },
+            skip,
+            take: pageSize
+        }),
+        prisma.user.count({ where: { role: 'tutor' } })
+    ]);
 
     const tutorDetails = await prisma.tutor.findMany({
-        where: {
-            userId: {
-                in: tutors.map(tutor => tutor.id)
-            }
-        },
+        where: { userId: { in: tutors.map(tutor => tutor.id) } },
         select: {
             userId: true,
             subjects: true,
             teachLevel: true,
             description: true,
-            photo: true
+            photo: true,
+            birthDate: true,
+            phone: true
         }
     });
 
@@ -251,15 +315,266 @@ async function getTutorsSortedByClassCount() {
         return map;
     }, {});
 
-    return tutors.map(tutor => ({
-        id: tutor.id,
-        name: tutor.name,
-        subject: tutorDetailsMap[tutor.id]?.subjects || null,
-        teachLevel: tutorDetailsMap[tutor.id]?.teachLevel || null,
-        description: tutorDetailsMap[tutor.id]?.description || null,
-        photo: tutorDetailsMap[tutor.id]?.photo || null,
-        classCount: tutor._count.class
+    function getAge(birthDate) {
+        if (!birthDate) return null;
+        const today = new Date();
+        const dob = new Date(birthDate);
+        let age = today.getFullYear() - dob.getFullYear();
+        const m = today.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    return {
+        data: tutors.map(tutor => {
+            const detail = tutorDetailsMap[tutor.id] || {};
+            return {
+                id: tutor.id,
+                name: tutor.name,
+                joinDate: tutor.createdAt,
+                subject: detail.subjects || null,
+                teachLevel: detail.teachLevel || null,
+                description: detail.description || null,
+                photo: detail.photo || null,
+                classCount: tutor._count.class,
+                phone: detail.phone || null,
+                age: detail.birthDate ? getAge(detail.birthDate) : null
+            };
+        }),
+        total,
+        page,
+        pageSize
+    };
+}
+
+/**
+ * Get details of a user by ID.
+ *
+ * @async
+ * @function getUserById
+ * @param {string} id - The user's ID.
+ * @returns {Promise<Object>} The user object.
+*/
+async function getUserById(id) {
+    const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+            students: true,
+            tutors: {
+                include: {
+                    tutorDay: {
+                        include: {
+                            day: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    if (!user) {
+        throw new HttpError(404, { message: 'User not found' });
+    }
+
+    if (user.role === 'tutor' && user.tutors?.length) {
+        user.tutors = user.tutors.map(tutor => {
+            const { tutorDay, ...rest } = tutor;
+            return {
+            ...rest,
+            daysName: tutorDay.map(td => td.day?.daysName).filter(Boolean)
+            };
+        });
+    }
+
+    return user;
+}
+
+/**
+ * Retrieves students ordered by their creation date.
+ *
+ * @async
+ * @function getTopStudents
+ * @returns {Promise<Array>} The list of students ordered by creation date, including level and class count.
+ */
+async function getTopStudents() {
+    const students = await prisma.user.findMany({
+        where: {
+            role: 'siswa'
+        },
+        select: {
+            id: true,
+            name: true,
+            students: {
+                select: {
+                    level: true
+                }
+            },
+            _count: {
+                select: {
+                    studentClass: true
+                }
+            }
+        },
+        orderBy: {
+            studentClass: {
+                _count: 'desc'
+            }
+        },
+        take: 5
+    });
+
+    return students.map(student => ({
+        id: student.id,
+        name: student.name,
+        level: student.students?.[0]?.level || null,
+        classCount: student._count?.studentClass || 0,
     }));
 }
 
-export const UserService = { createStudent, createUserWithRole, updateUser, getTutorsSortedByClassCount };
+/**
+ * Retrieves the newest students ordered by their creation date, with pagination.
+ *
+ * @async
+ * @function getNewStudents
+ * @param {Object} [options] - Pagination options.
+ * @param {number} [options.page=1] - Page number (1-based).
+ * @param {number} [options.pageSize=10] - Number of items per page.
+ * @returns {Promise<Object} The paginated list of newest students and total count.
+ */
+async function getNewStudents({ page = 1, pageSize = 10 } = {}) {
+    const skip = (page - 1) * pageSize;
+    const [students, total] = await Promise.all([
+        prisma.user.findMany({
+            where: {
+                role: 'siswa'
+            },
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                students: {
+                    select: {
+                        level: true,
+                        phone: true,
+                    }
+                },
+                _count: {
+                    select: {
+                        studentClass: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            skip,
+            take: pageSize
+        }),
+        prisma.user.count({
+            where: {
+                role: 'siswa'
+            }
+        })
+    ]);
+
+    return {
+        data: students.map(student => ({
+            id: student.id,
+            name: student.name,
+            createdAt: student.createdAt,
+            level: student.students?.[0]?.level || null,
+            phone: student.students?.[0]?.phone || null,
+            classCount: student._count?.studentClass || 0,
+        })),
+        total,
+        page,
+        pageSize
+    };
+}
+
+/**
+ * Retrieves statistics about tutors, students, and packages.
+ *
+ * @async
+ * @function getStatistics
+ * @returns {Promise<Object>} The statistics object.
+ */
+async function getStatistics() {
+  const [tutorCount, studentCount, packageCount, activePackageCount] = await Promise.all([
+    prisma.user.count({ where: { role: 'tutor' } }),
+    prisma.user.count({ where: { role: 'siswa' } }),
+    prisma.bimbelPackage.count(),
+    prisma.bimbelPackage.count({ where: { isActive: true } })
+  ]);
+
+  return {
+    tutorCount,
+    studentCount,
+    packageCount,
+    activePackageCount
+  };
+}
+
+/**
+ * Delete a user and all related data by userId.
+ * 
+ * @async
+ * @function deleteUser
+ * @param {string} userId - The user's ID.
+ * @returns {Promise<void>}
+ */
+async function deleteUser(userId) {
+    await prisma.studentClass.deleteMany({ where: { userId } });
+    await prisma.attendance.deleteMany({ where: { userId } });
+    await prisma.student.deleteMany({ where: { userId } });
+
+    const tutor = await prisma.tutor.findUnique({ where: { userId } });
+    if (tutor) {
+        await prisma.tutorDay.deleteMany({ where: { tutorId: tutor.id } });
+        await prisma.tutor.deleteMany({ where: { userId } });
+    }
+
+    const packages = await prisma.bimbelPackage.findMany({ where: { userId } });
+    for (const pkg of packages) {
+        const groupTypes = await prisma.groupType.findMany({ where: { packageId: pkg.id } });
+        for (const gt of groupTypes) {
+            await prisma.order.deleteMany({ where: { groupTypeId: gt.id } });
+        }
+        await prisma.groupType.deleteMany({ where: { packageId: pkg.id } });
+
+        await prisma.packageDay.deleteMany({ where: { packageId: pkg.id } });
+
+        await prisma.order.deleteMany({ where: { packageId: pkg.id } });
+
+        const orders = await prisma.order.findMany({ where: { packageId: pkg.id } });
+        for (const order of orders) {
+            await prisma.class.deleteMany({ where: { orderId: order.id } });
+        }
+
+        await prisma.class.deleteMany({ where: { tutorId: userId } });
+
+        await prisma.bimbelPackage.delete({ where: { id: pkg.id } });
+    }
+
+    await prisma.order.deleteMany({ where: { userId } });
+    await prisma.notification.deleteMany({ where: { userId } });
+    await prisma.passwordReset.deleteMany({ where: { userId } });
+    await prisma.otp.deleteMany({ where: { userId } });
+    await prisma.salary.deleteMany({ where: { userId } });
+
+    await prisma.user.delete({ where: { id: userId } });
+}
+
+export const UserService = { 
+    createStudent,
+    createUserWithRole, 
+    updateUser, 
+    getTutorsSortedByClassCount,
+    getUserById,
+    getTopStudents,
+    getNewStudents,
+    getStatistics,
+    deleteUser,
+};

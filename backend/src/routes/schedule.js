@@ -14,4 +14,12 @@ export default (app) => {
   router.get('/closest', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ScheduleController.getClosestSchedules);
 
   router.get('/', AuthMiddleware.isAuthorized, ScheduleController.getSchedules);
+
+  router.get('/:slug', AuthMiddleware.isAuthorized, ScheduleController.getScheduleBySlug);
+
+  router.get('/closest/:slug', AuthMiddleware.isAuthorized, ScheduleController.getClosestScheduleBySlug);
+
+  router.get('/user/:userId', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ScheduleController.getScheduleByUserId);
+
+  router.patch('/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin', 'tutor']), ScheduleController.updateScheduleInformation);
 };

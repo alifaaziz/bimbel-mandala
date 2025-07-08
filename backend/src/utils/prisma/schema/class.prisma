@@ -1,11 +1,14 @@
 model Class {
     id       String   @id @default(uuid(7))
     code     String   @unique
+    status   ProgramStatus
     orderId  String?  @map("order_id")
     order    Order?   @relation(fields: [orderId], references: [id])
 
     tutorId   String?  @map("tutor_id")
     tutor    User?    @relation(fields: [tutorId], references: [id])
+
+    maxStudents Int @map("max_students")
 
     studentClasses StudentClass[]
     schedules      Schedule[]
@@ -14,4 +17,9 @@ model Class {
     updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at") @db.Timestamp()
 
     @@map("class")
+}
+
+enum ProgramStatus{
+    berjalan
+    selesai
 }

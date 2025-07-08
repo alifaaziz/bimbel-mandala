@@ -10,7 +10,7 @@ import { prisma } from "../utils/db.js";
  */
 async function getNotifications(userId) {
   return prisma.notification.findMany({
-    where: { userId },
+    where: { userId, viewed: false },
     orderBy: { createdAt: 'desc' }
   });
 }
@@ -20,18 +20,19 @@ async function getNotifications(userId) {
  *
  * @async
  * @function markNotificationAsRead
+ * @param {string} userId - The user ID.
  * @param {string} notificationId - The notification ID.
  * @returns {Promise<void>} A promise that resolves when the notification is marked as read.
  */
 async function markNotificationAsRead(userId, notificationId) {
-    await prisma.notification.findFirst({
-        where: { id: notificationId, userId: userId }
-    });
+  await prisma.notification.findFirst({
+    where: { id: notificationId, userId }
+  });
 
-    await prisma.notification.update({
+  await prisma.notification.update({
     where: { id: notificationId },
     data: { viewed: true }
-    });
+  });
 }
 
 /**
@@ -54,73 +55,18 @@ async function markAllNotificationsAsRead(userId) {
  * 
  * @async
  * @function deleteNotification
+ * @param {string} userId - The user ID.
  * @param {string} notificationId - The notification ID.
  * @returns {Promise<void>} A promise that resolves when the notification is deleted.
  */
-async function deleteNotification(userId, notificationId) {
-    await prisma.notification.findFirst({
-        where: { id: notificationId, userId: userId }
-    });
-    
-    await prisma.notification.delete({
-        where: { id: notificationId }
-    });
-}
-
-/**
- * Retrieves all notifications (admin only).
- *
- * @async
- * @function getAllNotifications
- * @returns {Promise<Array>} All notifications in the system.
- */
-async function getAllNotifications() {
-  const notifications = await prisma.notification.findMany({
-    select: {
-      id: true,
-      type: true,
-      createdAt: true,
-      description: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
-          role: true
-        }
-      }
-    },
-    orderBy: { createdAt: 'desc' }
-  });
-
-  const enrichedNotifications = notifications.map((notification) => {
-    const { description, type } = notification;
-
-    if (['Program', 'Perubahan Jadwal', 'Izin', 'Absensi'].includes(type) && description) {
-      const match = description.match(/<b>(.*?)<\/b>.*?<b>(.*?) #([A-Z0-9]+)<\/b>/);
-      const programName = match ? match[2] : null;
-      const classCode = match ? match[3] : null;
-
-      return {
-        id: notification.id,
-        type : notification.type,
-        createdAt: notification.createdAt,
-        user: notification.user,
-        programName,
-        classCode
-      };
+async function deleteNotification() {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const result = await prisma.notification.deleteMany({
+    where: {
+      createdAt: { lt: thirtyDaysAgo }
     }
-    
-    return {
-      id: notification.id,
-      type : notification.type,
-      createdAt: notification.createdAt,
-      user: notification.user,
-      programName: null,
-      classCode: null
-    };
   });
-
-  return enrichedNotifications;
+  return result.count;
 }
 
 export const NotificationService = {
@@ -128,5 +74,4 @@ export const NotificationService = {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
-  getAllNotifications
 };

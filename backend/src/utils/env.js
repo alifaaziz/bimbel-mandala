@@ -9,6 +9,7 @@ logger.info('✅ Environment variables loaded from .env');
 
 // Schema validasi environment variables
 const envSchema = z.object({
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: validStringSchema,
   VALID_ORIGINS: validStringSchema,
   JWT_SECRET: validStringSchema,

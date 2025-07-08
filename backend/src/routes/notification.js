@@ -30,17 +30,8 @@ export default (app) => {
     );
 
     router.delete(
-        '/:id',
-        CommonValidationMiddleware.isValidParamsIdUuid,
+        '/',
         AuthMiddleware.isAuthorized,
-        NotificationMiddleware.isNotificationExists,
         NotificationController.deleteNotification
-    );
-
-    router.get(
-        '/all',
-        AuthMiddleware.isAuthorized,
-        AuthMiddleware.hasRole(['admin']),
-        NotificationController.getAllNotifications
     );
 }

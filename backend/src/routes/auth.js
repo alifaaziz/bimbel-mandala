@@ -6,6 +6,8 @@ import { UserValidation } from '../middlewares/validation/user.js';
 import { CommonValidationMiddleware } from '../middlewares/validation/common.js';
 import { OtpValidationMiddleware } from '../middlewares/validation/otp.js';
 import { AuthMiddleware } from '../middlewares/auth.js';
+import { appEnv } from '../utils/env.js';
+import { upload } from '../middlewares/upload.js';
 
 export default (app) => {
     const router = Router();
@@ -24,37 +26,32 @@ export default (app) => {
     );
 
     router.post(
-        '/add-user',
-        AuthController.createUserWithRole
-    );
-
-    router.post(
         '/password-reset',
         CommonValidationMiddleware.isValidEmailPayload,
         AuthController.sendPasswordResetEmail
     );
-
+    
     router.get(
         '/password-reset/:token',
         AuthValidationMiddleware.isValidTokenParams,
         AuthController.verifyPasswordResetToken
     );
-
+    
     router.post(
         '/password-reset/confirm',
         AuthValidationMiddleware.isValidResetPasswordPayload,
         AuthController.resetPassword
     );
-
+    
     router.post(
         '/password-change',
         AuthMiddleware.isAuthorized,
         AuthController.changePassword
     );
-
+    
     router.get('/otp', (_req, res) => {
         res.status(200).json({ message: 'disini tempat otp nanti' });
-      });
+    });
     
     router.post(
         '/otp',
@@ -62,12 +59,27 @@ export default (app) => {
         UserValidation.isUnverifiedUserExistsPayload,
         AuthController.sendUserVerificationOtp
     );
-
+    
     router.post(
         '/otp/verify',
         OtpValidationMiddleware.isValidOtpPayload,
         UserValidation.isUnverifiedUserExistsPayload,
         AuthController.verifyUserVerificationOtp
+    );
+    
+    router.post(
+        '/add-user',
+        AuthMiddleware.isAuthorized,
+        upload.single('photo'),
+        AuthMiddleware.hasRole('admin'),
+        AuthController.createUserWithRole
+    );
+    
+    router.post(
+        '/add-student',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        AuthController.addStudentByAdmin
     );
 
     router.get(
@@ -78,14 +90,18 @@ export default (app) => {
 
     router.get(
         '/google/callback',
-        passport.authenticate('google', 
-        { failureRedirect: '/' }),
+        passport.authenticate('google', { failureRedirect: '/' }),
         (req, res) => {
-            if (req.user.redirect) {
-                res.redirect(req.user.redirect);
+          const { token, isNew } = req.user || {};
+          if (token) {
+            if (isNew) {
+              res.redirect(`${appEnv.FRONTEND_URL}/google/success?token=${token}&new=1`);
             } else {
-                res.redirect('/');
+              res.redirect(`${appEnv.FRONTEND_URL}/google/success?token=${token}`);
             }
+          } else {
+            res.redirect(`${appEnv.FRONTEND_URL}/login?error=google`);
+          }
         }
     );
 };

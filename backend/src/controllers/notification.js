@@ -52,23 +52,9 @@ async function markAllNotificationsAsRead(req, res) {
  * @param {Object} res - The response object.
  * @returns {Promise<void>} Resolves with no value.
  */
-async function deleteNotification(req, res) {
-  await NotificationService.deleteNotification(res.locals.user.id, req.params.id);
-  res.status(200).json({ message: 'Notification deleted' });
-}
-
-/**
- * Gets all notifications for an admin.
- * 
- * @async
- * @function getAllNotifications
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Promise<void>} Resolves with the notifications.
- */
-async function getAllNotifications(req, res) {
-  const notifications = await NotificationService.getAllNotifications();
-  res.status(200).json({ data: notifications });
+async function deleteNotification(_req, res) {
+  const count = await NotificationService.deleteNotification();
+  res.status(200).json({ message: `Deleted ${count} notifications older than 30 days.` });
 }
 
 export const NotificationController = {
@@ -76,5 +62,4 @@ export const NotificationController = {
   markNotificationAsRead: asyncWrapper(markNotificationAsRead),
   markAllNotificationsAsRead: asyncWrapper(markAllNotificationsAsRead),
   deleteNotification: asyncWrapper(deleteNotification),
-  getAllNotifications: asyncWrapper(getAllNotifications)
 };

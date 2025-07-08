@@ -9,6 +9,7 @@ import schedule from './schedule.js';
 import docs from './docs.js';
 import attendance from './attendance.js';
 import tutorApplication from './tutorApplication.js';
+import salary from './salary.js';
 
 export default (app) => {
     root(app);
@@ -22,4 +23,5 @@ export default (app) => {
     docs(app);
     attendance(app);
     tutorApplication(app);
+    salary(app);
   };

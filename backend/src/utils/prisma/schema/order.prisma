@@ -23,4 +23,5 @@ enum OrderStatus {
     pending
     paid
     cancel
+    kelas
 }

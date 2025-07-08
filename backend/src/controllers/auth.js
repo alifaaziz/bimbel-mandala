@@ -49,7 +49,7 @@ async function register(req, res) {
  * @throws {Error} Throws an error if admin user creation fails.
  */
 async function createUserWithRole(req, res) {
-    const adminUser = await UserService.createUserWithRole(req.body);
+    const adminUser = await UserService.createUserWithRole(req.body, req.file);
     res.status(201).json({ data: adminUser });
 }
 
@@ -156,6 +156,21 @@ async function changePassword(req, res) {
     res.status(200).json({ message: 'Password changed successfully' });
 }
 
+/**
+ * Adds a new student, skip OTP if admin.
+ *
+ * @async
+ * @function addStudentByAdmin
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves when the student has been successfully added.
+ */
+async function addStudentByAdmin(req, res) {
+    const isAdmin = res.locals.user && res.locals.user.role === 'admin';
+    const student = await UserService.createStudent(req.body, { skipOtp: isAdmin });
+    res.status(201).json({ message: 'Student added successfully' });
+}
+
 export const AuthController = {
     login: asyncWrapper(login),
     register: asyncWrapper(register),
@@ -165,5 +180,6 @@ export const AuthController = {
     verifyPasswordResetToken: asyncWrapper(verifyPasswordResetToken),
     sendUserVerificationOtp: asyncWrapper(sendUserVerificationOtp),
     verifyUserVerificationOtp: asyncWrapper(verifyUserVerificationOtp),
-    changePassword: asyncWrapper(changePassword)
+    changePassword: asyncWrapper(changePassword),
+    addStudentByAdmin: asyncWrapper(addStudentByAdmin)
 };

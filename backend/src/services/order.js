@@ -3,6 +3,17 @@ import { ClassService } from './class.js';
 import { ScheduleService } from './schedule.js';
 
 /**
+ * Helper to get tutor name with prefix.
+ * @param {Object} tutor - Tutor object (with user and gender).
+ * @returns {string} Tutor name with prefix.
+ */
+function getTutorDisplayName(tutor) {
+  const genderPrefix = tutor.gender === 'Male' ? 'Pak' : 'Bu';
+  const name = tutor.user?.name || 'Tutor';
+  return `${genderPrefix} ${name}`;
+}
+
+/**
  * Creates a new order.
  *
  * @async
@@ -11,7 +22,10 @@ import { ScheduleService } from './schedule.js';
  * @returns {Promise<Object>} The created order.
  */
 async function createOrder(userId, packageId, groupTypeId, address) {
-
+  const groupType = await prisma.groupType.findUnique({
+    where: { id: groupTypeId }
+  });
+  
   await prisma.order.create({
     data: {
       userId,
@@ -22,14 +36,16 @@ async function createOrder(userId, packageId, groupTypeId, address) {
     }
   });
 
-  await prisma.bimbelPackage.update({
-    where: {
-      id: packageId
-    },
-    data: {
-      isActive: false
-    }
-  });
+  if (groupType?.type !== 'kelas') {
+    await prisma.bimbelPackage.update({
+      where: {
+        id: packageId
+      },
+      data: {
+        isActive: false
+      }
+    });
+  }
 }
 
 /**
@@ -43,49 +59,83 @@ async function createOrder(userId, packageId, groupTypeId, address) {
  */
 async function updateOrderStatus(orderId, status) {
   const order = await prisma.order.update({
-    where: {
-      id: orderId
-    },
-    data: {
-      status
-    },
+    where: { id: orderId },
+    data: { status },
     include: {
-      bimbelPackage: {
-        include: {
-          user: true
-        }
-      }
+      bimbelPackage: { include: { user: true } },
+      groupType: true,
+      user: true
     }
   });
 
   if (status === 'paid') {
+    if (order.groupType.type === 'kelas') {
+      const dummyOrder = await prisma.order.findFirst({
+        where: {
+          packageId: order.packageId,
+          status: 'kelas'
+        }
+      });
+
+      if (!dummyOrder) throw new Error('Dummy order/class untuk paket ini tidak ditemukan.');
+
+      const kelas = await prisma.class.findFirst({
+        where: { orderId: dummyOrder.id }
+      });
+
+      if (!kelas) throw new Error('Class untuk paket ini tidak ditemukan.');
+
+      const existingStudent = await prisma.studentClass.findFirst({
+        where: {
+          userId: order.userId,
+          classId: kelas.id
+        }
+      });
+      if (!existingStudent) {
+        await prisma.studentClass.create({
+          data: {
+            userId: order.userId,
+            classId: kelas.id
+          }
+        });
+      }
+
+      // Notifikasi, dsb, bisa ditambahkan di sini
+
+      return order;
+    }
+
+    // --- Flow lama untuk non-kelas ---
     const newClass = await ClassService.createClass({ orderId });
     await ScheduleService.createSchedules(newClass.id);
 
     const { name: packageName, level, userId } = order.bimbelPackage;
+
     const tutor = await prisma.tutor.findUnique({
       where: { userId },
       include: { user: true }
     });
+    const tutorPhoto = tutor?.photo || null;
 
-    const tutorName = tutor?.user?.name || 'Tutor';
-    const genderPrefix = tutor?.gender === 'Male' ? 'Pak' : 'Bu';
+    const tutorDisplayName = getTutorDisplayName(tutor);
 
-    const studentDescription = `Selamat, Bimbingan belajar <b>${packageName} ${level} #${newClass.code}</b> bersama <b>${genderPrefix} ${tutorName}</b> sudah terkonfirmasi dan segera berlangsung.`;
+    const studentDescription = `Selamat, Bimbingan belajar <strong>${packageName} ${level} #${newClass.code}</strong> bersama <strong>${tutorDisplayName}</strong> sudah terkonfirmasi dan segera berlangsung.`;
     await prisma.notification.create({
       data: {
         userId: order.userId,
         type: 'Program',
-        description: studentDescription
+        description: studentDescription,
+        photo: tutorPhoto
       }
     });
 
-    const tutorDescription = `Selamat, Bimbingan belajar <b>${packageName} ${level} #${newClass.code}</b> sudah terkonfirmasi dan segera berlangsung.`;
+    const tutorDescription = `Selamat, Bimbingan belajar <strong>${packageName} ${level} #${newClass.code}</strong> sudah terkonfirmasi dan segera berlangsung.`;
     await prisma.notification.create({
       data: {
         userId: tutor.userId,
         type: 'Program',
-        description: tutorDescription
+        description: tutorDescription,
+        photo: tutorPhoto
       }
     });
   } else {
@@ -93,27 +143,11 @@ async function updateOrderStatus(orderId, status) {
       data: {
         userId: order.userId,
         type: 'Program',
-        description: `The order status has been updated to <b>${status}</b>`
+        description: `The order status has been updated to <strong>${status}</strong>`,
+        photo: order.bimbelPackage.user?.tutor?.photo
       }
     });
   }
-
-  const groupType = await prisma.groupType.findUnique({
-    where: {
-      id: order.groupTypeId
-    }
-  });
-
-  const totalSalary = groupType.price * 0.9;
-
-  await prisma.salary.create({
-    data: {
-      userId: order.bimbelPackage.userId,
-      orderId: order.id,
-      total: totalSalary,
-      status: 'pending'
-    }
-  });
 
   return order;
 }
@@ -126,25 +160,140 @@ async function updateOrderStatus(orderId, status) {
  * @returns {Promise<Array>} The list of orders.
  */
 async function getAllOrders() {
-  const orders = await prisma.order.findMany();
-  return orders;
+  const orders = await prisma.order.findMany({
+    include: {
+      bimbelPackage: {
+        select: {
+          name: true,
+          level: true,
+          user: {
+            select: {
+              name: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return orders.map(order => ({
+    id: order.id,
+    packageName: order.bimbelPackage?.name || null,
+    level: order.bimbelPackage?.level || null,
+    tutorName: order.bimbelPackage?.user?.name || null,
+    status: order.status,
+  }));
 }
 
 /**
- * Gets an order by ID (optional).
+ * Gets an order by ID (with detail).
  *
  * @async
  * @function getOrderById
  * @param {String} id - The ID of the order.
- * @returns {Promise<Object>} The order.
+ * @returns {Promise<Object>} The order detail.
  */
 async function getOrderById(id) {
   const order = await prisma.order.findUnique({
-    where: {
-      id: id
+    where: { id },
+    include: {
+      user: { select: { name: true } }, // siswa yang order
+      bimbelPackage: {
+        select: {
+          name: true,
+          level: true,
+          area: true,
+          totalMeetings: true,
+          time: true,
+          duration: true,
+          user: { select: { name: true } },
+          groupType: {
+            select: {
+              id: true,
+              type: true,
+              price: true,
+              discPrice: true
+            }
+          },
+          packageDay: {
+            select: {
+              day: { select: { daysName: true } }
+            }
+          }
+        }
+      },
+      groupType: {
+        select: {
+          id: true,
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      }
     }
   });
-  return order;
+
+  if (!order) return null;
+
+  // Ambil groupType yang dipilih (dari order)
+  const selectedGroupType = order.groupType;
+
+  let paid = null;
+  if (selectedGroupType) {
+    paid = selectedGroupType.discPrice != null ? selectedGroupType.discPrice : selectedGroupType.price;
+  }
+
+  // Nama siswa
+  const studentName = order.user?.name || null;
+
+  // Hari-hari paket
+  const packageDays = order.bimbelPackage?.packageDay?.map(pd => pd.day.daysName) || [];
+
+  // Cari hari terdekat dari hari ini
+  function getNextDateForDay(dayName) {
+    const daysMap = {
+      'Senin': 1, 'Selasa': 2, 'Rabu': 3, 'Kamis': 4, 'Jumat': 5, 'Sabtu': 6, 'Minggu': 0
+    };
+    const today = new Date();
+    const todayDay = today.getDay(); // 0 = Minggu, 1 = Senin, dst
+    const targetDay = daysMap[dayName];
+    let diff = (targetDay - todayDay + 7) % 7;
+    if (diff === 0) diff = 7; // ambil minggu depan jika hari ini sudah lewat
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + diff);
+    return nextDate;
+  }
+
+  let nearestDay = null;
+  let nearestDate = null;
+  if (packageDays.length > 0) {
+    let minDiff = 8;
+    packageDays.forEach(dayName => {
+      const date = getNextDateForDay(dayName);
+      const diff = (date - new Date()) / (1000 * 60 * 60 * 24);
+      if (diff < minDiff) {
+        minDiff = diff;
+        nearestDay = dayName;
+        nearestDate = date;
+      }
+    });
+  }
+
+  return {
+    id: order.id,
+    packageName: order.bimbelPackage?.name || null,
+    level: order.bimbelPackage?.level || null,
+    tutorName: order.bimbelPackage?.user?.name || null,
+    area: order.bimbelPackage?.area || null,
+    totalMeetings: order.bimbelPackage?.totalMeetings || null,
+    time: order.bimbelPackage?.time || null,
+    duration: order.bimbelPackage?.duration || null,
+    type: selectedGroupType?.type || null,
+    paid,
+    studentName,
+    address: order.address,
+    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null // format YYYY-MM-DD
+  };
 }
 
 /**
@@ -172,23 +321,23 @@ async function deleteOrder(id) {
  * @returns {Promise<void>}
  */
 async function cancelPendingOrders() {
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-  
-    const result = await prisma.order.updateMany({
-      where: {
-        status: 'pending',
-        createdAt: {
-          lt: twoDaysAgo
-        }
-      },
-      data: {
-        status: 'cancel'
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+  const result = await prisma.order.updateMany({
+    where: {
+      status: 'pending',
+      createdAt: {
+        lt: twoDaysAgo
       }
-    });
-  
-    console.log(`Orders cancelled: ${result.count}`);
-  }
+    },
+    data: {
+      status: 'cancel'
+    }
+  });
+
+  console.log(`Orders cancelled: ${result.count}`);
+}
 
 export const OrderService = {
   createOrder,
