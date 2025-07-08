@@ -1,251 +1,146 @@
 <template>
-  <div class="siswa-container">
-    <n-space vertical :size="24">
-      <h1 class="headlineb2">Jadwal Program Aktif</h1>
+  <div class="dashboard-view">
+    <h1 class="headlineb2">Dashboard</h1>
 
-      <div class="search-tambah">
-        <div class="search-container">
-          <n-input
-            v-model="searchText"
-            round
-            size="large"
-            placeholder="Cari Jadwal">
-            <template #prefix>
-              <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
-            </template>
-          </n-input>
-        </div>
-        <n-date-picker
-          v-model="selectedDate"
-          round
-          size="large"
-          type="date"
-          placeholder="Cari tanggal"
-          clearable
-          style="width: 220px;"
-        />
+    <div class="search-container">
+      <n-input
+      round
+      size="large"
+      placeholder="Cari jadwal program bimbel...">
+        <template #prefix>
+          <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
+        </template>
+      </n-input>
+    </div>
+
+    <section class="schedule-section">
+      <h2 class="headersb2">Jadwal Program</h2>
+      <div class="table-responsive">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Bimbel <i class="fas fa-chevron-down sort-icon"></i></th>
+              <th>Kode <i class="fas fa-chevron-down sort-icon"></i></th>
+              <th>Tanggal <i class="fas fa-chevron-down sort-icon"></i></th>
+              <th>Jam <i class="fas fa-chevron-down sort-icon"></i></th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in scheduleItems" :key="item.kode">
+              <td>
+                <div class="bimbel-subject">{{ item.bimbel.subject }}</div>
+                <div class="bimbel-teacher">{{ item.bimbel.teacher }}</div>
+              </td>
+              <td>#{{ item.kode }}</td>
+              <td>{{ item.tanggal }}</td>
+              <td>{{ item.jam }}</td>
+              <td>
+                <button class="detail-button" @click="showDetail(item)">
+                  <img src="@/assets/icons/more-horizontal.svg" alt="">
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <n-data-table
-        :columns="columns"
-        :data="displayedData"
-        :pagination="false"
-        :bordered="false"
-        :single-line="false"
-        :loading="loading"
-      />
-      <div class="pagination-wrapper">
-        <n-pagination
-          :page="page"
-          :page-size="pageSize"
-          :item-count="total"
-          :page-slot="7"
-          @update:page="handlePageChange"
-          @update:page-size="handlePageSizeChange"
-          :page-sizes="[10, 20, 50]"
-          v-model="page"
-        />
+      <div class="pagination">
+        <button @click="goToPreviousPage" :disabled="page === 1">Sebelumnya</button>
+        <span>Halaman {{ page }} dari {{ totalPages }}</span>
+        <button @click="goToNextPage" :disabled="page === totalPages">Selanjutnya</button>
       </div>
-    </n-space>
+    </section>
   </div>
 </template>
 
-<script setup>
-import { ref, h, computed, watch, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { NButton, NIcon, NDataTable, NSpace, NH1, NInput, useMessage } from 'naive-ui';
-import {
-  EllipsisHorizontal,
-} from '@vicons/ionicons5';
-import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
-
-const message = useMessage();
-const router = useRouter();
-const searchText = ref('');
-const loading = ref(false);
-
-const page = ref(1);
-const pageSize = ref(10);
-const total = ref(0);
-
-const data = ref([]);
-
-const allData = ref([]); 
-
-async function fetchSiswa() {
-  loading.value = true;
-  try {
-    const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/users/new-students?page=${page.value}&limit=${pageSize.value}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    const json = await res.json();
-    const siswaArr = json.data.data.map((item, idx) => ({
-      id: item.id,
-      key: idx,
-      name: item.name,
-      level: item.level,
-      phone: item.phone,
-      classCount: item.classCount,
-    }));
-    data.value = siswaArr;
-    total.value = json.data.total;
-  } catch (err) {
-    message.error('Gagal mengambil data siswa');
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function fetchAllSiswa() {
-  loading.value = true;
-  try {
-    const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/users/new-students?page=1&limit=${total.value}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    const json = await res.json();
-    allData.value = json.data.data.map((item, idx) => ({
-      id: item.id,
-      key: idx,
-      name: item.name,
-      level: item.level,
-      phone: item.phone,
-      classCount: item.classCount,
-    }));
-  } catch (err) {
-    allData.value = [];
-  } finally {
-    loading.value = false;
-  }
-}
-
-watch([page, pageSize], () => {
-  if (!searchText.value) {
-    fetchSiswa();
-  }
-}, { immediate: true });
-
-
-watch(searchText, async (val) => {
-  if (val) {
-    await fetchAllSiswa();
-  } else {
-    fetchSiswa();
-  }
-});
-
-const displayedData = computed(() => {
-  if (!searchText.value) {
-    return data.value;
-  }
-  return allData.value.filter((student) =>
-    student.name.toLowerCase().includes(searchText.value.toLowerCase())
-  );
-});
-
-function handlePageChange(newPage) {
-  page.value = newPage;
-  if (!searchText.value) fetchSiswa();
-}
-
-function handlePageSizeChange(newSize) {
-  pageSize.value = newSize;
-  page.value = 1;
-  if (!searchText.value) fetchSiswa();
-}
-
-const handleTambahSiswa = () => {
-  router.push('/dashboardadmin/siswa/tambahsiswa');
-};
-
-const viewDetails = (row) => {
-  router.push(`/dashboardadmin/siswa/${row.id}`);
-};
-
-const createColumns = ({ viewDetails }) => [
-  {
-    title: 'Nama',
-    key: 'name',
-    sorter: 'default',
+<script>
+export default {
+  name: 'DashboardView',
+  data() {
+    return {
+      scheduleItems: [], 
+      page: 1,
+      limit: 10, 
+      totalPages: 1
+    };
   },
-  {
-    title: 'Jenjang',
-    key: 'level',
-    filterOptions: [
-      { label: 'SMA', value: 'SMA' },
-      { label: 'SMP', value: 'SMP' },
-      { label: 'SD', value: 'SD' },
-    ],
-    filter(value, row) {
-      return row.level === value;
-    },
-  },
-  {
-    title: 'No. WhatsApp',
-    key: 'phone',
-    sorter: (rowA, rowB) => rowA.phone.localeCompare(rowB.phone),
-  },
-  {
-    title: 'Program',
-    key: 'classCount',
-    sorter: (rowA, rowB) => rowA.classCount - rowB.classCount,
-  },
-  {
-    title: 'Detail',
-    key: 'actions',
-    render(row) {
-      return h(
-        NButton,
-        {
-          tertiary: true,
-          circle: true,
-          disabled: !row.id,
-          onClick: () => row.id && viewDetails(row),
-        },
-        {
-          icon: () => h(NIcon, { component: EllipsisHorizontal }),
+  methods: {
+    async fetchClosestSchedules(page = this.page) {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token tidak ditemukan. Silakan login kembali.');
         }
-      );
+        const response = await fetch(`http://localhost:3000/schedules/closest?page=${page}&limit=${this.limit}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        this.scheduleItems = result.data.data.map(item => ({
+          kode: item.classCode,
+          bimbel: {
+            subject: item.packageName,
+            teacher: item.tutorName
+          },
+          tanggal: new Date(item.date).toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          jam: new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          slug: item.slug
+        }));
+        this.page = result.data.page;
+        this.totalPages = result.data.totalPages;
+      } catch (error) {
+        console.error('Error fetching closest schedules:', error);
+        alert('Gagal mengambil data jadwal terdekat.');
+      }
     },
+    showDetail(item) {
+      console.log('Menampilkan detail untuk:', item.kode, item.bimbel.subject);
+      alert(`Detail untuk ${item.bimbel.subject} (${item.kode})`);
+    },
+    goToNextPage() {
+      if (this.page < this.totalPages) {
+        this.page++;
+        this.fetchClosestSchedules(this.page);
+      }
+    },
+    goToPreviousPage() {
+      if (this.page > 1) {
+        this.page--;
+        this.fetchClosestSchedules(this.page);
+      }
+    }
   },
-];
-
-// --- Inisialisasi Kolom ---
-const columns = createColumns({
-  viewDetails,
-});
+  mounted() {
+    this.fetchClosestSchedules();
+  }
+};
 </script>
 
 <style scoped>
-.headlineb2 {
-  color: #154484;
-}
-.siswa-container {
-  background-color: #fff;
+.dashboard-view {
   width: 100%;
+  background-color: white;
   border-radius: 12px;
   padding: 20px;
   height: fit-content;
 }
 
-.n-input-wrapper {
-  width: 100%;
-}
-
-.search-tambah {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
+.headlineb2, .schedule-section h2 {
+  color: #154484;
 }
 
 .search-container {
-  width: 100%;
-  max-width: 100%;
+  margin: 20px 0;
 }
 
 .img-search {
@@ -254,33 +149,102 @@ const columns = createColumns({
    margin-right: 8px;
 }
 
-/* Kustomisasi gaya tombol Tambah Siswa agar sesuai dengan gambar */
-:deep(.n-button--primary-type.n-button--ghost) {
-  border-color: #f28e23;
-  color: #f28e23;
-}
-:deep(.n-button--primary-type.n-button--ghost:hover) {
-  border-color: #d6791a;
-  background-color: #fef4e9;
-  color: #d6791a;
-}
-:deep(.n-button--primary-type.n-button--ghost .n-icon) {
-  color: #f28e23;
-}
-:deep(.n-button--primary-type.n-button--ghost:hover .n-icon) {
-  color: #d6791a;
+.table-responsive {
+  overflow-x: auto; /* Memungkinkan scroll horizontal jika tabel terlalu lebar */
+  background-color: #fff; /* Latar belakang putih untuk area tabel */
+  border-radius: 8px; /* Sedikit lengkungan pada kontainer tabel */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Shadow halus */
+  padding: 15px;
 }
 
-/* Kustomisasi tombol detail (...) */
-:deep(.n-button--tertiary-type) {
-    border: 1px solid #f28e23;
-    color: #f28e23;
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse; /* Menghilangkan spasi antar border sel */
 }
 
-.pagination-wrapper {
-  margin-top: 1rem;
+.schedule-table th,
+.schedule-table td {
+  padding: 15px 12px; /* Padding sel */
+  text-align: left;
+  vertical-align: middle; /* Vertikal align tengah */
+  border-bottom: 1px solid #dee2e6; /* Garis pemisah antar baris */
+}
+
+.schedule-table th {
+  font-weight: 600; /* Header lebih tebal */
+  font-size: 0.9em;
+  color: #495057; /* Warna teks header */
+  white-space: nowrap; /* Mencegah header wrap */
+}
+
+.sort-icon {
+  font-size: 0.7em;
+  margin-left: 5px;
+  color: #6c757d;
+}
+
+.schedule-table td {
+  font-size: 0.95em;
+  color: #212529; /* Warna teks isi tabel */
+}
+
+.bimbel-subject {
+  font-weight: 600; /* Nama bimbel sedikit tebal */
+  color: #0d47a1; /* Warna biru untuk subjek bimbel */
+}
+
+.bimbel-teacher {
+  font-size: 0.85em;
+  color: #6c757d; /* Warna abu-abu untuk nama guru */
+  margin-top: 2px;
+}
+
+.detail-button {
+  background-color: transparent;
+  border: 1px solid #ff9800; /* Border oranye */
+  color: #ff9800; /* Warna ikon oranye */
+  padding: 6px 12px;
+  border-radius: 20px; /* Tombol rounded */
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-button:hover {
+  background-color: #ffe0b2; /* Warna latar oranye muda saat hover */
+  color: #c66900; /* Warna ikon oranye tua saat hover */
+}
+
+.detail-button i {
+  font-size: 0.9em;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pagination button {
+  background-color: #154484;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 0.9em;
+  color: #333;
 }
 </style>
-

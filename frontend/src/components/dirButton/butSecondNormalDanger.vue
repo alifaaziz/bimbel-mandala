@@ -26,15 +26,15 @@ defineProps({
 }
 
 .custom-button {
-  color: #154484;
-  border: 1px solid #154484;
+  color: red;
+  border: 1px solid red;
   padding: 10px 2rem;
   transition: all 0.3s ease;
   border-radius: 25px;
 }
 
 .custom-button:hover {
-  background-color: #0B2343; 
+  background-color: maroon; 
   color: #e8f5e9;
   cursor: pointer;
 }

@@ -21,6 +21,7 @@ const formValue = ref({
     ttg: null,
     gender: "",
     photo: null,
+    alamat: "",
     email: "",
     wa: "",
     pass: "",
@@ -58,6 +59,11 @@ const rules = {
     gender: {
       required: true,
       message: "Wajib memasukkan jenis kelamin tutor",
+      trigger: "blur"
+    },
+    alamat: {
+      required: true,
+      message: "Wajib memasukkan alamat tutor",
       trigger: "blur"
     },
     email: {
@@ -234,6 +240,14 @@ function toggleDay(day) {
               </n-upload>
               <p class="bodyr3" v-if="formValue.user.photo">File dipilih: {{ formValue.user.photo.name }}</p>
             </div>
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="Alamat" path="user.alamat" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.alamat"
+              placeholder="Tuliskan alamat tutor disini"
+            />
           </n-form-item>
         </div>
         <div class="grid-form">

@@ -45,6 +45,7 @@ import VerifikasiTutor from '@/components/Dashboard/dashboardTutor/TutorVerifica
 import VerificationSuccess from '@/components/Dashboard/dashboardTutor/VerificationSuccess.vue';
 
 import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
+import JadwalAdminView from '@/components/Dashboard/dashboardJadwal/jadwalview.vue';
 
 import ProgramAdmin from '@/components/Dashboard/dashboardProgram/ProgramAdmin.vue';
 import ProgramMain from '@/components/Dashboard/dashboardProgram/ProgramMain.vue';
@@ -271,6 +272,13 @@ const routes = [
         path: 'jadwal',
         name: 'JadwalAdmin',
         component: JadwalAdmin,
+        children: [
+          {
+            path: '',
+            name: 'JadwalAdminView',
+            component: JadwalAdminView
+          },
+        ]
       },
       {
         path: 'catatanbiaya',
