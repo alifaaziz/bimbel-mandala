@@ -6,7 +6,8 @@ const mockPrisma = {
         findFirst: jest.fn(),
         update: jest.fn(),
         updateMany: jest.fn(),
-        delete: jest.fn()
+        delete: jest.fn(),
+        deleteMany: jest.fn()
     }
 };
 
@@ -53,15 +54,17 @@ describe('NotificationService', () => {
         });
     });
 
-    it('deleteNotification deletes notification', async () => {
-        mockPrisma.notification.findFirst.mockResolvedValueOnce({ id: 1 });
-        mockPrisma.notification.delete.mockResolvedValueOnce({});
-        await NotificationService.deleteNotification('user1', 'notif1');
-        expect(mockPrisma.notification.findFirst).toHaveBeenCalledWith({
-            where: { id: 'notif1', userId: 'user1' }
-        });
-        expect(mockPrisma.notification.delete).toHaveBeenCalledWith({
-            where: { id: 'notif1' }
+    it('deleteNotification deletes all notifications older than 30 days', async () => {
+        const mockResult = { count: 5 };
+        mockPrisma.notification.deleteMany.mockResolvedValueOnce(mockResult);
+
+        const now = Date.now();
+        await NotificationService.deleteNotification();
+
+        expect(mockPrisma.notification.deleteMany).toHaveBeenCalledWith({
+            where: {
+                createdAt: { lt: expect.any(Date) }
+            }
         });
     });
 });

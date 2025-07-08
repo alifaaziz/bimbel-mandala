@@ -30,10 +30,8 @@ export default (app) => {
     );
 
     router.delete(
-        '/:id',
-        CommonValidationMiddleware.isValidParamsIdUuid,
+        '/',
         AuthMiddleware.isAuthorized,
-        NotificationMiddleware.isNotificationExists,
         NotificationController.deleteNotification
     );
 }

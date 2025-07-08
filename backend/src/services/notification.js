@@ -59,14 +59,14 @@ async function markAllNotificationsAsRead(userId) {
  * @param {string} notificationId - The notification ID.
  * @returns {Promise<void>} A promise that resolves when the notification is deleted.
  */
-async function deleteNotification(userId, notificationId) {
-  await prisma.notification.findFirst({
-    where: { id: notificationId, userId }
+async function deleteNotification() {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const result = await prisma.notification.deleteMany({
+    where: {
+      createdAt: { lt: thirtyDaysAgo }
+    }
   });
-
-  await prisma.notification.delete({
-    where: { id: notificationId }
-  });
+  return result.count;
 }
 
 export const NotificationService = {
