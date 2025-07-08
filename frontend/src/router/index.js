@@ -46,6 +46,7 @@ import VerificationSuccess from '@/components/Dashboard/dashboardTutor/Verificat
 
 import JadwalAdmin from '@/components/Dashboard/dashboardJadwal/jadwal.vue';
 import JadwalAdminView from '@/components/Dashboard/dashboardJadwal/jadwalview.vue';
+import DetailJadwalAktif from '@/components/Dashboard/dashboardJadwal/DetailJadwal.vue'
 
 import ProgramAdmin from '@/components/Dashboard/dashboardProgram/ProgramAdmin.vue';
 import ProgramMain from '@/components/Dashboard/dashboardProgram/ProgramMain.vue';
@@ -277,6 +278,11 @@ const routes = [
             path: '',
             name: 'JadwalAdminView',
             component: JadwalAdminView
+          },
+          {
+            path: 'detailjadwalaktif/:id',
+            name: 'DetailJadwalAktif',
+            component: DetailJadwalAktif
           },
         ]
       },
