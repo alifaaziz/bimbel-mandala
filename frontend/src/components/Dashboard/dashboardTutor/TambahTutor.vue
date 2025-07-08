@@ -1,143 +1,15 @@
-<template>
-  <div class="form-container">
-    <div class="form-card">
-      <h1 class="headerb1">Tambah Akun Tutor</h1>
-      <n-divider class="divider" />
-      <n-form
-      ref="formRef"
-      class="form"
-      inline
-      :model="formValue"
-      :rules="rules"
-      :size="size"
-      >
-        <h2 class="headersb3">Informasi Pribadi</h2>
-        <div class="grid-form">
-          <n-form-item label="Nama Lengkap" path="user.name" class="col-span-6">
-            <n-input
-              v-model:value="formValue.user.name"
-              placeholder="Tuliskan nama tutor disini"
-            />
-          </n-form-item>
-        </div>
-        <div class="grid-form">
-          <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-2">
-            <n-date-picker v-model:value="formValue.user.ttg" type="date" />
-          </n-form-item>
-          <n-form-item label="Jenis Kelamin" path="user.gender" class="col-span-2">
-            <n-select
-              v-model:value="formValue.user.gender"
-              :options="optionsgender"
-              placeholder="Pilih jenis kelamin"
-            />
-          </n-form-item>
-          <n-form-item label="Foto Diri" path="user.photo" class="col-span-2">
-            <div class="form-group third-width">
-              <n-upload
-                :show-file-list="false"
-                :custom-request="handleCustomUpload"
-              >
-                <n-button>Upload Foto</n-button>
-              </n-upload>
-              <p class="bodyr3" v-if="formValue.user.photo">File dipilih: {{ formValue.user.photo.name }}</p>
-            </div>
-          </n-form-item>
-        </div>
-        <div class="grid-form">
-          <n-form-item label="E-mail Tutor" path="user.email" class="col-span-3">
-            <n-input
-              v-model:value="formValue.user.email"
-              placeholder="Tuliskan email tutor disini"
-            />
-          </n-form-item>
-          <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-3">
-            <n-input
-              v-model:value="formValue.user.wa"
-              placeholder="Tuliskan No. WhatsApp tutor disini"
-            />
-          </n-form-item>
-        </div>
-        <div class="grid-form">
-          <n-form-item label="Password Tutor" path="user.pass" class="col-span-6">
-            <n-input
-              v-model:value="formValue.user.pass"
-              placeholder="Tuliskan password tutor disini"
-              type="password"
-              show-password-on="mousedown"
-            />
-          </n-form-item>
-        </div>
-        <n-divider class="divider" />
-        <h2 class="headersb3">Pendidikan</h2>
-        <div class="grid-form">
-          <n-form-item label="Asal Universitas" path="user.univ" class="col-span-6">
-            <n-input
-              v-model:value="formValue.user.univ"
-              placeholder="Tuliskan asal universitas tutor disini"
-            />
-          </n-form-item>
-        </div>
-        <div class="grid-form">
-          <n-form-item label="Program Studi" path="user.prodi" class="col-span-4">
-            <n-input
-              v-model:value="formValue.user.prodi"
-              placeholder="Tuliskan program studi tutor disini"
-            />
-          </n-form-item>
-          <n-form-item label="Status" path="user.status" class="col-span-2">
-            <n-select
-              v-model:value="formValue.user.status"
-              :options="optionsStatus"
-              placeholder="Pilih status"
-            />
-          </n-form-item>
-        </div>
-        <n-divider class="divider" />
-        <h2 class="headersb3">Mengajar</h2>
-        <div class="grid-form">
-          <n-form-item label="Jenjang" path="user.jenjangAjar" class="col-span-6">
-            <n-input
-              v-model:value="formValue.user.jenjangAjar"
-              placeholder="SD, SMP, atau SMA"
-            />
-          </n-form-item>
-        </div>
-        <div class="grid-form">
-          <n-form-item label="Mata Pelajaran" path="user.pelajaran" class="col-span-6">
-            <n-input
-              v-model:value="formValue.user.pelajaran"
-              placeholder="Matematika, Bahasa Inggris, Fisika, dll."
-            />
-          </n-form-item>
-          <n-form-item label="Hari Aktif Mengajar" path="user.days" class="col-span-6">
-              <div class="hari-mengajar">
-                <div class="days">
-                  <button
-                    v-for="(day, index) in days"
-                    :key="index"
-                    :class="['day-button', { active: selectedDays.includes(day) }]"
-                    @click="toggleDay(day)"
-                  >
-                    {{ day }}
-                  </button>
-                </div>
-              </div>
-          </n-form-item>
-        </div>
-      </n-form>
-
-      <butPrimerNormal
-        @click="handleValidateClick"
-        label="Simpan Akun Tutor"
-      />
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref } from "vue";
 import { useMessage, NFormItem, NInput } from "naive-ui";
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function handleBackClick() {
+  router.back()
+}
 
 const formRef = ref(null);
 const message = useMessage();
@@ -317,8 +189,149 @@ function toggleDay(day) {
   }
   formValue.value.user.days = [...selectedDays.value];
 }
-
 </script>
+
+<template>
+  <div class="form-container">
+    <div class="form-card">
+      <h1 class="headerb1">Tambah Akun Tutor</h1>
+      <n-divider class="divider" />
+      <n-form
+      ref="formRef"
+      class="form"
+      inline
+      :model="formValue"
+      :rules="rules"
+      :size="size"
+      >
+        <h2 class="headersb3">Informasi Pribadi</h2>
+        <div class="grid-form">
+          <n-form-item label="Nama Lengkap" path="user.name" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.name"
+              placeholder="Tuliskan nama tutor disini"
+            />
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-2">
+            <n-date-picker v-model:value="formValue.user.ttg" type="date" />
+          </n-form-item>
+          <n-form-item label="Jenis Kelamin" path="user.gender" class="col-span-2">
+            <n-select
+              v-model:value="formValue.user.gender"
+              :options="optionsgender"
+              placeholder="Pilih jenis kelamin"
+            />
+          </n-form-item>
+          <n-form-item label="Foto Diri" path="user.photo" class="col-span-2">
+            <div class="form-group third-width">
+              <n-upload
+                :show-file-list="false"
+                :custom-request="handleCustomUpload"
+              >
+                <n-button>Upload Foto</n-button>
+              </n-upload>
+              <p class="bodyr3" v-if="formValue.user.photo">File dipilih: {{ formValue.user.photo.name }}</p>
+            </div>
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="E-mail Tutor" path="user.email" class="col-span-3">
+            <n-input
+              v-model:value="formValue.user.email"
+              placeholder="Tuliskan email tutor disini"
+            />
+          </n-form-item>
+          <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-3">
+            <n-input
+              v-model:value="formValue.user.wa"
+              placeholder="Tuliskan No. WhatsApp tutor disini"
+            />
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="Password Tutor" path="user.pass" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.pass"
+              placeholder="Tuliskan password tutor disini"
+              type="password"
+              show-password-on="mousedown"
+            />
+          </n-form-item>
+        </div>
+        <n-divider class="divider" />
+        <h2 class="headersb3">Pendidikan</h2>
+        <div class="grid-form">
+          <n-form-item label="Asal Universitas" path="user.univ" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.univ"
+              placeholder="Tuliskan asal universitas tutor disini"
+            />
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="Program Studi" path="user.prodi" class="col-span-4">
+            <n-input
+              v-model:value="formValue.user.prodi"
+              placeholder="Tuliskan program studi tutor disini"
+            />
+          </n-form-item>
+          <n-form-item label="Status" path="user.status" class="col-span-2">
+            <n-select
+              v-model:value="formValue.user.status"
+              :options="optionsStatus"
+              placeholder="Pilih status"
+            />
+          </n-form-item>
+        </div>
+        <n-divider class="divider" />
+        <h2 class="headersb3">Mengajar</h2>
+        <div class="grid-form">
+          <n-form-item label="Jenjang" path="user.jenjangAjar" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.jenjangAjar"
+              placeholder="SD, SMP, atau SMA"
+            />
+          </n-form-item>
+        </div>
+        <div class="grid-form">
+          <n-form-item label="Mata Pelajaran" path="user.pelajaran" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.pelajaran"
+              placeholder="Matematika, Bahasa Inggris, Fisika, dll."
+            />
+          </n-form-item>
+          <n-form-item label="Hari Aktif Mengajar" path="user.days" class="col-span-6">
+              <div class="hari-mengajar">
+                <div class="days">
+                  <button
+                    v-for="(day, index) in days"
+                    :key="index"
+                    :class="['day-button', { active: selectedDays.includes(day) }]"
+                    @click="toggleDay(day)"
+                  >
+                    {{ day }}
+                  </button>
+                </div>
+              </div>
+          </n-form-item>
+        </div>
+      </n-form>
+
+      <div class="button">
+        <butPrimerNormal
+          @click="handleValidateClick"
+          label="Simpan Akun Tutor"
+        />
+        <butSecondNormal
+          @click="handleBackClick"
+          label="Batal"
+        />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .form-container {
@@ -402,5 +415,11 @@ function toggleDay(day) {
 .bodyr3{
   color: #061222;
   margin-top: 0.5rem;
+}
+
+.button{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 </style>
