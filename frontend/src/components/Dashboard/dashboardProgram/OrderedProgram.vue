@@ -67,8 +67,11 @@ const handleAction = (program) => {
 
 <style scoped>
 .ordered-program-container {
+  background-color: #ffffff;
+  border-radius: 12px;
   padding: 24px;
-  max-width: 500px; /* Batasi lebar agar tidak terlalu stretched */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  max-width: 400px; /* Batasi lebar agar tidak terlalu stretched */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
