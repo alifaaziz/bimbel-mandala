@@ -67,19 +67,16 @@ describe('NotificationController', () => {
   });
 
   describe('deleteNotification', () => {
-    it('should delete a notification', async () => {
-      NotificationService.deleteNotification.mockResolvedValue();
+    it('should delete old notification', async () => {
+      NotificationService.deleteNotification.mockResolvedValue(7);
 
-      const { req, res } = setupExpressMock({
-        req: { params: { id: 1 } },
-        res: { locals: { user: { id: 123 } } },
-      });
+      const { req, res } = setupExpressMock({});
 
       await NotificationController.deleteNotification(req, res);
 
-      expect(NotificationService.deleteNotification).toHaveBeenCalledWith(123, 1);
+      expect(NotificationService.deleteNotification).toHaveBeenCalledWith();
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Notification deleted' });
+      expect(res.json).toHaveBeenCalledWith({ message: 'Deleted 7 notifications older than 30 days.' });
     });
   });
 });

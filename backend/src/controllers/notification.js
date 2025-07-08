@@ -52,9 +52,9 @@ async function markAllNotificationsAsRead(req, res) {
  * @param {Object} res - The response object.
  * @returns {Promise<void>} Resolves with no value.
  */
-async function deleteNotification(req, res) {
-  await NotificationService.deleteNotification(res.locals.user.id, req.params.id);
-  res.status(200).json({ message: 'Notification deleted' });
+async function deleteNotification(_req, res) {
+  const count = await NotificationService.deleteNotification();
+  res.status(200).json({ message: `Deleted ${count} notifications older than 30 days.` });
 }
 
 export const NotificationController = {

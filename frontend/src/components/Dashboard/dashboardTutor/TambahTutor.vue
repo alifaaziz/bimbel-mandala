@@ -144,6 +144,7 @@ async function handleSubmit() {
       if (user.gender) payload.append("gender", user.gender);
       if (user.email) payload.append("email", user.email);
       if (user.wa) payload.append("phone", user.wa);
+      if (user.alamat) payload.append("address", user.alamat);
       if (user.pass) payload.append("password", user.pass);
       if (user.univ) payload.append("school", user.univ);
       if (user.prodi) payload.append("major", user.prodi);
@@ -174,6 +175,7 @@ async function handleSubmit() {
       }
 
       message.success("Tutor berhasil ditambahkan!");
+      router.push("/dashboardadmin/tutor");
     } catch (err) {
       message.error(err.message || "Terjadi kesalahan.");
     }

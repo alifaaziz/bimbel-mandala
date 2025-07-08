@@ -53,7 +53,7 @@ onMounted(async () => {
     major: tutor.major || '-',
     teachLevel: tutor.teachLevel || '-',
     subjects: tutor.subjects || '-',
-    photo: tutor.photo || '/tutor/1.png',
+    photo: tutor.photo,
     days: tutor.daysName || [],
     birthDate: tutor.birthDate || '-',
   };
@@ -76,7 +76,7 @@ onMounted(async () => {
         <div class="header-part">
             <img
               class="img-tutor"
-              :src="tutorProfile.photo ? `http://localhost:3000${tutorProfile.photo}` : '/tutor/1.png'"
+              :src="tutorProfile.photo ? `http://localhost:3000${tutorProfile.photo}` : '/tutor/Tutor_Default.png'"
             />
           <div class="datadiri">
             <div class="headersb2">
