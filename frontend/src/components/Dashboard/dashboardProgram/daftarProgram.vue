@@ -1,225 +1,277 @@
-<script setup>
-import { ref, h, computed } from 'vue';
-import { useRouter } from 'vue-router'; // Tambahkan ini
-import {
-  NCard,
-  NDataTable,
-  NButton,
-  NSpace,
-  NH2,
-  NInput,
-  NIcon,
-  NDivider,
-  useMessage
-} from 'naive-ui';
-import { SearchOutline, Add, EllipsisHorizontal } from '@vicons/ionicons5';
-import butSecondNormal from '@/components/dirButton/butSecondNormal.vue';
-
-const router = useRouter(); // Tambahkan ini
-
-const message = useMessage();
-const searchTerm = ref('');
-
-// Fungsi tambah program
-const handleTambahProgram = () => {
-  router.push('/dashboardadmin/programadmin/tambahprogram');
-};
-
-// Fungsi placeholder saat tombol detail di klik
-const handleDetail = (rowData) => {
-  message.info(`Lihat detail untuk: ${rowData.subject}`);
-  console.log('Melihat detail untuk baris:', rowData);
-};
-
-// Definisi kolom untuk n-data-table
-const createColumns = ({ viewDetail }) => {
-  return [
-    {
-      title: 'Bimbel',
-      key: 'bimbel',
-      // Menggunakan fungsi render untuk membuat tampilan kustom
-      render(row) {
-        return h(
-          'div',
-          {},
-          [
-            h('div', { style: { fontWeight: '500', fontSize: '14px' } }, row.subject),
-            h('div', { style: { fontSize: '12px', color: 'gray' } }, row.teacher)
-          ]
-        );
-      }
-    },
-    {
-      title: 'Hari',
-      key: 'day',
-      align: 'left'
-    },
-    {
-      title: 'Jam',
-      key: 'time',
-      align: 'left'
-    },
-    {
-      title: 'Durasi',
-      key: 'duration',
-      align: 'left'
-    },
-    {
-      title: 'Detail',
-      key: 'actions',
-      align: 'center',
-      // Menggunakan fungsi render untuk membuat tombol aksi
-      render(row) {
-        return h(
-          NButton,
-          {
-            tertiary: true,
-            circle: true,
-            onClick: () => viewDetail(row)
-          },
-          { default: () => h(NIcon, null, { default: () => h(EllipsisHorizontal) }) }
-        );
-      }
-    }
-  ];
-};
-
-// Data statis sesuai gambar
-const data = ref([
-  {
-    key: 0,
-    subject: 'Matematika SMA',
-    teacher: 'Pak Dendy Wan S.Pd',
-    day: 'Senin, Rabu, Sabtu',
-    time: '15:00',
-    duration: '120 Menit'
-  },
-  {
-    key: 1,
-    subject: 'Matematika SD',
-    teacher: 'Bu Luna S.Pd',
-    day: 'Senin, Rabu, Sabtu',
-    time: '15:00',
-    duration: '120 Menit'
-  },
-  {
-    key: 2,
-    subject: 'Fisika SMA',
-    teacher: 'Bu Wendy S.Pd',
-    day: 'Selasa, Kamis',
-    time: '15:00',
-    duration: '120 Menit'
-  },
-  {
-    key: 3,
-    subject: 'Seni SMA',
-    teacher: 'Pak Wahyu Hendi S.Pd',
-    day: 'Senin, Rabu, Sabtu',
-    time: '15:00',
-    duration: '120 Menit'
-  },
-    {
-    key: 4,
-    subject: 'Fokus UTBK',
-    teacher: 'Pak Indra Jaya S.Pd',
-    day: 'Senin',
-    time: '15:00',
-    duration: '90 Menit'
-  },
-  {
-    key: 5,
-    subject: 'English SMP',
-    teacher: 'Bu Susi Wati S.Pd',
-    day: 'Selasa, Kamis',
-    time: '15:00',
-    duration: '120 Menit'
-  },
-    {
-    key: 6,
-    subject: 'Fisika SMA',
-    teacher: 'Pak Dendy Wan S.Pd',
-    day: 'Selasa, Kamis',
-    time: '15:00',
-    duration: '120 Menit'
-  }
-]);
-
-// Kolom yang dibuat secara reaktif
-const columns = createColumns({
-  viewDetail: handleDetail
-});
-
-// Logika untuk filter data berdasarkan input pencarian
-const filteredData = computed(() => {
-  if (!searchTerm.value) {
-    return data.value;
-  }
-  return data.value.filter(item =>
-    item.teacher.toLowerCase().includes(searchTerm.value.toLowerCase())
-  );
-});
-
-</script>
-
 <template>
-  <div class="program-container">
-    <n-card content-style="padding: 24px;">
-      <div class="header-section">
-        <n-h2 style="margin: 0;">Program</n-h2>
-        <n-space>
+  <div class="siswa-container">
+    <n-space vertical :size="24">
+      <h1 class="headlineb2">Program</h1>
+
+      <div class="search-tambah">
+        <div class="search-container">
           <n-input
-            v-model="searchTerm"
-            placeholder="Cari tutor..."
-            style="width: 240px;"
-            clearable
-          >
+            v-model="searchText"
+            round
+            size="large"
+            placeholder="Cari tutor">
             <template #prefix>
-              <n-icon :component="SearchOutline" />
+              <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
             </template>
           </n-input>
-          <butSecondNormal label="Tambah Program" @click="handleTambahProgram" />
-        </n-space>
+        </div>
+        <ButImgTambahSecondNormal label="Tambah Program" @click="handleTambahProgram"/>
       </div>
-
-      <n-divider />
-
       <n-data-table
         :columns="columns"
-        :data="filteredData"
+        :data="displayedData"
         :pagination="false"
         :bordered="false"
         :single-line="false"
+        :loading="loading"
       />
-    </n-card>
+      <div class="pagination-wrapper">
+        <n-pagination
+          :page="page"
+          :page-size="pageSize"
+          :item-count="total"
+          :page-slot="7"
+          @update:page="handlePageChange"
+          @update:page-size="handlePageSizeChange"
+          :page-sizes="[10, 20, 50]"
+          v-model="page"
+        />
+      </div>
+    </n-space>
   </div>
 </template>
 
-<style scoped>
-.program-container {
-  padding: 20px;
-  background-color: #f7f8fa; /* Memberi background abu-abu seperti di gambar */
+<script setup>
+import { ref, h, computed, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { NButton, NIcon, NDataTable, NSpace, NH1, NInput, useMessage } from 'naive-ui';
+import {
+  EllipsisHorizontal,
+} from '@vicons/ionicons5';
+import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
+
+const message = useMessage();
+const router = useRouter();
+const searchText = ref('');
+const loading = ref(false);
+
+const page = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
+
+const data = ref([]);
+
+const allData = ref([]); 
+
+async function fetchSiswa() {
+  loading.value = true;
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/new-students?page=${page.value}&limit=${pageSize.value}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    const siswaArr = json.data.data.map((item, idx) => ({
+      id: item.id,
+      key: idx,
+      name: item.name,
+      level: item.level,
+      phone: item.phone,
+      classCount: item.classCount,
+    }));
+    data.value = siswaArr;
+    total.value = json.data.total;
+  } catch (err) {
+    message.error('Gagal mengambil data siswa');
+  } finally {
+    loading.value = false;
+  }
 }
 
-.header-section {
+async function fetchAllSiswa() {
+  loading.value = true;
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:3000/users/new-students?page=1&limit=${total.value}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    allData.value = json.data.data.map((item, idx) => ({
+      id: item.id,
+      key: idx,
+      name: item.name,
+      level: item.level,
+      phone: item.phone,
+      classCount: item.classCount,
+    }));
+  } catch (err) {
+    allData.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
+watch([page, pageSize], () => {
+  if (!searchText.value) {
+    fetchSiswa();
+  }
+}, { immediate: true });
+
+
+watch(searchText, async (val) => {
+  if (val) {
+    await fetchAllSiswa();
+  } else {
+    fetchSiswa();
+  }
+});
+
+const displayedData = computed(() => {
+  if (!searchText.value) {
+    return data.value;
+  }
+  return allData.value.filter((student) =>
+    student.name.toLowerCase().includes(searchText.value.toLowerCase())
+  );
+});
+
+function handlePageChange(newPage) {
+  page.value = newPage;
+  if (!searchText.value) fetchSiswa();
+}
+
+function handlePageSizeChange(newSize) {
+  pageSize.value = newSize;
+  page.value = 1;
+  if (!searchText.value) fetchSiswa();
+}
+
+const handleTambahSiswa = () => {
+  router.push('/dashboardadmin/siswa/tambahsiswa');
+};
+
+const viewDetails = (row) => {
+  router.push(`/dashboardadmin/siswa/${row.id}`);
+};
+
+const createColumns = ({ viewDetails }) => [
+  {
+    title: 'Nama',
+    key: 'name',
+    sorter: 'default',
+  },
+  {
+    title: 'Jenjang',
+    key: 'level',
+    filterOptions: [
+      { label: 'SMA', value: 'SMA' },
+      { label: 'SMP', value: 'SMP' },
+      { label: 'SD', value: 'SD' },
+    ],
+    filter(value, row) {
+      return row.level === value;
+    },
+  },
+  {
+    title: 'No. WhatsApp',
+    key: 'phone',
+    sorter: (rowA, rowB) => rowA.phone.localeCompare(rowB.phone),
+  },
+  {
+    title: 'Program',
+    key: 'classCount',
+    sorter: (rowA, rowB) => rowA.classCount - rowB.classCount,
+  },
+  {
+    title: 'Detail',
+    key: 'actions',
+    render(row) {
+      return h(
+        NButton,
+        {
+          tertiary: true,
+          circle: true,
+          disabled: !row.id,
+          onClick: () => row.id && viewDetails(row),
+        },
+        {
+          icon: () => h(NIcon, { component: EllipsisHorizontal }),
+        }
+      );
+    },
+  },
+];
+
+// --- Inisialisasi Kolom ---
+const columns = createColumns({
+  viewDetails,
+});
+</script>
+
+<style scoped>
+.headlineb2 {
+  color: #154484;
+}
+.siswa-container {
+  background-color: #fff;
+  width: 100%;
+  border-radius: 12px;
+  padding: 20px;
+  height: fit-content;
+}
+
+.n-input-wrapper {
+  width: 100%;
+}
+
+.search-tambah {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 20px;
 }
 
-/* Kustomisasi agar tabel terlihat lebih mirip dengan desain */
-:deep(.n-data-table-th) {
-  background-color: transparent;
-  font-weight: bold;
-  color: #8a8a8e;
+.search-container {
+  width: 100%;
+  max-width: 100%;
 }
 
-:deep(.n-data-table-td) {
-  padding-top: 16px !important;
-  padding-bottom: 16px !important;
+.img-search {
+  width: 16px;
+  height: auto;
+   margin-right: 8px;
 }
 
-:deep(h2.n-h) {
-  font-family: 'Helvetica Neue', sans-serif;
-  font-weight: 700;
+/* Kustomisasi gaya tombol Tambah Siswa agar sesuai dengan gambar */
+:deep(.n-button--primary-type.n-button--ghost) {
+  border-color: #f28e23;
+  color: #f28e23;
+}
+:deep(.n-button--primary-type.n-button--ghost:hover) {
+  border-color: #d6791a;
+  background-color: #fef4e9;
+  color: #d6791a;
+}
+:deep(.n-button--primary-type.n-button--ghost .n-icon) {
+  color: #f28e23;
+}
+:deep(.n-button--primary-type.n-button--ghost:hover .n-icon) {
+  color: #d6791a;
+}
+
+/* Kustomisasi tombol detail (...) */
+:deep(.n-button--tertiary-type) {
+    border: 1px solid #f28e23;
+    color: #f28e23;
+}
+
+.pagination-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-start;
 }
 </style>

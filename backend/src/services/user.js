@@ -93,8 +93,8 @@ async function createStudent(payload, options = {}) {
  * @returns {Promise<Object>} The new user object.
  * @throws {HttpError} Throws an error if the user creation fails.
  */
-async function createUserWithRole(payload) {
-    const { name, email, password, role, ...additionalData } = payload;
+async function createUserWithRole(payload, file) {
+    const { name, email, password, role, days, ...additionalData } = payload;
 
     if (role !== 'tutor' && role !== 'admin') {
         throw new HttpError(400, { message: 'Invalid role for this function' });
@@ -103,22 +103,24 @@ async function createUserWithRole(payload) {
     const encryptedPassword = await AuthService.hashPassword(password);
 
     const parsedUserWithEncryptedPassword = {
-        name: payload.name,
-        email: payload.email,
+        name,
+        email,
         password: encryptedPassword,
-        role: payload.role,
+        role,
         googleId: payload.googleId || null,
     };
 
     let user = await prisma.user.findFirst({
-        where: {
-            email
-        }
+        where: { email }
     });
 
     if (user) {
-        let errorMessage = 'Email already exists';
-        throw new HttpError(409, { message: errorMessage });
+        throw new HttpError(409, { message: 'Email already exists' });
+    }
+
+    if (file) {
+        const photoPath = await savePhoto(file, name || 'tutor');
+        additionalData.photo = photoPath;
     }
 
     const newUser = await prisma.user.create({
@@ -130,13 +132,28 @@ async function createUserWithRole(payload) {
 
     user = newUser;
 
+    let tutor;
     if (role === 'tutor') {
-        await prisma.tutor.create({
+        tutor = await prisma.tutor.create({
             data: {
                 userId: user.id,
                 ...additionalData,
             }
         });
+
+        if (Array.isArray(days)) {
+            for (const dayName of days) {
+                const day = await prisma.day.findFirst({ where: { daysName: dayName } });
+                if (day) {
+                    await prisma.tutorDay.create({
+                        data: {
+                            tutorId: tutor.id,
+                            daysId: day.id
+                        }
+                    });
+                }
+            }
+        }
 
         await prisma.notification.create({
             data: {

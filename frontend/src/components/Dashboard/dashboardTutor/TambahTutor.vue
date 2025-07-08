@@ -34,15 +34,15 @@ const formValue = ref({
 });
 
 const optionsgender = [
-  { label: "Laki-laki", value: "laki" },
-  { label: "Perempuan", value: "perempuan" }
+  { label: "Laki-laki", value: "Male" },
+  { label: "Perempuan", value: "Female" }
 ];
 const optionsStatus = [
-  { label: "Semester 1-2", value: "tahun1" },
-  { label: "Semester 3-4", value: "tahun2" },
-  { label: "Semester 5-6", value: "tahun3" },
-  { label: "Semester 7-8", value: "tahun4" },
-  { label: "Semester 8<", value: "tahunakhir" },
+  { label: "Semester 1-2", value: "TH1" },
+  { label: "Semester 3-4", value: "TH2" },
+  { label: "Semester 5-6", value: "TH3" },
+  { label: "Semester 7-8", value: "TH4" },
+  { label: "Semester 8", value: "TH5" },
   { label: "Sarjana S1", value: "S1" },
   { label: "Sarjana S2", value: "S2" },
   { label: "Sarjana S3", value: "S3" },
@@ -113,18 +113,63 @@ function handleValidateClick(e) {
   e.preventDefault();
   formRef.value?.validate((errors) => {
     if (!errors) {
-      const dataToShow = {
-        ...formValue.value,
-        user: {
-          ...formValue.value.user,
-          photo: formValue.value.user.photo?.name || null
-        }
-      };
-      alert("Data yang dimasukkan:\n" + JSON.stringify(dataToShow, null, 2));
+      handleSubmit();
       message.success("Valid");
     } else {
       console.log(errors);
       message.error("Invalid");
+    }
+  });
+}
+
+async function handleSubmit() {
+  formRef.value?.validate(async (errors) => {
+    if (errors) {
+      message.error("Form tidak valid!");
+      return;
+    }
+
+    try {
+      const payload = new FormData();
+      const user = formValue.value.user;
+
+      if (user.name) payload.append("name", user.name);
+      if (user.ttg) payload.append("birthDate", new Date(user.ttg).toISOString());
+      if (user.gender) payload.append("gender", user.gender);
+      if (user.email) payload.append("email", user.email);
+      if (user.wa) payload.append("phone", user.wa);
+      if (user.pass) payload.append("password", user.pass);
+      if (user.univ) payload.append("school", user.univ);
+      if (user.prodi) payload.append("major", user.prodi);
+      if (user.status) payload.append("status", user.status);
+      if (user.jenjangAjar) payload.append("teachLevel", user.jenjangAjar);
+      if (user.pelajaran) payload.append("subjects", user.pelajaran);
+      if (user.days && user.days.length > 0) payload.append("days", JSON.stringify(user.days));
+      if (user.photo) payload.append("photo", user.photo);
+      payload.append("role", "tutor");
+
+      const token = localStorage.getItem('token');
+
+      const res = await fetch("http://localhost:3000/auth/add-user", {
+        method: "POST",
+        body: payload,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        if (err && err.message === "Email already exists") {
+          message.error("Email sudah terdaftar. Silakan gunakan email lain.");
+          return;
+        }
+        throw new Error(err.message || "Gagal menambah tutor.");
+      }
+
+      message.success("Tutor berhasil ditambahkan!");
+    } catch (err) {
+      message.error(err.message || "Terjadi kesalahan.");
     }
   });
 }

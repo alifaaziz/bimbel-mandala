@@ -286,59 +286,15 @@ const router = createRouter({
     routes
 })
 
-import { ref, onMounted } from 'vue'
+ router.beforeEach((to, from, next) => {
+   const userRole = localStorage.getItem('role'); // contoh: 'admin' atau 'user'
 
-const isTutor = ref(false)
-
-onMounted(async () => {
-  const token = localStorage.getItem('token')
-  if (!token) return
-  const res = await fetch('http://localhost:3000/users/me', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  })
-  if (res.ok) {
-    const data = await res.json()
-    isTutor.value = data.data?.role === 'tutor'
-  }
-})
-
-router.beforeEach(async (to, from, next) => {
-  const token = localStorage.getItem('token')
-
-  // Kalau tidak ada token, izinkan akses ke halaman publik
-  if (!token) {
-    return next()
-  }
-
-  try {
-    const res = await fetch('http://localhost:3000/users/me', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-
-    if (!res.ok) {
-      throw new Error('Gagal ambil user info')
-    }
-
-    const data = await res.json()
-    const userRole = data.data?.role
-
-    // Cek jika route butuh admin tapi bukan admin
-    if (to.matched.some(record => record.meta.requiresAdmin) && userRole !== 'admin') {
-      return next({ name: 'Error403' })
-    }
-
-    // lanjut ke route yang diminta
-    next()
-  } catch (error) {
-    console.error('Gagal validasi role:', error)
-    // Redirect ke error403 jika gagal ambil data user
-    return next({ name: 'Error403' })
-  }
-})
-
+   // Cek jika ingin akses dashboardadmin tapi bukan admin
+   if (to.path.startsWith('/dashboardadmin') && userRole !== 'admin') {
+     next({ name: 'Error403' });
+   } else {
+     next();
+   }
+ });
 
 export default router

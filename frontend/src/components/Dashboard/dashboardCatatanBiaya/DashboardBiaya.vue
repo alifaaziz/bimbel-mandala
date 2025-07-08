@@ -1,9 +1,7 @@
 <template>
   <div class="dashboard-container">
     <n-space vertical :size="24">
-      <n-h2 prefix="bar" align-text>
-        Catatan & Biaya
-      </n-h2>
+      <h1 class="headlineb2">Catatan & Biaya</h1>
 
       <n-grid cols="1 s:2 m:4" :x-gap="16" :y-gap="16" responsive="screen">
         <n-gi>
@@ -39,19 +37,18 @@
       </n-grid>
 
       <n-space vertical :size="16">
-        <n-h2 prefix="bar" align-text>
-          Program Selesai
-        </n-h2>
-        
-        <n-input 
-          v-model="searchTerm" 
-          placeholder="Cari program bimbel berdasarkan nama, tutor, atau kode..."
-          clearable
-        >
-          <template #prefix>
-            <n-icon :component="SearchOutline" />
-          </template>
-        </n-input>
+        <h2 class="headlineb2">Program Selesai</h2>
+         
+        <div class="search-container">
+      <n-input
+      round
+      size="large"
+      placeholder="Cari program bimbel berdasarkan nama, tutor, atau kode program">
+        <template #prefix>
+          <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
+        </template>
+      </n-input>
+    </div>
 
         <n-data-table
           :columns="columns"
@@ -208,9 +205,15 @@ const pagination = {
 </script>
 
 <style scoped>
+.headlineb2 {
+  color: #154484;
+}
 .dashboard-container {
-  padding: 24px;
-  background-color: #f8f9fa; /* Warna latar belakang lembut */
+  background-color: #fff;
+  width: 100%;
+  border-radius: 12px;
+  padding: 20px;
+  height: fit-content;
 }
 /* Kustomisasi agar NCard tidak memiliki border dan bayangan yang terlalu kuat */
 :deep(.n-card) {

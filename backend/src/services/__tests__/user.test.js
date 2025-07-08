@@ -193,6 +193,68 @@ describe('UserService', () => {
       expect(mockPrisma.tutor.create).not.toHaveBeenCalled();
       expect(result).toMatchObject({ id: 3, name: 'Admin' });
     });
+
+    it('creates tutor with photo if file is provided', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 20, name: 'T', email: 't@mail.com' });
+      mockPrisma.tutor.create.mockResolvedValueOnce({});
+      mockPrisma.notification.create.mockResolvedValueOnce({});
+      const file = { buffer: Buffer.from('img'), originalname: 'img.jpg' };
+      await UserService.createUserWithRole({
+        name: 'T', email: 't@mail.com', password: 'pw', role: 'tutor', school: 'SMA'
+      }, file);
+      expect(mockSavePhoto).toHaveBeenCalledWith(file, 'T');
+      expect(mockPrisma.tutor.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({ photo: '/photo/path.jpg' })
+      }));
+    });
+    
+    it('creates tutor without photo if file is not provided', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 21, name: 'T2', email: 't2@mail.com' });
+      mockPrisma.tutor.create.mockResolvedValueOnce({});
+      mockPrisma.notification.create.mockResolvedValueOnce({});
+      await UserService.createUserWithRole({
+        name: 'T2', email: 't2@mail.com', password: 'pw', role: 'tutor', school: 'SMA'
+      });
+      expect(mockSavePhoto).not.toHaveBeenCalled();
+      expect(mockPrisma.tutor.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.not.objectContaining({ photo: expect.anything() })
+      }));
+    });
+
+    it('creates tutorDay for each valid day in days array', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 30, name: 'T', email: 't@mail.com' });
+      mockPrisma.tutor.create.mockResolvedValueOnce({ id: 300 });
+      mockPrisma.notification.create.mockResolvedValueOnce({});
+      mockPrisma.day.findFirst
+        .mockResolvedValueOnce({ id: 1, daysName: 'Senin' })
+        .mockResolvedValueOnce({ id: 2, daysName: 'Selasa' });
+      mockPrisma.tutorDay.create.mockResolvedValue({});
+      await UserService.createUserWithRole({
+        name: 'T', email: 't@mail.com', password: 'pw', role: 'tutor', days: ['Senin', 'Selasa']
+      });
+      expect(mockPrisma.tutorDay.create).toHaveBeenCalledTimes(2);
+      expect(mockPrisma.tutorDay.create).toHaveBeenCalledWith({ data: { tutorId: 300, daysId: 1 } });
+      expect(mockPrisma.tutorDay.create).toHaveBeenCalledWith({ data: { tutorId: 300, daysId: 2 } });
+    });
+    
+    it('does not create tutorDay for days that do not exist', async () => {
+      mockPrisma.user.findFirst.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({ id: 31, name: 'T', email: 't@mail.com' });
+      mockPrisma.tutor.create.mockResolvedValueOnce({ id: 301 });
+      mockPrisma.notification.create.mockResolvedValueOnce({});
+      mockPrisma.day.findFirst
+        .mockResolvedValueOnce({ id: 1, daysName: 'Senin' })
+        .mockResolvedValueOnce(null);
+      mockPrisma.tutorDay.create.mockResolvedValue({});
+      await UserService.createUserWithRole({
+        name: 'T', email: 't@mail.com', password: 'pw', role: 'tutor', days: ['Senin', 'Rabu']
+      });
+      expect(mockPrisma.tutorDay.create).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.tutorDay.create).toHaveBeenCalledWith({ data: { tutorId: 301, daysId: 1 } });
+    });
   });
 
   describe('updateUser', () => {
