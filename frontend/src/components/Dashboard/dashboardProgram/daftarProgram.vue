@@ -1,61 +1,124 @@
 <template>
   <div class="dashboard-container">
     <h1 class="headlineb2">Program</h1>
-
     <div class="search-tambah">
-        <div class="search-container">
-          <n-input
-            v-model="searchText"
-            round
-            size="large"
-            placeholder="Cari Tutor">
-            <template #prefix>
-              <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
-            </template>
-          </n-input>
-        </div>
-        <ButImgTambahSecondNormal label="Tambah Program" @click="handleTambahProgram"/>
+      <div class="search-container">
+        <n-input
+          v-model="searchText"
+          round
+          size="large"
+          placeholder="Cari Program">
+          <template #prefix>
+            <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
+          </template>
+        </n-input>
       </div>
+      <ButImgTambahSecondNormal label="Tambah Program" @click="handleTambahProgram"/>
+    </div>
 
     <section class="schedule-section">
+      <h2 class="headersb2">Semua Program</h2>
       <div class="table-responsive">
         <table class="schedule-table">
           <thead>
             <tr>
-              <th>Bimbel <i class="fas fa-chevron-down sort-icon"></i></th>
-              <th>Kode <i class="fas fa-chevron-down sort-icon"></i></th>
-              <th>Tanggal <i class="fas fa-chevron-down sort-icon"></i></th>
-              <th>Jam <i class="fas fa-chevron-down sort-icon"></i></th>
+              <th>Program</th>
+              <th>Hari</th>
+              <th>Jam</th>
+              <th>Durasi</th>
+              <th>Aktif</th>
               <th>Detail</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in scheduleItems" :key="item.kode">
+            <tr v-for="item in packageItems" :key="item.slug">
               <td>
-                <div class="bimbel-subject">{{ item.bimbel.subject }}</div>
-                <div class="bimbel-teacher">{{ item.bimbel.teacher }}</div>
+                <div class="bimbel-subject">{{ item.name }} {{ item.level }}</div>
+                <div class="bimbel-teacher">{{ item.tutorName }}</div>
               </td>
-              <td>#{{ item.kode }}</td>
-              <td>{{ item.tanggal }}</td>
-              <td>{{ item.jam }}</td>
+              <td>{{ item.days.join(', ') }}</td>
+              <td>{{ new Date(item.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}</td>
+              <td>{{ item.duration }} menit</td>
+              <td>
+                <n-icon v-if="item.isActive" color="#4caf50" size="22">
+                  <CheckmarkCircleOutline />
+                </n-icon>
+                <n-icon v-else color="#f44336" size="22">
+                  <CloseCircleOutline />
+                </n-icon>
+              </td>
               <td>
                 <button class="detail-button" @click="showDetail(item)">
                   <img src="@/assets/icons/more-horizontal.svg" alt="">
                 </button>
               </td>
             </tr>
+            <tr v-if="packageItems.length === 0">
+              <td colspan="6" style="text-align:center;">Tidak ada data</td>
+            </tr>
           </tbody>
         </table>
       </div>
       <div class="pagination">
-        <button @click="goToPreviousPage" :disabled="page === 1">Sebelumnya</button>
-        <span>Halaman {{ page }} dari {{ totalPages }}</span>
-        <button @click="goToNextPage" :disabled="page === totalPages">Selanjutnya</button>
+        <n-pagination
+          v-model:page="page"
+          :page-count="totalPages"
+          :page-size="limit"
+          :page-slot="7"
+          @update:page="handlePageChange"
+        />
       </div>
     </section>
   </div>
 </template>
 
+<script>
+import { NIcon, NPagination } from 'naive-ui'
+import { CheckmarkCircleOutline, CloseCircleOutline } from '@vicons/ionicons5'
+
+export default {
+  name: 'DashboardContainer',
+  components: { NIcon, NPagination, CheckmarkCircleOutline, CloseCircleOutline },
+  data() {
+    return {
+      packageItems: [],
+      page: 1,
+      limit: 8,
+      totalPages: 1,
+      searchText: ''
+    };
+  },
+  methods: {
+    async fetchClosestSchedules(page = this.page) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:3000/packages/all?page=${page}&limit=${this.limit}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const result = await response.json();
+        this.packageItems = result.data;
+        this.totalPages = Math.ceil(result.total / this.limit);
+      } catch (error) {
+        console.error('Gagal fetch data:', error);
+      }
+    },
+    handlePageChange(newPage) {
+      this.page = newPage;
+      this.fetchClosestSchedules(newPage);
+    },
+    showDetail(item) {
+      alert(`Detail untuk ${item.name} (${item.slug})`);
+    },
+    handleTambahProgram() {
+      alert('Tambah Program');
+    }
+  },
+  mounted() {
+    this.fetchClosestSchedules();
+  }
+};
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'; // Tambahkan ini
@@ -250,27 +313,7 @@ onMounted(() => {
 .pagination {
   margin-top: 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-}
-
-.pagination button {
-  background-color: #154484;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.pagination span {
-  font-size: 0.9em;
-  color: #333;
 }
 </style>

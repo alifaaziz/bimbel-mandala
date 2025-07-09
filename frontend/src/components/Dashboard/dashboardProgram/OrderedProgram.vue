@@ -11,22 +11,23 @@
         >
           <n-thing>
             <template #header>
-              <span class="program-subject">{{ program.subject }}</span>
+              <div class="header-row">
+                <span class="program-subject">{{ program.subject }}</span>
+                <n-button
+                  round
+                  ghost
+                  type="primary"
+                  size="small"
+                  @click="handleAction(program)"
+                  class="aksi-btn"
+                >
+                  Aksi
+                </n-button>
+              </div>
             </template>
             
             <template #description>
               <span class="program-teacher">{{ program.teacher }}</span>
-            </template>
-
-            <template #action>
-              <n-button
-                round
-                ghost
-                type="primary"
-                @click="handleAction(program)"
-              >
-                Aksi
-              </n-button>
             </template>
           </n-thing>
         </n-card>
@@ -36,33 +37,43 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { NCard, NThing, NButton, NSpace, NH3, useMessage } from 'naive-ui';
 
-// Opsional: untuk menampilkan notifikasi saat tombol "Aksi" diklik
 const message = useMessage();
+const orderedPrograms = ref([]);
+const page = ref(1);
+const limit = ref(2);
+const total = ref(0);
 
-// Data reaktif untuk program yang dipesan.
-// Dibuat sebagai array agar mudah jika ingin menampilkan lebih dari satu.
-const orderedPrograms = ref([
-  {
-    id: 1,
-    subject: 'Fisika SMA',
-    teacher: 'Pak Dendy Wan S.Pd'
-  },
-  // Anda bisa menambahkan program lain di sini
-  // {
-  //   id: 2,
-  //   subject: 'Kimia SMA',
-  //   teacher: 'Ibu Retno Wulan S.Si'
-  // }
-]);
+const fetchOrderedPrograms = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:3000/orders?page=${page.value}&limit=${limit.value}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const result = await response.json();
+    orderedPrograms.value = result.data.data.map(item => ({
+      id: item.id,
+      subject: `${item.packageName} ${item.level}`,
+      teacher: item.tutorName,
+      status: item.status
+    }));
+    total.value = result.data.total;
+  } catch (error) {
+    message.error('Gagal mengambil data program terpesan');
+  }
+};
 
-// Fungsi yang dipanggil ketika tombol "Aksi" diklik
 const handleAction = (program) => {
-  console.log('Aksi untuk program:', program.subject);
   message.info(`Tombol aksi untuk "${program.subject}" diklik!`);
 };
+
+onMounted(() => {
+  fetchOrderedPrograms();
+});
 </script>
 
 <style scoped>
@@ -89,6 +100,17 @@ const handleAction = (program) => {
 /* Kustomisasi n-thing agar sesuai desain */
 :deep(.n-thing-main) {
   flex-grow: 1;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.aksi-btn {
+  margin-left: 12px;
 }
 
 .program-subject {

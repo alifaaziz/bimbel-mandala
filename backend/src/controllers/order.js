@@ -37,9 +37,9 @@ async function updateOrderStatus(req, res) {
 }
 
 /**
- * Gets all orders.
- * 
- * @function getAllOrders
+ * Gets pending orders.
+ *
+ * @function getPendingOrders
  * @async
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
@@ -47,8 +47,10 @@ async function updateOrderStatus(req, res) {
  * @returns {Promise<void>} Resolves with the list of orders.
  * @throws {Error} Throws an error if fetching orders fails.
  */
-async function getAllOrders(req, res) {
-    const orders = await OrderService.getAllOrders();
+async function getPendingOrders(req, res) {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const orders = await OrderService.getPendingOrders({ page, limit });
     res.status(200).json({ data: orders });
 }
 
@@ -89,7 +91,7 @@ async function deleteOrder(req, res) {
 export const OrderController = {
     createOrder: asyncWrapper(createOrder),
     updateOrderStatus: asyncWrapper(updateOrderStatus),
-    getAllOrders: asyncWrapper(getAllOrders),
+    getPendingOrders: asyncWrapper(getPendingOrders),
     getOrderById: asyncWrapper(getOrderById),
     deleteOrder: asyncWrapper(deleteOrder)
 };

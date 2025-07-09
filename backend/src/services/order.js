@@ -153,36 +153,53 @@ async function updateOrderStatus(orderId, status) {
 }
 
 /**
- * Gets all orders (optional).
+ * Gets pending orders with pagination.
  *
  * @async
- * @function getAllOrders
- * @returns {Promise<Array>} The list of orders.
+ * @function getPendingOrders
+ * @param {Object} options - Pagination options.
+ * @param {number} options.page - Page number (1-based).
+ * @param {number} options.limit - Items per page.
+ * @returns {Promise<Object>} The paginated orders and total count.
  */
-async function getAllOrders() {
-  const orders = await prisma.order.findMany({
-    include: {
-      bimbelPackage: {
-        select: {
-          name: true,
-          level: true,
-          user: {
-            select: {
-              name: true
+async function getPendingOrders({ page = 1, limit = 10 } = {}) {
+  const skip = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    prisma.order.findMany({
+      skip,
+      take: limit,
+      where: { status: 'pending' }, 
+      orderBy: { createdAt: 'desc' },
+      include: {
+        bimbelPackage: {
+          select: {
+            name: true,
+            level: true,
+            user: {
+              select: {
+                name: true
+              }
             }
           }
         }
       }
-    }
-  });
+    }),
+    prisma.order.count({ where: { status: 'pending' } }) 
+  ]);
 
-  return orders.map(order => ({
-    id: order.id,
-    packageName: order.bimbelPackage?.name || null,
-    level: order.bimbelPackage?.level || null,
-    tutorName: order.bimbelPackage?.user?.name || null,
-    status: order.status,
-  }));
+  return {
+    data: orders.map(order => ({
+      id: order.id,
+      packageName: order.bimbelPackage?.name || null,
+      level: order.bimbelPackage?.level || null,
+      tutorName: order.bimbelPackage?.user?.name || null,
+      status: order.status,
+    })),
+    total,
+    page,
+    pageSize: limit
+  };
 }
 
 /**
@@ -342,7 +359,7 @@ async function cancelPendingOrders() {
 export const OrderService = {
   createOrder,
   updateOrderStatus,
-  getAllOrders,
+  getPendingOrders,
   getOrderById,
   deleteOrder,
   cancelPendingOrders
