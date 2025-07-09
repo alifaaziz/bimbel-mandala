@@ -2,6 +2,10 @@
 import { ref } from 'vue'
 import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue'
 
+import butSecondSmall from '@/components/dirButton/butSecondSmall.vue'
+import butPrimerSmall from '@/components/dirButton/butPrimerSmall.vue'
+
+const showRescheduleModal = ref(false)
 // Mapping status ke tipe tag Naive UI
 const tagTypeMap = {
   active: 'success',
@@ -35,9 +39,11 @@ const schedule = ref({
   status: 'active'
 })
 
-// Fungsi membuka modal (saat ini hanya alert info)
 function openRescheduleModal() {
-  alert(`Test Jadwal Ulang`)
+  showRescheduleModal.value = true
+}
+function closeRescheduleModal() {
+  showRescheduleModal.value = false
 }
 </script>
 
@@ -120,6 +126,41 @@ function openRescheduleModal() {
             <span class="value">: 08xxxxxxxxx</span>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+  <!-- Popup Jadwal Ulang -->
+  <div v-if="showRescheduleModal" class="modal-overlay" @click.self="closeRescheduleModal">
+    <div class="modal-content">
+      <div class="popup-content">
+        <h3 class="headersb2">Jadwal Ulang</h3>
+        <p class="bodyr3" style="margin-bottom: 16px;">
+          Pilih tanggal dan jam baru untuk:<br>
+          <strong>Kamis, 10 Juli 2025</strong> bersama Dendy Wan S.Pd<br>
+          <span>Pertemuan ke 12</span>
+        </p>
+        <div style="margin-bottom: 12px;">
+          <label class="bodym3" for="reschedule-date" style="display:block; margin-bottom:4px;">Tanggal Baru</label>
+          <input
+            id="reschedule-date"
+            type="date"
+            v-model="rescheduleDate"
+            class="inputm1"
+            style="width: 100%; margin-bottom: 8px;"
+          />
+          <label class="bodym3" for="reschedule-time" style="display:block; margin-bottom:4px;">Jam Baru</label>
+          <input
+            id="reschedule-time"
+            type="time"
+            v-model="rescheduleTime"
+            class="inputm1"
+            style="width: 100%;"
+          />
+        </div>
+      </div>
+      <div class="modal-actions-popup">
+        <butPrimerSmall label="Jadwal Ulang" />
+        <butSecondSmall label="Batal" @click="closeRescheduleModal" />
       </div>
     </div>
   </div>
@@ -215,5 +256,112 @@ function openRescheduleModal() {
 .label-detail {
     text-align: left;
     width: 180px;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  color: #061222;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.modal-actions button {
+  padding: 0.8rem 1rem;
+  border-radius: 2rem;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-actions button:first-child {
+  background-color: #154484;
+  color: white;
+}
+
+.modal-actions button:last-child {
+  background-color: white;
+  border: 2px solid #154484;
+  color: #154484;
+}
+
+.modal-content .headersb2 {
+  color: #154484;
+  text-align: center;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding-bottom: 2rem;
+  gap: 1rem;
+}
+
+.popup-content .bodyr2 {
+  color: #597AA8;
+  font-size: 0.95rem;
+}
+
+.detail-jadwal {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.detail-jadwal .bodyb2 {
+    color: #154484;
+}
+
+.info-tutor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 50%;
+}
+
+.inputm1 {
+  padding: 8px 10px;
+  font-size: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+  width: 100%;
+}
+textarea.inputm1 {
+  font-family: inherit;
+  min-height: 80px;
+  max-height: 300px;
+  resize: vertical;
+}
+.detail-jadwal .bodyr2, .kontak-tutor .bodyr2 {
+    color: #626264;
+}
+.modal-actions-popup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 </style>
