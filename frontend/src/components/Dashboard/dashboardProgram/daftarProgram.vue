@@ -111,9 +111,9 @@ export default {
     showDetail(item) {
       alert(`Detail untuk ${item.name} (${item.slug})`);
     },
-    handleTambahProgram() {
-      alert('Tambah Program');
-    }
+    const handleTambahProgram = () => {
+      alert ('TambahProgram');
+    };
   },
   mounted() {
     this.fetchClosestSchedules();
