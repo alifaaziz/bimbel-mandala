@@ -75,10 +75,11 @@
 <script>
 import { NIcon, NPagination } from 'naive-ui'
 import { CheckmarkCircleOutline, CloseCircleOutline } from '@vicons/ionicons5'
+import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue'
 
 export default {
   name: 'DashboardContainer',
-  components: { NIcon, NPagination, CheckmarkCircleOutline, CloseCircleOutline },
+  components: { NIcon, NPagination, CheckmarkCircleOutline, CloseCircleOutline, ButImgTambahSecondNormal },
   data() {
     return {
       packageItems: [],
@@ -111,14 +112,15 @@ export default {
     showDetail(item) {
       alert(`Detail untuk ${item.name} (${item.slug})`);
     },
-    const handleTambahProgram = () => {
-      alert ('TambahProgram');
-    };
+    handleTambahProgram() {
+      this.$router.push('/dashboardadmin/programadmin/tambahprogram');
+    }
   },
   mounted() {
     this.fetchClosestSchedules();
   }
 };
+</script>
 
 <style scoped>
 .dashboard-container {
