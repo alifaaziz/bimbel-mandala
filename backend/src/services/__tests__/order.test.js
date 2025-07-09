@@ -203,8 +203,8 @@ describe('OrderService', () => {
     });
   });
 
-  describe('getAllOrders', () => {
-    it('should return all orders with mapped fields', async () => {
+  describe('getPendingOrders', () => {
+    it('should return pending orders with mapped fields and pagination', async () => {
       mockPrisma.order.findMany.mockResolvedValueOnce([
         {
           id: 1,
@@ -214,26 +214,33 @@ describe('OrderService', () => {
         {
           id: 2,
           bimbelPackage: null,
-          status: 'cancel'
-        }
-      ]);
-      const result = await OrderService.getAllOrders();
-      expect(result).toEqual([
-        {
-          id: 1,
-          packageName: 'Paket A',
-          level: 'SMA',
-          tutorName: 'Budi',
           status: 'pending'
-        },
-        {
-          id: 2,
-          packageName: null,
-          level: null,
-          tutorName: null,
-          status: 'cancel'
         }
       ]);
+      mockPrisma.order.count.mockResolvedValueOnce(2);
+
+      const result = await OrderService.getPendingOrders({ page: 1, limit: 10 });
+      expect(result).toEqual({
+        data: [
+          {
+            id: 1,
+            packageName: 'Paket A',
+            level: 'SMA',
+            tutorName: 'Budi',
+            status: 'pending'
+          },
+          {
+            id: 2,
+            packageName: null,
+            level: null,
+            tutorName: null,
+            status: 'pending'
+          }
+        ],
+        total: 2,
+        page: 1,
+        pageSize: 10
+      });
     });
   });
 

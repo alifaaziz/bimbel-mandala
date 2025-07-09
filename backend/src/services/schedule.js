@@ -290,8 +290,6 @@ async function updateScheduleInformation(scheduleId, information) {
 async function getClosestSchedules(page = 1, limit = 10) {
   const offset = (page - 1) * limit; // Hitung offset berdasarkan page dan limit
 
-  console.log('Offset:', offset, 'Page:', page, 'Limit:', limit); // Debugging
-
   const [schedules, total] = await Promise.all([
     prisma.schedule.findMany({
       where: { date: { gte: new Date() } }, // Ambil jadwal yang dimulai dari hari ini
