@@ -1,12 +1,12 @@
 <template>
   <div class="dashboard-view">
-    <h1 class="headlineb2">Dashboard</h1>
+    <h1 class="headlineb2">Jadwal Program Aktif</h1>
 
     <div class="search-container">
       <n-input
       round
       size="large"
-      placeholder="Cari jadwal program bimbel...">
+      placeholder="Cari jadwal">
         <template #prefix>
           <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
         </template>
@@ -14,7 +14,6 @@
     </div>
 
     <section class="schedule-section">
-      <h2 class="headersb2">Jadwal Program</h2>
       <div class="table-responsive">
         <table class="schedule-table">
           <thead>

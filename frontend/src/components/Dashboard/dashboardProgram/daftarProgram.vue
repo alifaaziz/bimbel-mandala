@@ -18,7 +18,6 @@
       </div>
 
     <section class="schedule-section">
-      <h2 class="headersb2">Jadwal Program</h2>
       <div class="table-responsive">
         <table class="schedule-table">
           <thead>
@@ -57,78 +56,93 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'DashboardContainer',
-  data() {
-    return {
-      scheduleItems: [], 
-      page: 1,
-      limit: 10, 
-      totalPages: 1
-    };
-  },
-  methods: {
-    async fetchClosestSchedules(page = this.page) {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('Token tidak ditemukan. Silakan login kembali.');
-        }
-        const response = await fetch(`http://localhost:3000/schedules/closest?page=${page}&limit=${this.limit}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
-        this.scheduleItems = result.data.data.map(item => ({
-          kode: item.classCode,
-          bimbel: {
-            subject: item.packageName,
-            teacher: item.tutorName
-          },
-          tanggal: new Date(item.date).toLocaleDateString('id-ID', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          }),
-          jam: new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-          slug: item.slug
-        }));
-        this.page = result.data.page;
-        this.totalPages = result.data.totalPages;
-      } catch (error) {
-        console.error('Error fetching closest schedules:', error);
-        alert('Gagal mengambil data jadwal terdekat.');
-      }
-    },
-    showDetail(item) {
-      console.log('Menampilkan detail untuk:', item.kode, item.bimbel.subject);
-      alert(`Detail untuk ${item.bimbel.subject} (${item.kode})`);
-    },
-    goToNextPage() {
-      if (this.page < this.totalPages) {
-        this.page++;
-        this.fetchClosestSchedules(this.page);
-      }
-    },
-    goToPreviousPage() {
-      if (this.page > 1) {
-        this.page--;
-        this.fetchClosestSchedules(this.page);
-      }
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // Tambahkan ini
+import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue';
+
+
+const scheduleItems = ref([]);
+const page = ref(1);
+const limit = 10;
+const totalPages = ref(1);
+const searchText = ref('');
+
+const router = useRouter(); // Tambahkan ini
+
+const fetchClosestSchedules = async (targetPage = page.value) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Token tidak ditemukan. Silakan login kembali.');
     }
-  },
-  mounted() {
-    this.fetchClosestSchedules();
+
+    const response = await fetch(`http://localhost:3000/schedules/closest?page=${targetPage}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    scheduleItems.value = result.data.data.map(item => ({
+      kode: item.classCode,
+      bimbel: {
+        subject: item.packageName,
+        teacher: item.tutorName
+      },
+      tanggal: new Date(item.date).toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      jam: new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+      slug: item.slug
+    }));
+
+    page.value = result.data.page;
+    totalPages.value = result.data.totalPages;
+
+  } catch (error) {
+    console.error('Error fetching closest schedules:', error);
+    alert('Gagal mengambil data jadwal terdekat.');
   }
 };
+
+const showDetail = (item) => {
+  console.log('Menampilkan detail untuk:', item.kode, item.bimbel.subject);
+  alert(`Detail untuk ${item.bimbel.subject} (${item.kode})`);
+};
+
+const goToNextPage = () => {
+  if (page.value < totalPages.value) {
+    page.value++;
+    fetchClosestSchedules(page.value);
+  }
+};
+
+const goToPreviousPage = () => {
+  if (page.value > 1) {
+    page.value--;
+    fetchClosestSchedules(page.value);
+  }
+};
+
+const handleTambahProgram = () => {
+  router.push('/dashboardadmin/programadmin/tambahprogram');
+};
+
+onMounted(() => {
+  fetchClosestSchedules();
+});
 </script>
+
 
 <style scoped>
 .dashboard-container {
@@ -145,6 +159,7 @@ export default {
 
 .search-container {
   margin: 20px 0;
+  width: 100%;
 }
 
 .search-tambah {

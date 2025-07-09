@@ -98,7 +98,7 @@
       </n-space>
     </div>
     <!-- Modal Konfirmasi Hapus Akun -->
-    <n-modal v-model:show="showDeleteConfirm" preset="dialog" title="Konfirmasi Hapus Akun"
+    <n-modal v-model="showDeleteConfirm" preset="dialog" title="Konfirmasi Hapus Akun"
       positive-text="Hapus" negative-text="Batal"
       type="error"
       @positive-click="confirmDelete"

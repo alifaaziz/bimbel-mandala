@@ -45,8 +45,8 @@ const optionsStatus = [
   { label: "Semester 7-8", value: "TH4" },
   { label: "Semester 8", value: "TH5" },
   { label: "Sarjana S1", value: "S1" },
-  { label: "Sarjana S2", value: "S2" },
-  { label: "Sarjana S3", value: "S3" },
+  { label: "Magister S2", value: "S2" },
+  { label: "Doktor S3", value: "S3" },
 ];
 
 const rules = {
@@ -216,18 +216,18 @@ function toggleDay(day) {
         <div class="grid-form">
           <n-form-item label="Nama Lengkap" path="user.name" class="col-span-6">
             <n-input
-              v-model:value="formValue.user.name"
+              v-model="formValue.user.name"
               placeholder="Tuliskan nama tutor disini"
             />
           </n-form-item>
         </div>
         <div class="grid-form">
           <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-2">
-            <n-date-picker v-model:value="formValue.user.ttg" type="date" />
+            <n-date-picker v-model="formValue.user.ttg" type="date" />
           </n-form-item>
           <n-form-item label="Jenis Kelamin" path="user.gender" class="col-span-2">
             <n-select
-              v-model:value="formValue.user.gender"
+              v-model="formValue.user.gender"
               :options="optionsgender"
               placeholder="Pilih jenis kelamin"
             />
@@ -247,7 +247,7 @@ function toggleDay(day) {
         <div class="grid-form">
           <n-form-item label="Alamat" path="user.alamat" class="col-span-6">
             <n-input
-              v-model:value="formValue.user.alamat"
+              v-model="formValue.user.alamat"
               placeholder="Tuliskan alamat tutor disini"
             />
           </n-form-item>
@@ -255,13 +255,13 @@ function toggleDay(day) {
         <div class="grid-form">
           <n-form-item label="E-mail Tutor" path="user.email" class="col-span-3">
             <n-input
-              v-model:value="formValue.user.email"
+              v-model="formValue.user.email"
               placeholder="Tuliskan email tutor disini"
             />
           </n-form-item>
           <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-3">
             <n-input
-              v-model:value="formValue.user.wa"
+              v-model="formValue.user.wa"
               placeholder="Tuliskan No. WhatsApp tutor disini"
             />
           </n-form-item>
@@ -269,7 +269,7 @@ function toggleDay(day) {
         <div class="grid-form">
           <n-form-item label="Password Tutor" path="user.pass" class="col-span-6">
             <n-input
-              v-model:value="formValue.user.pass"
+              v-model="formValue.user.pass"
               placeholder="Tuliskan password tutor disini"
               type="password"
               show-password-on="mousedown"
@@ -281,7 +281,7 @@ function toggleDay(day) {
         <div class="grid-form">
           <n-form-item label="Asal Universitas" path="user.univ" class="col-span-6">
             <n-input
-              v-model:value="formValue.user.univ"
+              v-model="formValue.user.univ"
               placeholder="Tuliskan asal universitas tutor disini"
             />
           </n-form-item>
@@ -289,13 +289,13 @@ function toggleDay(day) {
         <div class="grid-form">
           <n-form-item label="Program Studi" path="user.prodi" class="col-span-4">
             <n-input
-              v-model:value="formValue.user.prodi"
+              v-model="formValue.user.prodi"
               placeholder="Tuliskan program studi tutor disini"
             />
           </n-form-item>
           <n-form-item label="Status" path="user.status" class="col-span-2">
             <n-select
-              v-model:value="formValue.user.status"
+              v-model="formValue.user.status"
               :options="optionsStatus"
               placeholder="Pilih status"
             />
@@ -306,7 +306,7 @@ function toggleDay(day) {
         <div class="grid-form">
           <n-form-item label="Jenjang" path="user.jenjangAjar" class="col-span-6">
             <n-input
-              v-model:value="formValue.user.jenjangAjar"
+              v-model="formValue.user.jenjangAjar"
               placeholder="SD, SMP, atau SMA"
             />
           </n-form-item>
@@ -314,7 +314,7 @@ function toggleDay(day) {
         <div class="grid-form">
           <n-form-item label="Mata Pelajaran" path="user.pelajaran" class="col-span-6">
             <n-input
-              v-model:value="formValue.user.pelajaran"
+              v-model="formValue.user.pelajaran"
               placeholder="Matematika, Bahasa Inggris, Fisika, dll."
             />
           </n-form-item>
