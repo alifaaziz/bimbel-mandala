@@ -10,7 +10,6 @@ import butSecondSmall from '../dirButton/butSecondSmall.vue'
 import butPrimerSmall from '../dirButton/butPrimerSmall.vue'
 
 const showAbsenModal = ref(false)
-const izinReason = ref('')
 const schedule = ref<any>(null)
 const showRescheduleModal = ref(false)
 const rescheduleDate = ref('')

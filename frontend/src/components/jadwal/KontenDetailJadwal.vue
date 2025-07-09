@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import Scheduled from '../Absen/Scheduled.vue'
+// import Scheduled from '../Absen/Scheduled.vue'
 import butAbsen from '../dirButton/butAbsen.vue'
 import butIzin from '../dirButton/butIzin.vue'
 
-const isScheduled = ref(true)
+// const isScheduled = ref(true)
 const showAbsenModal = ref(false)
 const izinReason = ref('')
 const schedule = ref<any>(null)
