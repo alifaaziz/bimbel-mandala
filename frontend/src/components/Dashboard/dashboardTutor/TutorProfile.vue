@@ -7,6 +7,8 @@ import JadwalTutor from './programjadwaltutor/JadwalTutor.vue';
 import ProgramTerbuka from './programjadwaltutor/ProgramTerbuka.vue';
 import ButEditProfileAdmin from '@/components/dirButton/butEditProfileAdmin.vue';
 
+import {TrashOutline} from '@vicons/ionicons5';
+
 const route = useRoute();
 const id = route.params.id;
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -87,6 +89,10 @@ onMounted(async () => {
         </div>
         <div class="headeer-part">
           <ButEditProfileAdmin :id="id"/>
+          <n-button type="error" ghost round @click="handleDelete">
+            <template #icon><n-icon :component="TrashOutline" /></template>
+            Hapus Akun
+          </n-button>
         </div>
       </div>
       <n-divider class="divider" />
@@ -289,6 +295,11 @@ onMounted(async () => {
 .headersb3 {
   color: #154484;
   margin-bottom: 1rem;
+}
+.headeer-part{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 .tag {
   background-color: #154484;

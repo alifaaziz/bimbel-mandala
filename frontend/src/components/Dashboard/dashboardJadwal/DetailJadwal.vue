@@ -6,6 +6,11 @@ import butSecondSmall from '@/components/dirButton/butSecondSmall.vue'
 import butPrimerSmall from '@/components/dirButton/butPrimerSmall.vue'
 
 const showRescheduleModal = ref(false)
+
+const rescheduleDate = ref('')
+const rescheduleTime = ref('')
+const showSuccessPopup = ref(false)
+
 // Mapping status ke tipe tag Naive UI
 const tagTypeMap = {
   active: 'success',
@@ -38,6 +43,17 @@ const schedule = ref({
   meetingNumber: 3,
   status: 'active'
 })
+
+function handleReschedule() {
+  if (!rescheduleDate.value || !rescheduleTime.value) {
+    alert("Tanggal dan jam baru wajib diisi.");
+    return;
+  }
+  // Tutup modal pertama
+  showRescheduleModal.value = false
+  // Tampilkan popup sukses
+  showSuccessPopup.value = true
+}
 
 function openRescheduleModal() {
   showRescheduleModal.value = true
@@ -159,8 +175,22 @@ function closeRescheduleModal() {
         </div>
       </div>
       <div class="modal-actions-popup">
-        <butPrimerSmall label="Jadwal Ulang" />
+        <butPrimerSmall label="Jadwal Ulang" @click="handleReschedule" />
         <butSecondSmall label="Batal" @click="closeRescheduleModal" />
+      </div>
+    </div>
+  </div>
+  <!-- Popup Sukses Jadwal Ulang -->
+  <div v-if="showSuccessPopup" class="modal-overlay" @click.self="showSuccessPopup = false">
+    <div class="modal-content-success">
+      <h3 class="headersb2">Berhasil Jadwal Ulang</h3>
+      <div class="success">
+        <img src="@/assets/success/success.png" alt="Ilustrasi Sukses">
+      </div>
+      <p class="bodyr3 text-success">Penjadwalan ulang berhasil dilakukan. Silahkan untuk memberi kabar ke siswa dan tutor.
+      </p>
+      <div class="modal-actions-popup-success">
+        <butPrimerSmall label="Kembali" @click="showSuccessPopup = false" />
       </div>
     </div>
   </div>
@@ -276,36 +306,23 @@ function closeRescheduleModal() {
   padding: 2rem;
   border-radius: 12px;
   width: 90%;
-  max-width: 400px;
+  max-width: 360px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
-
-.modal-actions {
+.modal-content-success {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 1rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 360px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-.modal-actions button {
-  padding: 0.8rem 1rem;
-  border-radius: 2rem;
-  border: none;
-  cursor: pointer;
-}
-
-.modal-actions button:first-child {
-  background-color: #154484;
-  color: white;
-}
-
-.modal-actions button:last-child {
-  background-color: white;
-  border: 2px solid #154484;
-  color: #154484;
-}
-
-.modal-content .headersb2 {
+.headersb2 {
   color: #154484;
   text-align: center;
 }
@@ -316,6 +333,16 @@ function closeRescheduleModal() {
   text-align: left;
   padding-bottom: 2rem;
   gap: 1rem;
+}
+
+.success {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column; 
 }
 
 .popup-content .bodyr2 {
@@ -363,5 +390,15 @@ textarea.inputm1 {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+.modal-actions-popup-success {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.text-success{
+  text-align: left;
+  color: #597AA8;
 }
 </style>
