@@ -1,7 +1,21 @@
 <template>
   <div class="ordered-program-container">
     <n-space vertical :size="20">
-      <n-h3 class="component-title">Program Terpesan</n-h3>
+      <div class="header-row-ordered">
+        <n-h3 class="component-title">Program Terpesan</n-h3>
+        <div class="pagination-wrapper">
+          <button
+            class="pagination-btn"
+            :disabled="page === 1"
+            @click="handlePrev"
+          >&lt;</button>
+          <button
+            class="pagination-btn"
+            :disabled="page >= Math.ceil(total / limit)"
+            @click="handleNext"
+          >&gt;</button>
+        </div>
+      </div>
 
       <div v-for="program in orderedPrograms" :key="program.id">
         <n-card
@@ -25,7 +39,6 @@
                 </n-button>
               </div>
             </template>
-            
             <template #description>
               <span class="program-teacher">{{ program.teacher }}</span>
             </template>
@@ -71,6 +84,19 @@ const handleAction = (program) => {
   message.info(`Tombol aksi untuk "${program.subject}" diklik!`);
 };
 
+function handlePrev() {
+  if (page.value > 1) {
+    page.value--;
+    fetchOrderedPrograms();
+  }
+}
+function handleNext() {
+  if (page.value < Math.ceil(total.value / limit.value)) {
+    page.value++;
+    fetchOrderedPrograms();
+  }
+}
+
 onMounted(() => {
   fetchOrderedPrograms();
 });
@@ -109,6 +135,14 @@ onMounted(() => {
   gap: 12px;
 }
 
+.header-row-ordered {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
 .aksi-btn {
   margin-left: 12px;
 }
@@ -122,5 +156,31 @@ onMounted(() => {
 .program-teacher {
   font-size: 0.95rem;
   color: #64748b;
+}
+
+.pagination-wrapper {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.pagination-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid #154484;
+  background: #fff;
+  color: #154484;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
