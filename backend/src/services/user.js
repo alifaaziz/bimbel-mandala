@@ -108,6 +108,7 @@ async function createUserWithRole(payload, file) {
         password: encryptedPassword,
         role,
         googleId: payload.googleId || null,
+        verified: true 
     };
 
     let user = await prisma.user.findFirst({
