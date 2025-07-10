@@ -320,12 +320,67 @@
                   }
                 }
               }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "birthDate": {
+                    "type": "string",
+                    "example": "1990-01-01T00:00:00.000Z"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "johndue@mail.com"
+                  },
+                  "gender": {
+                    "type": "string",
+                    "example": "Male"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "John Due, S.Pd"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "0888888888888"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "role": {
+                    "type": "string",
+                    "example": "tutor"
+                  },
+                  "school": {
+                    "type": "string",
+                    "example": "ITB Semarang"
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": "S1"
+                  },
+                  "subjects": {
+                    "type": "string",
+                    "example": "Matematika"
+                  },
+                  "teachLevel": {
+                    "type": "string",
+                    "example": "SMA"
+                  }
+                }
+              }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "201 - Success add new admin / 201 - Success add new tutor",
+            "description": "201 - Register Admin/Tutor with file / 201 - Success add new admin / 201 - Success add new tutor",
             "headers": {
               "Access-Control-Allow-Credentials": {
                 "schema": {
@@ -392,7 +447,7 @@
                       "properties": {
                         "email": {
                           "type": "string",
-                          "example": "admin@admin.com"
+                          "example": "mrjohndue@mail.com"
                         },
                         "googleId": {
                           "nullable": true,
@@ -400,15 +455,15 @@
                         },
                         "id": {
                           "type": "string",
-                          "example": "0197d87f-cadb-7ad2-b6bd-a062c7005fc3"
+                          "example": "0197e3d1-a81f-7ff1-8694-905cbc37b5c3"
                         },
                         "name": {
                           "type": "string",
-                          "example": "Admin"
+                          "example": "John Due, S.Pd"
                         },
                         "role": {
                           "type": "string",
-                          "example": "admin"
+                          "example": "tutor"
                         },
                         "verified": {
                           "type": "boolean",
@@ -419,6 +474,18 @@
                   }
                 },
                 "examples": {
+                  "201 - Register Admin/Tutor with file": {
+                    "value": {
+                      "data": {
+                        "email": "mrjohndue@mail.com",
+                        "googleId": null,
+                        "id": "0197e3d1-a81f-7ff1-8694-905cbc37b5c3",
+                        "name": "John Due, S.Pd",
+                        "role": "tutor",
+                        "verified": false
+                      }
+                    }
+                  },
                   "201 - Success add new admin": {
                     "value": {
                       "data": {
@@ -3287,6 +3354,162 @@
         ]
       }
     },
+    "/users/new-tutors": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get New Tutors",
+        "description": "Get New Tutors",
+        "operationId": "getNewTutors",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "examples": {
+                "Get New Tutors": {
+                  "value": ""
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 - Get New Tutors",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "272"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Thu, 10 Jul 2025 01:53:28 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"110-R5tye0qBTV1Xu7VHL91hwZVyPPA\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2025-07-08T15:25:06.000Z"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "jajskhndchfejio"
+                          },
+                          "teachLevel": {
+                            "type": "string",
+                            "example": "SMA"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "createdAt": "2025-07-08T15:25:06.000Z",
+                          "name": "jajskhndchfejio",
+                          "teachLevel": "SMA"
+                        },
+                        {
+                          "createdAt": "2025-07-08T15:22:55.000Z",
+                          "name": "ahahah",
+                          "teachLevel": "SMP"
+                        },
+                        {
+                          "createdAt": "2025-07-08T08:58:19.000Z",
+                          "name": "Muhammad Rofiq Abdillah, S. Pd.",
+                          "teachLevel": "SMP"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Get New Tutors": {
+                    "value": {
+                      "data": [
+                        {
+                          "createdAt": "2025-07-08T15:25:06.000Z",
+                          "name": "jajskhndchfejio",
+                          "teachLevel": "SMA"
+                        },
+                        {
+                          "createdAt": "2025-07-08T15:22:55.000Z",
+                          "name": "ahahah",
+                          "teachLevel": "SMP"
+                        },
+                        {
+                          "createdAt": "2025-07-08T08:58:19.000Z",
+                          "name": "Muhammad Rofiq Abdillah, S. Pd.",
+                          "teachLevel": "SMP"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/users/{id}": {
       "get": {
         "tags": [
@@ -3984,6 +4207,100 @@
             "bearerAuth": []
           }
         ]
+      },
+      "delete": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "Delete Old Notification",
+        "description": "Delete Old Notification",
+        "operationId": "deleteOldNotification",
+        "responses": {
+          "200": {
+            "description": "200 - Delete Old Notification",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "57"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 08 Jul 2025 08:19:28 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"39-sehVKuV+fD9EWujdqPrQaFcjfac\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Deleted 1 notifications older than 30 days."
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Delete Old Notification": {
+                    "value": {
+                      "message": "Deleted 1 notifications older than 30 days."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/notification/{id}": {
@@ -4062,94 +4379,6 @@
                   "200 - Read a Notification": {
                     "value": {
                       "message": "Notification marked as read"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Notification"
-        ],
-        "summary": "Delete a Notification",
-        "description": "Delete a Notification",
-        "operationId": "deleteANotification",
-        "responses": {
-          "200": {
-            "description": "200 - Delete a Notification",
-            "headers": {
-              "Access-Control-Allow-Credentials": {
-                "schema": {
-                  "type": "string",
-                  "example": "true"
-                }
-              },
-              "Connection": {
-                "schema": {
-                  "type": "string",
-                  "example": "keep-alive"
-                }
-              },
-              "Content-Length": {
-                "schema": {
-                  "type": "string",
-                  "example": "34"
-                }
-              },
-              "Date": {
-                "schema": {
-                  "type": "string",
-                  "example": "Thu, 20 Mar 2025 03:25:42 GMT"
-                }
-              },
-              "ETag": {
-                "schema": {
-                  "type": "string",
-                  "example": "W/\"22-9EmvJax0wy/qAppHQeiS2QudMeM\""
-                }
-              },
-              "Keep-Alive": {
-                "schema": {
-                  "type": "string",
-                  "example": "timeout=5"
-                }
-              },
-              "Vary": {
-                "schema": {
-                  "type": "string",
-                  "example": "Origin"
-                }
-              },
-              "X-Powered-By": {
-                "schema": {
-                  "type": "string",
-                  "example": "Express"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Notification deleted"
-                    }
-                  }
-                },
-                "examples": {
-                  "200 - Delete a Notification": {
-                    "value": {
-                      "message": "Notification deleted"
                     }
                   }
                 }
@@ -5624,6 +5853,24 @@
         "summary": "Get All Packages",
         "description": "Get All Packages",
         "operationId": "getAllPackages",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "1"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "8"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "200 - Get All Packages",
@@ -6476,7 +6723,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/packages/filtered": {
@@ -8148,7 +8400,7 @@
         "operationId": "getUserStatisticsProgram",
         "responses": {
           "200": {
-            "description": "200 - Get User Statistics Program / 200 - Get User Statistics Program",
+            "description": "200 - Get User Statistics Program",
             "headers": {
               "Access-Control-Allow-Credentials": {
                 "schema": {
@@ -8238,6 +8490,123 @@
           }
         ]
       }
+    },
+    "/packages/statistics/{userId}": {
+      "get": {
+        "tags": [
+          "Package"
+        ],
+        "summary": "Get User Statistics Program by Id",
+        "description": "Get User Statistics Program by Id",
+        "operationId": "getUserStatisticsProgramById",
+        "responses": {
+          "200": {
+            "description": "200 - Get User Statistics Program by Id",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "60"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 05 Jul 2025 05:48:40 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"3c-GNYeoEKlE7Mt6i12rR2M+wBshgY\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "activePackages": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "completedClasses": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "runningClasses": {
+                      "type": "number",
+                      "example": 2
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Get User Statistics Program by Id": {
+                    "value": {
+                      "activePackages": 1,
+                      "completedClasses": 0,
+                      "runningClasses": 2
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "0195c5ed-3fc9-771d-bced-9c4b10afd9a2"
+          }
+        }
+      ]
     },
     "/packages/my": {
       "get": {
@@ -8774,10 +9143,6 @@
                     "type": "string",
                     "example": "Semarang"
                   },
-                  "basePrice": {
-                    "type": "number",
-                    "example": 800000
-                  },
                   "days": {
                     "type": "array",
                     "items": {
@@ -8790,6 +9155,10 @@
                       "Sabtu"
                     ]
                   },
+                  "discount": {
+                    "type": "number",
+                    "example": 10
+                  },
                   "duration": {
                     "type": "number",
                     "example": 120
@@ -8801,7 +9170,7 @@
                       "properties": {
                         "price": {
                           "type": "number",
-                          "example": 600000
+                          "example": 580000
                         },
                         "type": {
                           "type": "string",
@@ -8811,13 +9180,23 @@
                     },
                     "example": [
                       {
-                        "price": 600000,
+                        "price": 580000,
                         "type": "privat"
                       },
                       {
+                        "price": 980000,
+                        "type": "grup2"
+                      },
+                      {
+                        "price": 1380000,
                         "type": "grup3"
                       },
                       {
+                        "price": 1900000,
+                        "type": "grup4"
+                      },
+                      {
+                        "price": 2340000,
                         "type": "grup5"
                       }
                     ]
@@ -8848,22 +9227,32 @@
                 "Make a Package": {
                   "value": {
                     "area": "Semarang",
-                    "basePrice": 800000,
                     "days": [
                       "Selasa",
                       "Kamis",
                       "Sabtu"
                     ],
+                    "discount": 10,
                     "duration": 120,
                     "groupType": [
                       {
-                        "price": 600000,
+                        "price": 580000,
                         "type": "privat"
                       },
                       {
+                        "price": 980000,
+                        "type": "grup2"
+                      },
+                      {
+                        "price": 1380000,
                         "type": "grup3"
                       },
                       {
+                        "price": 1900000,
+                        "type": "grup4"
+                      },
+                      {
+                        "price": 2340000,
                         "type": "grup5"
                       }
                     ],
@@ -8888,6 +9277,12 @@
                   "example": "true"
                 }
               },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
               "Connection": {
                 "schema": {
                   "type": "string",
@@ -8897,19 +9292,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "49"
+                  "example": "1681"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Thu, 10 Apr 2025 04:23:55 GMT"
+                  "example": "Sun, 06 Jul 2025 05:12:18 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"31-QqKS36DjyzqsbUcghEIN6LXoUFs\""
+                  "example": "W/\"691-OBV5ry5R9va6Gl3m3Wzh4r9/Qkg\""
                 }
               },
               "Keep-Alive": {
@@ -8936,6 +9331,174 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "area": {
+                          "type": "string",
+                          "example": "Semarang"
+                        },
+                        "deletedAt": {
+                          "nullable": true,
+                          "example": null
+                        },
+                        "discount": {
+                          "type": "string",
+                          "example": "10"
+                        },
+                        "duration": {
+                          "type": "number",
+                          "example": 120
+                        },
+                        "groupType": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "discPrice": {
+                                "type": "string",
+                                "example": "522000"
+                              },
+                              "id": {
+                                "type": "string",
+                                "example": "0197de26-41fb-71a0-9fa0-126e7005926b"
+                              },
+                              "maxStudent": {
+                                "type": "string",
+                                "example": "1"
+                              },
+                              "packageId": {
+                                "type": "string",
+                                "example": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                              },
+                              "price": {
+                                "type": "string",
+                                "example": "580000"
+                              },
+                              "type": {
+                                "type": "string",
+                                "example": "privat"
+                              }
+                            }
+                          },
+                          "example": [
+                            {
+                              "discPrice": "522000",
+                              "id": "0197de26-41fb-71a0-9fa0-126e7005926b",
+                              "maxStudent": "1",
+                              "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                              "price": "580000",
+                              "type": "privat"
+                            },
+                            {
+                              "discPrice": "882000",
+                              "id": "0197de26-41fb-71a0-9fa0-127b72977097",
+                              "maxStudent": "2",
+                              "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                              "price": "980000",
+                              "type": "grup2"
+                            },
+                            {
+                              "discPrice": "1242000",
+                              "id": "0197de26-41fb-71a0-9fa0-128a0409d6b7",
+                              "maxStudent": "3",
+                              "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                              "price": "1380000",
+                              "type": "grup3"
+                            },
+                            {
+                              "discPrice": "1710000",
+                              "id": "0197de26-41fb-71a0-9fa0-1292ac239f25",
+                              "maxStudent": "4",
+                              "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                              "price": "1900000",
+                              "type": "grup4"
+                            },
+                            {
+                              "discPrice": "2106000",
+                              "id": "0197de26-41fb-71a0-9fa0-12aae3b429ec",
+                              "maxStudent": "5",
+                              "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                              "price": "2340000",
+                              "type": "grup5"
+                            }
+                          ]
+                        },
+                        "id": {
+                          "type": "string",
+                          "example": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                        },
+                        "isActive": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "level": {
+                          "type": "string",
+                          "example": "SMA"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Matematika Mudah"
+                        },
+                        "packageDay": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "dayId": {
+                                "type": "string",
+                                "example": "0195c5ed-3fc8-7164-9ffd-ec049b3082a4"
+                              },
+                              "id": {
+                                "type": "string",
+                                "example": "0197de26-41fb-71a0-9fa0-12bc56d2aed4"
+                              },
+                              "packageId": {
+                                "type": "string",
+                                "example": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                              }
+                            }
+                          },
+                          "example": [
+                            {
+                              "dayId": "0195c5ed-3fc8-7164-9ffd-ec049b3082a4",
+                              "id": "0197de26-41fb-71a0-9fa0-12bc56d2aed4",
+                              "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                            },
+                            {
+                              "dayId": "0195c5ed-3fc8-7496-b6b3-97e307a38413",
+                              "id": "0197de26-41fb-71a0-9fa0-12c3d6a5d767",
+                              "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                            },
+                            {
+                              "dayId": "0195c5ed-3fc8-7819-8210-360b97629ef2",
+                              "id": "0197de26-41fb-71a0-9fa0-12de3cd441e5",
+                              "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                            }
+                          ]
+                        },
+                        "slug": {
+                          "type": "string",
+                          "example": "matematika-mudah-sma-hkiwgn"
+                        },
+                        "startDate": {
+                          "nullable": true,
+                          "example": null
+                        },
+                        "time": {
+                          "type": "string",
+                          "example": "2025-03-24T19:00:00.000Z"
+                        },
+                        "totalMeetings": {
+                          "type": "number",
+                          "example": 4
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "0195c5ed-3fc9-771d-bced-9c4b10afd9a2"
+                        }
+                      }
+                    },
                     "message": {
                       "type": "string",
                       "example": "Bimbel package created successfully"
@@ -8945,6 +9508,80 @@
                 "examples": {
                   "201 - Make a Package": {
                     "value": {
+                      "data": {
+                        "area": "Semarang",
+                        "deletedAt": null,
+                        "discount": "10",
+                        "duration": 120,
+                        "groupType": [
+                          {
+                            "discPrice": "522000",
+                            "id": "0197de26-41fb-71a0-9fa0-126e7005926b",
+                            "maxStudent": "1",
+                            "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                            "price": "580000",
+                            "type": "privat"
+                          },
+                          {
+                            "discPrice": "882000",
+                            "id": "0197de26-41fb-71a0-9fa0-127b72977097",
+                            "maxStudent": "2",
+                            "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                            "price": "980000",
+                            "type": "grup2"
+                          },
+                          {
+                            "discPrice": "1242000",
+                            "id": "0197de26-41fb-71a0-9fa0-128a0409d6b7",
+                            "maxStudent": "3",
+                            "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                            "price": "1380000",
+                            "type": "grup3"
+                          },
+                          {
+                            "discPrice": "1710000",
+                            "id": "0197de26-41fb-71a0-9fa0-1292ac239f25",
+                            "maxStudent": "4",
+                            "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                            "price": "1900000",
+                            "type": "grup4"
+                          },
+                          {
+                            "discPrice": "2106000",
+                            "id": "0197de26-41fb-71a0-9fa0-12aae3b429ec",
+                            "maxStudent": "5",
+                            "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                            "price": "2340000",
+                            "type": "grup5"
+                          }
+                        ],
+                        "id": "0197de26-41fb-71a0-9fa0-125e8e51c3bc",
+                        "isActive": true,
+                        "level": "SMA",
+                        "name": "Matematika Mudah",
+                        "packageDay": [
+                          {
+                            "dayId": "0195c5ed-3fc8-7164-9ffd-ec049b3082a4",
+                            "id": "0197de26-41fb-71a0-9fa0-12bc56d2aed4",
+                            "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                          },
+                          {
+                            "dayId": "0195c5ed-3fc8-7496-b6b3-97e307a38413",
+                            "id": "0197de26-41fb-71a0-9fa0-12c3d6a5d767",
+                            "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                          },
+                          {
+                            "dayId": "0195c5ed-3fc8-7819-8210-360b97629ef2",
+                            "id": "0197de26-41fb-71a0-9fa0-12de3cd441e5",
+                            "packageId": "0197de26-41fb-71a0-9fa0-125e8e51c3bc"
+                          }
+                        ],
+                        "slug": "matematika-mudah-sma-hkiwgn",
+                        "startDate": null,
+                        "time": "2025-03-24T19:00:00.000Z",
+                        "totalMeetings": 4,
+                        "userId": "0195c5ed-3fc9-771d-bced-9c4b10afd9a2"
+                      },
                       "message": "Bimbel package created successfully"
                     }
                   }
@@ -9919,14 +10556,14 @@
         "tags": [
           "Order"
         ],
-        "summary": "Get Order",
-        "description": "Get Order",
-        "operationId": "getOrder",
+        "summary": "Get Pending Order",
+        "description": "Get Pending Order",
+        "operationId": "getPendingOrder",
         "requestBody": {
           "content": {
             "application/json": {
               "examples": {
-                "Get Order": {
+                "Get Pending Order": {
                   "value": ""
                 }
               }
@@ -9935,7 +10572,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 - Get Order",
+            "description": "200 - Get Pending Order",
             "headers": {
               "Access-Control-Allow-Credentials": {
                 "schema": {
@@ -9958,19 +10595,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "539"
+                  "example": "182"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Sat, 05 Jul 2025 03:53:16 GMT"
+                  "example": "Wed, 09 Jul 2025 07:01:33 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"21b-QaCZv4j2IBNo9q7+I78/VyGIHW0\""
+                  "example": "W/\"b6-oVkQV+Lf64UVPIGAoblYF7Buml8\""
                 }
               },
               "Keep-Alive": {
@@ -9998,98 +10635,78 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "example": "019618a1-68a4-7134-b8a7-98ba49f8e50f"
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "0196b2d1-ecd3-7d08-8784-4e413a3f3788"
+                              },
+                              "level": {
+                                "type": "string",
+                                "example": "SMA"
+                              },
+                              "packageName": {
+                                "type": "string",
+                                "example": "Kimia"
+                              },
+                              "status": {
+                                "type": "string",
+                                "example": "pending"
+                              },
+                              "tutorName": {
+                                "type": "string",
+                                "example": "Ratna Dewi M.Pd"
+                              }
+                            }
                           },
-                          "level": {
-                            "type": "string",
-                            "example": "SMP"
-                          },
-                          "packageName": {
-                            "type": "string",
-                            "example": "Matematika"
-                          },
-                          "status": {
-                            "type": "string",
-                            "example": "paid"
-                          },
-                          "tutorName": {
-                            "type": "string",
-                            "example": "Dendy Wan S.Pd"
-                          }
+                          "example": [
+                            {
+                              "id": "0196b2d1-ecd3-7d08-8784-4e413a3f3788",
+                              "level": "SMA",
+                              "packageName": "Kimia",
+                              "status": "pending",
+                              "tutorName": "Ratna Dewi M.Pd"
+                            }
+                          ]
+                        },
+                        "page": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "pageSize": {
+                          "type": "number",
+                          "example": 2
+                        },
+                        "total": {
+                          "type": "number",
+                          "example": 1
                         }
-                      },
-                      "example": [
-                        {
-                          "id": "019618a1-68a4-7134-b8a7-98ba49f8e50f",
-                          "level": "SMP",
-                          "packageName": "Matematika",
-                          "status": "paid",
-                          "tutorName": "Dendy Wan S.Pd"
-                        },
-                        {
-                          "id": "019618a1-68a4-75a4-abe4-dffa3730c045",
-                          "level": "SMA",
-                          "packageName": "Bahasa Inggris",
-                          "status": "paid",
-                          "tutorName": "Venita S.Pd"
-                        },
-                        {
-                          "id": "0196b2d1-ecd3-7d08-8784-4e413a3f3788",
-                          "level": "SMA",
-                          "packageName": "Kimia",
-                          "status": "pending",
-                          "tutorName": "Ratna Dewi M.Pd"
-                        },
-                        {
-                          "id": "0197d446-707c-76a7-8021-d1364ebf1e47",
-                          "level": "SMA",
-                          "packageName": "FOKUS UTBK",
-                          "status": "kelas",
-                          "tutorName": "Dendy Wan S.Pd"
-                        }
-                      ]
+                      }
                     }
                   }
                 },
                 "examples": {
-                  "200 - Get Order": {
+                  "200 - Get Pending Order": {
                     "value": {
-                      "data": [
-                        {
-                          "id": "019618a1-68a4-7134-b8a7-98ba49f8e50f",
-                          "level": "SMP",
-                          "packageName": "Matematika",
-                          "status": "paid",
-                          "tutorName": "Dendy Wan S.Pd"
-                        },
-                        {
-                          "id": "019618a1-68a4-75a4-abe4-dffa3730c045",
-                          "level": "SMA",
-                          "packageName": "Bahasa Inggris",
-                          "status": "paid",
-                          "tutorName": "Venita S.Pd"
-                        },
-                        {
-                          "id": "0196b2d1-ecd3-7d08-8784-4e413a3f3788",
-                          "level": "SMA",
-                          "packageName": "Kimia",
-                          "status": "pending",
-                          "tutorName": "Ratna Dewi M.Pd"
-                        },
-                        {
-                          "id": "0197d446-707c-76a7-8021-d1364ebf1e47",
-                          "level": "SMA",
-                          "packageName": "FOKUS UTBK",
-                          "status": "kelas",
-                          "tutorName": "Dendy Wan S.Pd"
-                        }
-                      ]
+                      "data": {
+                        "data": [
+                          {
+                            "id": "0196b2d1-ecd3-7d08-8784-4e413a3f3788",
+                            "level": "SMA",
+                            "packageName": "Kimia",
+                            "status": "pending",
+                            "tutorName": "Ratna Dewi M.Pd"
+                          }
+                        ],
+                        "page": 1,
+                        "pageSize": 2,
+                        "total": 1
+                      }
                     }
                   }
                 }
@@ -15573,19 +16190,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "2523"
+                  "example": "313"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Sat, 05 Jul 2025 04:22:35 GMT"
+                  "example": "Sun, 06 Jul 2025 05:04:52 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"9db-7Y4i/90U/otNtQn0ycfttIHTDCo\""
+                  "example": "W/\"139-hTXc8nNoHVVWz/EKQsghSLHLy6U\""
                 }
               },
               "Keep-Alive": {
@@ -15617,162 +16234,32 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "address": {
-                            "type": "string",
-                            "example": "Jl. Melati No. 10"
-                          },
-                          "birthDate": {
-                            "type": "string",
-                            "example": "1992-05-10T00:00:00.000Z"
-                          },
-                          "createdAt": {
-                            "type": "string",
-                            "example": "2025-07-04T14:20:30.000Z"
-                          },
-                          "description": {
-                            "type": "string",
-                            "example": "Saya memiliki pengalaman mengajar Matematika SMP selama 3 tahun."
-                          },
-                          "email": {
-                            "type": "string",
-                            "example": "andi.saputra@mail.com"
-                          },
-                          "gender": {
-                            "type": "string",
-                            "example": "Male"
-                          },
                           "id": {
                             "type": "string",
-                            "example": "01980001-0000-0000-0000-000000000001"
-                          },
-                          "major": {
-                            "type": "string",
-                            "example": "Pendidikan Matematika"
+                            "example": "01980001-0000-0000-0000-000000000002"
                           },
                           "name": {
                             "type": "string",
-                            "example": "Andi Saputra"
-                          },
-                          "phone": {
-                            "type": "string",
-                            "example": "081234567800"
-                          },
-                          "photo": {
-                            "nullable": true,
-                            "example": null
-                          },
-                          "school": {
-                            "type": "string",
-                            "example": "Universitas Negeri Semarang"
-                          },
-                          "status": {
-                            "type": "string",
-                            "example": "S1"
-                          },
-                          "subjects": {
-                            "type": "string",
-                            "example": "Matematika"
-                          },
-                          "teachLevel": {
-                            "type": "string",
-                            "example": "SMP"
-                          },
-                          "updatedAt": {
-                            "type": "string",
-                            "example": "2025-07-04T14:20:30.000Z"
+                            "example": "Budi Hartanto"
                           }
                         }
                       },
                       "example": [
                         {
-                          "address": "Jl. Melati No. 10",
-                          "birthDate": "1992-05-10T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Saya memiliki pengalaman mengajar Matematika SMP selama 3 tahun.",
-                          "email": "andi.saputra@mail.com",
-                          "gender": "Male",
-                          "id": "01980001-0000-0000-0000-000000000001",
-                          "major": "Pendidikan Matematika",
-                          "name": "Andi Saputra",
-                          "phone": "081234567800",
-                          "photo": null,
-                          "school": "Universitas Negeri Semarang",
-                          "status": "S1",
-                          "subjects": "Matematika",
-                          "teachLevel": "SMP",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
-                        },
-                        {
-                          "address": "Jl. Kenanga No. 11",
-                          "birthDate": "1990-08-21T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Berpengalaman mengajar Fisika SMA dan aktif dalam komunitas guru.",
-                          "email": "budi.hartanto@mail.com",
-                          "gender": "Male",
                           "id": "01980001-0000-0000-0000-000000000002",
-                          "major": "Fisika",
-                          "name": "Budi Hartanto",
-                          "phone": "081234567801",
-                          "photo": null,
-                          "school": "Universitas Diponegoro",
-                          "status": "S2",
-                          "subjects": "Fisika",
-                          "teachLevel": "SMA",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
+                          "name": "Budi Hartanto"
                         },
                         {
-                          "address": "Jl. Anggrek No. 12",
-                          "birthDate": "1995-03-15T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Lulusan S1 Pendidikan Bahasa Inggris, suka mengajar anak-anak.",
-                          "email": "citra.dewi@mail.com",
-                          "gender": "Female",
                           "id": "01980001-0000-0000-0000-000000000003",
-                          "major": "Pendidikan Bahasa Inggris",
-                          "name": "Citra Dewi",
-                          "phone": "081234567802",
-                          "photo": null,
-                          "school": "Universitas Negeri Semarang",
-                          "status": "S1",
-                          "subjects": "Bahasa Inggris",
-                          "teachLevel": "SMP",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
+                          "name": "Citra Dewi"
                         },
                         {
-                          "address": "Jl. Flamboyan No. 13",
-                          "birthDate": "1993-11-30T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Berpengalaman mengajar Biologi SMA dan aktif di kegiatan sains.",
-                          "email": "dewi.lestari@mail.com",
-                          "gender": "Female",
                           "id": "01980001-0000-0000-0000-000000000004",
-                          "major": "Pendidikan Biologi",
-                          "name": "Dewi Lestari",
-                          "phone": "081234567803",
-                          "photo": null,
-                          "school": "Universitas Gadjah Mada",
-                          "status": "S1",
-                          "subjects": "Biologi",
-                          "teachLevel": "SMA",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
+                          "name": "Dewi Lestari"
                         },
                         {
-                          "address": "Jl. Duku No. 14",
-                          "birthDate": "1994-07-22T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Pernah menjadi asisten dosen Kimia dan mengajar privat.",
-                          "email": "eko.prasetyo@mail.com",
-                          "gender": "Male",
                           "id": "01980001-0000-0000-0000-000000000005",
-                          "major": "Kimia",
-                          "name": "Eko Prasetyo",
-                          "phone": "081234567804",
-                          "photo": null,
-                          "school": "Universitas Indonesia",
-                          "status": "S1",
-                          "subjects": "Kimia",
-                          "teachLevel": "SMA",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
+                          "name": "Eko Prasetyo"
                         }
                       ]
                     },
@@ -15786,7 +16273,7 @@
                     },
                     "total": {
                       "type": "number",
-                      "example": 5
+                      "example": 4
                     }
                   }
                 },
@@ -15795,99 +16282,25 @@
                     "value": {
                       "data": [
                         {
-                          "address": "Jl. Melati No. 10",
-                          "birthDate": "1992-05-10T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Saya memiliki pengalaman mengajar Matematika SMP selama 3 tahun.",
-                          "email": "andi.saputra@mail.com",
-                          "gender": "Male",
-                          "id": "01980001-0000-0000-0000-000000000001",
-                          "major": "Pendidikan Matematika",
-                          "name": "Andi Saputra",
-                          "phone": "081234567800",
-                          "photo": null,
-                          "school": "Universitas Negeri Semarang",
-                          "status": "S1",
-                          "subjects": "Matematika",
-                          "teachLevel": "SMP",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
-                        },
-                        {
-                          "address": "Jl. Kenanga No. 11",
-                          "birthDate": "1990-08-21T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Berpengalaman mengajar Fisika SMA dan aktif dalam komunitas guru.",
-                          "email": "budi.hartanto@mail.com",
-                          "gender": "Male",
                           "id": "01980001-0000-0000-0000-000000000002",
-                          "major": "Fisika",
-                          "name": "Budi Hartanto",
-                          "phone": "081234567801",
-                          "photo": null,
-                          "school": "Universitas Diponegoro",
-                          "status": "S2",
-                          "subjects": "Fisika",
-                          "teachLevel": "SMA",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
+                          "name": "Budi Hartanto"
                         },
                         {
-                          "address": "Jl. Anggrek No. 12",
-                          "birthDate": "1995-03-15T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Lulusan S1 Pendidikan Bahasa Inggris, suka mengajar anak-anak.",
-                          "email": "citra.dewi@mail.com",
-                          "gender": "Female",
                           "id": "01980001-0000-0000-0000-000000000003",
-                          "major": "Pendidikan Bahasa Inggris",
-                          "name": "Citra Dewi",
-                          "phone": "081234567802",
-                          "photo": null,
-                          "school": "Universitas Negeri Semarang",
-                          "status": "S1",
-                          "subjects": "Bahasa Inggris",
-                          "teachLevel": "SMP",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
+                          "name": "Citra Dewi"
                         },
                         {
-                          "address": "Jl. Flamboyan No. 13",
-                          "birthDate": "1993-11-30T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Berpengalaman mengajar Biologi SMA dan aktif di kegiatan sains.",
-                          "email": "dewi.lestari@mail.com",
-                          "gender": "Female",
                           "id": "01980001-0000-0000-0000-000000000004",
-                          "major": "Pendidikan Biologi",
-                          "name": "Dewi Lestari",
-                          "phone": "081234567803",
-                          "photo": null,
-                          "school": "Universitas Gadjah Mada",
-                          "status": "S1",
-                          "subjects": "Biologi",
-                          "teachLevel": "SMA",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
+                          "name": "Dewi Lestari"
                         },
                         {
-                          "address": "Jl. Duku No. 14",
-                          "birthDate": "1994-07-22T00:00:00.000Z",
-                          "createdAt": "2025-07-04T14:20:30.000Z",
-                          "description": "Pernah menjadi asisten dosen Kimia dan mengajar privat.",
-                          "email": "eko.prasetyo@mail.com",
-                          "gender": "Male",
                           "id": "01980001-0000-0000-0000-000000000005",
-                          "major": "Kimia",
-                          "name": "Eko Prasetyo",
-                          "phone": "081234567804",
-                          "photo": null,
-                          "school": "Universitas Indonesia",
-                          "status": "S1",
-                          "subjects": "Kimia",
-                          "teachLevel": "SMA",
-                          "updatedAt": "2025-07-04T14:20:30.000Z"
+                          "name": "Eko Prasetyo"
                         }
                       ],
                       "page": 1,
                       "pageSize": 5,
-                      "total": 5
+                      "total": 4
                     }
                   }
                 }
@@ -15986,6 +16399,10 @@
                     "type": "string",
                     "example": "1990-01-01T00:00:00.000Z"
                   },
+                  "days": {
+                    "type": "string",
+                    "example": "[\"Senin\",\"Kamis\"]"
+                  },
                   "description": {
                     "type": "string",
                     "example": "berpengalaman mengajar anak jenjang smp di berbagai daerah"
@@ -16060,19 +16477,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "511"
+                  "example": "596"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Thu, 17 Apr 2025 02:28:47 GMT"
+                  "example": "Tue, 08 Jul 2025 01:44:26 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"1ff-Mvo12bLtge7kE4F8AtccgvoXx/Y\""
+                  "example": "W/\"254-L6CqAZIZTjRyE9WLw6s+ThfS/iI\""
                 }
               },
               "Keep-Alive": {
@@ -16102,21 +16519,29 @@
                     "data": {
                       "type": "object",
                       "properties": {
+                        "address": {
+                          "nullable": true,
+                          "example": null
+                        },
                         "birthDate": {
                           "type": "string",
                           "example": "1990-01-01T00:00:00.000Z"
                         },
                         "createdAt": {
                           "type": "string",
-                          "example": "2025-04-17T09:28:47.000Z"
+                          "example": "2025-07-08T08:44:26.000Z"
+                        },
+                        "days": {
+                          "type": "string",
+                          "example": "[\"Senin\",\"Kamis\"]"
                         },
                         "description": {
                           "type": "string",
-                          "example": "Experienced tutor in science subjects."
+                          "example": "berpengalaman mengajar anak jenjang smp di berbagai daerah"
                         },
                         "email": {
                           "type": "string",
-                          "example": "fulan@mail.com"
+                          "example": "m86095229@gmail.com"
                         },
                         "gender": {
                           "type": "string",
@@ -16124,31 +16549,27 @@
                         },
                         "id": {
                           "type": "string",
-                          "example": "01964193-cbcd-7663-a3e4-cba94659ef80"
+                          "example": "0197e7b4-a8cf-7932-9821-3dc0e7a57db6"
                         },
                         "major": {
                           "type": "string",
-                          "example": "Pendidikan IPA"
+                          "example": "Pendidikan Matematika"
                         },
                         "name": {
                           "type": "string",
-                          "example": "Fulan, S.Pd"
-                        },
-                        "password": {
-                          "type": "string",
-                          "example": "password123"
+                          "example": "Muhammad Rofiq"
                         },
                         "phone": {
                           "type": "string",
-                          "example": "081234567890"
+                          "example": "08123456789"
                         },
                         "photo": {
-                          "nullable": true,
-                          "example": null
+                          "type": "string",
+                          "example": "/public/muhammad-rofiq-1751939066061.png"
                         },
                         "school": {
                           "type": "string",
-                          "example": "University of Science"
+                          "example": "Universitas Indonesia"
                         },
                         "status": {
                           "type": "string",
@@ -16156,15 +16577,15 @@
                         },
                         "subjects": {
                           "type": "string",
-                          "example": "Matematika, Fisika"
+                          "example": "Matematika"
                         },
                         "teachLevel": {
                           "type": "string",
-                          "example": "SMA"
+                          "example": "SMP"
                         },
                         "updatedAt": {
                           "type": "string",
-                          "example": "2025-04-17T09:28:47.000Z"
+                          "example": "2025-07-08T08:44:26.000Z"
                         }
                       }
                     },
@@ -16178,22 +16599,23 @@
                   "201 - Tutor Application": {
                     "value": {
                       "data": {
+                        "address": null,
                         "birthDate": "1990-01-01T00:00:00.000Z",
-                        "createdAt": "2025-04-17T09:28:47.000Z",
-                        "description": "Experienced tutor in science subjects.",
-                        "email": "fulan@mail.com",
+                        "createdAt": "2025-07-08T08:44:26.000Z",
+                        "days": "[\"Senin\",\"Kamis\"]",
+                        "description": "berpengalaman mengajar anak jenjang smp di berbagai daerah",
+                        "email": "m86095229@gmail.com",
                         "gender": "Male",
-                        "id": "01964193-cbcd-7663-a3e4-cba94659ef80",
-                        "major": "Pendidikan IPA",
-                        "name": "Fulan, S.Pd",
-                        "password": "password123",
-                        "phone": "081234567890",
-                        "photo": null,
-                        "school": "University of Science",
+                        "id": "0197e7b4-a8cf-7932-9821-3dc0e7a57db6",
+                        "major": "Pendidikan Matematika",
+                        "name": "Muhammad Rofiq",
+                        "phone": "08123456789",
+                        "photo": "/public/muhammad-rofiq-1751939066061.png",
+                        "school": "Universitas Indonesia",
                         "status": "S1",
-                        "subjects": "Matematika, Fisika",
-                        "teachLevel": "SMA",
-                        "updatedAt": "2025-04-17T09:28:47.000Z"
+                        "subjects": "Matematika",
+                        "teachLevel": "SMP",
+                        "updatedAt": "2025-07-08T08:44:26.000Z"
                       },
                       "message": "Tutor applied successfully"
                     }
@@ -16438,6 +16860,206 @@
           "schema": {
             "type": "string",
             "example": "019641bc-1e94-73d0-86cd-92e782a75da4"
+          }
+        }
+      ]
+    },
+    "/apply/{id}": {
+      "get": {
+        "tags": [
+          "Registration Tutor"
+        ],
+        "summary": "Get Apply by ID",
+        "description": "Get Apply by ID",
+        "operationId": "getApplyById",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "examples": {
+                "Get Apply by ID": {
+                  "value": ""
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 - Get Apply by ID",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "496"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 06 Jul 2025 05:09:25 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"1f0-sTkxFlM7EM5yY2B84nZDhXmxhHs\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "address": {
+                          "type": "string",
+                          "example": "Jl. Kenanga No. 11"
+                        },
+                        "birthDate": {
+                          "type": "string",
+                          "example": "1990-08-21T00:00:00.000Z"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2025-07-04T14:20:30.000Z"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Berpengalaman mengajar Fisika SMA dan aktif dalam komunitas guru."
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "budi.hartanto@mail.com"
+                        },
+                        "gender": {
+                          "type": "string",
+                          "example": "Male"
+                        },
+                        "id": {
+                          "type": "string",
+                          "example": "01980001-0000-0000-0000-000000000002"
+                        },
+                        "major": {
+                          "type": "string",
+                          "example": "Fisika"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Budi Hartanto"
+                        },
+                        "phone": {
+                          "type": "string",
+                          "example": "081234567801"
+                        },
+                        "photo": {
+                          "nullable": true,
+                          "example": null
+                        },
+                        "school": {
+                          "type": "string",
+                          "example": "Universitas Diponegoro"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "S2"
+                        },
+                        "subjects": {
+                          "type": "string",
+                          "example": "Fisika"
+                        },
+                        "teachLevel": {
+                          "type": "string",
+                          "example": "SMA"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "example": "2025-07-04T14:20:30.000Z"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Get Apply by ID": {
+                    "value": {
+                      "data": {
+                        "address": "Jl. Kenanga No. 11",
+                        "birthDate": "1990-08-21T00:00:00.000Z",
+                        "createdAt": "2025-07-04T14:20:30.000Z",
+                        "description": "Berpengalaman mengajar Fisika SMA dan aktif dalam komunitas guru.",
+                        "email": "budi.hartanto@mail.com",
+                        "gender": "Male",
+                        "id": "01980001-0000-0000-0000-000000000002",
+                        "major": "Fisika",
+                        "name": "Budi Hartanto",
+                        "phone": "081234567801",
+                        "photo": null,
+                        "school": "Universitas Diponegoro",
+                        "status": "S2",
+                        "subjects": "Fisika",
+                        "teachLevel": "SMA",
+                        "updatedAt": "2025-07-04T14:20:30.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "01980001-0000-0000-0000-000000000002"
           }
         }
       ]
