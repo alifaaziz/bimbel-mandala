@@ -110,7 +110,8 @@ export default {
       this.fetchClosestSchedules(newPage);
     },
     showDetail(item) {
-      alert(`Detail untuk ${item.name} (${item.slug})`);
+      // Ganti alert menjadi push ke detail program privat
+      this.$router.push(`/dashboardadmin/programadmin/detailprogramprivat/${item.slug}`);
     },
     handleTambahProgram() {
       this.$router.push('/dashboardadmin/programadmin/tambahprogram');
