@@ -13,18 +13,24 @@ onMounted(async () => {
     isLoading.value = false
     return
   }
-  const res = await fetch('http://localhost:3000/users/me', {
-    headers: {
-      'Authorization': `Bearer ${token}`
+  try {
+    const res = await fetch('http://localhost:3000/users/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      isAdmin.value = data.data?.role === 'admin'
+      if (isAdmin.value && router.currentRoute.value.path !== '/dashboardadmin') {
+        router.replace('/dashboardadmin')
+        return
+      }
+    } else {
+      localStorage.removeItem('token')
     }
-  })
-  if (res.ok) {
-    const data = await res.json()
-    isAdmin.value = data.data?.role === 'admin'
-    if (isAdmin.value && router.currentRoute.value.path !== '/dashboardadmin') {
-      router.replace('/dashboardadmin')
-      return
-    }
+  } catch (e) {
+    localStorage.removeItem('token')
   }
   isLoading.value = false
 })
