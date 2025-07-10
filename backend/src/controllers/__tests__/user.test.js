@@ -207,4 +207,20 @@ describe('UserController', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: 'User deleted successfully' });
   });
+
+  it('getNewTutors returns newest tutors', async () => {
+    const tutors = [
+      { name: 'A', createdAt: '2023-01-01T00:00:00.000Z', teachLevel: 'SMA' },
+      { name: 'B', createdAt: '2023-01-02T00:00:00.000Z', teachLevel: 'SMP' },
+      { name: 'C', createdAt: '2023-01-03T00:00:00.000Z', teachLevel: 'SD' }
+    ];
+    UserService.getNewTutors = jest.fn().mockResolvedValue(tutors);
+
+    const { req, res } = setupExpressMock();
+    await UserController.getNewTutors(req, res);
+
+    expect(UserService.getNewTutors).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ data: tutors });
+  });
 });

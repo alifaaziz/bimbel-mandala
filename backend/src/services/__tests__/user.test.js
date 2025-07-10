@@ -847,4 +847,43 @@ describe('UserService', () => {
       expect(mockPrisma.order.deleteMany).not.toHaveBeenCalledWith({ where: { groupTypeId: expect.any(String) } });
     });
   });
+
+  describe('getNewTutors', () => {
+    it('returns 3 newest tutors with name, createdAt, and teachLevel', async () => {
+      const mockTutors = [
+        { name: 'A', createdAt: new Date('2023-01-01'), tutors: [{ teachLevel: 'SMA' }] },
+        { name: 'B', createdAt: new Date('2023-01-02'), tutors: [{ teachLevel: 'SMP' }] },
+        { name: 'C', createdAt: new Date('2023-01-03'), tutors: [{ teachLevel: 'SD' }] }
+      ];
+      mockPrisma.user.findMany.mockResolvedValueOnce(mockTutors);
+
+      const result = await UserService.getNewTutors();
+
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
+        where: { role: 'tutor' },
+        select: {
+          name: true,
+          createdAt: true,
+          tutors: { select: { teachLevel: true } }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 3
+      });
+      expect(result).toEqual([
+        { name: 'A', createdAt: new Date('2023-01-01'), teachLevel: 'SMA' },
+        { name: 'B', createdAt: new Date('2023-01-02'), teachLevel: 'SMP' },
+        { name: 'C', createdAt: new Date('2023-01-03'), teachLevel: 'SD' }
+      ]);
+    });
+
+    it('returns teachLevel null if tutors array is empty', async () => {
+      const mockTutors = [
+        { name: 'D', createdAt: new Date('2023-01-04'), tutors: [] }
+      ];
+      mockPrisma.user.findMany.mockResolvedValueOnce(mockTutors);
+
+      const result = await UserService.getNewTutors();
+      expect(result[0]).toMatchObject({ name: 'D', teachLevel: null });
+    });
+  });
 });

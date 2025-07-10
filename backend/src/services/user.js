@@ -495,6 +495,36 @@ async function getNewStudents({ page = 1, pageSize = 10 } = {}) {
 }
 
 /**
+ * Retrieves the 3 newest tutors.
+ *
+ * @async
+ * @function getNewTutors
+ * @returns {Promise<Array>} The newest tutors.
+ */
+async function getNewTutors() {
+    const tutors = await prisma.user.findMany({
+        where: { role: 'tutor' },
+        select: {
+            name: true,
+            createdAt: true,
+            tutors: {
+                select: {
+                    teachLevel: true
+                }
+            }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 3
+    });
+
+    return tutors.map(tutor => ({
+        name: tutor.name,
+        createdAt: tutor.createdAt,
+        teachLevel: tutor.tutors?.[0]?.teachLevel || null
+    }));
+}
+
+/**
  * Retrieves statistics about tutors, students, and packages.
  *
  * @async
@@ -575,6 +605,7 @@ export const UserService = {
     getUserById,
     getTopStudents,
     getNewStudents,
+    getNewTutors,
     getStatistics,
     deleteUser,
 };
