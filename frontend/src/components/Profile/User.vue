@@ -51,10 +51,18 @@ onMounted(async () => {
   <navbarProfile/>
   <div class="profile-container padding-components" v-if="user">
     <div class="space-profile">
-      <div class="identitas">
-        <h4 class="headerb2">{{ user.name }}</h4>
-        <p class="bodyr2" v-if="user.role === 'siswa'">{{ siswa?.level }}</p>
-        <p class="bodyr2" v-else-if="user.role === 'tutor'">{{ formatTutorStatus(tutor?.status) }}</p>
+      <div class="head-profile">
+        <div v-if="user.role === 'tutor'">
+          <img
+            class="img-tutor"
+            :src="'/tutor/Tutor_Default.png'"
+          />
+        </div>
+        <div class="identitas">
+          <h4 class="headerb2">{{ user.name }}</h4>
+          <p class="bodyr2" v-if="user.role === 'siswa'">{{ siswa?.level }}</p>
+          <p class="bodyr2" v-else-if="user.role === 'tutor'">{{ formatTutorStatus(tutor?.status) }}</p>
+        </div>
       </div>
       <div class="butAct">
         <butEditProfile />
@@ -146,7 +154,17 @@ onMounted(async () => {
   margin-top: 104px !important;
   margin-bottom: 4rem;
 }
-
+.head-profile{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.img-tutor {
+  border-radius: 8px;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+}
 .space-profile {
   display: flex;
   justify-content: space-between;
