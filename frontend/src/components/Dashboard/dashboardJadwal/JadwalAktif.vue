@@ -26,7 +26,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in scheduleItems" :key="item.kode">
+            <tr v-for="item in scheduleItems" :key="item.slug">
               <td>
                 <div class="bimbel-subject">{{ item.bimbel.subject }}</div>
                 <div class="bimbel-teacher">{{ item.bimbel.teacher }}</div>
@@ -43,17 +43,20 @@
           </tbody>
         </table>
       </div>
-      <div class="pagination">
-        <button @click="goToPreviousPage" :disabled="page === 1">Sebelumnya</button>
-        <span>Halaman {{ page }} dari {{ totalPages }}</span>
-        <button @click="goToNextPage" :disabled="page === totalPages">Selanjutnya</button>
-      </div>
+      <n-pagination
+        v-model:page="page"
+        :page-count="totalPages"
+        :page-size="limit"
+        :page-slot="7"
+        style="margin-top: 20px; justify-content: flex-start;"
+        @update:page="onPageChange"
+      />
     </section>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const scheduleItems = ref([]);
@@ -65,23 +68,15 @@ const router = useRouter();
 const fetchClosestSchedules = async (requestedPage = page.value) => {
   try {
     const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Token tidak ditemukan. Silakan login kembali.');
-    }
+    if (!token) throw new Error('Token tidak ditemukan. Silakan login kembali.');
     const response = await fetch(`http://localhost:3000/schedules/closest?page=${requestedPage}&limit=${limit.value}`, {
-      method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
-
     scheduleItems.value = result.data.data.map(item => ({
       kode: item.classCode,
       bimbel: {
@@ -99,10 +94,8 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
       }),
       slug: item.slug
     }));
-
     page.value = result.data.page;
     totalPages.value = result.data.totalPages;
-
   } catch (error) {
     console.error('Error fetching closest schedules:', error);
     alert('Gagal mengambil data jadwal terdekat.');
@@ -114,18 +107,9 @@ const showDetail = (item) => {
   router.push(`/dashboardadmin/jadwal/detailjadwalaktif/${id}`);
 };
 
-const goToNextPage = () => {
-  if (page.value < totalPages.value) {
-    page.value++;
-    fetchClosestSchedules(page.value);
-  }
-};
-
-const goToPreviousPage = () => {
-  if (page.value > 1) {
-    page.value--;
-    fetchClosestSchedules(page.value);
-  }
+const onPageChange = (newPage) => {
+  page.value = newPage;
+  fetchClosestSchedules(newPage);
 };
 
 onMounted(() => {

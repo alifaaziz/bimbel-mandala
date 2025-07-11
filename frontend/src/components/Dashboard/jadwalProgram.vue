@@ -4,9 +4,9 @@
 
     <div class="search-container">
       <n-input
-      round
-      size="large"
-      placeholder="Cari jadwal program bimbel...">
+        round
+        size="large"
+        placeholder="Cari jadwal program bimbel...">
         <template #prefix>
           <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
         </template>
@@ -27,7 +27,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in scheduleItems" :key="item.kode">
+            <tr v-for="item in scheduleItems" :key="item.slug">
               <td>
                 <div class="bimbel-subject">{{ item.bimbel.subject }}</div>
                 <div class="bimbel-teacher">{{ item.bimbel.teacher }}</div>
@@ -44,11 +44,14 @@
           </tbody>
         </table>
       </div>
-      <div class="pagination">
-        <button @click="goToPreviousPage" :disabled="page === 1">Sebelumnya</button>
-        <span>Halaman {{ page }} dari {{ totalPages }}</span>
-        <button @click="goToNextPage" :disabled="page === totalPages">Selanjutnya</button>
-      </div>
+      <n-pagination
+        v-model:page="page"
+        :page-count="totalPages"
+        :page-size="limit"
+        :page-slot="7"
+        style="margin-top: 20px; justify-content: flex-start;"
+        @update:page="onPageChange"
+      />
     </section>
   </div>
 </template>
@@ -84,6 +87,7 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
     const result = await response.json();
 
     scheduleItems.value = result.data.data.map(item => ({
+      id: item.id,
       kode: item.classCode,
       bimbel: {
         subject: item.packageName,
@@ -115,18 +119,9 @@ const showDetail = (item) => {
   router.push(`/dashboardadmin/jadwal/detailjadwalaktif/${id}`);
 };
 
-const goToNextPage = () => {
-  if (page.value < totalPages.value) {
-    page.value++;
-    fetchClosestSchedules(page.value);
-  }
-};
-
-const goToPreviousPage = () => {
-  if (page.value > 1) {
-    page.value--;
-    fetchClosestSchedules(page.value);
-  }
+const onPageChange = (newPage) => {
+  page.value = newPage;
+  fetchClosestSchedules(newPage);
 };
 
 onMounted(() => {

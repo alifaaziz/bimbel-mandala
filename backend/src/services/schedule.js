@@ -288,11 +288,11 @@ async function updateScheduleInformation(scheduleId, information) {
  * @throws {Error} If there are no schedules.
  */
 async function getClosestSchedules(page = 1, limit = 10) {
-  const offset = (page - 1) * limit; // Hitung offset berdasarkan page dan limit
+  const offset = (page - 1) * limit;
 
   const [schedules, total] = await Promise.all([
     prisma.schedule.findMany({
-      where: { date: { gte: new Date() } }, // Ambil jadwal yang dimulai dari hari ini
+      where: { date: { gte: new Date() } },
       include: {
         class: {
           include: {
@@ -313,12 +313,15 @@ async function getClosestSchedules(page = 1, limit = 10) {
           }
         }
       },
-      orderBy: { date: 'asc' }, // Urutkan berdasarkan tanggal terdekat
-      skip: offset, // Gunakan offset untuk pagination
-      take: limit // Ambil jumlah data sesuai limit
+      orderBy: [
+        { date: 'asc' },
+        { id: 'asc' } 
+      ],
+      skip: offset,
+      take: limit
     }),
     prisma.schedule.count({
-      where: { date: { gte: new Date() } } // Hitung total jadwal yang tersedia
+      where: { date: { gte: new Date() } }
     })
   ]);
 

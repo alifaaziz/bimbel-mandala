@@ -29,8 +29,6 @@ async function reschedule(req, res) {
   const { id: scheduleId } = req.params;
   const { newDate } = req.body;
 
-  console.log(`New Date: ${newDate}`);
-
   const loggedInUser = res.locals.user;
   const isAdmin = loggedInUser.role === 'admin';
   

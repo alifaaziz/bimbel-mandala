@@ -292,7 +292,7 @@ const routes = [
             component: JadwalAdminView
           },
           {
-            path: 'detailjadwalaktif/:id',
+            path: 'detailjadwalaktif/:slug',
             name: 'DetailJadwalAktif',
             component: DetailJadwalAktif
           },
