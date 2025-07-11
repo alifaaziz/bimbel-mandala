@@ -5869,6 +5869,14 @@
               "type": "string",
               "example": "8"
             }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "dendy"
+            }
           }
         ],
         "responses": {
@@ -5896,19 +5904,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "4166"
+                  "example": "945"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Sat, 05 Jul 2025 03:37:53 GMT"
+                  "example": "Fri, 11 Jul 2025 06:35:38 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"1046-p0VWLrF8vmmVFQ1NFHVqAM0OS5A\""
+                  "example": "W/\"3b1-9nqx/L9Iqsdnt0e91FsqLHPwsHg\""
                 }
               },
               "Keep-Alive": {
@@ -6021,8 +6029,7 @@
                           },
                           "photo": {
                             "type": "string",
-                            "nullable": true,
-                            "example": "/public/1.png"
+                            "example": "/tutors/1.png"
                           },
                           "slug": {
                             "type": "string",
@@ -6081,183 +6088,11 @@
                           "isActive": false,
                           "level": "SMP",
                           "name": "Matematika",
-                          "photo": "/public/1.png",
+                          "photo": "/tutors/1.png",
                           "slug": "matematika-smp-12lkop",
                           "time": "1970-01-01T08:00:00.000Z",
                           "totalMeetings": 24,
                           "tutorName": "Dendy Wan S.Pd"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Selasa",
-                            "Jumat"
-                          ],
-                          "duration": 120,
-                          "groupType": [
-                            {
-                              "discPrice": null,
-                              "price": "1020000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "1460000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "580000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "1900000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2340000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SMA",
-                          "name": "Bahasa Inggris",
-                          "photo": "/public/2.png",
-                          "slug": "bahasa-inggris-sma-14klui",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 8,
-                          "tutorName": "Venita S.Pd"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Senin",
-                            "Rabu"
-                          ],
-                          "duration": 90,
-                          "groupType": [
-                            {
-                              "discPrice": "2250000",
-                              "price": "2500000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": "4410000",
-                              "price": "4900000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": "6570000",
-                              "price": "7300000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": "8730000",
-                              "price": "9700000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": "10890000",
-                              "price": "12100000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SMA",
-                          "name": "Kimia",
-                          "photo": "/public/4.png",
-                          "slug": "kimia-sma-dg67ty",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 24,
-                          "tutorName": "Ratna Dewi M.Pd"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Selasa",
-                            "Jumat"
-                          ],
-                          "duration": 90,
-                          "groupType": [
-                            {
-                              "discPrice": "2250000",
-                              "price": "2500000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": "4410000",
-                              "price": "4900000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": "6570000",
-                              "price": "7300000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": "8730000",
-                              "price": "9700000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": "10890000",
-                              "price": "12100000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SMA",
-                          "name": "Fisika",
-                          "photo": "/public/3.png",
-                          "slug": "fisika-sma-0ki8er",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 24,
-                          "tutorName": "Fajar Nugroho, S.T"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Sabtu",
-                            "Kamis"
-                          ],
-                          "duration": 90,
-                          "groupType": [
-                            {
-                              "discPrice": "2250000",
-                              "price": "2500000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": "4410000",
-                              "price": "4900000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": "6570000",
-                              "price": "7300000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": "8730000",
-                              "price": "9700000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": "10890000",
-                              "price": "12100000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SMA",
-                          "name": "Biologi",
-                          "photo": null,
-                          "slug": "biologi-sma-l4l4qw",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 24,
-                          "tutorName": "Intan Lestari, S.Si"
                         },
                         {
                           "area": "Jl. Pemuda No.150, Sekayu, Kec. Semarang Tengah",
@@ -6276,97 +6111,11 @@
                           "isActive": true,
                           "level": "SMA",
                           "name": "FOKUS UTBK",
-                          "photo": "/public/1.png",
+                          "photo": "/tutors/1.png",
                           "slug": "fokus-utbk-sma-9j8k7l",
                           "time": "1970-01-01T08:00:00.000Z",
                           "totalMeetings": 4,
                           "tutorName": "Dendy Wan S.Pd"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Senin",
-                            "Selasa"
-                          ],
-                          "duration": 60,
-                          "groupType": [
-                            {
-                              "discPrice": null,
-                              "price": "820000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "1540000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2260000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2980000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "3700000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SD",
-                          "name": "Pendidikan Agama Islam & Budi Pekerti",
-                          "photo": null,
-                          "slug": "pai-budi-pekerti-sd-2b3c4d",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 12,
-                          "tutorName": "Ahmad Fadli, S.Pd.I"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Rabu",
-                            "Jumat"
-                          ],
-                          "duration": 60,
-                          "groupType": [
-                            {
-                              "discPrice": null,
-                              "price": "820000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "1540000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2260000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2980000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "3700000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SD",
-                          "name": "Pendidikan Pancasila",
-                          "photo": null,
-                          "slug": "pendidikan-pancasila-sd-1a2b3c",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 12,
-                          "tutorName": "Siti Aisyah, S.Pd"
                         }
                       ]
                     },
@@ -6380,7 +6129,7 @@
                     },
                     "total": {
                       "type": "number",
-                      "example": 28
+                      "example": 2
                     }
                   }
                 },
@@ -6426,183 +6175,11 @@
                           "isActive": false,
                           "level": "SMP",
                           "name": "Matematika",
-                          "photo": "/public/1.png",
+                          "photo": "/tutors/1.png",
                           "slug": "matematika-smp-12lkop",
                           "time": "1970-01-01T08:00:00.000Z",
                           "totalMeetings": 24,
                           "tutorName": "Dendy Wan S.Pd"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Selasa",
-                            "Jumat"
-                          ],
-                          "duration": 120,
-                          "groupType": [
-                            {
-                              "discPrice": null,
-                              "price": "1020000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "1460000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "580000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "1900000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2340000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SMA",
-                          "name": "Bahasa Inggris",
-                          "photo": "/public/2.png",
-                          "slug": "bahasa-inggris-sma-14klui",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 8,
-                          "tutorName": "Venita S.Pd"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Senin",
-                            "Rabu"
-                          ],
-                          "duration": 90,
-                          "groupType": [
-                            {
-                              "discPrice": "2250000",
-                              "price": "2500000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": "4410000",
-                              "price": "4900000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": "6570000",
-                              "price": "7300000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": "8730000",
-                              "price": "9700000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": "10890000",
-                              "price": "12100000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SMA",
-                          "name": "Kimia",
-                          "photo": "/public/4.png",
-                          "slug": "kimia-sma-dg67ty",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 24,
-                          "tutorName": "Ratna Dewi M.Pd"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Selasa",
-                            "Jumat"
-                          ],
-                          "duration": 90,
-                          "groupType": [
-                            {
-                              "discPrice": "2250000",
-                              "price": "2500000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": "4410000",
-                              "price": "4900000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": "6570000",
-                              "price": "7300000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": "8730000",
-                              "price": "9700000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": "10890000",
-                              "price": "12100000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SMA",
-                          "name": "Fisika",
-                          "photo": "/public/3.png",
-                          "slug": "fisika-sma-0ki8er",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 24,
-                          "tutorName": "Fajar Nugroho, S.T"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Sabtu",
-                            "Kamis"
-                          ],
-                          "duration": 90,
-                          "groupType": [
-                            {
-                              "discPrice": "2250000",
-                              "price": "2500000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": "4410000",
-                              "price": "4900000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": "6570000",
-                              "price": "7300000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": "8730000",
-                              "price": "9700000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": "10890000",
-                              "price": "12100000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SMA",
-                          "name": "Biologi",
-                          "photo": null,
-                          "slug": "biologi-sma-l4l4qw",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 24,
-                          "tutorName": "Intan Lestari, S.Si"
                         },
                         {
                           "area": "Jl. Pemuda No.150, Sekayu, Kec. Semarang Tengah",
@@ -6621,102 +6198,16 @@
                           "isActive": true,
                           "level": "SMA",
                           "name": "FOKUS UTBK",
-                          "photo": "/public/1.png",
+                          "photo": "/tutors/1.png",
                           "slug": "fokus-utbk-sma-9j8k7l",
                           "time": "1970-01-01T08:00:00.000Z",
                           "totalMeetings": 4,
                           "tutorName": "Dendy Wan S.Pd"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Senin",
-                            "Selasa"
-                          ],
-                          "duration": 60,
-                          "groupType": [
-                            {
-                              "discPrice": null,
-                              "price": "820000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "1540000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2260000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2980000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "3700000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SD",
-                          "name": "Pendidikan Agama Islam & Budi Pekerti",
-                          "photo": null,
-                          "slug": "pai-budi-pekerti-sd-2b3c4d",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 12,
-                          "tutorName": "Ahmad Fadli, S.Pd.I"
-                        },
-                        {
-                          "area": "Semarang",
-                          "days": [
-                            "Rabu",
-                            "Jumat"
-                          ],
-                          "duration": 60,
-                          "groupType": [
-                            {
-                              "discPrice": null,
-                              "price": "820000",
-                              "type": "privat"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "1540000",
-                              "type": "grup2"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2260000",
-                              "type": "grup3"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "2980000",
-                              "type": "grup4"
-                            },
-                            {
-                              "discPrice": null,
-                              "price": "3700000",
-                              "type": "grup5"
-                            }
-                          ],
-                          "isActive": true,
-                          "level": "SD",
-                          "name": "Pendidikan Pancasila",
-                          "photo": null,
-                          "slug": "pendidikan-pancasila-sd-1a2b3c",
-                          "time": "1970-01-01T08:00:00.000Z",
-                          "totalMeetings": 12,
-                          "tutorName": "Siti Aisyah, S.Pd"
                         }
                       ],
                       "page": 1,
                       "pageSize": 8,
-                      "total": 28
+                      "total": 2
                     }
                   }
                 }
@@ -12245,9 +11736,6 @@
               "examples": {
                 "Get Schedule From User": {
                   "value": ""
-                },
-                "Get Schedule by Slug": {
-                  "value": ""
                 }
               }
             }
@@ -12255,7 +11743,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 - Get Schedule From User / 200 - Get Schedule by Slug",
+            "description": "200 - Get Schedule From User",
             "headers": {
               "Access-Control-Allow-Credentials": {
                 "schema": {
@@ -12278,19 +11766,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "1007"
+                  "example": "1729"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Sat, 05 Jul 2025 04:13:54 GMT"
+                  "example": "Sat, 05 Jul 2025 04:12:22 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"3ef-oDkhzHhKASOUD2rDhynHubU+mcA\""
+                  "example": "W/\"6c1-ZXALJGbb3EY/f4a//Kue6ghb/oY\""
                 }
               },
               "Keep-Alive": {
@@ -12320,65 +11808,6 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "address": {
-                          "type": "string",
-                          "example": "Jl. Merdeka No. 2"
-                        },
-                        "attendances": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "id": {
-                                "type": "string",
-                                "example": "0196b2ee-98ca-7da3-849f-d1bc1660cf08"
-                              },
-                              "reason": {
-                                "nullable": true,
-                                "example": null
-                              },
-                              "scheduleId": {
-                                "type": "string",
-                                "example": "019618a1-68a4-7a00-8000-000000000001"
-                              },
-                              "status": {
-                                "type": "string",
-                                "example": "masuk"
-                              },
-                              "userId": {
-                                "type": "string",
-                                "example": "019618a1-68a4-7742-9471-2548f7726e86"
-                              }
-                            }
-                          },
-                          "example": [
-                            {
-                              "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf08",
-                              "reason": null,
-                              "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
-                              "status": "masuk",
-                              "userId": "019618a1-68a4-7742-9471-2548f7726e86"
-                            },
-                            {
-                              "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf14",
-                              "reason": null,
-                              "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
-                              "status": "masuk",
-                              "userId": "0195d575-26cb-73a9-ac9c-4395ebfb2326"
-                            },
-                            {
-                              "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf17",
-                              "reason": null,
-                              "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
-                              "status": "masuk",
-                              "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
-                            }
-                          ]
-                        },
-                        "classCode": {
-                          "type": "string",
-                          "example": "ABC123"
-                        },
                         "data": {
                           "type": "array",
                           "items": {
@@ -12526,68 +11955,13 @@
                             }
                           ]
                         },
-                        "date": {
-                          "type": "string",
-                          "example": "2025-04-08T08:00:00.000Z"
-                        },
-                        "duration": {
-                          "type": "number",
-                          "example": 120
-                        },
-                        "groupType": {
-                          "type": "string",
-                          "example": "grup2"
-                        },
-                        "id": {
-                          "type": "string",
-                          "example": "019618a1-68a4-7a00-8000-000000000001"
-                        },
-                        "info": {
-                          "nullable": true,
-                          "example": null
-                        },
-                        "level": {
-                          "type": "string",
-                          "example": "SMA"
-                        },
                         "limit": {
                           "type": "number",
                           "example": 5
                         },
-                        "meet": {
-                          "type": "number",
-                          "example": 1
-                        },
-                        "packageName": {
-                          "type": "string",
-                          "example": "Bahasa Inggris"
-                        },
                         "page": {
                           "type": "number",
                           "example": 1
-                        },
-                        "photo": {
-                          "type": "string",
-                          "example": "/public/2.png"
-                        },
-                        "slug": {
-                          "type": "string",
-                          "example": "bahasa-inggris-sma-ABC123-qwert11"
-                        },
-                        "status": {
-                          "type": "string",
-                          "example": "terjadwal"
-                        },
-                        "studentName": {
-                          "type": "array",
-                          "items": {
-                            "type": "string",
-                            "example": "Ma Tor Nu Won"
-                          },
-                          "example": [
-                            "Ma Tor Nu Won",
-                            "So Lie Kien"
-                          ]
                         },
                         "total": {
                           "type": "number",
@@ -12596,18 +11970,6 @@
                         "totalPages": {
                           "type": "number",
                           "example": 10
-                        },
-                        "tutorEmail": {
-                          "type": "string",
-                          "example": "venita@mail.com"
-                        },
-                        "tutorName": {
-                          "type": "string",
-                          "example": "Bu Venita S.Pd"
-                        },
-                        "tutorPhone": {
-                          "type": "string",
-                          "example": "0987654321"
                         }
                       }
                     }
@@ -12703,55 +12065,6 @@
                         "page": 1,
                         "total": 48,
                         "totalPages": 10
-                      }
-                    }
-                  },
-                  "200 - Get Schedule by Slug": {
-                    "value": {
-                      "data": {
-                        "address": "Jl. Merdeka No. 2",
-                        "attendances": [
-                          {
-                            "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf08",
-                            "reason": null,
-                            "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
-                            "status": "masuk",
-                            "userId": "019618a1-68a4-7742-9471-2548f7726e86"
-                          },
-                          {
-                            "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf14",
-                            "reason": null,
-                            "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
-                            "status": "masuk",
-                            "userId": "0195d575-26cb-73a9-ac9c-4395ebfb2326"
-                          },
-                          {
-                            "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf17",
-                            "reason": null,
-                            "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
-                            "status": "masuk",
-                            "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
-                          }
-                        ],
-                        "classCode": "ABC123",
-                        "date": "2025-04-08T08:00:00.000Z",
-                        "duration": 120,
-                        "groupType": "grup2",
-                        "id": "019618a1-68a4-7a00-8000-000000000001",
-                        "info": null,
-                        "level": "SMA",
-                        "meet": 1,
-                        "packageName": "Bahasa Inggris",
-                        "photo": "/public/2.png",
-                        "slug": "bahasa-inggris-sma-ABC123-qwert11",
-                        "status": "terjadwal",
-                        "studentName": [
-                          "Ma Tor Nu Won",
-                          "So Lie Kien"
-                        ],
-                        "tutorEmail": "venita@mail.com",
-                        "tutorName": "Bu Venita S.Pd",
-                        "tutorPhone": "0987654321"
                       }
                     }
                   }
@@ -13909,6 +13222,32 @@
         "summary": "Get Closest Schedules",
         "description": "Get Closest Schedules",
         "operationId": "getClosestSchedules",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "1"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "10"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "cls"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -13945,19 +13284,19 @@
               "Content-Length": {
                 "schema": {
                   "type": "string",
-                  "example": "2693"
+                  "example": "1104"
                 }
               },
               "Date": {
                 "schema": {
                   "type": "string",
-                  "example": "Sat, 05 Jul 2025 04:07:33 GMT"
+                  "example": "Fri, 11 Jul 2025 06:34:48 GMT"
                 }
               },
               "ETag": {
                 "schema": {
                   "type": "string",
-                  "example": "W/\"a85-WM3qUwMekL3gfIDmbdl35tZVofk\""
+                  "example": "W/\"450-t1/Ybv8PxLJutzWEteXUKQc8XLI\""
                 }
               },
               "Keep-Alive": {
@@ -13994,11 +13333,11 @@
                             "properties": {
                               "classCode": {
                                 "type": "string",
-                                "example": "AAA123"
+                                "example": "CLS-DEF456"
                               },
                               "date": {
                                 "type": "string",
-                                "example": "2025-07-07T08:00:00.000Z"
+                                "example": "2025-07-21T08:00:00.000Z"
                               },
                               "duration": {
                                 "type": "number",
@@ -14006,11 +13345,11 @@
                               },
                               "groupType": {
                                 "type": "string",
-                                "example": "privat"
+                                "example": "kelas"
                               },
                               "id": {
                                 "type": "string",
-                                "example": "0197d44e-e681-7411-ac71-c22a0c918710"
+                                "example": "0197d449-8bd0-7e6f-a77f-0b9be7400001"
                               },
                               "meet": {
                                 "type": "number",
@@ -14018,11 +13357,11 @@
                               },
                               "packageName": {
                                 "type": "string",
-                                "example": "Matematika"
+                                "example": "FOKUS UTBK"
                               },
                               "slug": {
                                 "type": "string",
-                                "example": "matematika-smp-AAA123-ck5kxg"
+                                "example": "fokus-utbk-sma-ask123"
                               },
                               "status": {
                                 "type": "string",
@@ -14036,122 +13375,50 @@
                           },
                           "example": [
                             {
-                              "classCode": "AAA123",
-                              "date": "2025-07-07T08:00:00.000Z",
+                              "classCode": "CLS-DEF456",
+                              "date": "2025-07-21T08:00:00.000Z",
                               "duration": 90,
-                              "groupType": "privat",
-                              "id": "0197d44e-e681-7411-ac71-c22a0c918710",
+                              "groupType": "kelas",
+                              "id": "0197d449-8bd0-7e6f-a77f-0b9be7400001",
                               "meet": 1,
-                              "packageName": "Matematika",
-                              "slug": "matematika-smp-AAA123-ck5kxg",
+                              "packageName": "FOKUS UTBK",
+                              "slug": "fokus-utbk-sma-ask123",
                               "status": "terjadwal",
                               "tutorName": "Pak Dendy Wan S.Pd"
                             },
                             {
-                              "classCode": "AAA123",
-                              "date": "2025-07-09T08:00:00.000Z",
+                              "classCode": "CLS-DEF456",
+                              "date": "2025-07-23T08:00:00.000Z",
                               "duration": 90,
-                              "groupType": "privat",
-                              "id": "0197d44e-e681-7411-ac71-c235245a8505",
+                              "groupType": "kelas",
+                              "id": "0197d449-8bd0-7e6f-a77f-0b9be7400002",
                               "meet": 2,
-                              "packageName": "Matematika",
-                              "slug": "matematika-smp-AAA123-4ha2yv",
+                              "packageName": "FOKUS UTBK",
+                              "slug": "fokus-utbk-sma-ask456",
                               "status": "terjadwal",
                               "tutorName": "Pak Dendy Wan S.Pd"
                             },
                             {
-                              "classCode": "D83FC6",
-                              "date": "2025-07-10T08:00:00.000Z",
+                              "classCode": "CLS-DEF456",
+                              "date": "2025-07-28T08:00:00.000Z",
                               "duration": 90,
-                              "groupType": "grup5",
-                              "id": "0197d8bf-30f9-7a70-9748-0023e5b0feac",
-                              "meet": 1,
-                              "packageName": "Biologi",
-                              "slug": "biologi-sma-D83FC6-lqulny",
-                              "status": "terjadwal",
-                              "tutorName": "Bu Intan Lestari, S.Si"
-                            },
-                            {
-                              "classCode": "D83FC6",
-                              "date": "2025-07-12T08:00:00.000Z",
-                              "duration": 90,
-                              "groupType": "grup5",
-                              "id": "0197d8bf-30f9-7a70-9748-003bceaa588a",
-                              "meet": 2,
-                              "packageName": "Biologi",
-                              "slug": "biologi-sma-D83FC6-ml5mei",
-                              "status": "terjadwal",
-                              "tutorName": "Bu Intan Lestari, S.Si"
-                            },
-                            {
-                              "classCode": "AAA123",
-                              "date": "2025-07-12T08:00:00.000Z",
-                              "duration": 90,
-                              "groupType": "privat",
-                              "id": "0197d44e-e681-7411-ac71-c2493e982285",
+                              "groupType": "kelas",
+                              "id": "0197d449-8bd0-7e6f-a77f-0b9be7400003",
                               "meet": 3,
-                              "packageName": "Matematika",
-                              "slug": "matematika-smp-AAA123-69c6v7",
+                              "packageName": "FOKUS UTBK",
+                              "slug": "fokus-utbk-sma-ask789",
                               "status": "terjadwal",
                               "tutorName": "Pak Dendy Wan S.Pd"
                             },
                             {
-                              "classCode": "AAA123",
-                              "date": "2025-07-14T08:00:00.000Z",
+                              "classCode": "CLS-DEF456",
+                              "date": "2025-07-30T08:00:00.000Z",
                               "duration": 90,
-                              "groupType": "privat",
-                              "id": "0197d44e-e681-7411-ac71-c25b88d3ff28",
+                              "groupType": "kelas",
+                              "id": "0197d449-8bd0-7e6f-a77f-0b9be7400004",
                               "meet": 4,
-                              "packageName": "Matematika",
-                              "slug": "matematika-smp-AAA123-ecr3ma",
-                              "status": "terjadwal",
-                              "tutorName": "Pak Dendy Wan S.Pd"
-                            },
-                            {
-                              "classCode": "AAA123",
-                              "date": "2025-07-16T08:00:00.000Z",
-                              "duration": 90,
-                              "groupType": "privat",
-                              "id": "0197d44e-e681-7411-ac71-c26eb04c5ce6",
-                              "meet": 5,
-                              "packageName": "Matematika",
-                              "slug": "matematika-smp-AAA123-oqt4p7",
-                              "status": "terjadwal",
-                              "tutorName": "Pak Dendy Wan S.Pd"
-                            },
-                            {
-                              "classCode": "D83FC6",
-                              "date": "2025-07-17T08:00:00.000Z",
-                              "duration": 90,
-                              "groupType": "grup5",
-                              "id": "0197d8bf-30f9-7a70-9748-004cd128affb",
-                              "meet": 3,
-                              "packageName": "Biologi",
-                              "slug": "biologi-sma-D83FC6-4vhkqg",
-                              "status": "terjadwal",
-                              "tutorName": "Bu Intan Lestari, S.Si"
-                            },
-                            {
-                              "classCode": "D83FC6",
-                              "date": "2025-07-19T08:00:00.000Z",
-                              "duration": 90,
-                              "groupType": "grup5",
-                              "id": "0197d8bf-30f9-7a70-9748-0057312a06d9",
-                              "meet": 4,
-                              "packageName": "Biologi",
-                              "slug": "biologi-sma-D83FC6-79ua2u",
-                              "status": "terjadwal",
-                              "tutorName": "Bu Intan Lestari, S.Si"
-                            },
-                            {
-                              "classCode": "AAA123",
-                              "date": "2025-07-19T08:00:00.000Z",
-                              "duration": 90,
-                              "groupType": "privat",
-                              "id": "0197d44e-e681-7411-ac71-c273248ffd6e",
-                              "meet": 6,
-                              "packageName": "Matematika",
-                              "slug": "matematika-smp-AAA123-5xtqxm",
+                              "packageName": "FOKUS UTBK",
+                              "slug": "fokus-utbk-sma-ask987",
                               "status": "terjadwal",
                               "tutorName": "Pak Dendy Wan S.Pd"
                             }
@@ -14167,11 +13434,11 @@
                         },
                         "total": {
                           "type": "number",
-                          "example": 52
+                          "example": 4
                         },
                         "totalPages": {
                           "type": "number",
-                          "example": 6
+                          "example": 1
                         }
                       }
                     }
@@ -14183,130 +13450,58 @@
                       "data": {
                         "data": [
                           {
-                            "classCode": "AAA123",
-                            "date": "2025-07-07T08:00:00.000Z",
+                            "classCode": "CLS-DEF456",
+                            "date": "2025-07-21T08:00:00.000Z",
                             "duration": 90,
-                            "groupType": "privat",
-                            "id": "0197d44e-e681-7411-ac71-c22a0c918710",
+                            "groupType": "kelas",
+                            "id": "0197d449-8bd0-7e6f-a77f-0b9be7400001",
                             "meet": 1,
-                            "packageName": "Matematika",
-                            "slug": "matematika-smp-AAA123-ck5kxg",
+                            "packageName": "FOKUS UTBK",
+                            "slug": "fokus-utbk-sma-ask123",
                             "status": "terjadwal",
                             "tutorName": "Pak Dendy Wan S.Pd"
                           },
                           {
-                            "classCode": "AAA123",
-                            "date": "2025-07-09T08:00:00.000Z",
+                            "classCode": "CLS-DEF456",
+                            "date": "2025-07-23T08:00:00.000Z",
                             "duration": 90,
-                            "groupType": "privat",
-                            "id": "0197d44e-e681-7411-ac71-c235245a8505",
+                            "groupType": "kelas",
+                            "id": "0197d449-8bd0-7e6f-a77f-0b9be7400002",
                             "meet": 2,
-                            "packageName": "Matematika",
-                            "slug": "matematika-smp-AAA123-4ha2yv",
+                            "packageName": "FOKUS UTBK",
+                            "slug": "fokus-utbk-sma-ask456",
                             "status": "terjadwal",
                             "tutorName": "Pak Dendy Wan S.Pd"
                           },
                           {
-                            "classCode": "D83FC6",
-                            "date": "2025-07-10T08:00:00.000Z",
+                            "classCode": "CLS-DEF456",
+                            "date": "2025-07-28T08:00:00.000Z",
                             "duration": 90,
-                            "groupType": "grup5",
-                            "id": "0197d8bf-30f9-7a70-9748-0023e5b0feac",
-                            "meet": 1,
-                            "packageName": "Biologi",
-                            "slug": "biologi-sma-D83FC6-lqulny",
-                            "status": "terjadwal",
-                            "tutorName": "Bu Intan Lestari, S.Si"
-                          },
-                          {
-                            "classCode": "D83FC6",
-                            "date": "2025-07-12T08:00:00.000Z",
-                            "duration": 90,
-                            "groupType": "grup5",
-                            "id": "0197d8bf-30f9-7a70-9748-003bceaa588a",
-                            "meet": 2,
-                            "packageName": "Biologi",
-                            "slug": "biologi-sma-D83FC6-ml5mei",
-                            "status": "terjadwal",
-                            "tutorName": "Bu Intan Lestari, S.Si"
-                          },
-                          {
-                            "classCode": "AAA123",
-                            "date": "2025-07-12T08:00:00.000Z",
-                            "duration": 90,
-                            "groupType": "privat",
-                            "id": "0197d44e-e681-7411-ac71-c2493e982285",
+                            "groupType": "kelas",
+                            "id": "0197d449-8bd0-7e6f-a77f-0b9be7400003",
                             "meet": 3,
-                            "packageName": "Matematika",
-                            "slug": "matematika-smp-AAA123-69c6v7",
+                            "packageName": "FOKUS UTBK",
+                            "slug": "fokus-utbk-sma-ask789",
                             "status": "terjadwal",
                             "tutorName": "Pak Dendy Wan S.Pd"
                           },
                           {
-                            "classCode": "AAA123",
-                            "date": "2025-07-14T08:00:00.000Z",
+                            "classCode": "CLS-DEF456",
+                            "date": "2025-07-30T08:00:00.000Z",
                             "duration": 90,
-                            "groupType": "privat",
-                            "id": "0197d44e-e681-7411-ac71-c25b88d3ff28",
+                            "groupType": "kelas",
+                            "id": "0197d449-8bd0-7e6f-a77f-0b9be7400004",
                             "meet": 4,
-                            "packageName": "Matematika",
-                            "slug": "matematika-smp-AAA123-ecr3ma",
-                            "status": "terjadwal",
-                            "tutorName": "Pak Dendy Wan S.Pd"
-                          },
-                          {
-                            "classCode": "AAA123",
-                            "date": "2025-07-16T08:00:00.000Z",
-                            "duration": 90,
-                            "groupType": "privat",
-                            "id": "0197d44e-e681-7411-ac71-c26eb04c5ce6",
-                            "meet": 5,
-                            "packageName": "Matematika",
-                            "slug": "matematika-smp-AAA123-oqt4p7",
-                            "status": "terjadwal",
-                            "tutorName": "Pak Dendy Wan S.Pd"
-                          },
-                          {
-                            "classCode": "D83FC6",
-                            "date": "2025-07-17T08:00:00.000Z",
-                            "duration": 90,
-                            "groupType": "grup5",
-                            "id": "0197d8bf-30f9-7a70-9748-004cd128affb",
-                            "meet": 3,
-                            "packageName": "Biologi",
-                            "slug": "biologi-sma-D83FC6-4vhkqg",
-                            "status": "terjadwal",
-                            "tutorName": "Bu Intan Lestari, S.Si"
-                          },
-                          {
-                            "classCode": "D83FC6",
-                            "date": "2025-07-19T08:00:00.000Z",
-                            "duration": 90,
-                            "groupType": "grup5",
-                            "id": "0197d8bf-30f9-7a70-9748-0057312a06d9",
-                            "meet": 4,
-                            "packageName": "Biologi",
-                            "slug": "biologi-sma-D83FC6-79ua2u",
-                            "status": "terjadwal",
-                            "tutorName": "Bu Intan Lestari, S.Si"
-                          },
-                          {
-                            "classCode": "AAA123",
-                            "date": "2025-07-19T08:00:00.000Z",
-                            "duration": 90,
-                            "groupType": "privat",
-                            "id": "0197d44e-e681-7411-ac71-c273248ffd6e",
-                            "meet": 6,
-                            "packageName": "Matematika",
-                            "slug": "matematika-smp-AAA123-5xtqxm",
+                            "packageName": "FOKUS UTBK",
+                            "slug": "fokus-utbk-sma-ask987",
                             "status": "terjadwal",
                             "tutorName": "Pak Dendy Wan S.Pd"
                           }
                         ],
                         "limit": 10,
                         "page": 1,
-                        "total": 52,
-                        "totalPages": 6
+                        "total": 4,
+                        "totalPages": 1
                       }
                     }
                   }
@@ -14321,6 +13516,295 @@
           }
         ]
       }
+    },
+    "/schedules/{slug}": {
+      "get": {
+        "tags": [
+          "Schedule"
+        ],
+        "summary": "Get Schedule by Slug",
+        "description": "Get Schedule by Slug",
+        "operationId": "getScheduleBySlug",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "Get Schedule by Slug": {
+                  "value": ""
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 - Get Schedule by Slug",
+            "headers": {
+              "Access-Control-Allow-Credentials": {
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "1007"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 05 Jul 2025 04:13:54 GMT"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"3ef-oDkhzHhKASOUD2rDhynHubU+mcA\""
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Origin"
+                }
+              },
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "address": {
+                          "type": "string",
+                          "example": "Jl. Merdeka No. 2"
+                        },
+                        "attendances": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "0196b2ee-98ca-7da3-849f-d1bc1660cf08"
+                              },
+                              "reason": {
+                                "nullable": true,
+                                "example": null
+                              },
+                              "scheduleId": {
+                                "type": "string",
+                                "example": "019618a1-68a4-7a00-8000-000000000001"
+                              },
+                              "status": {
+                                "type": "string",
+                                "example": "masuk"
+                              },
+                              "userId": {
+                                "type": "string",
+                                "example": "019618a1-68a4-7742-9471-2548f7726e86"
+                              }
+                            }
+                          },
+                          "example": [
+                            {
+                              "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf08",
+                              "reason": null,
+                              "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
+                              "status": "masuk",
+                              "userId": "019618a1-68a4-7742-9471-2548f7726e86"
+                            },
+                            {
+                              "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf14",
+                              "reason": null,
+                              "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
+                              "status": "masuk",
+                              "userId": "0195d575-26cb-73a9-ac9c-4395ebfb2326"
+                            },
+                            {
+                              "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf17",
+                              "reason": null,
+                              "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
+                              "status": "masuk",
+                              "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                            }
+                          ]
+                        },
+                        "classCode": {
+                          "type": "string",
+                          "example": "ABC123"
+                        },
+                        "date": {
+                          "type": "string",
+                          "example": "2025-04-08T08:00:00.000Z"
+                        },
+                        "duration": {
+                          "type": "number",
+                          "example": 120
+                        },
+                        "groupType": {
+                          "type": "string",
+                          "example": "grup2"
+                        },
+                        "id": {
+                          "type": "string",
+                          "example": "019618a1-68a4-7a00-8000-000000000001"
+                        },
+                        "info": {
+                          "nullable": true,
+                          "example": null
+                        },
+                        "level": {
+                          "type": "string",
+                          "example": "SMA"
+                        },
+                        "meet": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "packageName": {
+                          "type": "string",
+                          "example": "Bahasa Inggris"
+                        },
+                        "photo": {
+                          "type": "string",
+                          "example": "/public/2.png"
+                        },
+                        "slug": {
+                          "type": "string",
+                          "example": "bahasa-inggris-sma-ABC123-qwert11"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "terjadwal"
+                        },
+                        "studentName": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "example": "Ma Tor Nu Won"
+                          },
+                          "example": [
+                            "Ma Tor Nu Won",
+                            "So Lie Kien"
+                          ]
+                        },
+                        "tutorEmail": {
+                          "type": "string",
+                          "example": "venita@mail.com"
+                        },
+                        "tutorName": {
+                          "type": "string",
+                          "example": "Bu Venita S.Pd"
+                        },
+                        "tutorPhone": {
+                          "type": "string",
+                          "example": "0987654321"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "200 - Get Schedule by Slug": {
+                    "value": {
+                      "data": {
+                        "address": "Jl. Merdeka No. 2",
+                        "attendances": [
+                          {
+                            "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf08",
+                            "reason": null,
+                            "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
+                            "status": "masuk",
+                            "userId": "019618a1-68a4-7742-9471-2548f7726e86"
+                          },
+                          {
+                            "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf14",
+                            "reason": null,
+                            "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
+                            "status": "masuk",
+                            "userId": "0195d575-26cb-73a9-ac9c-4395ebfb2326"
+                          },
+                          {
+                            "id": "0196b2ee-98ca-7da3-849f-d1bc1660cf17",
+                            "reason": null,
+                            "scheduleId": "019618a1-68a4-7a00-8000-000000000001",
+                            "status": "masuk",
+                            "userId": "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa"
+                          }
+                        ],
+                        "classCode": "ABC123",
+                        "date": "2025-04-08T08:00:00.000Z",
+                        "duration": 120,
+                        "groupType": "grup2",
+                        "id": "019618a1-68a4-7a00-8000-000000000001",
+                        "info": null,
+                        "level": "SMA",
+                        "meet": 1,
+                        "packageName": "Bahasa Inggris",
+                        "photo": "/public/2.png",
+                        "slug": "bahasa-inggris-sma-ABC123-qwert11",
+                        "status": "terjadwal",
+                        "studentName": [
+                          "Ma Tor Nu Won",
+                          "So Lie Kien"
+                        ],
+                        "tutorEmail": "venita@mail.com",
+                        "tutorName": "Bu Venita S.Pd",
+                        "tutorPhone": "0987654321"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "slug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "bahasa-inggris-sma-ABC123-qwert11"
+          }
+        }
+      ]
     },
     "/schedules/closest/{slug}": {
       "get": {
