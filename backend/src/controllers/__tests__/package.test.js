@@ -42,7 +42,7 @@ describe('BimbelPackageController', () => {
     BimbelPackageService.getAllBimbelPackages.mockResolvedValue(packagesMock);
     const { req, res } = setupExpressMock({ req: { query: { page: '2', limit: '5' } } });
     await BimbelPackageController.getAllBimbelPackages(req, res);
-    expect(BimbelPackageService.getAllBimbelPackages).toHaveBeenCalledWith({ page: 2, pageSize: 5 });
+    expect(BimbelPackageService.getAllBimbelPackages).toHaveBeenCalledWith({ page: 2, pageSize: 5, search: '' });
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(packagesMock);
   });
@@ -51,7 +51,7 @@ describe('BimbelPackageController', () => {
     BimbelPackageService.getAllBimbelPackages.mockResolvedValue(packagesMock);
     const { req, res } = setupExpressMock({ req: { query: {} } });
     await BimbelPackageController.getAllBimbelPackages(req, res);
-    expect(BimbelPackageService.getAllBimbelPackages).toHaveBeenCalledWith({ page: 1, pageSize: 8 });
+    expect(BimbelPackageService.getAllBimbelPackages).toHaveBeenCalledWith({ page: 1, pageSize: 8, search: '' });
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(packagesMock);
   });
