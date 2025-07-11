@@ -154,7 +154,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   width: 100%;
   max-width: 1440px;
   padding: 0 8rem;
-  margin: 2rem auto;
+  margin: 1rem auto;
   height: auto;
 }
 

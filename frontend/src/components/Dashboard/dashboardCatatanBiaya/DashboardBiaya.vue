@@ -66,7 +66,10 @@
 <script setup>
 import { ref, h, computed } from 'vue';
 import { NTag, NButton, NIcon } from 'naive-ui';
-import { SearchOutline, EllipsisHorizontal } from '@vicons/ionicons5';
+import { EllipsisHorizontal } from '@vicons/ionicons5';
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // --- Tipe data untuk kolom tabel ---
 /**
@@ -192,8 +195,7 @@ const filteredData = computed(() => {
 
 // --- Fungsi Aksi dan Konfigurasi Tabel ---
 const showDetail = (row) => {
-  // Ganti dengan logika Anda, misal membuka modal atau navigasi
-  alert(`Melihat detail untuk program dengan kode: ${row.code}`);
+  router.push(`/dashboardadmin/catatanbiaya/detailprogramselesai`);
 };
 
 const columns = createColumns({ showDetail });

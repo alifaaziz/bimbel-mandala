@@ -245,6 +245,9 @@ function closeRescheduleModal() {
 .divider {
   border-top: 1px solid #FEEBD9 !important;
 }
+.headersb1 {
+  color: #154484;
+}
 .info-section {
   display: flex;
   flex-direction: column;
