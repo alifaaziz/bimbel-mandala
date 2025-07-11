@@ -4,6 +4,7 @@
 
     <div class="search-container">
       <n-input
+      v-model:value="searchText"
       round
       size="large"
       placeholder="Cari jadwal">
@@ -63,18 +64,23 @@ const scheduleItems = ref([]);
 const page = ref(1);
 const limit = ref(10);
 const totalPages = ref(1);
+const searchText = ref('');
 const router = useRouter();
+let searchTimeout = null;
 
 const fetchClosestSchedules = async (requestedPage = page.value) => {
   try {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Token tidak ditemukan. Silakan login kembali.');
-    const response = await fetch(`http://localhost:3000/schedules/closest?page=${requestedPage}&limit=${limit.value}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      `http://localhost:3000/schedules/closest?page=${requestedPage}&limit=${limit.value}&search=${encodeURIComponent(searchText.value)}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     scheduleItems.value = result.data.data.map(item => ({
@@ -111,6 +117,15 @@ const onPageChange = (newPage) => {
   page.value = newPage;
   fetchClosestSchedules(newPage);
 };
+
+// Watcher dengan debounce agar fetch tidak terlalu sering
+watch(searchText, () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    page.value = 1;
+    fetchClosestSchedules(1);
+  }, 350);
+});
 
 onMounted(() => {
   fetchClosestSchedules();

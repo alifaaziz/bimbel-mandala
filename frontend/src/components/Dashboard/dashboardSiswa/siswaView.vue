@@ -6,7 +6,7 @@
       <div class="search-tambah">
         <div class="search-container">
           <n-input
-            v-model="searchText"
+            v-model:value="searchText"
             round
             size="large"
             placeholder="Cari siswa">
