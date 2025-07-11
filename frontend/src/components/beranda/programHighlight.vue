@@ -90,7 +90,7 @@ function handleButton(slug) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo ? `http://localhost:3000${program.photo}` : '/public/tutor/3.png'" 
+              :src="program.photo ? `http://localhost:3000/public${program.photo}` : '/public/tutor/3.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
