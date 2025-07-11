@@ -78,7 +78,7 @@ onMounted(async () => {
         <div class="header-part">
             <img
               class="img-tutor"
-              :src="tutorProfile.photo ? `http://localhost:3000${tutorProfile.photo}` : '/tutor/Tutor_Default.png'"
+              :src="tutorProfile.photo ? `http://localhost:3000/public${tutorProfile.photo}` : '/tutor/Tutor_Default.png'"
             />
           <div class="datadiri">
             <div class="headersb2">

@@ -137,7 +137,7 @@ function handleButton(slug) {
       <n-card v-for="program in filteredPrograms" :key="program.slug" class="n-card">
         <div class="card-content">
           <div class="card-image">
-            <img :src="program.photo ? `http://localhost:3000${program.photo}` : '/tutor/Tutor_Default.png'" />
+            <img :src="program.photo ? `http://localhost:3000/public${program.photo}` : '/tutor/Tutor_Default.png'" />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
           </div>
           <div class="card-text">

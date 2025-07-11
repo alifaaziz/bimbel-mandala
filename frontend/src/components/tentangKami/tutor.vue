@@ -37,7 +37,7 @@ onMounted(() => {
         </div>
       </template>
       <template #cover>
-        <img :src="item.photo ? `http://localhost:3000${item.photo}` : 'tutor/Tutor_Default.png'" alt="Card Image">
+        <img :src="item.photo ? `http://localhost:3000/public${item.photo}` : 'tutor/Tutor_Default.png'" alt="Card Image">
       </template>
       <div class="bodyr3 content">
         {{ item.description }}

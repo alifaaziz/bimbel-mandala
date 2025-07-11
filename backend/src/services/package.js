@@ -94,51 +94,60 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
  * @param {Object} [options] - Pagination options.
  * @param {number} [options.page=1] - Page number (1-based).
  * @param {number} [options.pageSize=10] - Number of items per page.
+ * @param {string} [options.search=''] - Search term for package name or tutor name.
  * @returns {Promise<Object>} The paginated list of bimbel packages and total count.
  */
-async function getAllBimbelPackages({ page = 1, pageSize = 10 } = {}) {
+async function getAllBimbelPackages({ page = 1, pageSize = 10, search = '' } = {}) {
   const skip = (page - 1) * pageSize;
-  const [packages, total] = await Promise.all([
-    prisma.bimbelPackage.findMany({
-      where: {
-        deletedAt: null
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            tutors: {
-              select: {
-                photo: true
-              }
+
+  const whereClause = {
+    deletedAt: null,
+    ...(search && {
+      OR: [
+        { name: { contains: search } },
+        {
+          user: {
+            is: {
+              name: { contains: search }
             }
           }
-        },
-        groupType: {
-          select: {
-            type: true,
-            price: true,
-            discPrice: true
+        }
+      ]
+    })
+  };
+
+  const packages = await prisma.bimbelPackage.findMany({
+    where: whereClause,
+    include: {
+      user: {
+        select: {
+          name: true,
+          tutors: {
+            select: { photo: true }
           }
-        },
-        packageDay: {
-          select: {
-            day: {
-              select: {
-                daysName: true
-              }
-            }
+        }
+      },
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: {
+            select: { daysName: true }
           }
-        },
+        }
       },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      skip,
-      take: pageSize
-    }),
-    prisma.bimbelPackage.count({})
-  ]);
+    },
+    orderBy: { createdAt: 'desc' },
+    skip,
+    take: pageSize
+  });
+
+  const total = await prisma.bimbelPackage.count({ where: whereClause });
 
   return {
     data: packages.map(pkg => ({

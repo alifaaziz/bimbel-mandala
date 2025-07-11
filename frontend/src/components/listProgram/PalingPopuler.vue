@@ -56,7 +56,7 @@ function handleButton(slug) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo ? `http://localhost:3000${program.photo}` : '/tutor/Tutor_Default.png'" 
+              :src="program.photo ? `http://localhost:3000/public${program.photo}` : '/tutor/Tutor_Default.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>

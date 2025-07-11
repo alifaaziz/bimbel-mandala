@@ -4,14 +4,14 @@
     <div class="search-tambah">
       <div class="search-container">
         <n-input
-          v-model="searchText"
-          round
-          size="large"
-          placeholder="Cari Program">
-          <template #prefix>
-            <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
-          </template>
-        </n-input>
+        v-model:value="searchText"
+        round
+        size="large"
+        placeholder="Cari Program">
+        <template #prefix>
+          <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
+        </template>
+      </n-input>
       </div>
       <ButImgTambahSecondNormal label="Tambah Program" @click="handleTambahProgram"/>
     </div>
@@ -86,18 +86,30 @@ export default {
       page: 1,
       limit: 8,
       totalPages: 1,
-      searchText: ''
+      searchText: '',
+      searchTimeout: null
     };
   },
+  watch: {
+    searchText: {
+      handler() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+          this.page = 1;
+          this.fetchPackages();
+        }, 350);
+      },
+      immediate: true
+    }
+  },
   methods: {
-    async fetchClosestSchedules(page = this.page) {
+    async fetchPackages() {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/packages/all?page=${page}&limit=${this.limit}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        const response = await fetch(
+          `http://localhost:3000/packages/all?page=${this.page}&limit=${this.limit}&search=${encodeURIComponent(this.searchText)}`,
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
         const result = await response.json();
         this.packageItems = result.data;
         this.totalPages = Math.ceil(result.total / this.limit);
@@ -107,10 +119,9 @@ export default {
     },
     handlePageChange(newPage) {
       this.page = newPage;
-      this.fetchClosestSchedules(newPage);
+      this.fetchPackages();
     },
     showDetail(item) {
-      // Ganti alert menjadi push ke detail program privat
       this.$router.push(`/dashboardadmin/programadmin/detailprogramprivat/${item.slug}`);
     },
     handleTambahProgram() {
@@ -118,7 +129,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchClosestSchedules();
+    this.fetchPackages();
   }
 };
 </script>
@@ -229,7 +240,7 @@ export default {
 .pagination {
   margin-top: 20px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }
 </style>
