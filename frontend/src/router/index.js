@@ -52,7 +52,7 @@ import ProgramAdmin from '@/components/Dashboard/dashboardProgram/ProgramAdmin.v
 import ProgramMain from '@/components/Dashboard/dashboardProgram/ProgramMain.vue';
 import ProgramAdd from '@/components/Dashboard/dashboardProgram/ProgramAdd.vue';
 import DetailProgramPrivat from '@/components/Dashboard/dashboardProgram/detailProgramPrivat.vue';
-import DetailProgramKelas from '@/components/Dashboard/dashboardProgram/detailProgramKelas.vue';
+import EditProgramForm from '@/components/Dashboard/dashboardProgram/EditProgramForm.vue';
 
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
 
@@ -275,9 +275,9 @@ const routes = [
             component: DetailProgramPrivat,
           },
           {
-            path: 'detailprogramkelas/:id',
-            name: 'DetailProgramKelas',
-            component: DetailProgramKelas,
+            path: 'editprogram/:id',
+            name: 'EditProgramForm',
+            component: EditProgramForm,
           },
         ]
       },

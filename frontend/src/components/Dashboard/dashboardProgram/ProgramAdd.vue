@@ -50,21 +50,27 @@
                 </n-gi>
               </n-grid>
               
-              <n-form-item label="Jangka Waktu (Pertemuan)" path="jangkaWaktu">
-                 <n-input-number v-model:value="formValue.jangkaWaktu" placeholder="Please Input" style="width: 150px;" />
-              </n-form-item>
+              <n-grid :x-gap="24" :y-gap="0" :cols="7" style="align-items: center;">
+                <n-gi :span="2">
+                  <n-form-item label="Jangka Waktu (Pertemuan)" path="jangkaWaktu">
+                    <n-input-number v-model:value="formValue.jangkaWaktu" placeholder="8" style="width: 100%;" />
+                  </n-form-item>
+                </n-gi>
+                <n-gi :span="5">
+                  <div class="days">
+                    <button
+                      v-for="(day, index) in daysOptions"
+                      :key="index"
+                      :class="['day-button', { active: daysValue.includes(day) }]"
+                      type="button"
+                      @click="toggleDay(day)"
+                    >
+                      {{ day }}
+                    </button>
+                  </div>
+                </n-gi>
+              </n-grid>
     
-              <n-checkbox-group v-model:value="daysValue">
-                <n-space>
-                  <n-checkbox value="Senin" label="Senin" />
-                  <n-checkbox value="Selasa" label="Selasa" />
-                  <n-checkbox value="Rabu" label="Rabu" />
-                  <n-checkbox value="Kamis" label="Kamis" />
-                  <n-checkbox value="Jum'at" label="Jum'at" />
-                  <n-checkbox value="Sabtu" label="Sabtu" />
-                </n-space>
-              </n-checkbox-group>
-            
               <div v-if="formValue.tipe === 'Privat/Kelompok'">
                 <n-divider class="divider" />
                 <n-space vertical size="large">
@@ -154,11 +160,19 @@
               <li>Honor Tutor merupakan 70% dari biaya total program.</li>
             </ul>
           </div>
+
+          <n-divider class="divider" />
     
-          <n-space justify="start" size="medium" style="margin-top: 20px;">
-            <n-button>Batal</n-button>
-            <n-button type="primary">Buat Program</n-button>
-          </n-space>
+          <div class="button">
+        <butPrimerNormal
+          @click="handleValidateClick"
+          label="Buat Program"
+        />
+        <butSecondNormal
+          @click="handleBackClick"
+          label="Batal"
+        />
+      </div>
     
         </n-space>
       </n-card>
@@ -169,6 +183,8 @@
 
 <script setup>
 import { ref } from 'vue';
+import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 import { 
   NCard, NSpace, NForm, NFormItem, NInput, NSelect, NTimePicker, NInputNumber, 
   NGrid, NGi, NCheckboxGroup, NCheckbox, NButton, NDivider, NH2, NH3, NDatePicker
@@ -225,6 +241,16 @@ const durasiOptions = ref([
   { label: '90 Menit', value: 90 },
   { label: '120 Menit', value: 120 },
 ]);
+
+const daysOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
+
+function toggleDay(day) {
+  if (daysValue.value.includes(day)) {
+    daysValue.value = daysValue.value.filter(d => d !== day);
+  } else {
+    daysValue.value.push(day);
+  }
+}
 </script>
 
 <style scoped>
@@ -247,7 +273,38 @@ const durasiOptions = ref([
 .divider {
   border-top: 1px solid #FEEBD9 !important;
 }
+
+.button{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
 .catatan{
   color: #FB8312;
+}
+
+.days {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.day-button {
+  border: 1.5px solid #154484;
+  background: #fff;
+  color: #154484;
+  border-radius: 999px;
+  padding: 6px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+.day-button.active,
+.day-button:hover {
+  background: #eaf2fb;
+  color: #154484;
+  border-color: #154484;
+  font-weight: 600;
 }
 </style>

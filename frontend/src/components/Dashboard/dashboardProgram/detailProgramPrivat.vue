@@ -48,7 +48,7 @@
                     </div>
                   </div>
 
-                  <n-button type="primary" strong>Edit</n-button>
+                  <n-button type="primary" strong @click="handleEdit">Edit</n-button>
                 </n-space>
               </n-gi>
             </n-grid>
@@ -88,6 +88,7 @@ import {
   NCard, NGrid, NGi, NSpace, NTag, NText, NButton, NFlex,
   NDataTable, NList, NListItem, NConfigProvider, NDescriptions, NDescriptionsItem
 } from 'naive-ui';
+import { useRouter, useRoute } from 'vue-router';
 
 // Helper untuk format mata uang
 const formatCurrency = (value) => {
@@ -153,6 +154,15 @@ const tableData = [
     honorTotal: 1204000
   }
 ];
+
+const router = useRouter();
+const route = useRoute();
+
+const handleEdit = () => {
+  // id diambil dari params (misal :id pada route)
+  const id = route.params.id;
+  router.push(`/dashboardadmin/programadmin/editprogram/${id}`);
+};
 </script>
 
 <style scoped>

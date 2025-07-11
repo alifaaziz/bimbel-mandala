@@ -1,126 +1,146 @@
 <template>
-  <n-card content-style="padding: 24px;">
-    <template #header>
-      <h2 class="form-title">Edit Program</h2>
-    </template>
-
-    <n-form ref="formRef" :model="formModel">
-      <h3 class="section-title">Detail Program</h3>
-      <n-grid :x-gap="24" :y-gap="12" :cols="2" responsive="screen" item-responsive>
-        
-        <n-form-item-gi :span="2" label="Nama Program" path="programName">
-          <n-input v-model="formModel.programName" placeholder="Tuliskan nama program" />
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Tutor" path="tutorId">
-          <n-select v-model="formModel.tutorId" :options="tutorOptions" />
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Jenjang" path="level">
-          <n-select v-model="formModel.level" :options="levelOptions" />
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Tipe" path="type">
-          <n-select v-model="formModel.type" :options="typeOptions" />
-        </n-form-item-gi>
-
-        <n-form-item-gi label="JAM" path="startTime">
-          <n-time-picker v-model="formModel.startTime" style="width: 100%;" />
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Durasi per sesi" path="duration">
-            <n-input-number v-model="formModel.duration" :show-button="false" style="width: 100%;">
-                <template #suffix>Menit</template>
-            </n-input-number>
-        </n-form-item-gi>
-        
-        <n-form-item-gi label="Jangka Waktu" path="durationTerm">
-          <n-select v-model="formModel.durationTerm" :options="durationTermOptions" />
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Paket" path="packageType">
-          <n-select v-model="formModel.packageType" :options="packageOptions" />
-        </n-form-item-gi>
-
-
-        <n-form-item-gi :span="2" label="Pilih Hari" path="days">
-          <n-checkbox-group v-model="formModel.days" class="day-selector">
-            <n-space>
-              <n-checkbox value="Senin" label="Senin" />
-              <n-checkbox value="Selasa" label="Selasa" />
-              <n-checkbox value="Rabu" label="Rabu" />
-              <n-checkbox value="Kamis" label="Kamis" />
-              <n-checkbox value="Jumat" label="Jum'at" />
-              <n-checkbox value="Sabtu" label="Sabtu" />
-            </n-space>
-          </n-checkbox-group>
-        </n-form-item-gi>
-      </n-grid>
-
-      <n-divider />
-      <h3 class="section-title">Biaya</h3>
-      <n-grid :x-gap="24" :y-gap="12" :cols="2" responsive="screen" item-responsive>
-        
-        <n-form-item-gi label="Privat" path="costs.private">
-          <n-input-number v-model="formModel.costs.private" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-            <template #prefix>Rp</template>
-          </n-input-number>
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Kelompok 2 siswa" path="costs.group2">
-          <n-input-number v-model="formModel.costs.group2" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-            <template #prefix>Rp</template>
-          </n-input-number>
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Kelompok 3 siswa" path="costs.group3">
-          <n-input-number v-model="formModel.costs.group3" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-            <template #prefix>Rp</template>
-          </n-input-number>
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Kelompok 4 siswa" path="costs.group4">
-          <n-input-number v-model="formModel.costs.group4" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-            <template #prefix>Rp</template>
-          </n-input-number>
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Kelompok 5 siswa" path="costs.group5">
-          <n-input-number v-model="formModel.costs.group5" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-            <template #prefix>Rp</template>
-          </n-input-number>
-        </n-form-item-gi>
-
-        <n-form-item-gi label="Diskon" path="discount">
-          <n-input-number v-model="formModel.discount" :show-button="false" style="width: 100%;">
-            <template #suffix>%</template>
-          </n-input-number>
-        </n-form-item-gi>
-      </n-grid>
-
-      <n-divider />
-      <n-alert :show-icon="false" type="info" class="notes-alert">
-        <h4 class="notes-title">Catatan:</h4>
-        <n-ul>
-            <n-li>Biaya siswa mengacu pada paket privat. Biaya Kelompok otomatis dibuat menjadi 80% biaya siswa/anak paket diatasnya. Contoh biaya per anak paket kelompok 3 siswa adalah 80% biaya anak privat dan biaya siswa/anak paket kelompok 5 siswa adalah 80% biaya siswa/anak paket kelompok 3 siswa.</n-li>
-            <n-li>Biaya siswa tipe program kelas disamaratakan tanpa melihat jumlah siswa.</n-li>
-            <n-li>Honor Tutor merupakan 70% dari biaya total program.</n-li>
-        </n-ul>
-      </n-alert>
+  <div class="form-container">
+    <n-card class="form-card" content-style="padding: 24px;">
+        <h1 class="headerb1">Edit Program</h1>
+        <n-divider class="divider" />
       
-      <n-space justify="end" style="margin-top: 24px;">
-        <n-button ghost @click="handleCancelEdit">Batal Edit</n-button>
-        <n-button type="primary" @click="handleApplyChanges">Terapkan</n-button>
-      </n-space>
 
-    </n-form>
-  </n-card>
+      <n-form ref="formRef" :model="formModel">
+        <h2 class="section-title">Detail Program</h2>
+        
+        <n-grid :cols="1" :y-gap="12">
+          <n-form-item-gi label="Nama Program" path="programName">
+            <n-input v-model:value="formModel.programName" placeholder="Tuliskan nama program" />
+          </n-form-item-gi>
+        </n-grid>
+
+        <n-grid :cols="3" :x-gap="24" :y-gap="12" responsive="screen" item-responsive>
+          <n-form-item-gi label="Tutor" path="tutorId">
+            <n-select v-model:value="formModel.tutorId" :options="tutorOptions" />
+          </n-form-item-gi>
+
+          <n-form-item-gi label="Jenjang" path="level">
+            <n-select v-model:value="formModel.level" :options="levelOptions" />
+          </n-form-item-gi>
+
+          <n-form-item-gi label="Tipe" path="type">
+            <n-select v-model:value="formModel.type" :options="typeOptions" />
+          </n-form-item-gi>
+        </n-grid>
+        
+        <n-grid :cols="2" :x-gap="24" :y-gap="12" responsive="screen" item-responsive>
+          <n-form-item-gi label="JAM" path="startTime">
+            <n-time-picker v-model:value="formModel.startTime" style="width: 100%;" />
+          </n-form-item-gi>
+          
+          <n-form-item-gi label="Durasi per sesi" path="duration">
+            <n-input-number v-model:value="formModel.duration" :show-button="false" style="width: 100%;">
+              <template #suffix>Menit</template>
+            </n-input-number>
+          </n-form-item-gi>
+        </n-grid>
+
+        <n-grid :cols="2" :x-gap="24" :y-gap="12" responsive="screen" item-responsive>
+          <n-form-item-gi label="Jangka Waktu" path="durationTerm">
+            <n-select v-model:value="formModel.durationTerm" :options="durationTermOptions" />
+          </n-form-item-gi>
+
+          <n-form-item-gi label="Paket" path="packageType">
+            <n-select v-model:value="formModel.packageType" :options="packageOptions" />
+          </n-form-item-gi>
+        </n-grid>
+
+        <n-grid :cols="1" :y-gap="12">
+          <n-form-item-gi label="Hari Aktif Mengajar" path="days" class="col-span-6">
+            <div class="hari-mengajar">
+              <div class="days">
+                <button
+                  v-for="(day, index) in daysOptions"
+                  :key="index"
+                  :class="['day-button', { active: formModel.days.includes(day) }]"
+                  type="button"
+                  @click="toggleDay(day)"
+                >
+                  {{ day }}
+                </button>
+              </div>
+            </div>
+          </n-form-item-gi>
+        </n-grid>
+
+        <n-divider class="divider" />
+        <h2 class="section-title">Biaya</h2>
+        <n-grid :x-gap="24" :y-gap="12" :cols="2" responsive="screen" item-responsive>
+          
+          <n-form-item-gi label="Privat" path="costs.private">
+            <n-input-number v-model:value="formModel.costs.private" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+              <template #prefix>Rp</template>
+            </n-input-number>
+          </n-form-item-gi>
+
+          <n-form-item-gi label="Kelompok 2 siswa" path="costs.group2">
+            <n-input-number v-model:value="formModel.costs.group2" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+              <template #prefix>Rp</template>
+            </n-input-number>
+          </n-form-item-gi>
+
+          <n-form-item-gi label="Kelompok 3 siswa" path="costs.group3">
+            <n-input-number v-model:value="formModel.costs.group3" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+              <template #prefix>Rp</template>
+            </n-input-number>
+          </n-form-item-gi>
+
+          <n-form-item-gi label="Kelompok 4 siswa" path="costs.group4">
+            <n-input-number v-model:value="formModel.costs.group4" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+              <template #prefix>Rp</template>
+            </n-input-number>
+          </n-form-item-gi>
+
+          <n-form-item-gi label="Kelompok 5 siswa" path="costs.group5">
+            <n-input-number v-model:value="formModel.costs.group5" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+              <template #prefix>Rp</template>
+            </n-input-number>
+          </n-form-item-gi>
+
+          <n-form-item-gi label="Diskon" path="discount">
+            <n-input-number v-model:value="formModel.discount" :show-button="false" style="width: 100%;">
+              <template #suffix>%</template>
+            </n-input-number>
+          </n-form-item-gi>
+        </n-grid>
+
+        <n-divider class="divider" />
+        <div class="catatan">
+          <h3 class="bodysb1">Catatan:</h3>
+          <ul style="padding-left: 20px; line-height: 1.6;">
+            <li>Paket Privat/Kelompok: Biaya siswa mengacu pada paket privat. Biaya Kelompok otomatis dibuat menjadi 80% biaya siswa/anak paket diatasnya. Contoh biaya per anak paket kelompok 3 siswa adalah 80% biaya anak privat dan biaya siswa/anak paket kelompok 5 siswa adalah 80% biaya siswa/anak paket kelompok 3 siswa.</li>
+            <li>Paket Kelas: Biaya siswa tipe program kelas disamaratakan tanpa melihat jumlah siswa.</li>
+            <li>Honor Tutor merupakan 70% dari biaya total program.</li>
+          </ul>
+        </div>
+        
+        <n-divider class="divider" />
+        <div class="button">
+        <butPrimerNormal
+          @click="handleValidateClick"
+          label="Terapkan"
+        />
+        <butSecondNormal
+          @click="handleBackClick"
+          label="Batal Edit"
+        />
+      </div>
+
+      </n-form>
+    </n-card>
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useMessage } from 'naive-ui';
-// Impor semua komponen yang digunakan
+import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 import { 
   NCard, NForm, NFormItemGi, NGrid, NInput, NSelect, NTimePicker, NInputNumber,
   NCheckboxGroup, NCheckbox, NSpace, NDivider, NAlert, NUl, NLi, NButton
@@ -131,7 +151,7 @@ const formRef = ref(null);
 
 // Model data yang sudah terisi untuk simulasi form edit
 const formModel = ref({
-  programName: 'Matematika SMA Unggulan',
+  programName: null,
   tutorId: 'dendy_wan',
   level: 'SMA',
   type: 'private_group',
@@ -139,7 +159,7 @@ const formModel = ref({
   duration: 120,
   durationTerm: '6m',
   packageType: '3x_week',
-  days: ['Senin', 'Rabu', 'Jumat'],
+  days: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
   costs: {
     private: 580000,
     group2: 980000,
@@ -167,6 +187,17 @@ const packageOptions = [
     { label: '3 Kali Seminggu', value: '3x_week' },
 ];
 
+const daysOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
+
+
+const toggleDay = (day) => {
+  const idx = formModel.value.days.indexOf(day);
+  if (idx === -1) {
+    formModel.value.days.push(day);
+  } else {
+    formModel.value.days.splice(idx, 1);
+  }
+};
 
 // Fungsi untuk format mata uang
 const formatCurrency = (value) => {
@@ -181,8 +212,14 @@ const parseCurrency = (input) => {
 // Fungsi untuk tombol
 const handleApplyChanges = (e) => {
   e.preventDefault();
-  message.success('Perubahan berhasil diterapkan (lihat console)');
-  console.log('Updated Form Data:', formModel.value);
+  formRef.value?.validate((errors) => {
+    if (!errors) {
+      message.success('Perubahan berhasil diterapkan (lihat console)');
+      console.log('Updated Form Data:', formModel.value);
+    } else {
+      message.error('Harap isi semua field yang wajib');
+    }
+  });
 };
 
 const handleCancelEdit = () => {
@@ -191,55 +228,79 @@ const handleCancelEdit = () => {
 </script>
 
 <style scoped>
-.form-title {
-    margin: 0;
-    font-weight: 700;
-    color: #1e3a8a;
+.form-container {
+  width: 100%;
+  padding: 24px;
+  overflow-y: auto;
+  background-color: #0B2343;
+}
+
+.form-card {
+  border-radius: 8px;
+  background-color: #fff;
+  height: fit-content;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+.headerb1 {
+  color: #154484;
+}
+.divider {
+  border-top: 1px solid #FEEBD9 !important;
 }
 .section-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
+  color: #154484;
+  margin-bottom: 1rem;
 }
 .n-divider {
   margin-top: 24px;
   margin-bottom: 24px;
 }
-.notes-alert {
-    background-color: #fefce8 !important; /* light yellow */
+
+.hari-mengajar {
+  display: flex;
+  flex-direction: column;
 }
-.notes-title {
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #854d0e;
+
+.days {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
-.notes-alert .n-ul {
-    color: #854d0e;
-    font-size: 0.9rem;
-}
-.notes-alert .n-ul li::marker {
-  color: #f97316;
-}
-/* Styling Checkbox menjadi Tombol */
-.day-selector :deep(.n-checkbox) {
-  display: none;
-}
-.day-selector :deep(.n-checkbox-box-wrapper) {
-  padding: 6px 16px;
-  border: 1px solid #dcdfe6;
-  border-radius: 6px;
+
+.day-button {
+  border: 1.5px solid #154484;
+  background: #fff;
+  color: #154484;
+  border-radius: 999px;
+  padding: 6px 20px;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 0.3s;
-  background-color: #fff;
+  transition: all 0.2s;
+  outline: none;
 }
-.day-selector :deep(.n-checkbox--checked .n-checkbox-box-wrapper) {
-  background-color: #1e3a8a;
-  color: #fff;
-  border-color: #1e3a8a;
+
+.day-button.active,
+.day-button:hover {
+  background: #eaf2fb;
+  color: #154484;
+  border-color: #154484;
+  font-weight: 600;
 }
-.day-selector :deep(.n-checkbox:not(.n-checkbox--checked):hover .n-checkbox-box-wrapper) {
-    border-color: #1e3a8a;
-    color: #1e3a8a;
+
+.catatan {
+  color: #FB8312;
+}
+
+.button{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.bodysb1 {
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #333;
 }
 </style>
