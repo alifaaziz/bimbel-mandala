@@ -29,8 +29,6 @@ async function reschedule(req, res) {
   const { id: scheduleId } = req.params;
   const { newDate } = req.body;
 
-  console.log(`New Date: ${newDate}`);
-
   const loggedInUser = res.locals.user;
   const isAdmin = loggedInUser.role === 'admin';
   
@@ -51,7 +49,8 @@ async function reschedule(req, res) {
 async function getClosestSchedules(req, res) {
   const page = parseInt(req.query.page) || 1; 
   const limit = parseInt(req.query.limit) || 10; 
-  const schedule = await ScheduleService.getClosestSchedules(page, limit);
+  const search = req.query.search || ''; 
+  const schedule = await ScheduleService.getClosestSchedules(page, limit, search);
   res.status(200).json({ data: schedule });
 }
 

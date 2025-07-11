@@ -55,6 +55,8 @@ import DetailProgramPrivat from '@/components/Dashboard/dashboardProgram/detailP
 import EditProgramForm from '@/components/Dashboard/dashboardProgram/EditProgramForm.vue';
 
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
+import DashboardBiaya from '@/components/Dashboard/dashboardCatatanBiaya/DashboardBiaya.vue';
+import DetailProgramSelesai from '@/components/Dashboard/dashboardCatatanBiaya/DetailProgramSelesai.vue';
 
 import Error404 from '@/components/error404.vue';
 import Error403 from '@/components/error403.vue';
@@ -292,7 +294,7 @@ const routes = [
             component: JadwalAdminView
           },
           {
-            path: 'detailjadwalaktif/:id',
+            path: 'detailjadwalaktif/:slug',
             name: 'DetailJadwalAktif',
             component: DetailJadwalAktif
           },
@@ -302,6 +304,18 @@ const routes = [
         path: 'catatanbiaya',
         name: 'CatatanBiaya',
         component: CatatanBiaya,
+        children: [
+          {
+            path: '',
+            name: 'DashboardBiaya',
+            component: DashboardBiaya
+          },
+          {
+            path: 'detailprogramselesai',
+            name: 'DetailProgramSelesai',
+            component: DetailProgramSelesai
+          },
+        ]
       },
     ]
   }

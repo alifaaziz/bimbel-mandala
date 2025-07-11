@@ -209,7 +209,7 @@ onMounted(async () => {
     formValue.value.user.pelajaran = data.subjects || "";
 
     if (data.photo) {
-      photoUrl.value = `http://localhost:3000${data.photo}`;
+      photoUrl.value = `http://localhost:3000/public${data.photo}`;
     } else {
       photoUrl.value = TutorDefault;
     }

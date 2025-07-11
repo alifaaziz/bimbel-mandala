@@ -5,7 +5,7 @@ const mkdirSync = jest.fn();
 jest.unstable_mockModule('fs', () => ({
   default: { existsSync, mkdirSync },
 }));
-const resolve = jest.fn(() => '/mocked/public');
+const resolve = jest.fn(() => '/mocked/public/temp');
 const extname = jest.fn((filename) => '.jpg');
 jest.unstable_mockModule('path', () => ({
   default: { resolve, extname },
@@ -21,10 +21,10 @@ const { upload } = await import('../upload.js');
 const multer = (await import('multer')).default;
 
 describe('upload middleware', () => {
-  it('should create public directory if not exists', () => {
-    expect(resolve).toHaveBeenCalledWith('public');
-    expect(existsSync).toHaveBeenCalledWith('/mocked/public');
-    expect(mkdirSync).toHaveBeenCalledWith('/mocked/public', { recursive: true });
+  it('should create public/temp directory if not exists', () => {
+    expect(resolve).toHaveBeenCalledWith('public', 'temp');
+    expect(existsSync).toHaveBeenCalledWith('/mocked/public/temp');
+    expect(mkdirSync).toHaveBeenCalledWith('/mocked/public/temp', { recursive: true });
   });
 
   it('should configure multer with correct storage', () => {
@@ -42,17 +42,17 @@ describe('upload middleware', () => {
     expect(cb.mock.calls[0][1]).toMatch(/^temp-\d+\.jpg$/);
   });
 
-  it('should call cb with publicDir in destination', () => {
+  it('should call cb with tempDir in destination', () => {
     const storage = multer.diskStorage.mock.calls[0][0];
     const cb = jest.fn();
     const file = { originalname: 'test.jpg' };
 
     storage.destination({}, file, cb);
 
-    expect(cb).toHaveBeenCalledWith(null, '/mocked/public');
+    expect(cb).toHaveBeenCalledWith(null, '/mocked/public/temp');
   });
   
-  it('should NOT create public directory if already exists', async () => {
+  it('should NOT create public/temp directory if already exists', async () => {
     existsSync.mockReturnValueOnce(true);
 
     mkdirSync.mockClear();
@@ -72,7 +72,7 @@ describe('upload middleware', () => {
 
     const { upload: upload2 } = await import('../upload.js');
 
-    expect(existsSync).toHaveBeenCalledWith('/mocked/public');
+    expect(existsSync).toHaveBeenCalledWith('/mocked/public/temp');
     expect(mkdirSync).not.toHaveBeenCalled();
   });
 });

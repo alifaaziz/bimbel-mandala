@@ -160,7 +160,7 @@ function statusLabel(status: string) {
   <div class="card-container" v-if="schedule">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `http://localhost:3000${schedule.photo}` : '/tutor/Tutor_Default.png'"
+      :src="schedule.photo ? `http://localhost:3000/public${schedule.photo}` : '/tutor/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">

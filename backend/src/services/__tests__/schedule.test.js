@@ -216,12 +216,6 @@ describe('ScheduleService', () => {
   });
 
   describe('getClosestSchedules', () => {
-    it('throws if no schedules found', async () => {
-      prisma.schedule.findMany.mockResolvedValueOnce([]);
-      prisma.schedule.count.mockResolvedValueOnce(0);
-      await expect(ScheduleService.getClosestSchedules()).rejects.toThrow('No schedules found');
-    });
-
     it('returns closest schedules successfully', async () => {
       const now = new Date();
       prisma.schedule.findMany.mockResolvedValueOnce([
@@ -1413,6 +1407,231 @@ describe('ScheduleService', () => {
 
     it('returns name with Bu if gender is not Male', () => {
       expect(ScheduleService.getTutorName({ gender: 'Female', user: { name: 'Siti' } })).toBe('Bu Siti');
+    });
+  });
+
+  describe('getClosestSchedules', () => {
+    it('returns closest schedules successfully', async () => {
+      const now = new Date();
+      prisma.schedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'schedule1',
+          class: {
+            code: 'CLS123',
+            order: {},
+            tutor: { name: 'Tutor A', tutors: [{ gender: 'Male' }] }
+          },
+          meet: 1,
+          date: now,
+          status: 'terjadwal',
+          slug: 'schedule-slug'
+        }
+      ]);
+      prisma.schedule.count.mockResolvedValueOnce(1);
+      const result = await ScheduleService.getClosestSchedules();
+      expect(result.data[0]).toMatchObject({
+        id: 'schedule1',
+        classCode: 'CLS123',
+        tutorName: 'Pak Tutor A',
+        status: 'terjadwal',
+        slug: 'schedule-slug'
+      });
+      expect(result.total).toBe(1);
+    });
+
+    it('returns tutorName with prefix if tutor and gender exist', async () => {
+      const now = new Date();
+      prisma.schedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'schedule1',
+          class: {
+            code: 'CLS123',
+            order: {},
+            tutor: { name: 'Udin', tutors: [{ gender: 'Male' }] }
+          },
+          meet: 1,
+          date: now,
+          status: 'terjadwal',
+          slug: 'slug'
+        }
+      ]);
+      prisma.schedule.count.mockResolvedValueOnce(1);
+      const result = await ScheduleService.getClosestSchedules();
+      expect(result.data[0].tutorName).toBe('Pak Udin');
+    });
+    
+    it('returns tutorName with prefix Bu if gender is not Male', async () => {
+      const now = new Date();
+      prisma.schedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'schedule2',
+          class: {
+            code: 'CLS124',
+            order: {},
+            tutor: { name: 'Siti', tutors: [{ gender: 'Female' }] }
+          },
+          meet: 2,
+          date: now,
+          status: 'terjadwal',
+          slug: 'slug'
+        }
+      ]);
+      prisma.schedule.count.mockResolvedValueOnce(1);
+      const result = await ScheduleService.getClosestSchedules();
+      expect(result.data[0].tutorName).toBe('Bu Siti');
+    });
+    
+    it('returns tutorName with prefix Bu if tutors array is empty', async () => {
+      const now = new Date();
+      prisma.schedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'schedule3',
+          class: {
+            code: 'CLS125',
+            order: {},
+            tutor: { name: 'Ani', tutors: [] }
+          },
+          meet: 3,
+          date: now,
+          status: 'terjadwal',
+          slug: 'slug'
+        }
+      ]);
+      prisma.schedule.count.mockResolvedValueOnce(1);
+      const result = await ScheduleService.getClosestSchedules();
+      expect(result.data[0].tutorName).toBe('Bu Ani');
+    });
+    
+    it('returns tutorName null if tutor does not exist', async () => {
+      const now = new Date();
+      prisma.schedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'schedule4',
+          class: {
+            code: 'CLS126',
+            order: {},
+            tutor: null
+          },
+          meet: 4,
+          date: now,
+          status: 'terjadwal',
+          slug: 'slug'
+        }
+      ]);
+      prisma.schedule.count.mockResolvedValueOnce(1);
+      const result = await ScheduleService.getClosestSchedules();
+      expect(result.data[0].tutorName).toBeNull();
+    });
+
+    it('returns null for slug if schedule.slug is missing', async () => {
+        const now = new Date();
+        prisma.schedule.findMany.mockResolvedValueOnce([
+            {
+            id: 'schedule2',
+            class: {
+                code: 'CLS124',
+                order: {},
+                tutor: { name: 'Udin', tutors: [{ gender: 'Male' }] }
+            },
+            meet: 2,
+            date: now,
+            status: 'terjadwal'
+            // slug tidak ada
+            }
+        ]);
+        prisma.schedule.count.mockResolvedValueOnce(1);
+        const result = await ScheduleService.getClosestSchedules();
+        expect(result.data[0].slug).toBeNull();
+    });
+
+    it('returns filtered schedules by search (class code)', async () => {
+      const now = new Date();
+      prisma.schedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'schedule1',
+          class: {
+            code: 'CLS123',
+            order: {
+              bimbelPackage: { name: 'FOKUS UTBK', duration: 90 },
+              groupType: { type: 'kelas' }
+            },
+            tutor: { name: 'Dendy', tutors: [{ gender: 'Male' }] }
+          },
+          meet: 1,
+          date: now,
+          status: 'terjadwal',
+          slug: 'slug1'
+        }
+      ]);
+      prisma.schedule.count.mockResolvedValueOnce(1);
+
+      const result = await ScheduleService.getClosestSchedules(1, 10, 'CLS123');
+      expect(result.data[0]).toMatchObject({
+        classCode: 'CLS123',
+        packageName: 'FOKUS UTBK',
+        tutorName: 'Pak Dendy'
+      });
+      expect(result.total).toBe(1);
+    });
+
+    it('returns filtered schedules by search (package name)', async () => {
+      const now = new Date();
+      prisma.schedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'schedule2',
+          class: {
+            code: 'CLS456',
+            order: {
+              bimbelPackage: { name: 'FOKUS UTBK', duration: 90 },
+              groupType: { type: 'kelas' }
+            },
+            tutor: { name: 'Dendy', tutors: [{ gender: 'Male' }] }
+          },
+          meet: 2,
+          date: now,
+          status: 'terjadwal',
+          slug: 'slug2'
+        }
+      ]);
+      prisma.schedule.count.mockResolvedValueOnce(1);
+
+      const result = await ScheduleService.getClosestSchedules(1, 10, 'FOKUS');
+      expect(result.data[0]).toMatchObject({
+        packageName: 'FOKUS UTBK',
+        classCode: 'CLS456',
+        tutorName: 'Pak Dendy'
+      });
+      expect(result.total).toBe(1);
+    });
+
+    it('returns filtered schedules by search (tutor name)', async () => {
+      const now = new Date();
+      prisma.schedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'schedule3',
+          class: {
+            code: 'CLS789',
+            order: {
+              bimbelPackage: { name: 'Matematika', duration: 90 },
+              groupType: { type: 'privat' }
+            },
+            tutor: { name: 'Dendy', tutors: [{ gender: 'Male' }] }
+          },
+          meet: 3,
+          date: now,
+          status: 'terjadwal',
+          slug: 'slug3'
+        }
+      ]);
+      prisma.schedule.count.mockResolvedValueOnce(1);
+
+      const result = await ScheduleService.getClosestSchedules(1, 10, 'Dendy');
+      expect(result.data[0]).toMatchObject({
+        tutorName: 'Pak Dendy',
+        classCode: 'CLS789',
+        packageName: 'Matematika'
+      });
+      expect(result.total).toBe(1);
     });
   });
 });

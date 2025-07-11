@@ -287,12 +287,23 @@ async function updateScheduleInformation(scheduleId, information) {
  * @returns {Promise<Object>} The paginated closest schedules, including total count and current page.
  * @throws {Error} If there are no schedules.
  */
-async function getClosestSchedules(page = 1, limit = 10) {
-  const offset = (page - 1) * limit; // Hitung offset berdasarkan page dan limit
+async function getClosestSchedules(page = 1, limit = 10, search = '') {
+  const offset = (page - 1) * limit;
+
+  const whereClause = {
+    date: { gte: new Date() },
+    ...(search && {
+      OR: [
+        { class: { code: { contains: search } } }, 
+        { class: { order: { bimbelPackage: { name: { contains: search } } } } }, 
+        { class: { tutor: { name: { contains: search } } } } 
+      ]
+    })
+  };
 
   const [schedules, total] = await Promise.all([
     prisma.schedule.findMany({
-      where: { date: { gte: new Date() } }, // Ambil jadwal yang dimulai dari hari ini
+      where: whereClause,
       include: {
         class: {
           include: {
@@ -313,18 +324,17 @@ async function getClosestSchedules(page = 1, limit = 10) {
           }
         }
       },
-      orderBy: { date: 'asc' }, // Urutkan berdasarkan tanggal terdekat
-      skip: offset, // Gunakan offset untuk pagination
-      take: limit // Ambil jumlah data sesuai limit
+      orderBy: [
+        { date: 'asc' },
+        { id: 'asc' } 
+      ],
+      skip: offset,
+      take: limit
     }),
     prisma.schedule.count({
-      where: { date: { gte: new Date() } } // Hitung total jadwal yang tersedia
+      where: whereClause
     })
   ]);
-
-  if (!schedules || schedules.length === 0) {
-    throw new Error('No schedules found');
-  }
 
   const data = schedules.map(schedule => {
     const classData = schedule.class;

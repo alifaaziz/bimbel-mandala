@@ -77,7 +77,7 @@ describe('BimbelPackageService', () => {
       ]);
       mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(1);
 
-      const result = await BimbelPackageService.getAllBimbelPackages({ page: 1, pageSize: 10 });
+      const result = await BimbelPackageService.getAllBimbelPackages({ page: 1, pageSize: 10, search: 'Math' });
       expect(result.data[0]).toMatchObject({
         name: 'Math Package',
         tutorName: 'Tutor A',
@@ -86,6 +86,27 @@ describe('BimbelPackageService', () => {
         days: ['Senin']
       });
       expect(result.total).toBe(1);
+
+      // Pastikan query ke Prisma sesuai dengan search
+      expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            deletedAt: null,
+            OR: [
+              { name: { contains: 'Math' } },
+              {
+                user: {
+                  is: {
+                    name: { contains: 'Math' }
+                  }
+                }
+              }
+            ]
+          }),
+          skip: 0,
+          take: 10
+        })
+      );
     });
 
     it('should use default page=1 and pageSize=10 if not provided', async () => {

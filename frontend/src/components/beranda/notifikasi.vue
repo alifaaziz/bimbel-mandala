@@ -31,7 +31,7 @@ async function fetchNotifications() {
       read: item.viewed,
       createdAt: item.createdAt,
       photo: item.photo
-        ? (item.photo.startsWith('http') ? item.photo : `http://localhost:3000${item.photo}`)
+        ? (item.photo.startsWith('http') ? item.photo : `http://localhost:3000/public${item.photo}`)
         : 'http://localhost:3000/public/mandala.png',
       reason: item.reason,
       scheduleId: item.scheduleId

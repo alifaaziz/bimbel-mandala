@@ -1,58 +1,98 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue'
-
 import butSecondSmall from '@/components/dirButton/butSecondSmall.vue'
 import butPrimerSmall from '@/components/dirButton/butPrimerSmall.vue'
 
 const showRescheduleModal = ref(false)
-
 const rescheduleDate = ref('')
 const rescheduleTime = ref('')
 const showSuccessPopup = ref(false)
 
+const route = useRoute()
+const schedule = ref(null)
+const isLoading = ref(true)
+
 // Mapping status ke tipe tag Naive UI
 const tagTypeMap = {
-  active: 'success',
-  pending: 'warning',
-  cancelled: 'error',
-  completed: 'info'
+  terjadwal: 'success',
+  jadwal_ulang: 'warning'
 }
 
 // Fungsi untuk mengubah status menjadi label teks
 function statusLabel(status) {
   switch (status) {
-    case 'active':
+    case 'terjadwal':
       return 'Terjadwal'
-    case 'pending':
-      return 'Menunggu'
-    case 'cancelled':
-      return 'Dibatalkan'
-    case 'completed':
-      return 'Selesai'
+    case 'jadwal_ulang':
+      return 'Terjadwal Ulang'
     default:
       return 'Tidak Diketahui'
   }
 }
 
-// Data dummy jadwal
-const schedule = ref({
-  id: 1,
-  subject: 'Matematika Dasar',
-  tutor: 'Bapak Andi',
-  meetingNumber: 3,
-  status: 'active'
-})
+async function fetchScheduleDetail() {
+  const slug = route.params.slug
+  const token = localStorage.getItem('token')
+  if (!slug || !token) {
+    isLoading.value = false
+    return
+  }
+  try {
+    const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    if (res.ok) {
+      const result = await res.json()
+      schedule.value = result.data
+    } else {
+      schedule.value = null
+    }
+  } catch (e) {
+    schedule.value = null
+  }
+  isLoading.value = false
+}
+
+onMounted(fetchScheduleDetail)
 
 function handleReschedule() {
   if (!rescheduleDate.value || !rescheduleTime.value) {
     alert("Tanggal dan jam baru wajib diisi.");
     return;
   }
-  // Tutup modal pertama
-  showRescheduleModal.value = false
-  // Tampilkan popup sukses
-  showSuccessPopup.value = true
+  const token = localStorage.getItem('token');
+  if (!token || !schedule.value?.id) {
+    alert("Data tidak valid.");
+    return;
+  }
+  const id = schedule.value.id;
+
+  const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00`);
+
+  fetch(`http://localhost:3000/schedules/reschedule/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ newDate })
+  })
+    .then(async res => {
+      if (res.ok) {
+        showRescheduleModal.value = false;
+        showSuccessPopup.value = true;
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.message || "Gagal menjadwalkan ulang.");
+      }
+    })
+    .catch(() => {
+      alert("Terjadi kesalahan jaringan.");
+    });
 }
 
 function openRescheduleModal() {
@@ -63,23 +103,22 @@ function closeRescheduleModal() {
 }
 </script>
 
-
 <template>
   <div class="page-container">
-    <div class="detail-content">
+    <div class="detail-content" v-if="!isLoading && schedule">
       <h4 class="headerb1">Detail Jadwal Program</h4>
       <n-divider class="divider" />
       <div class="header-program">
         <img
           class="tutor-photo"
-          :src="'/tutor/Tutor_Default.png'"
+            :src="schedule.photo ? `http://localhost:3000/public${schedule.photo}` : '/tutor/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">
           <div class="header-section">
             <div>
-              <div class="subject headersb1">Matematika SMA</div>
-              <div class="tutor-name bodym2">Dendy Wan S.Pd</div>
+              <div class="subject headersb1">{{ schedule.packageName }} {{ schedule.level }}</div>
+              <div class="tutor-name bodym2">{{ schedule.tutorName }}</div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
               <n-tag
@@ -95,22 +134,22 @@ function closeRescheduleModal() {
           <div class="info-section bodyr2">
             <div class="info-row">
               <span class="label"><strong>Hari</strong></span>
-              <span class="value">: Kamis, 10 Juli 2025</span>
+              <span class="value">: {{ new Date(schedule.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
             </div>
             <div class="info-row">
               <span class="label"><strong>Pukul</strong></span>
-              <span class="value">: 15:00 WIB</span>
+              <span class="value">: {{ new Date(schedule.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB</span>
             </div>
             <div class="info-row">
               <span class="label"><strong>Durasi</strong></span>
-              <span class="value">: 120 menit</span>
+              <span class="value">: {{ schedule.duration }} menit</span>
             </div>
             <div class="info-row">
               <span class="label"><strong>Lokasi</strong></span>
-              <span class="value">: Jl. Taman Siswa No.114, Gunung Pati, Kota Semarang</span>
+              <span class="value">: {{ schedule.address }}</span>
             </div>
           </div>
-          <div class="meeting-link bodysb1">Pertemuan ke 12</div>
+          <div class="meeting-link bodysb1">Pertemuan ke {{ schedule.meet }}</div>
           <div class="button-group">
             <butPrimerNormal label="Jadwal Ulang" @click.stop="openRescheduleModal()" />
           </div>
@@ -119,23 +158,25 @@ function closeRescheduleModal() {
       <div class="detail-program">
         <div>
           <h4 class="bodysb2">Siswa</h4>
-          <p class="bodyr2">Arell Saverro Biyantoro, Alif Abdul Aziz, Rahaihan Muhammad</p>
+          <p class="bodyr2">
+            {{ schedule.studentName ? schedule.studentName.join(', ') : '-' }}
+          </p>
         </div>
       </div>
       <div class="detail-program">
         <div class="info-tutor">
           <h4 class="bodysb2">Informasi Tutor</h4>
-          <p class="bodyr2">Belum ada informasi dari tutor.</p>
+          <p class="bodyr2">{{ schedule.info || 'Belum ada informasi dari tutor.' }}</p>
         </div>
         <div class="detail-kontak">
           <h4 class="bodysb2">Kontak</h4>
           <div class="info-row">
             <span class="label-detail">No. WhatsApp Tutor</span>
-            <span class="value">: 08xxxxxxxxx</span>
+            <span class="value">: {{ schedule.tutorPhone || '-' }}</span>
           </div>
           <div class="info-row">
             <span class="label-detail">E-mail tutor</span>
-            <span class="value">: dendywan@gmail.com</span>
+            <span class="value">: {{ schedule.tutorEmail || '-' }}</span>
           </div>
           <div class="info-row">
             <span class="label-detail">No. WhatsApp Admin</span>
@@ -143,6 +184,12 @@ function closeRescheduleModal() {
           </div>
         </div>
       </div>
+    </div>
+    <div v-else-if="isLoading" class="detail-content">
+      <p>Loading...</p>
+    </div>
+    <div v-else class="detail-content">
+      <p>Jadwal tidak ditemukan.</p>
     </div>
   </div>
   <!-- Popup Jadwal Ulang -->
@@ -152,8 +199,11 @@ function closeRescheduleModal() {
         <h3 class="headersb2">Jadwal Ulang</h3>
         <p class="bodyr3" style="margin-bottom: 16px;">
           Pilih tanggal dan jam baru untuk:<br>
-          <strong>Kamis, 10 Juli 2025</strong> bersama Dendy Wan S.Pd<br>
-          <span>Pertemuan ke 12</span>
+          <strong>
+            {{ schedule ? new Date(schedule.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '' }}
+          </strong>
+          bersama {{ schedule ? schedule.tutorName : '' }}<br>
+          <span>Pertemuan ke {{ schedule ? schedule.meet : '' }}</span>
         </p>
         <div style="margin-bottom: 12px;">
           <label class="bodym3" for="reschedule-date" style="display:block; margin-bottom:4px;">Tanggal Baru</label>
@@ -244,6 +294,9 @@ function closeRescheduleModal() {
 }
 .divider {
   border-top: 1px solid #FEEBD9 !important;
+}
+.headersb1 {
+  color: #154484;
 }
 .info-section {
   display: flex;

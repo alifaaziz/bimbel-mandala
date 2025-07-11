@@ -1,10 +1,9 @@
 <script setup>
-import DashboardBiaya from './DashboardBiaya.vue';
 </script>
 
 <template>
     <div class="main-content">
-        <DashboardBiaya />
+        <router-view />
     </div>
 </template>
 

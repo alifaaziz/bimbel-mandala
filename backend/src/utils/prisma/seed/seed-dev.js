@@ -535,7 +535,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMP',
             description: 'Experienced tutor in Mathematics, once guided a math competition at the rt level in mijen sub-district. hardworking and responsive.',
-            photo: '/public/1.png'
+            photo: '/tutors/1.png'
         },
         {
             id: "019618a1-68a4-76ba-97fe-accd364715e8",
@@ -550,7 +550,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in English, once guided an English competition at the rt level in tembalang sub-district. hardworking and responsive.',
-            photo: '/public/2.png'
+            photo: '/tutors/2.png'
         },
         {
             id: "0196b294-4791-7688-b84e-d445b3c179a7",
@@ -565,7 +565,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Chemistry, once guided a chemistry competition at the rt level in tembalang sub-district. hardworking and responsive.',
-            photo: '/public/4.png'
+            photo: '/tutors/4.png'
         },
         {
             id: "0196b294-4791-7159-8bfe-a78b6cb6d210",
@@ -580,7 +580,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Physics, once guided a physics competition at the rt level in tembalang sub-district. hardworking and responsive.',
-            photo: '/public/3.png'
+            photo: '/tutors/3.png'
         },
         {
             id: "0196b294-4791-7793-9e50-871941b175a0",
@@ -1212,154 +1212,154 @@ async function main() {
             userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa",// Su Yon Oh
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "019618a1-68a4-7d40-bcf4-ed7d4e8305ff",
             userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",// So Lie Kien
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "019618a1-68a4-725a-bd3d-e62956fbd79b",
             userId: "019618a1-68a4-7742-9471-2548f7726e86",// Ma Tor Nu Won
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0195c5fa-413e-7927-afed-d65683fb14c0",
             userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "019618a1-68a4-7bff-a08a-255d2635db95",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa", // Venita S.Pd
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7c97-bfed-3d6e3e640449", // ID unik
             userId: "0196b294-4791-7c97-bfed-3d6e3e640448", // Michelle Chloe
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7510-a96a-db04d94dfbde", // ID unik
             userId: "0196b294-4791-7510-a96a-db04d94dfbdd", // Diana Wong
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "019780d6-fa98-7447-9fce-7a7b2eee0ff7", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b1", // Adi Nugroho
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14b3", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b2", // Sari Utami
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14b4", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b3", // Rudi Santoso
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14b5", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b4", // Lina Agustina
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "019780d5-a8ba-7c7f-9fec-224d26300039", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b5", // Budi Hartono
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "019780d5-e394-7239-9ca6-3ae5c6bdb2a9", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b6", // Maya Putri
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "019780b5-1d07-797a-ae32-20936b8b5767", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b7", // Yoga Pratama
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14b9", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b8", // Dewi Anjani
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14c1", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14b9", // Tommy Wijaya
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14c2", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14c0", // Indah Sari
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat belajar!',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14a8", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14a7", // Ratna Dewi M.Pd
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14a9", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14a8", // Fajar Nugroho, S.T
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196b294-4791-7972-912a-33627d5b14aa", // ID unik
             userId: "0196b294-4791-7972-912a-33627d5b14a9", // Intan Lestari, S.Si
             type: 'Pendaftaran Akun',
             description: 'Selamat datang di Bimbingan Belajar Mandala, selamat bergabung sebagai tutor.',
-            photo: '/public/mandala.png',
+            photo: '/mandala.png',
         },
         {
             id: "0196f634-6979-7231-b83b-18de51222ec6",
             userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa", // Su Yon Oh
             type: 'Program',
             description: 'Selamat, Bimbingan belajar <strong>Matematika SMP #AAA123</strong> bersama <strong>Pak Dendy Wan, S.Pd</strong> sudah terkonfirmasi dan segera berlangsung.',
-            photo: '/public/1.png',
+            photo: '/tutors/1.png',
         },
         {
             id: "0196f634-6979-7e5a-b353-4a2c95a35435",
             userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
             type: 'Program',
             description: 'Selamat, Bimbingan belajar <strong>Matematika SMP #AAA123</strong> sudah terkonfirmasi dan segera berlangsung.',
-            photo: '/public/1.png',
+            photo: '/tutors/1.png',
         },
         // Bu Venita belum ada Seeder
     ];
