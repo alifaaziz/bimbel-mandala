@@ -1,186 +1,78 @@
 <template>
   <div class="ordered-program-container">
-    <n-space vertical :size="20">
-      <div class="header-row-ordered">
-        <n-h3 class="component-title">Program Terpesan</n-h3>
-        <div class="pagination-wrapper">
-          <button
-            class="pagination-btn"
-            :disabled="page === 1"
-            @click="handlePrev"
-          >&lt;</button>
-          <button
-            class="pagination-btn"
-            :disabled="page >= Math.ceil(total / limit)"
-            @click="handleNext"
-          >&gt;</button>
-        </div>
+    <n-h2 class="main-title">Program Terpesan</n-h2>
+    <n-card class="program-card">
+      <div class="card-content">
+        <n-thing>
+          <template #header>
+            <span class="course-title">Fisika SMA</span>
+          </template>
+          <template #description>
+            <span class="instructor-name">Pak Dendy Wan S.Pd</span>
+          </template>
+        </n-thing>
+        <n-button ghost type="primary" @click="goToVerifProgram">
+          Aksi
+        </n-button>
       </div>
-
-      <div v-for="program in orderedPrograms" :key="program.id">
-        <n-card
-          class="program-card"
-          :bordered="false"
-          content-style="padding: 16px 24px;"
-        >
-          <n-thing>
-            <template #header>
-              <div class="header-row">
-                <span class="program-subject">{{ program.subject }}</span>
-                <n-button
-                  round
-                  ghost
-                  type="primary"
-                  size="small"
-                  @click="handleAction(program)"
-                  class="aksi-btn"
-                >
-                  Aksi
-                </n-button>
-              </div>
-            </template>
-            <template #description>
-              <span class="program-teacher">{{ program.teacher }}</span>
-            </template>
-          </n-thing>
-        </n-card>
-      </div>
-    </n-space>
+    </n-card>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { NCard, NThing, NButton, NSpace, NH3, useMessage } from 'naive-ui';
+import { useRouter } from 'vue-router'
+// Impor komponen yang diperlukan dari Naive UI
+import { NCard, NButton, NH2, NThing } from 'naive-ui';
 
-const message = useMessage();
-const orderedPrograms = ref([]);
-const page = ref(1);
-const limit = ref(2);
-const total = ref(0);
+const router = useRouter()
 
-const fetchOrderedPrograms = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:3000/orders?page=${page.value}&limit=${limit.value}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    const result = await response.json();
-    orderedPrograms.value = result.data.data.map(item => ({
-      id: item.id,
-      subject: `${item.packageName} ${item.level}`,
-      teacher: item.tutorName,
-      status: item.status
-    }));
-    total.value = result.data.total;
-  } catch (error) {
-    message.error('Gagal mengambil data program terpesan');
-  }
-};
-
-const handleAction = (program) => {
-  message.info(`Tombol aksi untuk "${program.subject}" diklik!`);
-};
-
-function handlePrev() {
-  if (page.value > 1) {
-    page.value--;
-    fetchOrderedPrograms();
-  }
+function goToVerifProgram() {
+  router.push({ name: 'VerifProgram' })
 }
-function handleNext() {
-  if (page.value < Math.ceil(total.value / limit.value)) {
-    page.value++;
-    fetchOrderedPrograms();
-  }
-}
-
-onMounted(() => {
-  fetchOrderedPrograms();
-});
 </script>
 
 <style scoped>
+/* Memberi batasan lebar dan margin untuk container utama */
 .ordered-program-container {
-  background-color: #ffffff;
-  border-radius: 12px;
+  background-color: #ffffff; /* Latar belakang kartu putih */
+  border-radius: 12px; /* Lengkungan sudut kartu keseluruhan */
   padding: 24px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-  max-width: 400px; /* Batasi lebar agar tidak terlalu stretched */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08); /* Bayangan halus untuk efek kartu */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  max-width: 400px; /* Batas lebar maksimum kartu */
 }
 
-.component-title {
-  margin: 0;
+/* Styling untuk judul utama "Program Terpesan" */
+.main-title {
   font-weight: 700;
-  color: #1e3a8a; /* Warna biru tua yang solid */
+  color: #1e3a8a; /* Warna biru tua sesuai gambar */
+  margin-bottom: 16px;
 }
 
+/* Styling untuk kartu program */
 .program-card {
-  background-color: #f1f5f9; /* Warna latar abu-abu muda */
-  border-radius: 12px; /* Membuat sudut lebih rounded */
+  border-radius: 12px !important; /* Membuat sudut lebih tumpul */
+  background-color: #eef2f7 !important; /* Warna latar belakang abu-abu muda */
 }
 
-/* Kustomisasi n-thing agar sesuai desain */
-:deep(.n-thing-main) {
-  flex-grow: 1;
-}
-
-.header-row {
+/* Menggunakan flexbox untuk mengatur layout konten di dalam kartu */
+.card-content {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-}
-
-.header-row-ordered {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 8px;
+  width: 100%;
 }
 
-.aksi-btn {
-  margin-left: 12px;
-}
-
-.program-subject {
-  font-weight: 600;
+/* Styling untuk judul mata pelajaran */
+.course-title {
   font-size: 1.15rem;
-  color: #1e293b;
+  font-weight: 600;
+  color: #1e1e1e; /* Warna hitam pekat */
 }
 
-.program-teacher {
+/* Styling untuk nama instruktur */
+.instructor-name {
   font-size: 0.95rem;
-  color: #64748b;
-}
-
-.pagination-wrapper {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 12px;
-}
-
-.pagination-btn {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  border: 1px solid #154484;
-  background: #fff;
-  color: #154484;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-  padding: 0;
-  line-height: 1;
-}
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  color: #6b7280; /* Warna abu-abu untuk teks sekunder */
 }
 </style>

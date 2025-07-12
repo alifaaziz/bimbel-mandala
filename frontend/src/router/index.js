@@ -53,6 +53,7 @@ import ProgramMain from '@/components/Dashboard/dashboardProgram/ProgramMain.vue
 import ProgramAdd from '@/components/Dashboard/dashboardProgram/ProgramAdd.vue';
 import DetailProgramPrivat from '@/components/Dashboard/dashboardProgram/detailProgramPrivat.vue';
 import EditProgramForm from '@/components/Dashboard/dashboardProgram/EditProgramForm.vue';
+import VerifProgram from '@/components/Dashboard/dashboardProgram/VerificationPage.vue';
 
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
 import DashboardBiaya from '@/components/Dashboard/dashboardCatatanBiaya/DashboardBiaya.vue';
@@ -281,6 +282,11 @@ const routes = [
             name: 'EditProgramForm',
             component: EditProgramForm,
           },
+          {
+            path: 'verifprogram',
+            name: 'VerifProgram',
+            component: VerifProgram,  
+          }
         ]
       },
       {
@@ -328,6 +334,7 @@ const router = createRouter({
 
 import { ref, onMounted } from 'vue'
 import path from 'path';
+import VerificationPage from '@/components/Dashboard/dashboardProgram/VerificationPage.vue';
 
 const isTutor = ref(false)
 
