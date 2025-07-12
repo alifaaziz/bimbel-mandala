@@ -1,59 +1,55 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import butWaTambahPrimerNormal from '@/components/dirButton/butWaTambahPrimerNormal.vue';
 import BiayaProgram from './BiayaProgram.vue';
 import BiayaTutor from './BiayaTutor.vue';
 
-const programData = ref({
-  _id: 'abc123',
-  name: 'Program Matematika Intensif',
-  tutorName: 'Pak Dendy Wan S.Pd',
-  level: 'SMA', // bisa 'SD', 'SMP', atau 'SMA'
-  days: ['Senin', 'Rabu', 'Jumat'],
-  time: '2025-01-27T15:00:00.000Z',
-  duration: 90,
-  area: 'Jakarta Selatan',
-  totalMeetings: 12,
-  startDate: '2025-01-27',
-  photo: null,
-  groupType: [
-    { type: 'Privat', price: 500000 },
-    { type: 'Kelompok', price: 300000 }
-  ]
-})
+const programData = ref<any>(null);
+
+const route = useRoute();
+const classId = route.params.classId || route.params.id;
+
+const fetchDetail = async () => {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`http://localhost:3000/classes/${classId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const result = await res.json();
+  programData.value = result.data;
+};
 
 const badgeClass = (level: string) => {
-  switch (level.toLowerCase()) {
-    case 'sd':
-      return 'grade-sd';
-    case 'smp':
-      return 'grade-smp';
-    case 'sma':
-      return 'grade-sma';
-    default:
-      return '';
+  switch (level?.toLowerCase()) {
+    case 'sd': return 'grade-sd';
+    case 'smp': return 'grade-smp';
+    case 'sma': return 'grade-sma';
+    default: return '';
   }
-}
+};
 
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
+onMounted(() => {
+  fetchDetail();
+});
 </script>
 
 <template>
-  <div class="detail-ccontainer">
+  <div class="detail-ccontainer" v-if="programData">
     <h4 class="headerb1">Detail Program Selesai</h4>
     <n-divider class="divider" />
     <div class="header-program">
       <img
         class="tutor-photo"
-        :src="'/tutor/Tutor_Default.png'"
+        :src="programData.tutorPhoto ? `http://localhost:3000/public/${programData.tutorPhoto}` : '/tutor/Tutor_Default.png'"
         alt="Tutor Photo"
       />
       <div class="card-content">
         <div class="header-section">
           <div>
-            <div class="subject headersb1">Matematika SMA</div>
-            <div class="tutor-name bodym2">Dendy Wan S.Pd</div>
+            <div class="subject headersb1">{{ programData.packageName }} {{ programData.level }}</div>
+            <div class="tutor-name bodym2">{{ programData.tutorName }}</div>
           </div>
           <div>
             <div
@@ -69,27 +65,27 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             v-for="(day, index) in allDays"
             :key="index"
             class="tag"
-            :class="{ 'tag-unselected': !programData.days.includes(day) }"
+            :class="{ 'tag-unselected': !programData.days?.includes(day) }"
           >
             {{ day }}
           </n-tag>
         </n-space>
         <div class="info-section bodyr2">
           <div class="info-row">
-            <span class="label"><strong>Hari</strong></span>
-            <span class="value">: Kamis, 10 Juli 2025</span>
+            <span class="label"><strong>Area</strong></span>
+            <span class="value">: {{ programData.area }}</span>
           </div>
           <div class="info-row">
             <span class="label"><strong>Pukul</strong></span>
-            <span class="value">: 15:00 WIB</span>
+            <span class="value">: {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB</span>
           </div>
           <div class="info-row">
             <span class="label"><strong>Durasi</strong></span>
-            <span class="value">: 120 menit</span>
+            <span class="value">: {{ programData.duration }} menit</span>
           </div>
           <div class="info-row">
             <span class="label"><strong>Lokasi</strong></span>
-            <span class="value">: Jl. Taman Siswa No.114, Gunung Pati, Kota Semarang</span>
+            <span class="value">: {{ programData.address }}</span>
           </div>
         </div>
         <div class="meeting-link bodysb1">Selesai</div>
@@ -98,7 +94,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     </div>
     <div class="siswa">
       <h4 class="bodysb2">Siswa</h4>
-      <p class="bodyr2">Arell Saverro Biyantoro, Alif Abdul Aziz, Rahaihan Muhammad</p>
+      <p class="bodyr2">{{ programData.students }}</p>
     </div>
     <BiayaProgram class="biayaprogram"/>
     <BiayaTutor class="biayaprogram"/>

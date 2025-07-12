@@ -122,49 +122,6 @@ describe('SalaryService', () => {
     })
 
     describe('getFinanceRecap', () => {
-        it('should return finance recap with correct fields', async () => {
-            mockPrisma.order.findMany.mockResolvedValueOnce([
-                {
-                    bimbelPackage: {
-                        name: 'Paket A',
-                        user: {
-                            name: 'Budi',
-                            tutors: [{ gender: 'Male' }]
-                        }
-                    },
-                    class: [
-                        {
-                            code: 'CLS1',
-                            status: 'selesai',
-                            schedules: [
-                                { meet: 1, date: '2024-01-01' },
-                                { meet: 2, date: '2024-01-02' }
-                            ]
-                        },
-                        {
-                            code: 'CLS2',
-                            status: 'pending',
-                            schedules: []
-                        }
-                    ],
-                    salary: [{ createdAt: '2024-01-10', status: 'pending' }]
-                }
-            ])
-
-            const recap = await SalaryService.getFinanceRecap()
-
-            expect(recap).toEqual([
-                {
-                    packageName: 'Paket A',
-                    tutorName: 'Pak Budi',
-                    classCode: 'CLS1',
-                    startDate: '2024-01-01',
-                    endDate: '2024-01-10',
-                    salaryStatus: 'pending'
-                }
-            ])
-        })
-
         it('should handle missing fields and non-selesai classes', async () => {
             mockPrisma.order.findMany.mockResolvedValueOnce([
                 {
@@ -174,21 +131,26 @@ describe('SalaryService', () => {
                     ],
                     salary: []
                 }
-            ])
+            ]);
 
-            const recap = await SalaryService.getFinanceRecap()
-
-            expect(recap).toEqual([
-                {
-                    packageName: null,
-                    tutorName: null,
-                    classCode: null,
-                    startDate: null,
-                    endDate: null,
-                    salaryStatus: null
-                }
-            ])
-        })
+            const result = await SalaryService.getFinanceRecap('', 1, 10);
+            expect(result).toEqual({
+                data: [
+                    {
+                        packageName: null,
+                        tutorName: null,
+                        classCode: null,
+                        startDate: null,
+                        endDate: null,
+                        salaryStatus: null
+                    }
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+                totalPages: 1
+            });
+        });
 
         it('should set startDate to null if meet 1 is not found in schedules', async () => {
             mockPrisma.order.findMany.mockResolvedValueOnce([
@@ -212,56 +174,26 @@ describe('SalaryService', () => {
                     ],
                     salary: [{ createdAt: '2024-02-10', status: 'paid' }]
                 }
-            ])
+            ]);
 
-            const recap = await SalaryService.getFinanceRecap()
-
-            expect(recap).toEqual([
-                {
-                    packageName: 'Paket C',
-                    tutorName: 'Pak Andi',
-                    classCode: 'CLS4',
-                    startDate: null,
-                    endDate: '2024-02-10',
-                    salaryStatus: 'paid'
-                }
-            ])
-        })
-
-        it('should set startDate to null if schedules is undefined', async () => {
-            mockPrisma.order.findMany.mockResolvedValueOnce([
-                {
-                    bimbelPackage: {
-                        name: 'Paket D',
-                        user: {
-                            name: 'Dewi',
-                            tutors: [{ gender: 'Female' }]
-                        }
-                    },
-                    class: [
-                        {
-                            code: 'CLS5',
-                            status: 'selesai',
-                            schedules: undefined
-                        }
-                    ],
-                    salary: [{ createdAt: '2024-03-10', status: 'pending' }]
-                }
-            ])
-
-            const recap = await SalaryService.getFinanceRecap()
-
-            expect(recap).toEqual([
-                {
-                    packageName: 'Paket D',
-                    tutorName: 'Bu Dewi',
-                    classCode: 'CLS5',
-                    startDate: null,
-                    endDate: '2024-03-10',
-                    salaryStatus: 'pending'
-                }
-            ])
-        })
+            const result = await SalaryService.getFinanceRecap('', 1, 10);
+            expect(result).toEqual({
+                data: [
+                    {
+                        packageName: 'Paket C',
+                        tutorName: 'Pak Andi',
+                        classCode: 'CLS4',
+                        startDate: null,
+                        endDate: '2024-02-10',
+                        salaryStatus: 'paid'
+                    }
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+                totalPages: 1
+            });
+        });
 
         it('should skip classes that are not selesai', async () => {
             mockPrisma.order.findMany.mockResolvedValueOnce([
@@ -278,11 +210,350 @@ describe('SalaryService', () => {
                     ],
                     salary: []
                 }
-            ])
+            ]);
 
-            const recap = await SalaryService.getFinanceRecap()
+            const result = await SalaryService.getFinanceRecap('', 1, 10);
+            expect(result).toEqual({
+                data: [],
+                total: 0,
+                page: 1,
+                limit: 10,
+                totalPages: 0
+            });
+        });
 
-            expect(recap).toEqual([])
-        })
+        it('should return correct recap with one package and pagination', async () => {
+            const mockOrder = [
+                {
+                    bimbelPackage: {
+                        name: 'Paket A',
+                        user: {
+                            name: 'Budi',
+                            tutors: [{ gender: 'Male' }]
+                        }
+                    },
+                    class: [
+                        {
+                            code: 'CLS1',
+                            status: 'selesai',
+                            schedules: [
+                                { meet: 1, date: '2024-01-01' }
+                            ]
+                        }
+                    ],
+                    salary: [{ createdAt: '2024-01-10', status: 'pending' }]
+                }
+            ];
+
+            // Tanpa search, page 1, limit 10
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result = await SalaryService.getFinanceRecap('', 1, 10);
+            expect(result).toEqual({
+                data: [
+                    {
+                        packageName: 'Paket A',
+                        tutorName: 'Pak Budi',
+                        classCode: 'CLS1',
+                        startDate: '2024-01-01',
+                        endDate: '2024-01-10',
+                        salaryStatus: 'pending'
+                    }
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+                totalPages: 1
+            });
+
+            // Pagination: page 2, limit 1 (should be empty)
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result3 = await SalaryService.getFinanceRecap('', 2, 1);
+            expect(result3).toEqual({
+                data: [],
+                total: 1,
+                page: 2,
+                limit: 1,
+                totalPages: 1
+            });
+        });
+
+        it('should return correct recap when searching by package name', async () => {
+            const mockOrder = [
+                {
+                    bimbelPackage: {
+                        name: 'Paket A',
+                        user: {
+                            name: 'Budi',
+                            tutors: [{ gender: 'Male' }]
+                        }
+                    },
+                    class: [
+                        {
+                            code: 'CLS1',
+                            status: 'selesai',
+                            schedules: [
+                                { meet: 1, date: '2024-01-01' }
+                            ]
+                        }
+                    ],
+                    salary: [{ createdAt: '2024-01-10', status: 'pending' }]
+                }
+            ];
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result = await SalaryService.getFinanceRecap('paket a', 1, 10);
+            expect(result).toEqual({
+                data: [
+                    {
+                        packageName: 'Paket A',
+                        tutorName: 'Pak Budi',
+                        classCode: 'CLS1',
+                        startDate: '2024-01-01',
+                        endDate: '2024-01-10',
+                        salaryStatus: 'pending'
+                    }
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+                totalPages: 1
+            });
+        });
+
+        it('should return correct recap when searching by tutor name', async () => {
+            const mockOrder = [
+                {
+                    bimbelPackage: {
+                        name: 'Paket A',
+                        user: {
+                            name: 'Budi',
+                            tutors: [{ gender: 'Male' }]
+                        }
+                    },
+                    class: [
+                        {
+                            code: 'CLS1',
+                            status: 'selesai',
+                            schedules: [
+                                { meet: 1, date: '2024-01-01' }
+                            ]
+                        }
+                    ],
+                    salary: [{ createdAt: '2024-01-10', status: 'pending' }]
+                }
+            ];
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result = await SalaryService.getFinanceRecap('budi', 1, 10);
+            expect(result).toEqual({
+                data: [
+                    {
+                        packageName: 'Paket A',
+                        tutorName: 'Pak Budi',
+                        classCode: 'CLS1',
+                        startDate: '2024-01-01',
+                        endDate: '2024-01-10',
+                        salaryStatus: 'pending'
+                    }
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+                totalPages: 1
+            });
+        });
+
+        it('should return correct recap when searching by class code', async () => {
+            const mockOrder = [
+                {
+                    bimbelPackage: {
+                        name: 'Paket A',
+                        user: {
+                            name: 'Budi',
+                            tutors: [{ gender: 'Male' }]
+                        }
+                    },
+                    class: [
+                        {
+                            code: 'CLS1',
+                            status: 'selesai',
+                            schedules: [
+                                { meet: 1, date: '2024-01-01' }
+                            ]
+                        }
+                    ],
+                    salary: [{ createdAt: '2024-01-10', status: 'pending' }]
+                }
+            ];
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result = await SalaryService.getFinanceRecap('CLS1', 1, 10);
+            expect(result).toEqual({
+                data: [
+                    {
+                        packageName: 'Paket A',
+                        tutorName: 'Pak Budi',
+                        classCode: 'CLS1',
+                        startDate: '2024-01-01',
+                        endDate: '2024-01-10',
+                        salaryStatus: 'pending'
+                    }
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+                totalPages: 1
+            });
+        });
+
+        it('should return empty recap if no orders', async () => {
+            mockPrisma.order.findMany.mockResolvedValueOnce([]);
+            const result = await SalaryService.getFinanceRecap('', 1, 10);
+            expect(result).toEqual({
+                data: [],
+                total: 0,
+                page: 1,
+                limit: 10,
+                totalPages: 0
+            });
+        });
+
+        it('should return empty recap if search not found', async () => {
+            const mockOrder = [
+                {
+                    bimbelPackage: {
+                        name: 'Paket A',
+                        user: { name: 'Budi', tutors: [{ gender: 'Male' }] }
+                    },
+                    class: [
+                        { code: 'CLS1', status: 'selesai', schedules: [{ meet: 1, date: '2024-01-01' }] }
+                    ],
+                    salary: [{ createdAt: '2024-01-10', status: 'pending' }]
+                }
+            ];
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result = await SalaryService.getFinanceRecap('tidakada', 1, 10);
+            expect(result).toEqual({
+                data: [],
+                total: 0,
+                page: 1,
+                limit: 10,
+                totalPages: 0
+            });
+        });
+
+        it('should return correct recap with null fields', async () => {
+            mockPrisma.order.findMany.mockResolvedValueOnce([
+                {
+                    bimbelPackage: null,
+                    class: [
+                        { code: null, status: 'selesai', schedules: [] }
+                    ],
+                    salary: []
+                }
+            ]);
+            const result = await SalaryService.getFinanceRecap('', 1, 10);
+            expect(result).toEqual({
+                data: [
+                    {
+                        packageName: null,
+                        tutorName: null,
+                        classCode: null,
+                        startDate: null,
+                        endDate: null,
+                        salaryStatus: null
+                    }
+                ],
+                total: 1,
+                page: 1,
+                limit: 10,
+                totalPages: 1
+            });
+        });
+
+        it('should return correct recap with case insensitive search', async () => {
+            const mockOrder = [
+                {
+                    bimbelPackage: {
+                        name: 'Paket A',
+                        user: { name: 'Budi', tutors: [{ gender: 'Male' }] }
+                    },
+                    class: [
+                        { code: 'CLS1', status: 'selesai', schedules: [{ meet: 1, date: '2024-01-01' }] }
+                    ],
+                    salary: [{ createdAt: '2024-01-10', status: 'pending' }]
+                }
+            ];
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result = await SalaryService.getFinanceRecap('paket a', 1, 10);
+            expect(result.total).toBe(1);
+
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result2 = await SalaryService.getFinanceRecap('PAKET A', 1, 10);
+            expect(result2.total).toBe(1);
+
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result3 = await SalaryService.getFinanceRecap('pak budi', 1, 10);
+            expect(result3.total).toBe(1);
+        });
+
+        it('should return correct pagination when limit is less than total', async () => {
+            const mockOrder = [
+                {
+                    bimbelPackage: {
+                        name: 'Paket A',
+                        user: { name: 'Budi', tutors: [{ gender: 'Male' }] }
+                    },
+                    class: [
+                        { code: 'CLS1', status: 'selesai', schedules: [{ meet: 1, date: '2024-01-01' }] }
+                    ],
+                    salary: [{ createdAt: '2024-01-10', status: 'pending' }]
+                },
+                {
+                    bimbelPackage: {
+                        name: 'Paket B',
+                        user: { name: 'Siti', tutors: [{ gender: 'Female' }] }
+                    },
+                    class: [
+                        { code: 'CLS2', status: 'selesai', schedules: [{ meet: 1, date: '2024-02-01' }] }
+                    ],
+                    salary: [{ createdAt: '2024-02-10', status: 'paid' }]
+                }
+            ];
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result = await SalaryService.getFinanceRecap('', 1, 1);
+            expect(result).toEqual({
+                data: [
+                    {
+                        packageName: 'Paket A',
+                        tutorName: 'Pak Budi',
+                        classCode: 'CLS1',
+                        startDate: '2024-01-01',
+                        endDate: '2024-01-10',
+                        salaryStatus: 'pending'
+                    }
+                ],
+                total: 2,
+                page: 1,
+                limit: 1,
+                totalPages: 2
+            });
+
+            mockPrisma.order.findMany.mockResolvedValueOnce(mockOrder);
+            const result2 = await SalaryService.getFinanceRecap('', 2, 1);
+            expect(result2).toEqual({
+                data: [
+                    {
+                        packageName: 'Paket B',
+                        tutorName: 'Bu Siti',
+                        classCode: 'CLS2',
+                        startDate: '2024-02-01',
+                        endDate: '2024-02-10',
+                        salaryStatus: 'paid'
+                    }
+                ],
+                total: 2,
+                page: 2,
+                limit: 1,
+                totalPages: 2
+            });
+        });
     })
 })

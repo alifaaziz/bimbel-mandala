@@ -456,11 +456,95 @@ async function getFinishedClasses() {
     });
 }
 
+/**
+ * Get a class detail by classId
+ * @param {string} classId
+ * @returns {Promise<Object>}
+ */
+async function getClassById(classId) {
+    const cls = await prisma.class.findUnique({
+        where: { id: classId },
+        include: {
+            studentClasses: {
+                include: {
+                    user: { select: { name: true } }
+                }
+            },
+            order: {
+                include: {
+                    groupType: {
+                        select: {
+                            type: true,
+                            price: true,
+                            discPrice: true,
+                            maxStudent: true
+                        }
+                    },
+                    bimbelPackage: {
+                        select: {
+                            name: true,
+                            level: true,
+                            area: true,
+                            time: true,
+                            duration: true,
+                            user: {
+                                select: {
+                                    name: true,
+                                    tutors: { select: { photo: true } } // ← gunakan select, bukan include
+                                }
+                            },
+                            packageDay: {
+                                select: {
+                                    day: { select: { daysName: true } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    if (!cls) return null;
+
+    const bimbelPackage = cls.order?.bimbelPackage;
+    const groupType = cls.order?.groupType;
+    const packageDays = bimbelPackage?.packageDay;
+
+    const price = groupType?.discPrice && Number(groupType.discPrice) > 0
+        ? Number(groupType.discPrice)
+        : Number(groupType?.price) || 0;
+    const maxStudent = groupType?.maxStudent || 1;
+    const honor = price * 0.9;
+    const studentPrice = maxStudent ? price / maxStudent : 0;
+    const students = cls.studentClasses.map(sc => sc.user.name).join(', ');
+
+    return {
+        classId: cls.id,
+        code: cls.code,
+        packageName: bimbelPackage?.name || null,
+        level: bimbelPackage?.level || null,
+        tutorName: bimbelPackage?.user?.name || null,
+        tutorPhoto: bimbelPackage?.user?.tutors?.[0]?.photo || null,
+        days: packageDays ? packageDays.map(day => day.day.daysName) : [],
+        area: bimbelPackage?.area || null,
+        time: bimbelPackage?.time || null,
+        duration: bimbelPackage?.duration || null,
+        type: groupType?.type || null,
+        price,
+        studentPrice,
+        honor,
+        address: cls.order?.address || null,
+        students
+    };
+}
+
 export const ClassService = {
     createClass,
     joinClass,
     getMyClass,
     getRunningClass,
     getStudentClassesByUserId,
-    getFinishedClasses
+    getFinishedClasses,
+    getClassById
 };

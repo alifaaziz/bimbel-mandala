@@ -2,27 +2,24 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-const program = ref(null);
-const groupTypes = ref([]);
+const biaya = ref({
+  type: '',
+  price: 0,
+  studentPrice: 0,
+  honor: 0
+});
 const route = useRoute();
+const classId = route.params.classId || route.params.id;
 
-// Fungsi untuk memformat tipe grup
 const formatGroupType = (type) => {
   switch (type) {
-    case 'privat':
-      return 'Privat';
-    case 'grup2':
-      return 'Kelompok 2 Siswa';
-    case 'grup3':
-      return 'Kelompok 3 Siswa';
-    case 'grup4':
-      return 'Kelompok 4 Siswa';
-    case 'grup5':
-      return 'Kelompok 5 Siswa';
-    case 'kelas':
-      return 'Kelas';
-    default:
-      return type;
+    case 'privat': return 'Privat';
+    case 'grup2': return 'Kelompok 2 Siswa';
+    case 'grup3': return 'Kelompok 3 Siswa';
+    case 'grup4': return 'Kelompok 4 Siswa';
+    case 'grup5': return 'Kelompok 5 Siswa';
+    case 'kelas': return 'Kelas';
+    default: return type;
   }
 };
 
@@ -35,39 +32,17 @@ const formatPrice = (price) => {
 
 onMounted(async () => {
   const token = localStorage.getItem('token');
-  const slug = route.params.id;
   try {
-    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+    const res = await fetch(`http://localhost:3000/classes/${classId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) throw new Error('Gagal mengambil data program');
-    const data = await res.json();
-
+    if (!res.ok) throw new Error('Gagal mengambil data kelas');
+    const { data } = await res.json();
     if (data) {
-      program.value = data;
-
-      const order = ['privat', 'grup2', 'grup3', 'grup4', 'grup5', 'kelas'];
-      // Buat map dari data API
-      const typeMap = {};
-      (data.groupType || []).forEach((g) => {
-        typeMap[g.type] = g;
-      });
-
-      // Pastikan semua tipe ada, jika tidak isi dummy
-      const types = order.map((type) => {
-        if (typeMap[type]) {
-          return typeMap[type];
-        }
-        return {
-          type,
-          price: '...',
-          discPrice: null,
-        };
-      });
-
-      groupTypes.value = types;
-    } else {
-      console.error('Data tidak valid:', data);
+      biaya.value.type = data.type;
+      biaya.value.price = data.price;
+      biaya.value.studentPrice = data.studentPrice;
+      biaya.value.honor = data.honor;
     }
   } catch (err) {
     console.error(err);
@@ -81,19 +56,19 @@ onMounted(async () => {
     <div class="card-body">
       <div class="column-data">
         <p class="data-label bodysb2">Jenis</p>
-        <p class="data-fill bodyr2">Kelompok 3 Siswa</p>
+        <p class="data-fill bodyr2">{{ formatGroupType(biaya.type) }}</p>
       </div>
       <div class="column-data">
         <p class="data-label bodysb2">Biaya Program</p>
-        <p class="data-fill bodyr2">Rp1.200.000</p>
+        <p class="data-fill bodyr2">Rp{{ formatPrice(biaya.price) }}</p>
       </div>
       <div class="column-data">
         <p class="data-label bodysb2">Biaya/anak</p>
-        <p class="data-fill bodyr2">Rp400.000</p>
+        <p class="data-fill bodyr2">Rp{{ formatPrice(biaya.studentPrice) }}</p>
       </div>
       <div class="column-data">
         <p class="data-label bodysb2">Honor Program</p>
-        <p class="data-fill bodyr2">Rp960.000</p>
+        <p class="data-fill bodyr2">Rp{{ formatPrice(biaya.honor) }}</p>
       </div>
     </div>
   </div>
