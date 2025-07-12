@@ -1,4 +1,5 @@
 import { prisma } from '../utils/db.js';
+import { SalaryService } from './salary.js';
 
 const SALARY_PERCENTAGE = 0.9;
 
@@ -144,6 +145,8 @@ async function createAttendance({ scheduleId, userId, status, reason = null }) {
     }
   });
 
+  await createSalaryIfLastAttendance(schedule.class.id);
+
   return attendance;
 }
 
@@ -160,51 +163,50 @@ async function markAlphaForMissedSchedules() {
 
   const schedules = await prisma.schedule.findMany({
     where: {
-      date: {
-        lt: now
-      },
-      attendances: {
-        none: {}
-      }
+      date: { lt: now }
     },
     include: {
       class: {
         include: {
-          studentClasses: {
-            include: {
-              user: true
-            }
-          },
+          studentClasses: { include: { user: true } },
           tutor: true
         }
-      }
+      },
+      attendances: true
     }
   });
 
   for (const schedule of schedules) {
-    const { id: scheduleId, class: { studentClasses, tutorId } } = schedule;
+    const { id: scheduleId, class: { studentClasses, tutor }, attendances } = schedule;
+
+    const attendedUserIds = new Set(attendances.map(a => a.userId));
 
     for (const studentClass of studentClasses) {
+      const userId = studentClass.user.id;
+      if (!attendedUserIds.has(userId)) {
+        await prisma.attendance.create({
+          data: {
+            scheduleId,
+            userId,
+            status: 'alpha',
+            reason: null
+          }
+        });
+      }
+    }
+
+    if (tutor && !attendedUserIds.has(tutor.id)) {
       await prisma.attendance.create({
         data: {
           scheduleId,
-          userId: studentClass.user.id,
+          userId: tutor.id,
           status: 'alpha',
           reason: null
         }
       });
     }
 
-    if (tutorId) {
-      await prisma.attendance.create({
-        data: {
-          scheduleId,
-          userId: tutorId,
-          status: 'alpha',
-          reason: null
-        }
-      });
-    }
+    await createSalaryIfLastAttendance(schedule.class.id);
   }
 }
 
@@ -554,11 +556,99 @@ async function createMasukNotification({ scheduleId, userId }) {
   }
 }
 
+/**
+ * Cek dan create salary jika attendance terakhir pada schedule terakhir
+ * @param {string} classId
+ */
+async function createSalaryIfLastAttendance(classId) {
+  const schedules = await prisma.schedule.findMany({
+    where: { classId },
+    orderBy: { date: 'asc' }
+  });
+  if (!schedules.length) return;
+
+  const lastSchedule = schedules[schedules.length - 1];
+
+  const attendances = await prisma.attendance.findMany({
+    where: { scheduleId: lastSchedule.id }
+  });
+
+  const classData = await prisma.class.findUnique({
+    where: { id: classId },
+    include: {
+      tutor: { select: { id: true } },
+      studentClasses: { select: { userId: true } },
+      order: { select: { id: true, amount: true } }
+    }
+  });
+
+  if (!classData?.order) return;
+
+  const tutorId = classData.tutor?.id;
+  const orderId = classData.order.id;
+  const price = Number(classData.order.amount) || 0;
+  const studentIds = classData.studentClasses.map(sc => sc.userId);
+
+  const requiredUserIds = tutorId ? [tutorId, ...studentIds] : studentIds;
+
+  const attendedUserIds = attendances.map(a => a.userId);
+  const allAttended = requiredUserIds.every(uid => attendedUserIds.includes(uid));
+  if (!allAttended) return;
+
+  const existingSalary = await prisma.salary.findFirst({
+    where: { userId: tutorId, orderId }
+  });
+  if (existingSalary) return;
+
+  const tutor = await prisma.tutor.findUnique({
+    where: { userId: tutorId }
+  });
+  const percent = tutor?.percent ? Number(tutor.percent) / 100 : 0.6; // default 60% jika tidak ada
+
+  const totalSchedules = schedules.length;
+  const hadirCount = await prisma.attendance.count({
+    where: {
+      userId: tutorId,
+      scheduleId: { in: schedules.map(s => s.id) },
+      status: 'masuk'
+    }
+  });
+  const hadirPersen = totalSchedules > 0 ? hadirCount / totalSchedules : 0;
+
+  const totalSalary = price * percent;
+  
+  const payroll = totalSalary * hadirPersen;
+
+  await SalaryService.createSalary({
+    tutorId,
+    orderId,
+    totalSalary,
+    payroll
+  });
+
+  await prisma.class.update({
+    where: { id: classId },
+    data: { status: 'selesai' }
+  });
+
+  const orderDetail = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { packageId: true }
+  });
+  if (orderDetail?.packageId) {
+    await prisma.bimbelPackage.update({
+      where: { id: orderDetail.packageId },
+      data: { isActive: true }
+    });
+  }
+}
+
 export const AttendanceService = {
   createAttendance,
   markAlphaForMissedSchedules,
   getMyAttendanceStatistics,
   getRekapKelasById,
   createIzinNotification,
-  createMasukNotification
+  createMasukNotification,
+  createSalaryIfLastAttendance
 };

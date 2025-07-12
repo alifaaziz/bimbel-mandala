@@ -3,6 +3,7 @@ model Salary {
     userId   String
     orderId  String
     total    Decimal       @db.Decimal(10, 2)
+    payroll  Decimal       @db.Decimal(10, 2)
     status   SalaryStatus
 
     user       User             @relation(fields: [userId], references: [id])

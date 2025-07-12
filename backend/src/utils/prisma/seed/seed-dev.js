@@ -535,7 +535,8 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMP',
             description: 'Experienced tutor in Mathematics, once guided a math competition at the rt level in mijen sub-district. hardworking and responsive.',
-            photo: '/tutors/1.png'
+            photo: '/tutors/1.png',
+            percent: 70
         },
         {
             id: "019618a1-68a4-76ba-97fe-accd364715e8",
@@ -550,7 +551,8 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in English, once guided an English competition at the rt level in tembalang sub-district. hardworking and responsive.',
-            photo: '/tutors/2.png'
+            photo: '/tutors/2.png',
+            percent: 60
         },
         {
             id: "0196b294-4791-7688-b84e-d445b3c179a7",
@@ -565,7 +567,8 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Chemistry, once guided a chemistry competition at the rt level in tembalang sub-district. hardworking and responsive.',
-            photo: '/tutors/4.png'
+            photo: '/tutors/4.png',
+            percent: 60
         },
         {
             id: "0196b294-4791-7159-8bfe-a78b6cb6d210",
@@ -580,7 +583,8 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Physics, once guided a physics competition at the rt level in tembalang sub-district. hardworking and responsive.',
-            photo: '/tutors/3.png'
+            photo: '/tutors/3.png',
+            percent: 60
         },
         {
             id: "0196b294-4791-7793-9e50-871941b175a0",
@@ -595,6 +599,7 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Biology, once guided a biology competition at the rt level in tembalang sub-district. hardworking and responsive.',
+            percent: 60
         },
         {
             id: "01979a81-cc2d-76ff-8ec8-7ad40efe4999",
@@ -609,6 +614,7 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Islamic studies, dedicated and passionate about teaching.',
+            percent: 60
         },
         {
             id: "01979a8a-d5c8-71ba-9bd5-75e76b166429",
@@ -623,6 +629,7 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Pendidikan Pancasila, dedicated and passionate about teaching.',
+            percent: 60
         },
         {
             id: "01979a92-eefe-7aef-8175-49e2c7f8da9b",
@@ -637,6 +644,7 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Bahasa Indonesia, passionate about teaching at elementary level.',
+            percent: 60
         },
         {
             id: "01979a92-eefe-79cd-b645-e1c1566f0ddf",
@@ -651,6 +659,7 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Mathematics, dedicated to helping elementary students excel.',
+            percent: 60
         },
         {
             id: "01979a92-eefe-7965-91b4-0139dcd8ad1a",
@@ -665,6 +674,7 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in PJOK, enthusiastic about physical education for young learners.',
+            percent: 60
         },
         {
             id: "01979a92-eefe-79b7-a33f-92d802fb9bac",
@@ -679,6 +689,7 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Seni Budaya, creative and passionate about arts education.',
+            percent: 60
         },
         {
             id: "01979a92-eefe-7d78-b9ac-e570ddc914e2",
@@ -693,6 +704,7 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in IPAS, committed to science education for elementary students.',
+            percent: 60
         },
         {
             id: "01979a92-eefe-783c-a68e-2066ef410830",
@@ -707,6 +719,7 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Bahasa Inggris, passionate about teaching English to young learners.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e",
@@ -721,6 +734,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Bahasa Indonesia tingkat SMP dan SMA.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-7b38-8e52-f786b7603fb2",
@@ -735,6 +749,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Matematika tingkat SMP dan SMA.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-717d-99d0-e595f2c5b6e2",
@@ -749,6 +764,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar IPA tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-7e5b-addd-fe579bc048c2",
@@ -763,6 +779,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar IPS tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-70a9-ab90-c53667ebee61",
@@ -777,6 +794,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar PPKn tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-765b-a22a-ab51d0b2d6c4",
@@ -791,6 +809,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Pendidikan Agama Islam tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-7085-88f1-366574bd9a17",
@@ -805,6 +824,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Pendidikan Agama Kristen tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-7854-a588-26af45c3cf3a",
@@ -819,6 +839,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Bahasa Inggris tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9",
@@ -833,6 +854,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar PJOK tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-732e-b902-d6fb4363579e",
@@ -847,6 +869,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Informatika tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-730c-9985-10f25a88fd83",
@@ -861,6 +884,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Seni Musik tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-7ca6-b637-cb8f6eeead5c",
@@ -875,6 +899,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Seni Rupa tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-7bfa-bec7-df624300ad89",
@@ -889,6 +914,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Prakarya tingkat SMP.',
+            percent: 60
         },
         {
             id: "0197b421-92cc-776c-8070-d476ed031f5b",
@@ -903,6 +929,7 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Bahasa Jawa tingkat SMP.',
+            percent: 60
         }
     ];
 
@@ -1395,6 +1422,7 @@ async function main() {
             area: 'Semarang',
             slug: 'bahasa-inggris-sma-14klui',
             userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa', // Venita S.Pd
+            isActive: false,
         },
         {
             id: "0196b294-4791-7b00-8000-000000000011",
@@ -3098,6 +3126,7 @@ async function main() {
             userId: "0195c5ed-3fc9-71de-93d8-d850abe7b4fa", // So Yon Oh
             packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika
             groupTypeId: "0195c63c-8fce-7232-990e-6d11e9ff2d02", // privat
+            amount: 1386000, // 10% discount applied
             address: 'Jl. Merdeka No. 1',
             status: 'paid'
         },
@@ -3107,6 +3136,7 @@ async function main() {
             packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris
             groupTypeId: "019618a1-68a4-7a75-948f-e8df29d3bb9c", // grup2
             address: 'Jl. Merdeka No. 2',
+            amount: 1020000,
             status: 'paid',
         },
         {
@@ -3114,6 +3144,7 @@ async function main() {
             userId: "0196b294-4791-7972-912a-33627d5b14b2", // Sari Utami
             packageId: "0196b294-4791-7b00-8000-000000000011", // Kimia
             groupTypeId: "0196b294-4791-7b00-8000-000000000101", // privat
+            amount: 2250000, // 10% discount applied
             address: 'Jl. Merdeka No. 3',
             status: 'pending',
         },
@@ -3145,7 +3176,7 @@ async function main() {
         {
             id: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
             code: 'ABC123',
-            status: 'selesai',
+            status: 'berjalan',
             tutorId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",// Ma Tor Nu Won - Bahasa Inggris
             maxStudents: 2,
@@ -3253,7 +3284,7 @@ async function main() {
         {
             id: "019618a1-68a4-7a00-8000-000000000008",
             classId: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
-            date: new Date('2025-05-02T08:00:00Z'),
+            date: new Date('2025-07-10T08:00:00Z'),
             meet: 8,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-l4pa11',
@@ -3393,12 +3424,6 @@ async function main() {
             userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
             status: 'masuk',
         },
-        {
-            id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d63",
-            scheduleId: "019618a1-68a4-7a00-8000-000000000008",
-            userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
-            status: 'alpha',
-        },
 
         // Venita - Bahasa Inggris
         {
@@ -3457,15 +3482,16 @@ async function main() {
     }
 
     // Seed Salary
-    await prisma.salary.create({
-        data: {
-            id: "01965b4e-ec32-791f-b338-25cd592ed5e8",
-            userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
-            orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",
-            total: 918000,
-            status: 'pending',
-        }
-    });
+    // await prisma.salary.create({
+    //     data: {
+    //         id: "01965b4e-ec32-791f-b338-25cd592ed5e8",
+    //         userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+    //         orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",
+    //         total: 918000,
+    //         payroll:918000,
+    //         status: 'pending',
+    //     }
+    // });
 
     // Seed Tutor Applications
     const tutorApplications = [

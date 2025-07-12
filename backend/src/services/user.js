@@ -139,6 +139,7 @@ async function createUserWithRole(payload, file) {
             data: {
                 userId: user.id,
                 ...additionalData,
+                percent: 60
             }
         });
 
@@ -189,9 +190,7 @@ async function updateUser(payload, file) {
     const { id, password, role, daysName, ...additionalData } = payload;
     const encryptedPassword = password ? await AuthService.hashPassword(password) : null;
 
-    // Gunakan id jika name tidak ada
     if (file) {
-        // Ambil nama user dari database jika ada
         let userName = additionalData.name;
         if (!userName) {
             const userDb = await prisma.user.findUnique({ where: { id } });
@@ -201,10 +200,8 @@ async function updateUser(payload, file) {
         additionalData.photo = photoPath;
     }
 
-    // Pisahkan field user dan tutor
     const { name, email, googleId, password: userPassword, ...maybeTutorData } = additionalData;
 
-    // Update user jika ada perubahan
     if (name || email || googleId || userPassword) {
         await prisma.user.update({
             where: { id: id },
@@ -218,7 +215,6 @@ async function updateUser(payload, file) {
     }
 
     if (role === 'siswa') {
-        // Hanya kirim field yang tidak null/undefined
         const studentData = Object.fromEntries(
             Object.entries(maybeTutorData).filter(([_, v]) => v !== null && v !== undefined)
         );
@@ -227,9 +223,8 @@ async function updateUser(payload, file) {
             data: studentData
         });
     } else if (role === 'tutor') {
-        // Hanya kirim field yang tidak null/undefined DAN memang field Tutor
         const allowedTutorFields = [
-            'status', 'school', 'phone', 'address', 'teachLevel', 'subjects', 'major', 'description', 'photo'
+            'status', 'school', 'phone', 'address', 'teachLevel', 'subjects', 'major', 'description', 'photo', 'percent'
         ];
         const tutorData = Object.fromEntries(
             Object.entries(maybeTutorData)
@@ -240,7 +235,6 @@ async function updateUser(payload, file) {
             data: tutorData
         });
 
-        // Update hari aktif jika ada
         if (Array.isArray(daysName)) {
             const tutor = await prisma.tutor.findUnique({ where: { userId: id } });
             await prisma.tutorDay.deleteMany({ where: { tutorId: tutor.id } });

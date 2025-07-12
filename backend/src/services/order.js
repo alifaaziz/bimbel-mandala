@@ -25,14 +25,24 @@ async function createOrder(userId, packageId, groupTypeId, address) {
   const groupType = await prisma.groupType.findUnique({
     where: { id: groupTypeId }
   });
-  
+
+  let amount = 0;
+  if (groupType) {
+    if (groupType.discPrice != null && Number(groupType.discPrice) > 0) {
+      amount = Number(groupType.discPrice);
+    } else {
+      amount = Number(groupType.price) || 0;
+    }
+  }
+
   await prisma.order.create({
     data: {
       userId,
       packageId,
       groupTypeId,
       address,
-      status: 'pending'
+      status: 'pending',
+      amount
     }
   });
 

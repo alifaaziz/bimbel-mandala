@@ -23,12 +23,13 @@ function getTutorName(user) {
  * @param {number} data.totalSalary - The total salary amount.
  * @returns {Promise<Object>} The created salary record.
  */
-async function createSalary({ tutorId, orderId, totalSalary }) {
+async function createSalary({ tutorId, orderId, totalSalary, payroll }) {
     const salary = await prisma.salary.create({
         data: {
             userId: tutorId,
             orderId,
             total: totalSalary,
+            payroll,
             status: 'pending'
         }
     });
