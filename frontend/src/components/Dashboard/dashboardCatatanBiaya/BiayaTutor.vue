@@ -2,29 +2,10 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-const program = ref(null);
-const groupTypes = ref([]);
+const tutorStats = ref(null);
+const stats = ref(null);
 const route = useRoute();
-
-// Fungsi untuk memformat tipe grup
-const formatGroupType = (type) => {
-  switch (type) {
-    case 'privat':
-      return 'Privat';
-    case 'grup2':
-      return 'Kelompok 2 Siswa';
-    case 'grup3':
-      return 'Kelompok 3 Siswa';
-    case 'grup4':
-      return 'Kelompok 4 Siswa';
-    case 'grup5':
-      return 'Kelompok 5 Siswa';
-    case 'kelas':
-      return 'Kelas';
-    default:
-      return type;
-  }
-};
+const classId = route.params.classId || route.params.id;
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('id-ID', {
@@ -35,39 +16,15 @@ const formatPrice = (price) => {
 
 onMounted(async () => {
   const token = localStorage.getItem('token');
-  const slug = route.params.id;
   try {
-    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+    const res = await fetch(`http://localhost:3000/attendance/${classId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) throw new Error('Gagal mengambil data program');
-    const data = await res.json();
-
+    if (!res.ok) throw new Error('Gagal mengambil data absensi');
+    const { data } = await res.json();
     if (data) {
-      program.value = data;
-
-      const order = ['privat', 'grup2', 'grup3', 'grup4', 'grup5', 'kelas'];
-      // Buat map dari data API
-      const typeMap = {};
-      (data.groupType || []).forEach((g) => {
-        typeMap[g.type] = g;
-      });
-
-      // Pastikan semua tipe ada, jika tidak isi dummy
-      const types = order.map((type) => {
-        if (typeMap[type]) {
-          return typeMap[type];
-        }
-        return {
-          type,
-          price: '...',
-          discPrice: null,
-        };
-      });
-
-      groupTypes.value = types;
-    } else {
-      console.error('Data tidak valid:', data);
+      tutorStats.value = data.tutorStats;
+      stats.value = data;
     }
   } catch (err) {
     console.error(err);
@@ -76,7 +33,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="program-card">
+  <div class="program-card" v-if="tutorStats && stats">
     <div class="card-header headerb3">Rekap Tutor</div>
     <div class="card-space">
       <div class="card-body">
@@ -84,24 +41,20 @@ onMounted(async () => {
         <div class="card-content">
           <div class="column-data">
             <p class="data-label bodysb2">Nama</p>
-            <p class="data-fill bodyr2">Dendy Wan S.Pd</p>
+            <p class="data-fill bodyr2">{{ tutorStats.name }}</p>
           </div>
           <div class="column-data">
             <p class="data-label bodysb2">Hadir</p>
-            <p class="data-fill bodyr2">140 pertemuan</p>
+            <p class="data-fill bodyr2">{{ tutorStats.masuk }} pertemuan</p>
           </div>
           <div class="column-data">
             <p class="data-label bodysb2">Izin</p>
-            <p class="data-fill bodyr2">1 pertemuan</p>
+            <p class="data-fill bodyr2">{{ tutorStats.izin }} pertemuan</p>
           </div>
           <div class="column-data">
             <p class="data-label bodysb2">Absen</p>
-            <p class="data-fill bodyr2">0 Pertemuan</p>
-          </div>  
-          <div class="column-data">
-            <p class="data-label bodysb2">Kosong</p>
-            <p class="data-fill bodyr2">3 Pertemuan</p>
-          </div>  
+            <p class="data-fill bodyr2">{{ tutorStats.alpha }} pertemuan</p>
+          </div>
         </div>
       </div>
       <div class="card-body">
@@ -109,24 +62,20 @@ onMounted(async () => {
         <div class="card-content">
           <div class="column-data">
             <p class="data-label bodysb2">Total Pertemuan</p>
-            <p class="data-fill bodyr2">144 pertemuan</p>
+            <p class="data-fill bodyr2">{{ stats.pertemuan }} pertemuan</p>
           </div>
           <div class="column-data">
             <p class="data-label bodysb2">Kosong</p>
-            <p class="data-fill bodyr2">4 Pertemuan</p>
+            <p class="data-fill bodyr2">{{ stats.kosong }} pertemuan</p>
           </div>
           <div class="column-data">
             <p class="data-label bodysb2">Progress</p>
-            <p class="data-fill bodyr2">100%</p>
+            <p class="data-fill bodyr2">{{ stats.progress }}%</p>
           </div>
           <div class="column-data">
             <p class="data-label bodysb2">Absensi</p>
-            <p class="data-fill bodyr2">97,22%</p>
-          </div>  
-          <div class="column-data">
-            <p class="data-label bodysb2"></p>
-            <p class="data-fill bodyr2"></p>
-          </div>  
+            <p class="data-fill bodyr2">{{ stats.absensi }}%</p>
+          </div>
         </div>
       </div>
       <div class="card-body">
@@ -135,16 +84,21 @@ onMounted(async () => {
       <div class="card-body">
         <div class="result">
           <div class="column-result">
-            <p class="result-label bodysb2">Kesesuaian</p>
-            <p class="data-fill bodyr2">: 99.31%</p>
-          </div>
-          <div class="column-result">
             <p class="result-label bodysb2">Honor Tutor</p>
-            <p class="data-fill bodyr2">: Rp960.000</p>
+            <p class="data-fill bodyr2">: Rp{{ formatPrice(tutorStats.salary) }}</p>
           </div>
           <div class="column-result">
             <p class="result-label bodysb2">Diterima</p>
-            <p class="data-fill bodyr2">: : Rp953.280</p>
+            <p class="data-fill bodyr2">: Rp{{ formatPrice(tutorStats.payroll) }}</p>
+          </div>
+          <div class="column-result">
+            <p class="result-label bodysb2">Status</p>
+            <p class="data-fill bodyr2">
+              : 
+              <span v-if="tutorStats.status === 'pending'">Belum Terbayar</span>
+              <span v-else-if="tutorStats.status === 'paid'">Terbayar</span>
+              <span v-else>{{ tutorStats.status }}</span>
+            </p>
           </div>
         </div>
       </div>

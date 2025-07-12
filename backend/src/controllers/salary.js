@@ -42,8 +42,12 @@ async function getFinanceStats(req, res) {
  * @returns {Promise<void>} Resolves with the finance recap list.
  */
 async function getFinanceRecap(req, res) {
-    const recap = await SalaryService.getFinanceRecap();
-    res.status(200).json({ message: "Finance recap retrieved successfully.", data: recap });
+    const search = req.query.search || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const recap = await SalaryService.getFinanceRecap(search, page, limit);
+    res.status(200).json({ message: "Finance recap retrieved successfully.", ...recap });
 }
 
 export const SalaryController = {

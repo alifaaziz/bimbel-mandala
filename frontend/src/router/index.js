@@ -317,7 +317,7 @@ const routes = [
             component: DashboardBiaya
           },
           {
-            path: 'detailprogramselesai',
+            path: 'detail/:classId',
             name: 'DetailProgramSelesai',
             component: DetailProgramSelesai
           },

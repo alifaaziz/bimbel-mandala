@@ -54,18 +54,57 @@ describe('SalaryController', () => {
   });
 
   describe('getFinanceRecap', () => {
-    it('should return finance recap', async () => {
-      SalaryService.getFinanceRecap.mockResolvedValue(recapMock);
+    it('should return finance recap with query params', async () => {
+      const recapResult = {
+        data: recapMock,
+        total: 1,
+        page: 2,
+        limit: 5,
+        totalPages: 1
+      };
+      SalaryService.getFinanceRecap.mockResolvedValue(recapResult);
 
-      const { req, res } = setupExpressMock();
+      const { req, res } = setupExpressMock({
+        req: { query: { search: 'venita', page: '2', limit: '5' } }
+      });
 
       await SalaryController.getFinanceRecap(req, res);
 
-      expect(SalaryService.getFinanceRecap).toHaveBeenCalled();
+      expect(SalaryService.getFinanceRecap).toHaveBeenCalledWith('venita', 2, 5);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: "Finance recap retrieved successfully.",
         data: recapMock,
+        total: 1,
+        page: 2,
+        limit: 5,
+        totalPages: 1
+      });
+    });
+
+    it('should return finance recap with default params', async () => {
+      const recapResult = {
+        data: recapMock,
+        total: 1,
+        page: 1,
+        limit: 10,
+        totalPages: 1
+      };
+      SalaryService.getFinanceRecap.mockResolvedValue(recapResult);
+
+      const { req, res } = setupExpressMock({ req: { query: {} } });
+
+      await SalaryController.getFinanceRecap(req, res);
+
+      expect(SalaryService.getFinanceRecap).toHaveBeenCalledWith('', 1, 10);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Finance recap retrieved successfully.",
+        data: recapMock,
+        total: 1,
+        page: 1,
+        limit: 10,
+        totalPages: 1
       });
     });
   });

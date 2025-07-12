@@ -18,4 +18,6 @@ export default (app) => {
   router.get('/student/:userId', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ClassController.getStudentClassesByUserId);
 
   router.get('/finished', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ClassController.getFinishedClasses);
+
+  router.get('/:id', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), ClassController.getClassById);
 };
