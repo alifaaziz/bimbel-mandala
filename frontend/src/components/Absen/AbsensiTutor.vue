@@ -150,7 +150,10 @@ function confirmReschedule() {
     return
   }
 
-  const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00.000Z`).toISOString()
+
+  const dateStr = `${rescheduleDate.value}T${rescheduleTime.value}:00+07:00`;
+  const utcDate = new Date(dateStr);
+  const newDate = utcDate.toISOString();
 
   fetch(`http://localhost:3000/schedules/reschedule/${schedule.value.id}`, {
     method: 'PATCH',
@@ -170,7 +173,6 @@ function confirmReschedule() {
           'Gagal melakukan jadwal ulang.'
         )
       }
-      // Set data sukses
       lastRescheduleDate.value = rescheduleDate.value
       lastRescheduleTime.value = rescheduleTime.value
       showSuccessModal.value = true

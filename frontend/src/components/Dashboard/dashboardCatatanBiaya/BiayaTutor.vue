@@ -48,10 +48,6 @@ onMounted(async () => {
             <p class="data-fill bodyr2">{{ tutorStats.masuk }} pertemuan</p>
           </div>
           <div class="column-data">
-            <p class="data-label bodysb2">Izin</p>
-            <p class="data-fill bodyr2">{{ tutorStats.izin }} pertemuan</p>
-          </div>
-          <div class="column-data">
             <p class="data-label bodysb2">Absen</p>
             <p class="data-fill bodyr2">{{ tutorStats.alpha }} pertemuan</p>
           </div>
@@ -83,6 +79,10 @@ onMounted(async () => {
       </div>
       <div class="card-body">
         <div class="result">
+          <div class="column-result">
+            <p class="result-label bodysb2">Kesesuaian</p>
+            <p class="data-fill bodyr2">: {{ stats.kesesuaian }}%</p>
+          </div>
           <div class="column-result">
             <p class="result-label bodysb2">Honor Tutor</p>
             <p class="data-fill bodyr2">: Rp{{ formatPrice(tutorStats.salary) }}</p>

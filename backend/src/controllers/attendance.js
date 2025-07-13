@@ -152,6 +152,21 @@ async function downloadRekapPDF(req, res) {
     res.end(pdfBuffer);
 }
 
+/**
+ * Handles the request to get attendance alerts for a class.
+ *
+ * @async
+ * @function getAttendanceAlerts
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the attendance alerts for the class.
+ */
+async function getAttendanceAlerts(req, res) {
+    const { classId } = req.params;
+    const alerts = await AttendanceService.alertAttendance(classId);
+    res.status(200).json({ data: alerts });
+}
+
 export const AttendanceController = {
     absenMasuk: asyncWrapper(absenMasuk),
     absenIzin: asyncWrapper(absenIzin),
@@ -159,4 +174,5 @@ export const AttendanceController = {
     getAttendanceStatistics: asyncWrapper(getAttendanceStatistics),
     getMyAttendanceStatistics: asyncWrapper(getMyAttendanceStatistics),
     downloadRekapPDF: asyncWrapper(downloadRekapPDF),
+    getAttendanceAlerts: asyncWrapper(getAttendanceAlerts),
 };

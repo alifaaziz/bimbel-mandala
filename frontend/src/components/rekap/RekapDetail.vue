@@ -74,7 +74,7 @@ onMounted(async () => {
     },
     program: {
       pertemuan: `${item.studentStats?.totalSchedules ?? '-'} Pertemuan`,
-      kosong: `${(item.studentStats?.totalSchedules ?? 0) - (item.studentStats?.masuk ?? 0) - (item.studentStats?.izin ?? 0) - (item.studentStats?.alpha ?? 0)} Pertemuan`,
+      kosong: `${(item.studentStats?.kosong ?? 0)} Pertemuan`,
       progress: `${item.studentStats?.scheduleProgress ?? 0}%`,
       absensi: `${item.studentStats?.totalAttendance ?? 0}%`
     }

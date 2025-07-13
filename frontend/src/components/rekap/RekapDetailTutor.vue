@@ -38,8 +38,9 @@
         </div>
         <n-divider />
         <div class="perdata-rekap">
-            <p><span>Honor</span> : Rp {{ program.honor.toLocaleString('id-ID') }}</p>
-            <p><span>Diterima</span> : Rp {{ program.diterima.toLocaleString('id-ID') }}</p>
+            <p><span>Kesesuaian</span> : {{ program.kesesuaian }}</p>
+            <p><span>Honor</span> : {{ formatRupiah(program.honor) }}</p>
+            <p><span>Diterima</span> : {{ formatRupiah(program.diterima) }}</p>
             <p><span>Status</span> : {{ program.status }}</p>
         </div>
       </div>
@@ -52,6 +53,10 @@ import { ref, onMounted } from 'vue'
 import ButDownloadSecondSmall from '../dirButton/butDownloadSecondSmall.vue'
 
 const rekap = ref([])
+
+function formatRupiah(value) {
+  return 'Rp ' + Number(value).toLocaleString('id-ID');
+}
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
@@ -73,13 +78,14 @@ onMounted(async () => {
     },
     program: {
       pertemuan: `${item.tutorStats?.totalSchedules ?? '-'} Pertemuan`,
-      kosong: `${(item.tutorStats?.totalSchedules ?? 0) - (item.tutorStats?.masuk ?? 0) - (item.tutorStats?.izin ?? 0) - (item.tutorStats?.alpha ?? 0)} Pertemuan`,
+      kosong: `${item.kosong ?? 0} Pertemuan`,
       progress: `${item.tutorStats?.scheduleProgress ?? 0}%`,
       absensi: `${item.tutorStats?.totalAttendance ?? 0}%`
     },
+    kesesuaian: `${item.kesesuaian || '-'}%`, 
     honor: item.tutorStats?.salary ?? 0,
     diterima: item.tutorStats?.payroll ?? 0,
-    status: item.tutorStats?.status || '-'
+    status: item.tutorStats?.status === 'pending' ? 'Belum Terbayar' : 'Terbayar'
   }))
 })
 

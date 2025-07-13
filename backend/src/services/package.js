@@ -902,7 +902,8 @@ async function getMyPackages(user) {
         select: {
           tutors: {
             select: {
-              photo: true
+              photo: true,
+              percent: true
             }
           }
         }
@@ -939,8 +940,8 @@ async function getMyPackages(user) {
     photo: pkg.user.tutors[0]?.photo || null,
     groupType: pkg.groupType.map(gt => ({
       type: gt.type,
-      price: gt.price * 0.9,
-      discPrice: gt.discPrice !== null ? gt.discPrice * 0.9 : null
+      price: gt.price * pkg.user.tutors[0]?.percent / 100,
+      discPrice: gt.discPrice !== null ? gt.discPrice * pkg.user.tutors[0]?.percent / 100 : null
     })),
     days: pkg.packageDay.map(day => day.day.daysName)
   }));
@@ -964,7 +965,7 @@ async function getMyPackageBySlug(slug, user) {
   const pkg = await prisma.bimbelPackage.findFirst({
     where: {
       slug: slug,
-      userId: user.id ,
+      userId: user.id,
       deletedAt: null
     },
     include: {
@@ -987,6 +988,11 @@ async function getMyPackageBySlug(slug, user) {
     }
   });
 
+  const tutor = await prisma.tutor.findUnique({
+    where: { userId: user.id },
+    select: { percent: true }
+  });
+
   if (!pkg) {
     return null;
   }
@@ -1000,10 +1006,11 @@ async function getMyPackageBySlug(slug, user) {
     duration: pkg.duration,
     area: pkg.area,
     slug: pkg.slug,
+    percent: tutor?.percent ? Number(tutor.percent) : null, 
     groupType: pkg.groupType.map(gt => ({
       type: gt.type,
-      price: gt.price * 0.9,
-      discPrice: gt.discPrice !== null ? gt.discPrice * 0.9 : null
+      price: gt.price * (tutor?.percent ? Number(tutor.percent) / 100 : 0.6),
+      discPrice: gt.discPrice !== null ? gt.discPrice * (tutor?.percent ? Number(tutor.percent) / 100 : 0.6) : null
     })),
     days: pkg.packageDay.map(day => day.day.daysName)
   };
