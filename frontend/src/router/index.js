@@ -54,6 +54,7 @@ import ProgramAdd from '@/components/Dashboard/dashboardProgram/ProgramAdd.vue';
 import DetailProgramPrivat from '@/components/Dashboard/dashboardProgram/detailProgramPrivat.vue';
 import EditProgramForm from '@/components/Dashboard/dashboardProgram/EditProgramForm.vue';
 import VerifProgram from '@/components/Dashboard/dashboardProgram/VerificationPage.vue';
+import ProgramScheduleDetail from '@/components/Dashboard/dashboardProgram/ProgramScheduleDetail.vue';
 
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
 import DashboardBiaya from '@/components/Dashboard/dashboardCatatanBiaya/DashboardBiaya.vue';
@@ -286,7 +287,12 @@ const routes = [
             path: 'verifprogram',
             name: 'VerifProgram',
             component: VerifProgram,  
-          }
+          },
+          {
+            path: 'programscheduledetail',
+            name: 'ProgramScheduleDetail',
+            component: ProgramScheduleDetail,
+          },
         ]
       },
       {

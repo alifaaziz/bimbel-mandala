@@ -121,11 +121,13 @@
 <script setup>
 import { ref } from 'vue';
 import { useMessage, NSpace, NTag, NDescriptions, NDescriptionsItem, NButton, NIcon, NInput } from 'naive-ui';
+import { useRouter } from 'vue-router';
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 import { PersonOutline, HomeOutline, PeopleOutline, CalendarOutline } from '@vicons/ionicons5';
 
 const message = useMessage();
+const router = useRouter();
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum\'at', 'Sabtu'];
 
 const programData = ref({
@@ -170,6 +172,9 @@ const handleVerify = () => {
 const handleCancel = () => {
   message.warning('Aksi dibatalkan.');
 };
+function handleValidateClick() {
+  router.push({ name: 'ProgramScheduleDetail' });
+}
 </script>
 
 <style scoped>
