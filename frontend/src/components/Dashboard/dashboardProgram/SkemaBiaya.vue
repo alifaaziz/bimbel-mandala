@@ -102,6 +102,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.program-containere{
+  background-color: #154288;
+  overflow-y: auto;
+}
 .program-card {
   border: 1px solid #f39c12;
   border-radius: 12px;

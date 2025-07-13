@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import ButDownloadSecondSmall from '@/components/dirButton/butDownloadSecondSmall.vue'
 
 const tutorStats = ref(null);
 const stats = ref(null);
@@ -30,11 +31,64 @@ onMounted(async () => {
     console.error(err);
   }
 });
+
+const railStyle = ({ checked }) => {
+  const style = {
+    borderRadius: '20px',
+  }
+  if (checked) {
+    style.background = '#2080f0'
+  } else {
+    style.background = '#d03050'
+  }
+  return style
+}
+
+function downloadRekap(program) {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  fetch(`http://localhost:3000/attendance/download/${program.classId}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(async res => {
+      if (!res.ok) throw new Error('Gagal download rekap')
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `rekap_${program.kode}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    })
+    .catch(err => {
+      alert('Gagal download rekap')
+      console.error(err)
+    })
+}
+
 </script>
 
 <template>
   <div class="program-card" v-if="tutorStats && stats">
-    <div class="card-header headerb3">Rekap Tutor</div>
+    <div class="card-header title-act">
+      <div class="headerb3">Rekap Tutor</div>
+      <div class="act">
+        <ButDownloadSecondSmall @click.stop="downloadRekap(program)"/>
+        <n-switch :rail-style="railStyle">
+          <template #checked>
+            Sudah Terbayar
+          </template>
+          <template #unchecked>
+            Belum Terbayar
+          </template>
+        </n-switch>
+      </div>
+    </div>
     <div class="card-space">
       <div class="card-body">
         <h3 class="headersb3">Rekap Tutor</h3>
@@ -127,6 +181,18 @@ onMounted(async () => {
   overflow: hidden;
   background-color: white;
   color: #061222;
+}
+.title-act {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.act {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
 }
 .card-header {
   background-color: #154288;
