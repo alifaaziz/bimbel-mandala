@@ -23,6 +23,7 @@
             <n-select v-model:value="formModel.level" :options="levelOptions" />
           </n-form-item-gi>
 
+          <!-- Pilihan Tipe -->
           <n-form-item-gi label="Tipe" path="type">
             <n-select v-model:value="formModel.type" :options="typeOptions" />
           </n-form-item-gi>
@@ -68,48 +69,70 @@
           </n-form-item-gi>
         </n-grid>
 
-        <n-divider class="divider" />
-        <h2 class="section-title">Biaya</h2>
-        <n-grid :x-gap="24" :y-gap="12" :cols="2" responsive="screen" item-responsive>
-          
-          <n-form-item-gi label="Privat" path="costs.private">
-            <n-input-number v-model:value="formModel.costs.private" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-              <template #prefix>Rp</template>
-            </n-input-number>
-          </n-form-item-gi>
+        <!-- Komponen Biaya hanya untuk Privat/Kelompok -->
+        <template v-if="isPrivateGroup">
+          <n-divider class="divider" />
+          <h2 class="section-title">Biaya</h2>
+          <n-grid :x-gap="24" :y-gap="12" :cols="2" responsive="screen" item-responsive>
+            <n-form-item-gi label="Privat" path="costs.private">
+              <n-input-number v-model:value="formModel.costs.private" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+                <template #prefix>Rp</template>
+              </n-input-number>
+            </n-form-item-gi>
+            <n-form-item-gi label="Kelompok 2 siswa" path="costs.group2">
+              <n-input-number v-model:value="formModel.costs.group2" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+                <template #prefix>Rp</template>
+              </n-input-number>
+            </n-form-item-gi>
+            <n-form-item-gi label="Kelompok 3 siswa" path="costs.group3">
+              <n-input-number v-model:value="formModel.costs.group3" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+                <template #prefix>Rp</template>
+              </n-input-number>
+            </n-form-item-gi>
+            <n-form-item-gi label="Kelompok 4 siswa" path="costs.group4">
+              <n-input-number v-model:value="formModel.costs.group4" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+                <template #prefix>Rp</template>
+              </n-input-number>
+            </n-form-item-gi>
+            <n-form-item-gi label="Kelompok 5 siswa" path="costs.group5">
+              <n-input-number v-model:value="formModel.costs.group5" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
+                <template #prefix>Rp</template>
+              </n-input-number>
+            </n-form-item-gi>
+            <n-form-item-gi label="Diskon" path="discount">
+              <n-input-number v-model:value="formModel.discount" :show-button="false" style="width: 100%;">
+                <template #suffix>%</template>
+              </n-input-number>
+            </n-form-item-gi>
+          </n-grid>
+        </template>
 
-          <n-form-item-gi label="Kelompok 2 siswa" path="costs.group2">
-            <n-input-number v-model:value="formModel.costs.group2" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-              <template #prefix>Rp</template>
-            </n-input-number>
-          </n-form-item-gi>
+        <!-- Komponen Detail Kelas hanya untuk Kelas -->
+        <template v-if="isClass">
+          <n-divider class="divider" />
+          <h2 class="section-title">Detail Kelas</h2>
+          <n-grid :x-gap="24" :y-gap="12" :cols="2" responsive="screen" item-responsive>
+            <n-form-item-gi label="Maksimal Siswa" path="studentsLimit">
+              <n-input v-model:value="formModel.studentsLimit" />
+            </n-form-item-gi>
+            <n-form-item-gi label="Tanggal Mulai" path="startDate">
+              <n-date-picker
+                v-model:value="formModel.startDate"
+                type="date"
+                style="width: 100%;"
+                placeholder="Pilih tanggal mulai"
+                format="dd/MM/yyyy"
+                clearable
+              />
+            </n-form-item-gi>
+          </n-grid>
+          <n-grid :cols="1" :y-gap="12">
+            <n-form-item-gi label="Biaya Per-Anak" path="pricePerChild">
+              <n-input v-model:value="formModel.pricePerChild" placeholder="Tuliskan Biaya Program Per-Anak" />
+            </n-form-item-gi>
+          </n-grid>
+        </template>
 
-          <n-form-item-gi label="Kelompok 3 siswa" path="costs.group3">
-            <n-input-number v-model:value="formModel.costs.group3" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-              <template #prefix>Rp</template>
-            </n-input-number>
-          </n-form-item-gi>
-
-          <n-form-item-gi label="Kelompok 4 siswa" path="costs.group4">
-            <n-input-number v-model:value="formModel.costs.group4" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-              <template #prefix>Rp</template>
-            </n-input-number>
-          </n-form-item-gi>
-
-          <n-form-item-gi label="Kelompok 5 siswa" path="costs.group5">
-            <n-input-number v-model:value="formModel.costs.group5" :formatter="formatCurrency" :parser="parseCurrency" style="width: 100%;">
-              <template #prefix>Rp</template>
-            </n-input-number>
-          </n-form-item-gi>
-
-          <n-form-item-gi label="Diskon" path="discount">
-            <n-input-number v-model:value="formModel.discount" :show-button="false" style="width: 100%;">
-              <template #suffix>%</template>
-            </n-input-number>
-          </n-form-item-gi>
-        </n-grid>
-
-        <n-divider class="divider" />
         <div class="catatan">
           <h3 class="bodysb1">Catatan:</h3>
           <ul style="padding-left: 20px; line-height: 1.6;">
@@ -137,7 +160,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useMessage } from 'naive-ui';
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
@@ -167,7 +190,8 @@ const formModel = ref({
     group4: 1900000,
     group5: 2340000,
   },
-  discount: 10
+  discount: 10,
+  startDate: null,
 });
 
 // Opsi untuk komponen Select
@@ -175,7 +199,7 @@ const tutorOptions = [
   { label: 'Pak Dendy Wan S.Pd', value: 'dendy_wan' },
   { label: 'Bu Luna S.Pd', value: 'luna' },
 ];
-const levelOptions = [ { label: 'SMA', value: 'SMA' }, { label: 'SMP', value: 'SMP' }];
+const levelOptions = [ { label: 'SD', value: 'SD' }, { label: 'SMP', value: 'SMP' }, { label: 'SMA', value: 'SMA' }, ];
 const typeOptions = [ { label: 'Privat/Kelompok', value: 'private_group' }, { label: 'Kelas', value: 'class' }];
 const durationTermOptions = [
     { label: '3 Bulan', value: '3m' },
@@ -225,6 +249,9 @@ const handleApplyChanges = (e) => {
 const handleCancelEdit = () => {
     message.warning('Perubahan dibatalkan');
 }
+
+const isPrivateGroup = computed(() => formModel.value.type === 'private_group');
+const isClass = computed(() => formModel.value.type === 'class');
 </script>
 
 <style scoped>

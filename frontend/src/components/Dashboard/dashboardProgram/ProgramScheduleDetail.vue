@@ -185,4 +185,5 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 .tabel {
   margin-top: 1rem;
 }
+
 </style>
