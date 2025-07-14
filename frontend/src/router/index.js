@@ -274,12 +274,12 @@ const routes = [
             component: ProgramAdd,
           },
           {
-            path: 'detailprogramprivat/:id',
+            path: 'detailprogram/:slug',
             name: 'DetailProgramPrivat',
             component: DetailProgramPrivat,
           },
           {
-            path: 'editprogram/:id',
+            path: 'editprogram/:slug',
             name: 'EditProgramForm',
             component: EditProgramForm,
           },

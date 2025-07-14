@@ -36,7 +36,7 @@ const formatPrice = (price) => {
 
 onMounted(async () => {
   const token = localStorage.getItem('token');
-  const slug = route.params.id;
+  const slug = route.params.slug;
   try {
     const res = await fetch(`http://localhost:3000/packages/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },

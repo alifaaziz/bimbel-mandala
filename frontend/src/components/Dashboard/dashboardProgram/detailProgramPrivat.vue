@@ -1,31 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue';
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import SkemaBiaya from './SkemaBiaya.vue';
 
-const router = useRouter()
+const router = useRouter();
+const route = useRoute();
 
-const programData = ref({
-  _id: 'abc123',
-  name: 'Program Matematika Intensif',
-  tutorName: 'Pak Dendy Wan S.Pd',
-  level: 'SMA', // bisa 'SD', 'SMP', atau 'SMA'
-  days: ['Senin', 'Rabu', 'Jumat'],
-  time: '2025-01-27T15:00:00.000Z',
-  duration: 90,
-  area: 'Jakarta Selatan',
-  totalMeetings: 12,
-  startDate: '2025-01-27',
-  photo: null,
-  groupType: [
-    { type: 'Privat', price: 500000 },
-    { type: 'Kelompok', price: 300000 }
-  ]
-})
+const programData = ref<any>(null);
+const sortedGroupType = ref<any[]>([]);
 
 const badgeClass = (level: string) => {
-  switch (level.toLowerCase()) {
+  switch (level?.toLowerCase()) {
     case 'sd':
       return 'grade-sd';
     case 'smp':
@@ -35,41 +21,63 @@ const badgeClass = (level: string) => {
     default:
       return '';
   }
-}
+};
 
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
-
-const programId = 123
 function editProgram() {
-  router.push(`/dashboardadmin/programadmin/editprogram/${programId}`)
+  if (programData.value?.slug) {
+    router.push(`/dashboardadmin/programadmin/editprogram/${programData.value.slug}`);
+  }
 }
 
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  const slug = route.params.slug;
+  try {
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error('Gagal mengambil data program');
+    const data = await res.json();
+    programData.value = data;
+
+    if (data.groupType && Array.isArray(data.groupType)) {
+      sortedGroupType.value = [...data.groupType].sort((a, b) => {
+        const priceA = Number(a.discPrice || a.price);
+        const priceB = Number(b.discPrice || b.price);
+        return priceA - priceB;
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+});
 </script>
 
 <template>
-  <div class="detail-flow">
+  <div class="detail-flow" v-if="programData">
     <div class="detail-ccontainer">
       <h4 class="headerb1">Detail Program</h4>
       <n-divider class="divider" />
       <div class="header-program">
         <img
           class="tutor-photo"
-          :src="'/tutor/Tutor_Default.png'"
+            :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/tutor/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">
           <div class="header-section">
             <div>
-              <div class="subject headersb1">Matematika SMA</div>
-              <div class="tutor-name bodym2">Dendy Wan S.Pd</div>
+              <div class="subject headersb1">{{ programData.name }} {{ programData.level }}</div>
+              <div class="tutor-name bodym2">{{ programData.tutorName }}</div>
             </div>
             <div>
               <div
                 class="headerb1"
                 :class="badgeClass(programData.level)"
               >
-              {{ programData.level }}
+                {{ programData.level }}
               </div>
             </div>
           </div>
@@ -78,7 +86,7 @@ function editProgram() {
               v-for="(day, index) in allDays"
               :key="index"
               class="tag"
-              :class="{ 'tag-unselected': !programData.days.includes(day) }"
+              :class="{ 'tag-unselected': !programData.days?.includes(day) }"
             >
               {{ day }}
             </n-tag>
@@ -86,24 +94,26 @@ function editProgram() {
           <div class="info-section bodyr2">
             <div class="info-row">
               <span class="label-data"><strong>Area</strong></span>
-              <span class="value">: Semarang</span>
+              <span class="value">: {{ programData.area }}</span>
             </div>
             <div class="info-row">
               <span class="label-data"><strong>Pukul</strong></span>
-              <span class="value">: 15:00 WIB</span>
+              <span class="value">: {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}</span>
             </div>
             <div class="info-row">
               <span class="label-data"><strong>Durasi</strong></span>
-              <span class="value">: 120 menit</span>
-            </div>
-            <div class="info-row">
-              <span class="label-data"><strong>Lokasi</strong></span>
-              <span class="value">: Jl. Taman Siswa No.114, Gunung Pati, Kota Semarang</span>
+              <span class="value">: {{ programData.duration }} menit</span>
             </div>
           </div>
-          <div class="meeting-link bodysb1">Selesai</div>
+          <div class="meeting-link bodysb1">{{ programData.status === 'aktif' ? 'Aktif' : 'Berjalan' }}</div>
           <n-space>
-              <p class="headerb3">Rp1.300.000 - Rp1.720.000</p>
+            <p class="headerb3">
+              <template v-if="sortedGroupType.length">
+                Rp{{ Number(sortedGroupType[0].discPrice || sortedGroupType[0].price).toLocaleString('id-ID') }}
+                -
+                Rp{{ Number(sortedGroupType[sortedGroupType.length-1].discPrice || sortedGroupType[sortedGroupType.length-1].price).toLocaleString('id-ID') }}
+              </template>
+            </p>
           </n-space>
           <butPrimerNormal label="Edit Program" @click="editProgram"/>
         </div>

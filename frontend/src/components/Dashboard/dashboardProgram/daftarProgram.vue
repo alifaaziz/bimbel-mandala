@@ -122,7 +122,7 @@ export default {
       this.fetchPackages();
     },
     showDetail(item) {
-      this.$router.push(`/dashboardadmin/programadmin/detailprogramprivat/${item.slug}`);
+      this.$router.push(`/dashboardadmin/programadmin/detailprogram/${item.slug}`);
     },
     handleTambahProgram() {
       this.$router.push('/dashboardadmin/programadmin/tambahprogram');
