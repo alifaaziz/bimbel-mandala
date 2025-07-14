@@ -241,9 +241,9 @@ function closeSuccessModal() {
 
       <div class="button-group">
         <butAbsen @click="openAbsenModal"/>
-        <!-- Tombol simulasi jadwal ulang -->
         <butJadwalUlang label="Jadwal Ulang" @click.stop="openRescheduleModal()" />
       </div>
+      <p class="bodym2" style="color: #FB8312;">Batas Keterlambatan 15 Menit dari waktu yang ditentukan</p>
     </div>
   </div>
 

@@ -1,5 +1,5 @@
-<script>
-import { defineComponent, h, ref, onMounted, computed } from "vue";
+<script setup>
+import { ref, onMounted, computed, h } from "vue";
 import { useRouter } from "vue-router";
 import { NTag } from "naive-ui";
 import butJadwalUlang from "../dirButton/butJadwalUlangTabel.vue";
@@ -8,6 +8,7 @@ import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
 import butJadwal from "../dirButton/butJadwal.vue";
 import butJadwalUlangSuccess from "../dirButton/butPrimerSmall.vue";
 
+// Format tanggal dan jam
 function formatTanggal(dateStr) {
   const date = new Date(dateStr);
   const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
@@ -42,221 +43,183 @@ function groupTypeLabel(type) {
   }
 }
 
-export default defineComponent({
-  components: {
-    butJadwalUlang,
-    butBatal,
-    butSumJadwalUlang,
-    butJadwal,
-    butJadwalUlangSuccess,
-    
+// Data dan state
+const router = useRouter();
+const data = ref([]);
+const isMobile = ref(false);
+
+// Modal sukses
+const showSuccessModal = ref(false);
+const lastRescheduleDate = ref("");
+const lastRescheduleTime = ref("");
+
+// Modal reschedule
+const showRescheduleModal = ref(false);
+const selectedSchedule = ref(null);
+const rescheduleDate = ref("");
+const rescheduleTime = ref("");
+
+// Responsive handler
+const checkIsMobile = () => {
+  isMobile.value = window.innerWidth < 768;
+};
+
+onMounted(() => {
+  checkIsMobile();
+  window.addEventListener("resize", checkIsMobile);
+});
+
+// Fungsi buka/tutup modal reschedule
+function openRescheduleModal(row) {
+  selectedSchedule.value = row;
+  showRescheduleModal.value = true;
+  rescheduleDate.value = "";
+  rescheduleTime.value = "";
+}
+
+function closeRescheduleModal() {
+  showRescheduleModal.value = false;
+  selectedSchedule.value = null;
+  rescheduleDate.value = "";
+  rescheduleTime.value = "";
+}
+
+// Konfirmasi jadwal ulang
+function confirmReschedule() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Token tidak ditemukan, silakan login ulang.');
+    return;
+  }
+  if (!selectedSchedule.value?.key) {
+    alert('Jadwal tidak ditemukan.');
+    return;
+  }
+  if (!rescheduleDate.value || !rescheduleTime.value) {
+    alert('Silakan pilih tanggal dan jam baru terlebih dahulu.');
+    return;
+  }
+
+  const dateStr = `${rescheduleDate.value}T${rescheduleTime.value}:00+07:00`;
+  const utcDate = new Date(dateStr);
+  const newDate = utcDate.toISOString();
+
+  fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ newDate })
+  })
+    .then(async res => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || data.error || 'Gagal melakukan jadwal ulang.');
+      }
+      lastRescheduleDate.value = rescheduleDate.value;
+      lastRescheduleTime.value = rescheduleTime.value;
+      showSuccessModal.value = true;
+      closeRescheduleModal();
+    })
+    .catch(err => {
+      alert(err.message);
+    });
+}
+
+function closeSuccessModal() {
+  showSuccessModal.value = false;
+}
+
+// Mapping status ke tipe tag
+const tagTypeMap = {
+  Masuk: "info",
+  Terjadwal: "success",
+  "Jadwal Ulang": "warning",
+  Izin: "error"
+};
+
+// Kolom tabel
+const columns = [
+  {
+    title: "Jadwal",
+    key: "jadwal",
+    render(row) {
+      return h("div", {}, [
+        h("div", { style: "font-weight: 600;" }, row.jadwal),
+        h("div", { style: "font-size: 12px; color: #666;" }, row.guru)
+      ]);
+    }
   },
-  setup() {
-    const data = ref([]);
-    const isMobile = ref(false);
-    const router = useRouter();
+  { title: "Jenis", key: "jenis" },
+  { title: "Pertemuan", key: "pertemuan" },
+  { title: "Tanggal", key: "tanggal" },
+  { title: "Jam", key: "jam" },
+  { title: "Durasi", key: "durasi" },
+  {
+    title: "Status",
+    key: "status",
+    render(row) {
+      return row.status.map((status) =>
+        h(
+          NTag,
+          {
+            style: { marginRight: "6px" },
+            type: tagTypeMap[status] || "default",
+            round: true,
+            bordered: false,
+            size: "small"
+          },
+          { default: () => status }
+        )
+      );
+    }
+  },
+  {
+    title: "Aksi",
+    key: "aksi",
+    render(row) {
+      return h(butJadwalUlang, {
+        label: "Jadwal Ulang",
+        onClick: () => openRescheduleModal(row)
+      });
+    }
+  }
+];
 
-    // Tambahkan state untuk modal sukses & data terakhir reschedule
-    const showSuccessModal = ref(false);
-    const lastRescheduleDate = ref("");
-    const lastRescheduleTime = ref("");
+// Pagination mobile
+const mobilePage = ref(1);
+const mobilePageSize = 1;
+const mobileTotalPage = computed(() => Math.ceil(data.value.length / mobilePageSize));
+const pagedMobileData = computed(() => {
+  const start = (mobilePage.value - 1) * mobilePageSize;
+  return data.value.slice(start, start + mobilePageSize);
+});
 
-    const checkIsMobile = () => {
-      isMobile.value = window.innerWidth < 768;
-    };
-
-    onMounted(() => {
-      checkIsMobile();
-      window.addEventListener("resize", checkIsMobile);
+// Fetch data
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:3000/schedules", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
-
-    // Popup Jadwal Ulang
-    const showRescheduleModal = ref(false);
-    const selectedSchedule = ref(null);
-    const rescheduleDate = ref("");
-    const rescheduleTime = ref("");
-
-    function openRescheduleModal(row) {
-      selectedSchedule.value = row;
-      showRescheduleModal.value = true;
-      rescheduleDate.value = "";
-      rescheduleTime.value = "";
-    }
-    function closeRescheduleModal() {
-      showRescheduleModal.value = false;
-      selectedSchedule.value = null;
-      rescheduleDate.value = "";
-      rescheduleTime.value = "";
-    }
-
-    // Hapus fungsi confirmReschedule yang lama (alert saja)
-    // Gunakan yang ini:
-    function confirmReschedule() {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Token tidak ditemukan, silakan login ulang.');
-        return;
-      }
-      if (!selectedSchedule.value?.key) {
-        alert('Jadwal tidak ditemukan.');
-        return;
-      }
-      if (!rescheduleDate.value || !rescheduleTime.value) {
-        alert('Silakan pilih tanggal dan jam baru terlebih dahulu.');
-        return;
-      }
-
-      const dateStr = `${rescheduleDate.value}T${rescheduleTime.value}:00+07:00`;
-      const utcDate = new Date(dateStr);
-      const newDate = utcDate.toISOString()
-
-      fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ newDate })
-      })
-        .then(async res => {
-          if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            throw new Error(
-              data.message ||
-              (data.error && data.error.message) ||
-              data.error ||
-              'Gagal melakukan jadwal ulang.'
-            );
-          }
-          // Simpan tanggal & jam baru untuk modal sukses
-          lastRescheduleDate.value = rescheduleDate.value;
-          lastRescheduleTime.value = rescheduleTime.value;
-          showSuccessModal.value = true;
-          closeRescheduleModal();
-        })
-        .catch(err => {
-          alert(err.message);
-        });
-    }
-
-    function closeSuccessModal() {
-      showSuccessModal.value = false;
-    }
-
-    const tagTypeMap = {
-      Masuk: "info",
-      Terjadwal: "success",
-      "Jadwal Ulang": "warning",
-      Izin: "error"
-    };
-
-    // Kolom data
-    const columns = [
-      {
-        title: "Jadwal",
-        key: "jadwal",
-        render(row) {
-          return h("div", {}, [
-            h("div", { style: "font-weight: 600;" }, row.jadwal),
-            h("div", { style: "font-size: 12px; color: #666;" }, row.guru)
-          ]);
-        }
-      },
-      { title: "Jenis", key: "jenis" },
-      { title: "Pertemuan", key: "pertemuan" },
-      { title: "Tanggal", key: "tanggal" },
-      { title: "Jam", key: "jam" },
-      { title: "Durasi", key: "durasi" },
-      {
-        title: "Status",
-        key: "status",
-        render(row) {
-          return row.status.map((status) =>
-            h(
-              NTag,
-              {
-                style: { marginRight: "6px" },
-                type: tagTypeMap[status] || "default",
-                round: true,
-                bordered: false,
-                size: "small"
-              },
-              { default: () => status }
-            )
-          );
-        }
-      },
-      {
-        title: "Aksi",
-        key: "aksi",
-        render(row) {
-          return h(butJadwalUlang, {
-            label: "Jadwal Ulang",
-            onClick: () => openRescheduleModal(row)
-          });
-        }
-      }
-    ];
-
-    // Pagination mobile
-    const mobilePage = ref(1);
-    const mobilePageSize = 1;
-    const mobileTotalPage = computed(() => Math.ceil(data.value.length / mobilePageSize));
-    const pagedMobileData = computed(() => {
-      const start = (mobilePage.value - 1) * mobilePageSize;
-      return data.value.slice(start, start + mobilePageSize);
-    });
-
-    // Fetch data di onMounted
-    onMounted(async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/schedules", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
-        });
-        const result = await res.json();
-        data.value = (result.data.data || [])
-        .slice(0, 5)
-        .map(item => ({
-          key: item.id,
-          jadwal: item.packageName,
-          guru: item.tutorName,
-          jenis: groupTypeLabel(item.groupType),
-          pertemuan: item.meet,
-          tanggal: formatTanggal(item.date),
-          jam: formatJam(item.date),
-          durasi: `${item.duration} Menit`,
-          status: [statusLabel(item.status)],
-          slug: item.slug
-        }));
-      } catch (e) {
-        data.value = [];
-      }
-    });
-
-    return {
-      data,
-      columns,
-      tagTypeMap,
-      pagination: { pageSize: 5 },
-      isMobile,
-      showRescheduleModal,
-      selectedSchedule,
-      rescheduleDate,
-      rescheduleTime,
-      openRescheduleModal,
-      closeRescheduleModal,
-      confirmReschedule,
-      mobilePage,
-      mobileTotalPage,
-      pagedMobileData,
-      mobilePageSize,
-      // Tambahkan ini
-      showSuccessModal,
-      lastRescheduleDate,
-      lastRescheduleTime,
-      closeSuccessModal
-    };
+    const result = await res.json();
+    data.value = (result.data.data || [])
+      .slice(0, 5)
+      .map(item => ({
+        key: item.id,
+        jadwal: item.packageName,
+        guru: item.tutorName,
+        jenis: groupTypeLabel(item.groupType),
+        pertemuan: item.meet,
+        tanggal: formatTanggal(item.date),
+        jam: formatJam(item.date),
+        durasi: `${item.duration} Menit`,
+        status: [statusLabel(item.status)],
+        slug: item.slug
+      }));
+  } catch (e) {
+    data.value = [];
   }
 });
 </script>
@@ -265,7 +228,7 @@ export default defineComponent({
   <h1 class="headerr2">Jadwal Program</h1>
   <h2 class="headerb1">Terdekat</h2>
   
-  <n-space vertical :size="12">
+  <n-space vertical :size="12" style="width: 100%;">
     <!-- Desktop Table -->
     <n-data-table
       v-if="!isMobile"

@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import ButDownloadSecondSmall from '@/components/dirButton/butDownloadSecondSmall.vue'
+import Tinjauan from './Tinjauan.vue';
 
 const tutorStats = ref(null);
 const stats = ref(null);
@@ -105,6 +106,10 @@ function downloadRekap(program) {
             <p class="data-label bodysb2">Absen</p>
             <p class="data-fill bodyr2">{{ tutorStats.alpha }} pertemuan</p>
           </div>
+          <div class="column-data">
+            <p class="data-label bodysb2">Potensi Tinjauan</p>
+            <p class="data-fill bodyr2">{{ tutorStats.alpha }} pertemuan</p>
+          </div>
         </div>
       </div>
       <div class="card-body">
@@ -126,6 +131,15 @@ function downloadRekap(program) {
             <p class="data-label bodysb2">Absensi</p>
             <p class="data-fill bodyr2">{{ stats.absensi }}%</p>
           </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <n-divider class="divider" />
+      </div>
+      <div>
+        <h3 class="headersb3">Potensi Tinjauan</h3>
+        <div class="tinjauan">
+          <Tinjauan/>
         </div>
       </div>
       <div class="card-body">
@@ -200,6 +214,9 @@ function downloadRekap(program) {
   padding: 12px 16px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
+}
+.tinjauan{
+  margin-top: 1rem;
 }
 .card-space{
   display: flex;
