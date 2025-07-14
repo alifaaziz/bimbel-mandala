@@ -1,13 +1,15 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import ButDownloadSecondSmall from '@/components/dirButton/butDownloadSecondSmall.vue'
+import ButDownloadSecondSmall from '@/components/dirButton/butDownloadSecondSmall.vue';
 import Tinjauan from './Tinjauan.vue';
 
 const tutorStats = ref(null);
 const stats = ref(null);
 const route = useRoute();
 const classId = route.params.classId || route.params.id;
+
+const isPaid = ref(false);
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('id-ID', {
@@ -27,52 +29,87 @@ onMounted(async () => {
     if (data) {
       tutorStats.value = data.tutorStats;
       stats.value = data;
+      isPaid.value = data.tutorStats.status === 'terbayar';
     }
   } catch (err) {
     console.error(err);
   }
 });
 
+watch(tutorStats, () => {
+  if (tutorStats.value?.status === 'terbayar') {
+    isPaid.value = true;
+  } else {
+    isPaid.value = false;
+  }
+});
+
 const railStyle = ({ checked }) => {
   const style = {
     borderRadius: '20px',
-  }
+  };
   if (checked) {
-    style.background = '#2080f0'
+    style.background = '#2080f0';
   } else {
-    style.background = '#d03050'
+    style.background = '#d03050';
   }
-  return style
-}
+  return style;
+};
 
 function downloadRekap() {
-  const token = localStorage.getItem('token')
-  const classId = route.params.classId || route.params.id
-  if (!token || !classId) return
+  const token = localStorage.getItem('token');
+  const classId = route.params.classId || route.params.id;
+  if (!token || !classId) return;
   fetch(`http://localhost:3000/attendance/download/${classId}`, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   })
-    .then(async res => {
-      if (!res.ok) throw new Error('Gagal download rekap')
-      const blob = await res.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `rekap_${stats.value?.classCode || classId}.pdf`
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      window.URL.revokeObjectURL(url)
+    .then(async (res) => {
+      if (!res.ok) throw new Error('Gagal download rekap');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rekap_${stats.value?.classCode || classId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
     })
-    .catch(err => {
-      alert('Gagal download rekap')
-      console.error(err)
-    })
+    .catch((err) => {
+      alert('Gagal download rekap');
+      console.error(err);
+    });
 }
 
+async function updatePaymentStatus(value) {
+  const token = localStorage.getItem('token');
+  const status = value ? 'terbayar' : 'pending';
+
+  try {
+    const res = await fetch('http://localhost:3000/salaries', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        salaryId: tutorStats.value.salaryId,
+        status: status,
+      }),
+    });
+
+    if (!res.ok) throw new Error('Gagal memperbarui status');
+
+    tutorStats.value.status = status;
+  } catch (err) {
+    alert('Gagal memperbarui status pembayaran');
+    console.error(err);
+    isPaid.value = !value; // rollback toggle
+  }
+}
 </script>
 
 <template>
@@ -80,8 +117,8 @@ function downloadRekap() {
     <div class="card-header title-act">
       <div class="headerb3">Rekap Tutor</div>
       <div class="act">
-        <ButDownloadSecondSmall @click.stop="downloadRekap"/>
-        <n-switch :rail-style="railStyle">
+        <ButDownloadSecondSmall @click.stop="downloadRekap" />
+        <n-switch v-model:value="isPaid" :rail-style="railStyle" @update:value="updatePaymentStatus">
           <template #checked>
             Sudah Terbayar
           </template>
@@ -140,7 +177,7 @@ function downloadRekap() {
       <div>
         <h3 class="headersb3">Potensi Tinjauan</h3>
         <div class="tinjauan">
-          <Tinjauan/>
+          <Tinjauan />
         </div>
       </div>
       <div class="card-body">
@@ -164,8 +201,8 @@ function downloadRekap() {
             <p class="result-label bodysb2">Status</p>
             <p class="data-fill bodyr2">
               : 
-              <span v-if="tutorStats.status === 'pending'">Belum Terbayar</span>
-              <span v-else-if="tutorStats.status === 'paid'">Terbayar</span>
+              <span v-if="tutorStats.status === 'belum'">Belum Terbayar</span>
+              <span v-else-if="tutorStats.status === 'terbayar'">Terbayar</span>
               <span v-else>{{ tutorStats.status }}</span>
             </p>
           </div>
@@ -216,10 +253,10 @@ function downloadRekap() {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
 }
-.tinjauan{
+.tinjauan {
   margin-top: 1rem;
 }
-.card-space{
+.card-space {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -230,43 +267,42 @@ function downloadRekap() {
   flex-direction: column;
   gap: 1rem;
 }
-.card-content{
+.card-content {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   gap: 0.5rem;
 }
-
-.column-data{
+.column-data {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-.data-label{
+.data-label {
   color: #154288;
   width: 200px;
 }
-.headersb3{
+.headersb3 {
   color: #154288;
 }
 .divider {
   border-top: 1px solid #FEEBD9 !important;
 }
-.column-result{
+.column-result {
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
 }
-.result{
+.result {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-.result-label{
+.result-label {
   width: 100px;
   color: #154288;
 }
-.catatan{
+.catatan {
   color: #f39c12;
 }
 </style>
