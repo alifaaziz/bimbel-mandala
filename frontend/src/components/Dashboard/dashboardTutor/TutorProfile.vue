@@ -55,6 +55,7 @@ onMounted(async () => {
     major: tutor.major || '-',
     teachLevel: tutor.teachLevel || '-',
     subjects: tutor.subjects || '-',
+    percent: tutor.percent || '-',
     photo: tutor.photo,
     days: tutor.daysName || [],
     birthDate: tutor.birthDate || '-',
@@ -187,7 +188,7 @@ onMounted(async () => {
             <div class="detail-profile">
               <p>Komisi Program</p>
             </div>
-            <p>: 60%</p>
+            <p>: {{ tutorProfile.percent }}%</p>
           </div>
         </n-space>
       </div>

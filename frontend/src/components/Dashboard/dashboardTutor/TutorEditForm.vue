@@ -71,12 +71,13 @@ async function handleUpdateTutor() {
   if (formValue.value.user.alamat) tutorPayload.address = formValue.value.user.alamat;
   if (formValue.value.user.jenjangAjar) tutorPayload.teachLevel = formValue.value.user.jenjangAjar;
   if (formValue.value.user.pelajaran) tutorPayload.subjects = formValue.value.user.pelajaran;
+  if (formValue.value.user.komisi) tutorPayload.percent = formValue.value.user.komisi;
   if (formValue.value.user.prodi) tutorPayload.major = formValue.value.user.prodi;
 
   const payload = {
     ...userPayload,
     ...tutorPayload,
-    daysName, 
+    ...(daysName.length > 0 ? { daysName } : {}), 
     role: "tutor"
   };
 
@@ -163,10 +164,11 @@ async function handleUpdateTutor() {
               placeholder="Matematika, Bahasa Inggris, Fisika, dll."
             />
           </n-form-item>
-          <n-form-item label="Komisi Program" path="user.pelajaran" class="col-span-6">
+          <n-form-item label="Komisi Program" path="user.komisi" class="col-span-6">
             <n-input
-              v-model:value="formValue.user.pelajaran"
+              v-model:value="formValue.user.komisi"
               placeholder="60%"
+              type="number"
             />
           </n-form-item>
           <n-form-item label="Hari Aktif Mengajar" path="user.days" class="col-span-6">
