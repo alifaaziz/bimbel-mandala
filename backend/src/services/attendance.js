@@ -457,6 +457,8 @@ async function getRekapKelasById(classId) {
   const totalPertemuan = schedules.length;
   const kesesuaian = totalPertemuan > 0 ? ((totalPertemuan - kosong) / totalPertemuan) * 100 : 0;
 
+  const alerts = await alertAttendance(classId);
+
   return {
     name: classData.order?.bimbelPackage?.name || '',
     level: classData.order?.bimbelPackage?.level || '',
@@ -467,7 +469,8 @@ async function getRekapKelasById(classId) {
     kosong,
     kesesuaian,
     progress: tutorStats?.scheduleProgress || 0,
-    absensi: tutorStats?.totalAttendance || 0
+    absensi: tutorStats?.totalAttendance || 0,
+    tinjauan: alerts.length 
   };
 }
 
@@ -732,12 +735,12 @@ async function alertAttendance(classId) {
       waktuAbsenDate.setHours(waktuAbsenDate.getHours() - 7);
 
       const selisihMenit = Math.floor((waktuAbsenDate - jadwalMulai) / 60000);
-      if (selisihMenit > 5) {
+      if (selisihMenit > 15) {
         alerts.push({
-          tanggal: jadwalMulai.toISOString().slice(0, 10),
+          tanggal: jadwalMulai,
           meet: schedule.meet,
           waktuAbsen: waktuAbsenDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-          status: 'Potensi Terlambat',
+          jenis: 'Keterlambatan',
           keterangan: `Tutor terlambat ${selisihMenit} menit`
         });
       }
@@ -746,17 +749,16 @@ async function alertAttendance(classId) {
         !attendances.some(att => att.userId === siswaId && att.status === 'masuk')
       );
       const now = new Date();
-      const missedOut = (now - jadwalMulai) > (24 * 60 * 60 * 1000);
       if (
         tutorMasuk &&
         siswaTidakMasuk &&
-        missedOut
+        now.getDate() !== jadwalMulai.getDate()
       ) {
         alerts.push({
-          tanggal: jadwalMulai.toISOString().slice(0, 10),
+          tanggal: jadwalMulai,
           meet: schedule.meet,
           waktuAbsen: waktuAbsenDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-          status: 'Potensi Pembatalan Sepihak',
+          jenis: 'Mark',
           keterangan: 'Semua siswa dalam kelas tidak melakukan absensi'
         });
       }
@@ -776,5 +778,5 @@ export const AttendanceService = {
   createIzinNotification,
   createMasukNotification,
   createSalaryIfLastAttendance,
-  alertAttendance
+  alertAttendance,
 };
