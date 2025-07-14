@@ -261,7 +261,9 @@ const isClass = computed(() => formModel.value.type === 'class');
   overflow-y: auto;
   background-color: #0B2343;
 }
-
+.bodysb2 {
+  margin-top: 1rem;
+}
 .form-card {
   border-radius: 8px;
   background-color: #fff;

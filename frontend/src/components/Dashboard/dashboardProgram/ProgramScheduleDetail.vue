@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue';
 import { useRouter } from 'vue-router'
-import SkemaBiaya from './SkemaBiaya.vue';
+import JadwalDetailProgram from './JadwalDetailProgram.vue';
 
 const router = useRouter()
 
@@ -101,7 +101,8 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
           <!-- Button Edit Program dihapus -->
         </div>
       </div>
-      <SkemaBiaya class="tabel" />
+      <n-divider class="divider" />
+      <JadwalDetailProgram />
     </div>
   </div>
 </template>
@@ -163,7 +164,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 }
 .label-data{
   display: inline-block; 
-  width: 60px;
+  width: 100px;
 }
 .tag {
   background-color: #154484;
@@ -178,6 +179,9 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 }
 .meeting-link {
   color: #FB8312;
+}
+.divider {
+  border-top: 1px solid #FEEBD9 !important;
 }
 .bodysb2, .headerb3 {
   color: #154484;
