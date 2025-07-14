@@ -438,117 +438,63 @@ describe('ClassService', () => {
     });
   });
 
-  describe('getFinishedClasses', () => {
-    it('should return finished classes with all fields', async () => {
-      mockPrisma.prisma.class.findMany.mockResolvedValueOnce([
-        {
-          tutor: { name: 'Budi' },
-          order: {
-            address: 'Jl. Mawar',
-            groupType: { type: 'Reguler', price: 100000, discPrice: 90000, maxStudent: 2 },
-            bimbelPackage: {
-              name: 'Paket A',
-              level: 'SMA',
-              time: '10:00',
-              duration: 90,
-              packageDay: [
-                { day: { daysName: 'Senin' } },
-                { day: { daysName: 'Rabu' } }
-              ]
+  describe('getClassById', () => {
+    it('should return class detail with all mapped fields', async () => {
+      mockPrisma.prisma.class.findUnique.mockResolvedValueOnce({
+        id: 'class1',
+        code: 'C123',
+        studentClasses: [
+          { user: { name: 'Siswa A' } },
+          { user: { name: 'Siswa B' } }
+        ],
+        order: {
+          amount: 1000000,
+          address: 'Jl. Mawar',
+          groupType: { type: 'Privat', maxStudent: 2 },
+          bimbelPackage: {
+            name: 'Kimia',
+            level: 'SMA',
+            area: 'Semarang',
+            time: '08:00',
+            duration: 90,
+            user: {
+              name: 'Ratna Dewi',
+              tutors: [{ photo: '/tutors/4.png', percent: 70 }]
             },
-            salary: [{ total: 50000, status: 'paid' }]
-          },
-          studentClasses: [
-            { user: { name: 'Student A' } },
-            { user: { name: 'Student B' } }
-          ],
-          status: 'selesai'
+            packageDay: [
+              { day: { daysName: 'Senin' } },
+              { day: { daysName: 'Rabu' } }
+            ]
+          }
         }
-      ]);
-      const result = await ClassService.getFinishedClasses();
-      expect(result[0]).toMatchObject({
-        programName: 'Paket A',
-        tutorName: 'Budi',
+      });
+
+      const result = await ClassService.getClassById('class1');
+      expect(result).toMatchObject({
+        classId: 'class1',
+        code: 'C123',
+        packageName: 'Kimia',
         level: 'SMA',
-        days: 'Senin, Rabu',
-        time: '10:00',
+        tutorName: 'Ratna Dewi',
+        tutorPhoto: '/tutors/4.png',
+        days: ['Senin', 'Rabu'],
+        area: 'Semarang',
+        time: '08:00',
+        duration: 90,
+        type: 'Privat',
+        price: 1000000,
+        studentPrice: 500000,
+        honor: 700000,
         address: 'Jl. Mawar',
-        status: 'selesai',
-        students: ['Student A', 'Student B'],
-        groupType: {
-          type: 'Reguler',
-          price: 90000,
-          maxStudent: 2,
-          studentPrice: 45000
-        },
-        salary: {
-          total: 50000,
-          status: 'paid'
-        }
+        students: 'Siswa A, Siswa B'
       });
     });
 
-    it('should handle missing groupType, bimbelPackage, salary, and students', async () => {
-      mockPrisma.prisma.class.findMany.mockResolvedValueOnce([
-        {
-          tutor: null,
-          order: {
-            address: null,
-            groupType: null,
-            bimbelPackage: null,
-            salary: []
-          },
-          studentClasses: [],
-          status: 'selesai'
-        }
-      ]);
-      const result = await ClassService.getFinishedClasses();
-      expect(result[0]).toMatchObject({
-        programName: null,
-        tutorName: null,
-        level: null,
-        days: null,
-        time: null,
-        address: null,
-        status: 'selesai',
-        students: [],
-        groupType: {
-          type: null,
-          price: null,
-          maxStudent: 1,
-          studentPrice: 0
-        },
-        salary: {
-          total: 0,
-          status: null
-        }
-      });
-    });
-
-    it('should return students as [] if studentClasses is missing', async () => {
-      mockPrisma.prisma.class.findMany.mockResolvedValueOnce([
-        {
-          tutor: { name: 'Budi' },
-          order: {
-            address: 'Jl. Mawar',
-            groupType: { type: 'Reguler', price: 100000, discPrice: 90000, maxStudent: 2 },
-            bimbelPackage: {
-              name: 'Paket A',
-              level: 'SMA',
-              time: '10:00',
-              duration: 90,
-              packageDay: [
-                { day: { daysName: 'Senin' } },
-                { day: { daysName: 'Rabu' } }
-              ]
-            },
-            salary: [{ total: 50000, status: 'paid' }]
-          },
-          status: 'selesai'
-        }
-      ]);
-      const result = await ClassService.getFinishedClasses();
-      expect(result[0].students).toEqual([]);
+    it('should return null if class not found', async () => {
+      mockPrisma.prisma.class.findUnique.mockResolvedValueOnce(null);
+      const result = await ClassService.getClassById('class2');
+      expect(result).toBeNull();
     });
   });
+
 });

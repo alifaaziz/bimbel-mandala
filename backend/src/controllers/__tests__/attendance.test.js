@@ -10,6 +10,7 @@ jest.unstable_mockModule('../../services/attendance.js', () => ({
     getAttendanceStatistics: jest.fn(),
     getMyAttendanceStatistics: jest.fn(),
     getRekapKelasById: jest.fn(),
+    alertAttendance: jest.fn(),
   },
 }));
 
@@ -148,6 +149,25 @@ describe('AttendanceController', () => {
       expect(AttendanceService.getMyAttendanceStatistics).toHaveBeenCalledWith({ id: 'user1' });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(statsMock);
+    });
+  });
+
+  describe('getAttendanceAlerts', () => {
+    it('should return attendance alerts for a class', async () => {
+      const alertsMock = [
+        { tanggal: '2025-07-13', meet: 2, waktuAbsen: '21.09', status: 'Potensi Terlambat', keterangan: 'Tutor terlambat 6 menit' }
+      ];
+      AttendanceService.alertAttendance.mockResolvedValue(alertsMock);
+
+      const { req, res } = setupExpressMock({
+        req: { params: { classId: 'class1' } },
+      });
+
+      await AttendanceController.getAttendanceAlerts(req, res);
+
+      expect(AttendanceService.alertAttendance).toHaveBeenCalledWith('class1');
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ data: alertsMock });
     });
   });
 });

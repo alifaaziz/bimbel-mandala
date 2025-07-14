@@ -34,7 +34,8 @@ describe('OrderService', () => {
           packageId: 'pkg1',
           groupTypeId: 'grp1',
           address: 'address',
-          status: 'pending'
+          status: 'pending',
+          amount: 0 
         }
       });
       expect(mockPrisma.bimbelPackage.update).toHaveBeenCalledWith({
@@ -49,6 +50,24 @@ describe('OrderService', () => {
       await OrderService.createOrder('user1', 'pkg1', 'grp1', 'address');
       expect(mockPrisma.order.create).toHaveBeenCalled();
       expect(mockPrisma.bimbelPackage.update).not.toHaveBeenCalled();
+    });
+
+    it('should use discPrice as amount if discPrice is present and > 0', async () => {
+      mockPrisma.groupType.findUnique.mockResolvedValueOnce({ type: 'reguler', price: 100000, discPrice: 90000 });
+      mockPrisma.order.create.mockResolvedValueOnce({});
+      mockPrisma.bimbelPackage.update.mockResolvedValueOnce({});
+      await OrderService.createOrder('user1', 'pkg1', 'grp1', 'address');
+      expect(mockPrisma.order.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'user1',
+          packageId: 'pkg1',
+          groupTypeId: 'grp1',
+          address: 'address',
+          status: 'pending',
+          amount: 90000 // discPrice
+        }
+      });
+      expect(mockPrisma.bimbelPackage.update).toHaveBeenCalled();
     });
   });
 
