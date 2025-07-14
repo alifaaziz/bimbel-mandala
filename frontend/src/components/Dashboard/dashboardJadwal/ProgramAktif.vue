@@ -39,11 +39,13 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        this.activePrograms = result.data.map((program) => ({
+        this.activePrograms = result.data
+          .map((program) => ({
             subject: `${program.programName} ${program.level}`,
-          teacher: program.tutorName,
-          code: program.classCode,
-        }));
+            teacher: program.tutorName,
+            code: program.classCode,
+          }))
+          .slice(0, 10); 
       } catch (error) {
         console.error('Error fetching running classes:', error);
         alert('Gagal mengambil data program aktif.');

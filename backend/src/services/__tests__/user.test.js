@@ -886,4 +886,21 @@ describe('UserService', () => {
       expect(result[0]).toMatchObject({ name: 'D', teachLevel: null });
     });
   });
+
+  describe('getAllTutors', () => {
+    it('returns all tutors with id and name only', async () => {
+      const mockTutors = [
+        { id: 't1', name: 'Tutor 1' },
+        { id: 't2', name: 'Tutor 2' }
+      ];
+      mockPrisma.user.findMany.mockResolvedValueOnce(mockTutors);
+
+      const result = await UserService.getAllTutors();
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
+        where: { role: 'tutor' },
+        select: { id: true, name: true }
+      });
+      expect(result).toEqual(mockTutors);
+    });
+  });
 });

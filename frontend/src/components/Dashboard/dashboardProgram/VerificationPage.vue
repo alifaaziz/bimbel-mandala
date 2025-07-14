@@ -1,28 +1,48 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 const programData = ref({
-  _id: 'abc123',
-  name: 'Program Matematika Intensif',
-  tutorName: 'Pak Dendy Wan S.Pd',
-  level: 'SMA', // bisa 'SD', 'SMP', atau 'SMA'
-  days: ['Senin', 'Rabu', 'Jumat'],
-  time: '2025-01-27T15:00:00.000Z',
-  duration: 90,
-  area: 'Jakarta Selatan',
-  totalMeetings: 12,
-  startDate: '2025-01-27',
-  photo: null,
-  groupType: [
-    { type: 'Privat', price: 500000 },
-    { type: 'Kelompok', price: 300000 }
-  ]
-})
+  id: '',
+  packageName: '',
+  tutorName: '',
+  level: '',
+  area: '',
+  totalMeetings: null,
+  time: '',
+  duration: null,
+  type: '',
+  paid: null,
+  studentName: '',
+  address: '',
+  startDate: '',
+  days: [],
+  photo: '',
+});
+
+const loading = ref(false);
+
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  const id = route.params.id;
+  if (!id || !token) return;
+  try {
+    const res = await fetch(`http://localhost:3000/orders/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    if (json.data) {
+      Object.assign(programData.value, json.data);
+    }
+  } catch (err) {
+    console.error('Gagal fetch order:', err);
+  }
+});
 
 const badgeClass = (level: string) => {
   switch (level.toLowerCase()) {
@@ -35,13 +55,62 @@ const badgeClass = (level: string) => {
     default:
       return '';
   }
+};
+
+async function handleValidateClick() {
+  const token = localStorage.getItem('token');
+  const orderId = route.params.id;
+  if (!orderId || !token) return;
+
+  loading.value = true;
+  try {
+    await fetch('http://localhost:3000/orders/status', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        orderId,
+        status: 'paid'
+      })
+    });
+    // Setelah fetch selesai, loading tetap aktif selama 2 detik
+    setTimeout(() => {
+      router.push(`/dashboardadmin/programadmin/detail/${orderId}`);
+      loading.value = false;
+    }, 2000);
+  } catch (err) {
+    alert('Gagal verifikasi order');
+    console.error(err);
+    loading.value = false;
+  }
 }
 
-function handleValidateClick() {
-  router.push({ name: 'ProgramScheduleDetail' });
+function handleBackClick() {
+  router.back();
 }
 
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+const typeLabel = (type) => {
+  switch (type) {
+    case 'privat':
+      return 'Privat';
+    case 'grup2':
+      return 'Kelompok 2 Peserta';
+    case 'grup3':
+      return 'Kelompok 3 Peserta';
+    case 'grup4':
+      return 'Kelompok 4 Peserta';
+    case 'grup5':
+      return 'Kelompok 5 Peserta';
+    case 'kelas':
+      return 'Kelas';
+    default:
+      return type;
+  }
+};
 </script>
 
 <template>
@@ -51,14 +120,14 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
       <div class="header-program">
         <img
           class="tutor-photo"
-          :src="'/tutor/Tutor_Default.png'"
+            :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/tutor/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">
           <div class="header-section">
             <div>
-              <div class="subject headersb1">Matematika SMA</div>
-              <div class="tutor-name bodym2">Dendy Wan S.Pd</div>
+              <div class="subject headersb1">{{ programData.packageName }}</div>
+              <div class="tutor-name bodym2">{{ programData.tutorName }}</div>
             </div>
             <div>
               <div
@@ -82,23 +151,29 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
           <div class="info-section bodyr2">
             <div class="info-row">
               <span class="label-data"><strong>Area</strong></span>
-              <span class="value">: Semarang</span>
+              <span class="value">: {{ programData.area }}</span>
             </div>
             <div class="info-row">
               <span class="label-data"><strong>Pertemuan</strong></span>
-              <span class="value">: 6 Bulan (3x perminggu)</span>
+              <span class="value">: {{ programData.totalMeetings }} pertemuan</span>
             </div>
             <div class="info-row">
               <span class="label-data"><strong>Pukul</strong></span>
-              <span class="value">: 15:00 WIB</span>
+              <span class="value">
+                : {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB
+              </span>
             </div>
             <div class="info-row">
               <span class="label-data"><strong>Durasi</strong></span>
-              <span class="value">: 120 menit</span>
+              <span class="value">: {{ programData.duration }} menit</span>
             </div>
           </div>
-          <div class="meeting-link bodysb1">Privat/Kelompok</div>
-          <p class="headerb3">Rp {{ programData.groupType[0].price }} </p>
+            <div class="meeting-link bodysb1">
+            {{ programData.type === 'kelas' ? 'Kelas' : 'Privat/Kelompok' }}
+            </div>
+          <p class="headerb3">
+            {{ Number(programData.paid).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }) }}
+          </p>
         </div>
       </div>
       <n-divider class="divider" />
@@ -106,34 +181,44 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
       <div>
           <h4 class="bodysb2">Siswa</h4>
-          <p class="bodyr2">Arell Saverro Biyantoro, Alif Abdul Aziz, Raihan Muhammad R.R.</p>
+          <p class="bodyr2">{{ programData.studentName }}</p>
       </div>
 
       <div>
           <h4 class="bodysb2">Lokasi Les Privat</h4>
-          <p class="bodyr2">Jalan Sekaran N0. 05 RT 003/001</p>
+          <p class="bodyr2">{{ programData.address }}</p>
       </div>
 
       <div>
           <h4 class="bodysb2">Peserta</h4>
-          <p class="bodyr2">Kelompok 3 Peserta</p>
+          <p class="bodyr2">{{ typeLabel(programData.type) }}</p>
       </div>
 
       <div>
           <h4 class="bodysb2">Tanggal Mulai</h4>
-          <p class="bodyr2">24 Mei 2025</p>
+            <p class="bodyr2">
+            {{
+              programData.startDate
+              ? new Date(programData.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+              : ''
+            }}
+            </p>
       </div>
 
       <n-divider class="divider" />
-      <div class="button">
+      <div class="button" style="position: relative;">
         <butPrimerNormal
           @click="handleValidateClick"
+          :loading="loading"
           label="Verifikasi Pembuatan Jadwal"
         />
         <butSecondNormal
           @click="handleBackClick"
           label="Batal"
         />
+        <div v-if="loading" class="btn-spinner-overlay">
+          <div class="btn-spinner"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -229,5 +314,28 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 .tabel {
   margin-top: 1rem;
 }
-
+.btn-spinner-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 160px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.btn-spinner {
+  width: 28px;
+  height: 28px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #154484;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  background: transparent;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
 </style>

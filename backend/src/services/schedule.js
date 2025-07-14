@@ -43,18 +43,22 @@ async function createSchedules(classId) {
   if (!time || isNaN(new Date(time).getTime())) {
     throw new Error('Invalid time format in bimbelPackage');
   }
-
-  // Urutkan hari sesuai urutan dunia (Minggu, Senin, ..., Sabtu)
   const weekDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   let days = packageDay.map((pd) => pd.day.daysName);
   days = days.sort((a, b) => weekDays.indexOf(a) - weekDays.indexOf(b));
 
-  // Jika kode kelas diawali "CLS" dan ada startDate di bimbelPackage, gunakan startDate
   let startDateObj;
-  if (classData.code && classData.code.startsWith('CLS') && startDate && !isNaN(new Date(startDate).getTime())) {
+  if (
+    classData.code &&
+    classData.code.startsWith('CLS') &&
+    startDate &&
+    !isNaN(new Date(startDate).getTime())
+  ) {
     startDateObj = new Date(startDate);
   } else {
     startDateObj = new Date();
+    startDateObj.setDate(startDateObj.getDate() + 1);
+    startDateObj.setHours(0, 0, 0, 0); 
   }
 
   const schedules = [];

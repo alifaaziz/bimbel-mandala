@@ -284,12 +284,12 @@ const routes = [
             component: EditProgramForm,
           },
           {
-            path: 'verifprogram',
+            path: 'verif/:id',
             name: 'VerifProgram',
-            component: VerifProgram,  
+            component: VerifProgram,
           },
           {
-            path: 'programscheduledetail',
+            path: 'detail/:orderId',
             name: 'ProgramScheduleDetail',
             component: ProgramScheduleDetail,
           },

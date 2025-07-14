@@ -1,13 +1,17 @@
 <script>
 import { NTag } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
 
 export default defineComponent({
-  setup() {
+  props: {
+    slug: {
+      type: String,
+      required: true
+    }
+  },
+  setup(props) {
     const isMobile = ref(false);
     const data = ref([]);
-    const route = useRoute();
 
     const updateIsMobile = () => {
       isMobile.value = window.innerWidth <= 600;
@@ -18,12 +22,12 @@ export default defineComponent({
       window.addEventListener("resize", updateIsMobile);
 
       const token = localStorage.getItem('token');
-      const userId = route.params.id;
-      const res = await fetch(`http://localhost:3000/schedules/user/${userId}`, {
+      if (!props.slug || !token) return;
+      const res = await fetch(`http://localhost:3000/schedules/closest/${props.slug}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await res.json();
-      const sorted = (result.data.data || []).sort((a, b) => new Date(a.date) - new Date(b.date));
+      const sorted = (result.data || []).sort((a, b) => new Date(a.date) - new Date(b.date));
       data.value = sorted.slice(0, 5).map((item, idx) => ({
         key: item.id || idx + 1,
         jadwal: item.packageName || '-',

@@ -1422,7 +1422,6 @@ async function main() {
             area: 'Semarang',
             slug: 'bahasa-inggris-sma-14klui',
             userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa', // Venita S.Pd
-            isActive: false,
         },
         {
             id: "0196b294-4791-7b00-8000-000000000011",
@@ -3176,7 +3175,7 @@ async function main() {
         {
             id: "019618a1-68a4-7fbc-87af-6cc1cc6cffd0",
             code: 'ABC123',
-            status: 'berjalan',
+            status: 'selesai',
             tutorId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",// Ma Tor Nu Won - Bahasa Inggris
             maxStudents: 2,
@@ -3490,16 +3489,16 @@ async function main() {
     }
 
     // Seed Salary
-    // await prisma.salary.create({
-    //     data: {
-    //         id: "01965b4e-ec32-791f-b338-25cd592ed5e8",
-    //         userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
-    //         orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",
-    //         total: 918000,
-    //         payroll:918000,
-    //         status: 'pending',
-    //     }
-    // });
+    await prisma.salary.create({
+        data: {
+            id: "01965b4e-ec32-791f-b338-25cd592ed5e8",
+            userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
+            orderId: "019618a1-68a4-75a4-abe4-dffa3730c045",
+            total: 612000,
+            payroll: 61200,
+            status: 'pending',
+        }
+    });
 
     // Seed Tutor Applications
     const tutorApplications = [

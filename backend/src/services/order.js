@@ -233,7 +233,8 @@ async function getOrderById(id) {
           totalMeetings: true,
           time: true,
           duration: true,
-          user: { select: { name: true } },
+          slug: true,
+          user: { select: { name: true, tutors: { select: { photo: true } } } },
           groupType: {
             select: {
               id: true,
@@ -319,7 +320,10 @@ async function getOrderById(id) {
     paid,
     studentName,
     address: order.address,
-    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null // format YYYY-MM-DD
+    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null, // format YYYY-MM-DD
+    days: packageDays,
+    photo: order.bimbelPackage?.user?.tutors?.[0]?.photo || null,
+    slug: order.bimbelPackage?.slug || null,
   };
 }
 
