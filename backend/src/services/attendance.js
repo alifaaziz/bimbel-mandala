@@ -37,6 +37,7 @@ async function getTutorStats({ schedules, order, user }) {
       orderId: order?.id
     },
     select: {
+      id: true,
       status: true,
       total: true,
       payroll: true
@@ -61,6 +62,7 @@ async function getTutorStats({ schedules, order, user }) {
 
   return {
     tutorId: user.id,
+    salaryId: salaryRecord?.id || null,
     name: user.name,
     ...calculateAttendanceStats(tutorAttendance, user.id),
     totalSchedules,
@@ -758,7 +760,7 @@ async function alertAttendance(classId) {
           tanggal: jadwalMulai,
           meet: schedule.meet,
           waktuAbsen: waktuAbsenDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-          jenis: 'Mark',
+          jenis: 'Pembatalan',
           keterangan: 'Semua siswa dalam kelas tidak melakukan absensi'
         });
       }

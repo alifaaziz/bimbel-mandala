@@ -1,22 +1,47 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
-const dataTable = ref([
-  {
-    jenis: 'Keterlambatan',
-    tanggal: '2025-07-10',
-    pertemuan: '12',
-    jam: '15:00',
-    keterangan: "Melakukan absensi pukul 15:50"
-  },
-  {
-    jenis: 'Pembatalan',
-    tanggal: '2025-07-12',
-    pertemuan: '13',
-    jam: '15:00 ',
-    keterangan: 'Tidak ada absensi siswa'
+const route = useRoute()
+const dataTable = ref([])
+const loading = ref(false)
+
+async function fetchTinjauan() {
+  loading.value = true
+  const classId = route.params.classId
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`http://localhost:3000/attendance/alert/${classId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    const json = await res.json()
+    dataTable.value = (json.data || []).map(item => ({
+      jenis: item.jenis,
+      tanggal: item.tanggal
+        ? `${new Date(item.tanggal).toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+          })}, ${new Date(item.tanggal).toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit'
+          })}`
+        : '',
+      pertemuan: item.meet,
+      jam: item.waktuAbsen,
+      keterangan: item.keterangan
+    }))
+  } catch (e) {
+    dataTable.value = []
+  } finally {
+    loading.value = false
   }
-])
+}
+
+onMounted(fetchTinjauan)
 </script>
 
 <template>
@@ -26,7 +51,7 @@ const dataTable = ref([
         <th class="th">Jenis</th>
         <th class="th">Tanggal</th>
         <th class="th">Pertemuan</th>
-        <th class="th">Jam</th>
+        <th class="th">Waktu Absen</th>
         <th class="th">Keterangan</th>
       </tr>
     </thead>

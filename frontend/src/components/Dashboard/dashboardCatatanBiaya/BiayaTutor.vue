@@ -45,10 +45,11 @@ const railStyle = ({ checked }) => {
   return style
 }
 
-function downloadRekap(program) {
+function downloadRekap() {
   const token = localStorage.getItem('token')
-  if (!token) return
-  fetch(`http://localhost:3000/attendance/download/${program.classId}`, {
+  const classId = route.params.classId || route.params.id
+  if (!token || !classId) return
+  fetch(`http://localhost:3000/attendance/download/${classId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`
@@ -60,7 +61,7 @@ function downloadRekap(program) {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `rekap_${program.kode}.pdf`
+      a.download = `rekap_${stats.value?.classCode || classId}.pdf`
       document.body.appendChild(a)
       a.click()
       a.remove()
@@ -79,7 +80,7 @@ function downloadRekap(program) {
     <div class="card-header title-act">
       <div class="headerb3">Rekap Tutor</div>
       <div class="act">
-        <ButDownloadSecondSmall @click.stop="downloadRekap(program)"/>
+        <ButDownloadSecondSmall @click.stop="downloadRekap"/>
         <n-switch :rail-style="railStyle">
           <template #checked>
             Sudah Terbayar
@@ -108,7 +109,7 @@ function downloadRekap(program) {
           </div>
           <div class="column-data">
             <p class="data-label bodysb2">Potensi Tinjauan</p>
-            <p class="data-fill bodyr2">{{ tutorStats.alpha }} pertemuan</p>
+            <p class="data-fill bodyr2">{{ stats.tinjauan }} pertemuan</p>
           </div>
         </div>
       </div>

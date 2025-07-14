@@ -3372,7 +3372,7 @@ async function main() {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d5d",
             scheduleId: "019618a1-68a4-7a00-8000-000000000007",
             userId: "019618a1-68a4-7742-9471-2548f7726e86",
-            status: 'masuk',
+            status: 'alpha',
         },
         {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d5e",
@@ -3422,7 +3422,7 @@ async function main() {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d62",
             scheduleId: "019618a1-68a4-7a00-8000-000000000007",
             userId: "0195d575-26cb-73a9-ac9c-4395ebfb2326",
-            status: 'masuk',
+            status: 'alpha',
         },
 
         // Venita - Bahasa Inggris
@@ -3431,48 +3431,56 @@ async function main() {
             scheduleId: "019618a1-68a4-7a00-8000-000000000001",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             status: 'masuk',
+            createdAt: new Date('2025-04-08T15:05:00Z'),
         },
         {
             id: "0196b2ee-98ca-7da3-849f-d1bc1660cf18",
             scheduleId: "019618a1-68a4-7a00-8000-000000000002",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             status: 'masuk',
+            createdAt: new Date('2025-04-11T15:35:00Z'),
         },
         {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d64",
             scheduleId: "019618a1-68a4-7a00-8000-000000000003",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             status: 'masuk',
+            createdAt: new Date('2025-04-15T15:10:00Z'),
         },
         {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d65",
             scheduleId: "019618a1-68a4-7a00-8000-000000000004",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             status: 'masuk',
+            createdAt: new Date('2025-04-18T18:40:00Z'),
         },
         {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d66",
             scheduleId: "019618a1-68a4-7a00-8000-000000000005",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             status: 'masuk',
+            createdAt: new Date('2025-04-22T15:00:00Z'),
         },
         {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d67",
             scheduleId: "019618a1-68a4-7a00-8000-000000000006",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             status: 'masuk',
+            createdAt: new Date('2025-04-25T15:00:00Z'),
         },
         {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d68",
             scheduleId: "019618a1-68a4-7a00-8000-000000000007",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             status: 'masuk',
+            createdAt: new Date('2025-04-28T15:00:00Z'),
         },
         {
             id: "0196b2ee-bc5d-a9c5-bd9c-fc5d9d5d9d69",
             scheduleId: "019618a1-68a4-7a00-8000-000000000008",
             userId: "019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa",
             status: 'masuk',
+            createdAt: new Date('2025-07-10T15:00:00Z'),
         },
     ];
     for (const attendance of attendances) {

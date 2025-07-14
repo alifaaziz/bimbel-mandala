@@ -122,7 +122,7 @@ describe('AttendanceService', () => {
       expect(result[0]).toMatchObject({ jenis: 'Keterlambatan' });
     });
 
-    it('should return alert for all students not present (Mark)', async () => {
+    it('should return alert for all students not present (Pembatalan)', async () => {
       const jadwalMulai = new Date(Date.now() - 24 * 60 * 60000); // kemarin
       const waktuAbsen = new Date(jadwalMulai.getTime() + (10 * 60000));
       waktuAbsen.setHours(waktuAbsen.getHours() + 7); // simulasikan offset
@@ -144,10 +144,10 @@ describe('AttendanceService', () => {
       const result = await AttendanceService.alertAttendance('class2');
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBeGreaterThan(0);
-      expect(result.some(r => r.jenis === 'Mark')).toBe(true);
+      expect(result.some(r => r.jenis === 'Pembatalan')).toBe(true);
     });
 
-    it('should not return Mark alert if at least one student is present', async () => {
+    it('should not return Pembatalan alert if at least one student is present', async () => {
       const jadwalMulai = new Date(Date.now() - 24 * 60 * 60000); // kemarin
       const waktuAbsen = new Date(jadwalMulai.getTime() + (10 * 60000));
       waktuAbsen.setHours(waktuAbsen.getHours() + 7); // simulasikan offset
@@ -170,8 +170,7 @@ describe('AttendanceService', () => {
         ]
       });
       const result = await AttendanceService.alertAttendance('class3');
-      // Tidak ada alert Mark karena ada siswa yang masuk
-      expect(result.some(r => r.jenis === 'Mark')).toBe(false);
+      expect(result.some(r => r.jenis === 'Pembatalan')).toBe(false);
     });
 
     it('should not return any alert if tutor has not attended', async () => {
