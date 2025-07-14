@@ -1,108 +1,129 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const programData = ref({
+  _id: 'abc123',
+  name: 'Program Matematika Intensif',
+  tutorName: 'Pak Dendy Wan S.Pd',
+  level: 'SMA', // bisa 'SD', 'SMP', atau 'SMA'
+  days: ['Senin', 'Rabu', 'Jumat'],
+  time: '2025-01-27T15:00:00.000Z',
+  duration: 90,
+  area: 'Jakarta Selatan',
+  totalMeetings: 12,
+  startDate: '2025-01-27',
+  photo: null,
+  groupType: [
+    { type: 'Privat', price: 500000 },
+    { type: 'Kelompok', price: 300000 }
+  ]
+})
+
+const badgeClass = (level: string) => {
+  switch (level.toLowerCase()) {
+    case 'sd':
+      return 'grade-sd';
+    case 'smp':
+      return 'grade-smp';
+    case 'sma':
+      return 'grade-sma';
+    default:
+      return '';
+  }
+}
+
+function handleValidateClick() {
+  router.push({ name: 'ProgramScheduleDetail' });
+}
+
+const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+</script>
+
 <template>
-  <div class="page-container">
-    <n-space vertical :size="32">
+  <div class="detail-flow">
+    <div class="detail-ccontainer">
+      
       <div class="header-program">
         <img
           class="tutor-photo"
-          :src="programData.tutorPhoto ? `http://localhost:3000/public/${programData.tutorPhoto}` : '/tutor/Tutor_Default.png'"
-          alt="Foto Tutor"
+          :src="'/tutor/Tutor_Default.png'"
+          alt="Tutor Photo"
         />
         <div class="card-content">
           <div class="header-section">
             <div>
-              <div class="subject headersb1">{{ programData.packageName }}</div>
-              <div class="tutor-name bodym2">{{ programData.tutorName }}</div>
+              <div class="subject headersb1">Matematika SMA</div>
+              <div class="tutor-name bodym2">Dendy Wan S.Pd</div>
             </div>
             <div>
               <div
                 class="headerb1"
                 :class="badgeClass(programData.level)"
               >
-                {{ programData.level }}
+              {{ programData.level }}
               </div>
             </div>
           </div>
           <n-space class="bodyr2">
             <n-tag
-              v-for="day in allDays"
-              :key="day"
+              v-for="(day, index) in allDays"
+              :key="index"
               class="tag"
-              :class="{ 'tag-unselected': !programData.days?.includes(day) }"
-              :bordered="false"
+              :class="{ 'tag-unselected': !programData.days.includes(day) }"
             >
               {{ day }}
             </n-tag>
           </n-space>
           <div class="info-section bodyr2">
             <div class="info-row">
-              <span class="label"><strong>Area</strong></span>
-              <span class="value">: {{ programData.area }}</span>
+              <span class="label-data"><strong>Area</strong></span>
+              <span class="value">: Semarang</span>
             </div>
             <div class="info-row">
-              <span class="label"><strong>Pertemuan</strong></span>
-              <span class="value">: {{ programData.meetings }}</span>
+              <span class="label-data"><strong>Pertemuan</strong></span>
+              <span class="value">: 6 Bulan (3x perminggu)</span>
             </div>
             <div class="info-row">
-              <span class="label"><strong>Pukul</strong></span>
-              <span class="value">: {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB</span>
+              <span class="label-data"><strong>Pukul</strong></span>
+              <span class="value">: 15:00 WIB</span>
             </div>
             <div class="info-row">
-              <span class="label"><strong>Durasi</strong></span>
-              <span class="value">: {{ programData.duration }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label"><strong>Lokasi</strong></span>
-              <span class="value">: {{ programData.address }}</span>
+              <span class="label-data"><strong>Durasi</strong></span>
+              <span class="value">: 120 menit</span>
             </div>
           </div>
-          <div>
-            <p class="program-type">{{ programData.type }}</p>
-            <p class="price">{{ formatRupiah(programData.price) }}</p>
-          </div>
+          <div class="meeting-link bodysb1">Privat/Kelompok</div>
+          <p class="headerb3">Rp {{ programData.groupType[0].price }} </p>
         </div>
       </div>
-      <div class="registration-details">
-        <n-divider class="divider" />
-        <h3 class="section-title">Data Pendaftaran Program</h3>
-        <n-descriptions label-placement="top" :column="1" size="large" :separator="false" content-style="margin-bottom: 24px;">
-          <n-descriptions-item>
-            <template #label>
-              <n-space align="center" :size="8">
-                <n-icon :component="PersonOutline" />
-                <span>Siswa</span>
-              </n-space>
-            </template>
-            {{ registrationData.students }}
-          </n-descriptions-item>
-          <n-descriptions-item>
-            <template #label>
-              <n-space align="center" :size="8">
-                <n-icon :component="HomeOutline" />
-                <span>Lokasi les Privat</span>
-              </n-space>
-            </template>
-            <n-input :value="registrationData.location" disabled />
-          </n-descriptions-item>
-          <n-descriptions-item>
-            <template #label>
-              <n-space align="center" :size="8">
-                <n-icon :component="PeopleOutline" />
-                <span>Peserta</span>
-              </n-space>
-            </template>
-            {{ registrationData.participantInfo }}
-          </n-descriptions-item>
-          <n-descriptions-item>
-            <template #label>
-              <n-space align="center" :size="8">
-                <n-icon :component="CalendarOutline" />
-                <span>Tanggal Mulai</span>
-              </n-space>
-            </template>
-            {{ registrationData.startDate }}
-          </n-descriptions-item>
-        </n-descriptions>
+      <n-divider class="divider" />
+      <h4 class="headerb2">Data Pendaftaran Program</h4>
+
+      <div>
+          <h4 class="bodysb2">Siswa</h4>
+          <p class="bodyr2">Arell Saverro Biyantoro, Alif Abdul Aziz, Raihan Muhammad R.R.</p>
       </div>
+
+      <div>
+          <h4 class="bodysb2">Lokasi Les Privat</h4>
+          <p class="bodyr2">Jalan Sekaran N0. 05 RT 003/001</p>
+      </div>
+
+      <div>
+          <h4 class="bodysb2">Peserta</h4>
+          <p class="bodyr2">Kelompok 3 Peserta</p>
+      </div>
+
+      <div>
+          <h4 class="bodysb2">Tanggal Mulai</h4>
+          <p class="bodyr2">24 Mei 2025</p>
+      </div>
+
       <n-divider class="divider" />
       <div class="button">
         <butPrimerNormal
@@ -114,114 +135,39 @@
           label="Batal"
         />
       </div>
-    </n-space>
+    </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import { useMessage, NSpace, NTag, NDescriptions, NDescriptionsItem, NButton, NIcon, NInput } from 'naive-ui';
-import { useRouter } from 'vue-router';
-import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
-import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
-import { PersonOutline, HomeOutline, PeopleOutline, CalendarOutline } from '@vicons/ionicons5';
-
-const message = useMessage();
-const router = useRouter();
-const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum\'at', 'Sabtu'];
-
-const programData = ref({
-  tutorPhoto: 'path/to/your/image.jpg',
-  packageName: 'Matematika',
-  tutorName: 'Pak Dendy Wan S.Pd',
-  level: 'SMA',
-  days: ['Senin', 'Rabu', 'Kamis', 'Sabtu'],
-  area: 'Semarang',
-  meetings: '6 Bulan (3x perminggu)',
-  time: '2025-07-13T15:00:00',
-  duration: '120 Menit',
-  address: 'Jln. Sekaran No.05 RT003/001',
-  type: 'Privat/Kelompok',
-  price: 1540000
-});
-
-const registrationData = ref({
-  students: 'Areli Saverro Biyantora, Alif Abdul Aziz, Raihan Muhammad R. R.',
-  location: 'Jln. Sekaran No.05 RT003/001',
-  participantInfo: 'Kelompok 3 Peserta',
-  startDate: '24 Maret 2025'
-});
-
-const badgeClass = (level) => {
-  if (level === 'SMA') return 'badge-sma';
-  if (level === 'SMP') return 'badge-smp';
-  return 'badge-default';
-};
-
-const formatRupiah = (number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  }).format(number);
-};
-
-const handleVerify = () => {
-  message.success('Jadwal telah diverifikasi!');
-};
-const handleCancel = () => {
-  message.warning('Aksi dibatalkan.');
-};
-function handleValidateClick() {
-  router.push({ name: 'ProgramScheduleDetail' });
-}
-</script>
-
 <style scoped>
-.page-container {
+.detail-flow{
+  background-color: #0B2343;
+  padding: 20px;
+  overflow-y: auto;
+  width: 100%;
+}
+.detail-ccontainer{
   width: 100%;
   background-color: #fff;
   border-radius: 16px;
   padding: 20px;
   height: fit-content;
 }
-.program-type {
-  font-weight: 600;
-  color: #f97316;
-  margin: 16px 0 4px 0;
-}
-.price {
-  font-weight: 700;
-  color: #1e3a8a;
-  font-size: 1.25rem;
-  margin: 0;
-}
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1e3a8a;
-  border-bottom: 2px solid #eef2ff;
-  padding-bottom: 12px;
-  margin-bottom: 24px;
-}
-.n-descriptions :deep(.n-descriptions-item-label) {
-  color: #4b5563;
-  font-weight: 600;
-}
-.button{
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
+.headerb2{
+  color: #154484;
 }
 .divider {
   border-top: 1px solid #FEEBD9 !important;
 }
 .header-program {
   display: flex;
-  gap: 24px;
-  border: 1px solid #e5e7eb;
-  padding: 16px;
-  border-radius: 12px;
+  flex-direction: row;
+  gap: 1rem;
+}
+.button{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 .tutor-photo {
   width: 100%;
@@ -231,57 +177,57 @@ function handleValidateClick() {
   border-radius: 16px;
 }
 .card-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  width: 100%;
+  gap: 1rem;
+  color: #061222;
+}
+.bodysb2 {
+  margin-top: 1rem;
 }
 .header-section {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
 }
-.subject {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-.tutor-name {
-  color: #6b7280;
-  margin-top: 4px;
-}
-.headerb1 {
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-weight: 600;
-  color: white;
-}
-.badge-sma { background-color: #1e3a8a; }
-.badge-smp { background-color: #1d4ed8; }
-.badge-default { background-color: #6b7280; }
-.tag {
-  background-color: #dbeafe;
-  color: #1e40af;
-  border-radius: 4px;
-}
-.tag-unselected {
-  background-color: #f3f4f6;
-  color: #9ca3af;
-  border: 1px solid #e5e7eb;
+.headersb1 {
+  color: #154484;
 }
 .info-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: 0.875rem;
+  color: #333;
 }
-.info-row {
-  display: flex;
-}
-.info-row .label {
+.label-data{
+  display: inline-block; 
   width: 100px;
-  flex-shrink: 0;
 }
-.info-row .value {
-  color: #374151;
+.tag {
+  background-color: #154484;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  transition: background 0.2s, color 0.2s;
 }
+.tag-unselected {
+  background-color: #e0e0e0;
+  color: #888;
+}
+.meeting-link {
+  color: #FB8312;
+}
+.divider {
+  border-top: 1px solid #FEEBD9 !important;
+}
+.bodysb2, .headerb3 {
+  color: #154484;
+}
+.tabel {
+  margin-top: 1rem;
+}
+
 </style>
