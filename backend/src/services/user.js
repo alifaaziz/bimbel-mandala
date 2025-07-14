@@ -592,6 +592,24 @@ async function deleteUser(userId) {
     await prisma.user.delete({ where: { id: userId } });
 }
 
+/**
+ * Get all tutors (id and name only).
+ *
+ * @async
+ * @function getAllTutors
+ * @returns {Promise<Array>} Array of tutors with id and name.
+ */
+async function getAllTutors() {
+    const tutors = await prisma.user.findMany({
+        where: { role: 'tutor' },
+        select: {
+            id: true,
+            name: true
+        }
+    });
+    return tutors;
+}
+
 export const UserService = { 
     createStudent,
     createUserWithRole, 
@@ -603,4 +621,5 @@ export const UserService = {
     getNewTutors,
     getStatistics,
     deleteUser,
+    getAllTutors,
 };

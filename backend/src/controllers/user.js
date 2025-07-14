@@ -176,6 +176,20 @@ async function getNewTutors(req, res) {
     res.status(200).json({ data: tutors });
 }
 
+/**
+ * Retrieves all tutors (id and name only).
+ * 
+ * @async
+ * @function getAllTutors
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} Resolves with the list of tutors.
+ */
+async function getAllTutors(req, res) {
+    const tutors = await UserService.getAllTutors();
+    res.status(200).json({ data: tutors });
+}
+
 export const UserController = {
     createUser: asyncWrapper(createUser),
     getCurrentUser: asyncWrapper(getCurrentUser),
@@ -187,5 +201,6 @@ export const UserController = {
     getNewTutors: asyncWrapper(getNewTutors),
     getStatistics: asyncWrapper(getStatistics),
     updateUserById: asyncWrapper(updateUserById),
-    deleteUser: asyncWrapper(deleteUser)
+    deleteUser: asyncWrapper(deleteUser),
+    getAllTutors: asyncWrapper(getAllTutors)
 };

@@ -40,7 +40,12 @@
               <n-grid :x-gap="24" :y-gap="0" :cols="2">
                 <n-gi>
                   <n-form-item label="JAM" path="jam">
-                     <n-time-picker v-model:value="formValue.jam" style="width: 100%;" placeholder="Select Time" />
+                    <n-time-picker
+                      v-model:value="formValue.jam"
+                      style="width: 100%;"
+                      format="HH:mm"
+                      placeholder="Select Time"
+                    />
                   </n-form-item>
                 </n-gi>
                 <n-gi>
@@ -166,6 +171,7 @@
           <div class="button">
         <butPrimerNormal
           @click="handleValidateClick"
+          :loading="loading"
           label="Buat Program"
         />
         <butSecondNormal
@@ -182,22 +188,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 import { 
   NCard, NSpace, NForm, NFormItem, NInput, NSelect, NTimePicker, NInputNumber, 
-  NGrid, NGi, NCheckboxGroup, NCheckbox, NButton, NDivider, NH2, NH3, NDatePicker
+  NGrid, NGi, NDivider, NH2, NDatePicker
 } from 'naive-ui';
 
-// Reactive state untuk form, diatur ke nilai awal (kosong)
 const formRef = ref(null);
 const formValue = ref({
   namaProgram: null,
   area: 'Semarang',
   tutor: null,
   jenjang: null,
-  tipe: null, // Awalnya null, sehingga tidak ada bagian yang tampil
+  tipe: null,
   jam: null,
   durasi: null,
   jangkaWaktu: null,
@@ -216,14 +222,27 @@ const formValue = ref({
   }
 });
 
-// Reactive state untuk hari yang dipilih
 const daysValue = ref([]);
+const tutorOptions = ref([]);
 
-// Opsi untuk komponen select
-const tutorOptions = ref([
-  { label: 'Pak Dendy Wan S.Pd', value: 'Pak Dendy Wan S.Pd' },
-  { label: 'Ibu Susi Susanti', value: 'Ibu Susi Susanti' },
-]);
+async function fetchTutorOptions() {
+  const token = localStorage.getItem('token');
+  try {
+    const res = await fetch('http://localhost:3000/users/tutors/all', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    tutorOptions.value = (json.data || []).map(tutor => ({
+      label: tutor.name,
+      value: tutor.id
+    }));
+  } catch (err) {
+    tutorOptions.value = [];
+    console.error('Gagal fetch tutor:', err);
+  }
+}
+
+onMounted(fetchTutorOptions);
 
 const jenjangOptions = ref([
   { label: 'SD', value: 'SD' },
@@ -249,6 +268,69 @@ function toggleDay(day) {
     daysValue.value = daysValue.value.filter(d => d !== day);
   } else {
     daysValue.value.push(day);
+  }
+}
+
+const router = useRouter();
+const loading = ref(false);
+
+async function handleValidateClick() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  loading.value = true; 
+
+  const tipe = formValue.value.tipe;
+  const payload = {
+    name: formValue.value.namaProgram,
+    level: formValue.value.jenjang,
+    totalMeetings: formValue.value.jangkaWaktu,
+    time: formValue.value.jam ? new Date(formValue.value.jam).toISOString() : null, 
+    duration: formValue.value.durasi,
+    area: formValue.value.area,
+    tutorId: formValue.value.tutor,
+    days: [...daysValue.value],
+    discount: formValue.value.diskon || 0
+  };
+
+  try {
+    if (tipe === 'Privat/Kelompok') {
+      payload.groupType = [
+        { type: 'privat', price: formValue.value.biaya.privat, maxStudent: 1 },
+        { type: 'grup2', price: formValue.value.biaya.kelompok2, maxStudent: 2 },
+        { type: 'grup3', price: formValue.value.biaya.kelompok3, maxStudent: 3 },
+        { type: 'grup4', price: formValue.value.biaya.kelompok4, maxStudent: 4 },
+        { type: 'grup5', price: formValue.value.biaya.kelompok5, maxStudent: 5 }
+      ];
+      await fetch('http://localhost:3000/packages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+    } else if (tipe === 'Kelas') {
+      payload.price = formValue.value.detailKelas.perAnak;
+      payload.maxStudent = formValue.value.detailKelas.maksimalSiswa;
+      payload.startDate = formValue.value.detailKelas.tanggalMulai
+        ? new Date(formValue.value.detailKelas.tanggalMulai).toISOString()
+        : null;
+      await fetch('http://localhost:3000/packages/class', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+    router.push('/dashboardadmin/programadmin'); 
+  } catch (err) {
+    alert('Gagal membuat program');
+    console.error(err);
+  } finally {
+    loading.value = false; 
   }
 }
 </script>

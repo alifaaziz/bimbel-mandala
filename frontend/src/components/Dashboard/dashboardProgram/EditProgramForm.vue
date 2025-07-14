@@ -25,13 +25,19 @@
 
           <!-- Pilihan Tipe -->
           <n-form-item-gi label="Tipe" path="type">
-            <n-select v-model:value="formModel.type" :options="typeOptions" />
+            <n-select v-model:value="formModel.type" :options="typeOptions" :disabled="true" />
           </n-form-item-gi>
         </n-grid>
         
         <n-grid :cols="2" :x-gap="24" :y-gap="12" responsive="screen" item-responsive>
           <n-form-item-gi label="JAM" path="startTime">
-            <n-time-picker v-model:value="formModel.startTime" style="width: 100%;" />
+            <n-time-picker
+              v-model:value="formModel.startTime"
+              style="width: 100%;"
+              :use-seconds="false"
+              format="HH:mm"
+              placeholder="Pilih Jam"
+            />
           </n-form-item-gi>
           
           <n-form-item-gi label="Durasi per sesi" path="duration">
@@ -40,17 +46,6 @@
             </n-input-number>
           </n-form-item-gi>
         </n-grid>
-
-        <n-grid :cols="2" :x-gap="24" :y-gap="12" responsive="screen" item-responsive>
-          <n-form-item-gi label="Jangka Waktu" path="durationTerm">
-            <n-select v-model:value="formModel.durationTerm" :options="durationTermOptions" />
-          </n-form-item-gi>
-
-          <n-form-item-gi label="Paket" path="packageType">
-            <n-select v-model:value="formModel.packageType" :options="packageOptions" />
-          </n-form-item-gi>
-        </n-grid>
-
         <n-grid :cols="1" :y-gap="12">
           <n-form-item-gi label="Hari Aktif Mengajar" path="days" class="col-span-6">
             <div class="hari-mengajar">
@@ -145,11 +140,12 @@
         <n-divider class="divider" />
         <div class="button">
         <butPrimerNormal
-          @click="handleValidateClick"
+          @click="handleApplyChanges"
+          :loading="loading"
           label="Terapkan"
         />
         <butSecondNormal
-          @click="handleBackClick"
+          @click="handleCancelEdit"
           label="Batal Edit"
         />
       </div>
@@ -160,56 +156,47 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useMessage } from 'naive-ui';
+import { useRoute, useRouter } from 'vue-router';
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 import { 
-  NCard, NForm, NFormItemGi, NGrid, NInput, NSelect, NTimePicker, NInputNumber,
-  NCheckboxGroup, NCheckbox, NSpace, NDivider, NAlert, NUl, NLi, NButton
+  NCard, NForm, NFormItemGi, NGrid, NInput, NSelect, NTimePicker, NInputNumber
 } from 'naive-ui';
 
 const message = useMessage();
 const formRef = ref(null);
+const route = useRoute();
+const router = useRouter();
+const loading = ref(false);
 
-// Model data yang sudah terisi untuk simulasi form edit
 const formModel = ref({
   programName: null,
-  tutorId: 'dendy_wan',
-  level: 'SMA',
-  type: 'private_group',
-  startTime: new Date().setHours(15, 0, 0, 0),
-  duration: 120,
-  durationTerm: '6m',
-  packageType: '3x_week',
-  days: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+  tutorId: null,
+  level: null,
+  type: null,
+  startTime: null,
+  duration: null,
+  area: null,
+  totalMeetings: null,
+  days: [],
   costs: {
-    private: 580000,
-    group2: 980000,
-    group3: 1380000,
-    group4: 1900000,
-    group5: 2340000,
+    private: null,
+    group2: null,
+    group3: null,
+    group4: null,
+    group5: null,
   },
-  discount: 10,
+  discount: null,
   startDate: null,
+  studentsLimit: null,
+  pricePerChild: null,
 });
 
-// Opsi untuk komponen Select
-const tutorOptions = [
-  { label: 'Pak Dendy Wan S.Pd', value: 'dendy_wan' },
-  { label: 'Bu Luna S.Pd', value: 'luna' },
-];
+const tutorOptions = ref([]);
 const levelOptions = [ { label: 'SD', value: 'SD' }, { label: 'SMP', value: 'SMP' }, { label: 'SMA', value: 'SMA' }, ];
 const typeOptions = [ { label: 'Privat/Kelompok', value: 'private_group' }, { label: 'Kelas', value: 'class' }];
-const durationTermOptions = [
-    { label: '3 Bulan', value: '3m' },
-    { label: '6 Bulan', value: '6m' },
-    { label: '12 Bulan', value: '12m' },
-];
-const packageOptions = [
-    { label: '2 Kali Seminggu', value: '2x_week' },
-    { label: '3 Kali Seminggu', value: '3x_week' },
-];
 
 const daysOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
 
@@ -223,7 +210,6 @@ const toggleDay = (day) => {
   }
 };
 
-// Fungsi untuk format mata uang
 const formatCurrency = (value) => {
   if (value === null) return '';
   return `${value.toLocaleString('id-ID')}`;
@@ -233,22 +219,131 @@ const parseCurrency = (input) => {
   return nums ? Number(nums) : null;
 };
 
-// Fungsi untuk tombol
-const handleApplyChanges = (e) => {
+const handleApplyChanges = async (e) => {
   e.preventDefault();
-  formRef.value?.validate((errors) => {
-    if (!errors) {
-      message.success('Perubahan berhasil diterapkan (lihat console)');
-      console.log('Updated Form Data:', formModel.value);
-    } else {
-      message.error('Harap isi semua field yang wajib');
+  loading.value = true;
+  const slug = route.params.slug;
+  const token = localStorage.getItem('token');
+  if (!slug || !token) return;
+
+  const payload = {
+    name: formModel.value.programName,
+    level: formModel.value.level,
+    totalMeetings: formModel.value.totalMeetings,
+    time: formModel.value.startTime ? new Date(formModel.value.startTime).toISOString() : null,
+    duration: formModel.value.duration,
+    area: formModel.value.area,
+    tutorId: formModel.value.tutorId,
+    days: [...formModel.value.days],
+    discount: formModel.value.discount || 0
+  };
+
+  try {
+    if (formModel.value.type === 'private_group') {
+      payload.groupType = [
+        { type: 'privat', price: formModel.value.costs.private },
+        { type: 'grup2', price: formModel.value.costs.group2 },
+        { type: 'grup3', price: formModel.value.costs.group3 },
+        { type: 'grup4', price: formModel.value.costs.group4 },
+        { type: 'grup5', price: formModel.value.costs.group5 }
+      ];
+      await fetch(`http://localhost:3000/packages/${slug}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+    } else if (formModel.value.type === 'class') {
+      payload.price = formModel.value.pricePerChild;
+      payload.maxStudent = formModel.value.studentsLimit;
+      payload.startDate = formModel.value.startDate
+        ? new Date(formModel.value.startDate).toISOString()
+        : null;
+      await fetch(`http://localhost:3000/packages/class/${slug}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
     }
-  });
+    message.success('Program berhasil diupdate');
+    router.push('/dashboardadmin/programadmin');
+  } catch (err) {
+    alert('Gagal edit program');
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const handleCancelEdit = () => {
     message.warning('Perubahan dibatalkan');
+    router.push('/dashboardadmin/programadmin');
 }
+
+async function fetchTutorOptions() {
+  const token = localStorage.getItem('token');
+  try {
+    const res = await fetch('http://localhost:3000/users/tutors/all', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    tutorOptions.value = (json.data || []).map(tutor => ({
+      label: tutor.name,
+      value: tutor.id
+    }));
+  } catch (err) {
+    tutorOptions.value = [];
+    console.error('Gagal fetch tutor:', err);
+  }
+}
+
+async function fetchPackageData() {
+  const slug = route.params.slug;
+  const token = localStorage.getItem('token');
+  if (!slug || !token) return;
+  try {
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const pkg = data;
+    formModel.value.programName = pkg.name || null;
+    formModel.value.tutorId = pkg.tutorId || null;
+    formModel.value.level = pkg.level || null;
+    formModel.value.area = pkg.area || null;
+    formModel.value.totalMeetings = pkg.totalMeetings || null;
+    formModel.value.startTime = pkg.time ? new Date(pkg.time).getTime() : null;
+    formModel.value.duration = pkg.duration || null;
+    formModel.value.days = Array.isArray(pkg.days) ? pkg.days : [];
+    formModel.value.discount = pkg.discount ? Number(pkg.discount) : null;
+    formModel.value.startDate = pkg.startDate ? new Date(pkg.startDate).getTime() : null;
+
+    if (pkg.groupType && Array.isArray(pkg.groupType)) {
+      formModel.value.type = 'private_group';
+      formModel.value.costs.private = Number(pkg.groupType.find(g => g.type === 'privat')?.price) || null;
+      formModel.value.costs.group2 = Number(pkg.groupType.find(g => g.type === 'grup2')?.price) || null;
+      formModel.value.costs.group3 = Number(pkg.groupType.find(g => g.type === 'grup3')?.price) || null;
+      formModel.value.costs.group4 = Number(pkg.groupType.find(g => g.type === 'grup4')?.price) || null;
+      formModel.value.costs.group5 = Number(pkg.groupType.find(g => g.type === 'grup5')?.price) || null;
+    } else {
+      formModel.value.type = 'class';
+      formModel.value.studentsLimit = pkg.maxStudent || null;
+      formModel.value.pricePerChild = pkg.price || null;
+    }
+  } catch (err) {
+    console.error('Gagal fetch package:', err);
+  }
+}
+
+onMounted(() => {
+  fetchTutorOptions();
+  fetchPackageData();
+});
 
 const isPrivateGroup = computed(() => formModel.value.type === 'private_group');
 const isClass = computed(() => formModel.value.type === 'class');

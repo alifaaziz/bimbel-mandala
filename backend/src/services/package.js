@@ -191,6 +191,7 @@ async function getBimbelPackageBySlug(slug) {
     include: {
       user: {
         select: {
+          id: true,
           name: true,
           tutors: {
             select: {
@@ -234,8 +235,10 @@ async function getBimbelPackageBySlug(slug) {
     area: pkg.area,
     slug: pkg.slug,
     status: pkg.isActive ? 'aktif' : 'nonaktif',
+    tutorId: pkg.user.id,
     tutorName: pkg.user.name,
     photo: pkg.user.tutors[0]?.photo,
+    discount: pkg.discount,
     groupType: pkg.groupType.map(gt => ({
       id: gt.id,
       type: gt.type,
