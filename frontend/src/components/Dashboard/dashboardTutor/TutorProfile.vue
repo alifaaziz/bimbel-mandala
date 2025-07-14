@@ -112,7 +112,7 @@ onMounted(async () => {
       </div>
       <n-divider class="divider" />
       <div class="space-profile">
-        <n-space vertical>
+        <n-space vertical class="detail-space">
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/mail.svg" alt="">
@@ -129,13 +129,13 @@ onMounted(async () => {
           </div>
           <div class="detail-separator">
             <div class="detail-profile">
-              <img src="@/assets/icons/home.svg" alt="Gender">
+              <img src="@/assets/icons/home.svg" alt="alamat">
               <p>Alamat Rumah</p>
             </div>
             <p>: {{ tutorProfile.address }}</p>
           </div>
         </n-space>
-        <n-space vertical>
+        <n-space vertical class="detail-space">
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/admin/gender.svg" alt="">
@@ -181,6 +181,13 @@ onMounted(async () => {
               <p>Mata Pelajaran</p>
             </div>
             <p>: {{ tutorProfile.subjects }}</p>
+          </div>
+          <!-- Backend sini -->
+          <div class="detail-separator">
+            <div class="detail-profile">
+              <p>Komisi Program</p>
+            </div>
+            <p>: 60%</p>
           </div>
         </n-space>
       </div>
@@ -236,6 +243,9 @@ onMounted(async () => {
   width: 60px;
   height: 60px;
   object-fit: cover;
+}
+.detail-space{
+  min-width: 460px;
 }
 .datadiri {
   display: flex;

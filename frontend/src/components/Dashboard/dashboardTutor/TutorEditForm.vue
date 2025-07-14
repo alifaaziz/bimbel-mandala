@@ -163,6 +163,12 @@ async function handleUpdateTutor() {
               placeholder="Matematika, Bahasa Inggris, Fisika, dll."
             />
           </n-form-item>
+          <n-form-item label="Komisi Program" path="user.pelajaran" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.pelajaran"
+              placeholder="60%"
+            />
+          </n-form-item>
           <n-form-item label="Hari Aktif Mengajar" path="user.days" class="col-span-6">
               <div class="hari-mengajar">
                 <div class="days">
