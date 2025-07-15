@@ -24,7 +24,7 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('http://localhost:3000/schedules', {
+    const res = await fetch('/schedules', {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (!res.ok) throw new Error('Gagal mengambil jadwal')
@@ -94,7 +94,7 @@ function confirmAbsen() {
     return
   }
 
-  fetch('http://localhost:3000/attendance/masuk', {
+  fetch('/attendance/masuk', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -150,9 +150,12 @@ function confirmReschedule() {
     return
   }
 
-  const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00.000Z`).toISOString()
 
-  fetch(`http://localhost:3000/schedules/reschedule/${schedule.value.id}`, {
+  const dateStr = `${rescheduleDate.value}T${rescheduleTime.value}:00+07:00`;
+  const utcDate = new Date(dateStr);
+  const newDate = utcDate.toISOString();
+
+  fetch(`/schedules/reschedule/${schedule.value.id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -170,7 +173,6 @@ function confirmReschedule() {
           'Gagal melakukan jadwal ulang.'
         )
       }
-      // Set data sukses
       lastRescheduleDate.value = rescheduleDate.value
       lastRescheduleTime.value = rescheduleTime.value
       showSuccessModal.value = true
@@ -190,7 +192,7 @@ function closeSuccessModal() {
   <div v-if="schedule" class="card-container">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `http://localhost:3000${schedule.photo}` : '/tutor/Tutor_Default.png'"
+      :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">
@@ -239,9 +241,9 @@ function closeSuccessModal() {
 
       <div class="button-group">
         <butAbsen @click="openAbsenModal"/>
-        <!-- Tombol simulasi jadwal ulang -->
         <butJadwalUlang label="Jadwal Ulang" @click.stop="openRescheduleModal()" />
       </div>
+      <p class="bodym2" style="color: #FB8312;">Batas Keterlambatan 15 Menit dari waktu yang ditentukan</p>
     </div>
   </div>
 

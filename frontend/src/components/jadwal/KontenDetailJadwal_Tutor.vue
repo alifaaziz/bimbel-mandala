@@ -10,7 +10,6 @@ import butSecondSmall from '../dirButton/butSecondSmall.vue'
 import butPrimerSmall from '../dirButton/butPrimerSmall.vue'
 
 const showAbsenModal = ref(false)
-const izinReason = ref('')
 const schedule = ref<any>(null)
 const showRescheduleModal = ref(false)
 const rescheduleDate = ref('')
@@ -26,7 +25,7 @@ onMounted(async () => {
   if (!token) return
 
   const slug = route.params.slug
-  const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
+  const res = await fetch(`/schedules/${slug}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -57,7 +56,7 @@ function confirmAbsen() {
     return
   }
 
-  fetch('http://localhost:3000/attendance/masuk', {
+  fetch('/attendance/masuk', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -142,7 +141,7 @@ function confirmReschedule() {
   const utcDate = new Date(dateStr);
   const newDate = utcDate.toISOString()
 
-  fetch(`http://localhost:3000/schedules/reschedule/${schedule.value.id}`, {
+  fetch(`/schedules/reschedule/${schedule.value.id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -184,7 +183,7 @@ async function saveEditInfo() {
     return;
   }
 
-  const res = await fetch(`http://localhost:3000/schedules/${schedule.value.id}`, {
+  const res = await fetch(`/schedules/${schedule.value.id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -207,7 +206,7 @@ async function saveEditInfo() {
   <div class="card-container" v-if="schedule">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `http://localhost:3000${schedule.photo}` : '/tutor/Tutor_Default.png'"
+      :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">

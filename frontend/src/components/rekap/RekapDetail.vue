@@ -52,7 +52,7 @@ const rekap = ref([])
 onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return
-  const res = await fetch('http://localhost:3000/attendance/my', {
+  const res = await fetch('/attendance/my', {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await res.json()
@@ -74,7 +74,7 @@ onMounted(async () => {
     },
     program: {
       pertemuan: `${item.studentStats?.totalSchedules ?? '-'} Pertemuan`,
-      kosong: `${(item.studentStats?.totalSchedules ?? 0) - (item.studentStats?.masuk ?? 0) - (item.studentStats?.izin ?? 0) - (item.studentStats?.alpha ?? 0)} Pertemuan`,
+      kosong: `${(item.studentStats?.kosong ?? 0)} Pertemuan`,
       progress: `${item.studentStats?.scheduleProgress ?? 0}%`,
       absensi: `${item.studentStats?.totalAttendance ?? 0}%`
     }

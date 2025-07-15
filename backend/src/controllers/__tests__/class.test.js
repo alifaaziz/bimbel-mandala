@@ -14,7 +14,7 @@ jest.unstable_mockModule('../../services/class.js', () => ({
     getMyClass: jest.fn(() => Promise.resolve(classesMock)),
     getRunningClass: jest.fn(() => Promise.resolve(classesMock)),
     getStudentClassesByUserId: jest.fn(() => Promise.resolve(classesMock)),
-    getFinishedClasses: jest.fn(() => Promise.resolve(classesMock)),
+    getClassById: jest.fn(() => Promise.resolve(classesMock)),
   },
 }));
 
@@ -102,20 +102,34 @@ describe('ClassController', () => {
     });
   });
 
-  describe('getFinishedClasses', () => {
-    it('should return finished classes and return 200', async () => {
-      const finishedClassesMock = [
-        { id: 3, name: 'History Class', code: 'HIS789' },
-      ];
-      ClassService.getFinishedClasses.mockResolvedValue(finishedClassesMock);
+  describe('getClassById', () => {
+    it('should return class detail and status 200 if found', async () => {
+      const classDetailMock = { id: 1, name: 'Math Class', code: 'ABC123' };
+      ClassService.getClassById.mockResolvedValue(classDetailMock);
 
-      const { req, res } = setupExpressMock();
+      const { req, res } = setupExpressMock({
+        req: { params: { id: '1' } },
+      });
 
-      await ClassController.getFinishedClasses(req, res);
+      await ClassController.getClassById(req, res);
 
-      expect(ClassService.getFinishedClasses).toHaveBeenCalled();
+      expect(ClassService.getClassById).toHaveBeenCalledWith('1');
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ data: finishedClassesMock });
+      expect(res.json).toHaveBeenCalledWith({ data: classDetailMock });
+    });
+
+    it('should return 404 and message if class not found', async () => {
+      ClassService.getClassById.mockResolvedValue(null);
+
+      const { req, res } = setupExpressMock({
+        req: { params: { id: '999' } },
+      });
+
+      await ClassController.getClassById(req, res);
+
+      expect(ClassService.getClassById).toHaveBeenCalledWith('999');
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Class not found' });
     });
   });
 });

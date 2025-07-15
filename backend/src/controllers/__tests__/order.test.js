@@ -8,7 +8,7 @@ jest.unstable_mockModule('../../services/order.js', () => ({
   OrderService: {
     createOrder: jest.fn(() => Promise.resolve(orderMock)),
     updateOrderStatus: jest.fn(() => Promise.resolve()),
-    getAllOrders: jest.fn(() => Promise.resolve(ordersMock)),
+    getPendingOrders: jest.fn(() => Promise.resolve(ordersMock)),
     getOrderById: jest.fn(() => Promise.resolve(orderMock)),
     deleteOrder: jest.fn(() => Promise.resolve()),
   },
@@ -51,15 +51,31 @@ describe('OrderController', () => {
     });
   });
 
-  describe('getAllOrders', () => {
-    it('should return all orders', async () => {
-      OrderService.getAllOrders.mockResolvedValue(ordersMock);
+  describe('getPendingOrders', () => {
+    it('should return pending orders', async () => {
+      OrderService.getPendingOrders.mockResolvedValue(ordersMock);
 
-      const { req, res } = setupExpressMock();
+      const { req, res } = setupExpressMock({
+        req: { query: { page: '2', limit: '5' } }
+      });
 
-      await OrderController.getAllOrders(req, res);
+      await OrderController.getPendingOrders(req, res);
 
-      expect(OrderService.getAllOrders).toHaveBeenCalled();
+      expect(OrderService.getPendingOrders).toHaveBeenCalledWith({ page: 2, limit: 5 });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ data: ordersMock });
+    });
+
+    it('should use default page and limit if not provided', async () => {
+      OrderService.getPendingOrders.mockResolvedValue(ordersMock);
+
+      const { req, res } = setupExpressMock({
+        req: { query: {} }
+      });
+
+      await OrderController.getPendingOrders(req, res);
+
+      expect(OrderService.getPendingOrders).toHaveBeenCalledWith({ page: 1, limit: 10 });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ data: ordersMock });
     });

@@ -13,27 +13,18 @@ function formatDate(dateStr) {
 
 const latestTutors = ref([]);
 
-const getTagType = (level) => {
-  switch (level) {
-    case 'SMA':
-      return 'success';
-    case 'SMP':
-      return 'info';
-    case 'SD':
-      return 'warning';
-    default:
-      return 'default';
-  }
-};
-
 const fetchLatestTutors = async () => {
   try {
-    const res = await fetch('http://localhost:3000/users/tutors?page=1&limit=3');
+    const token = localStorage.getItem('token');
+    const res = await fetch('/users/new-tutors', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     const json = await res.json();
     latestTutors.value = json.data.map(tutor => ({
-      id: tutor.id,
       name: tutor.name,
-      date: formatDate(tutor.joinDate || tutor.createdAt),
+      date: formatDate(tutor.createdAt),
       level: tutor.teachLevel
     }));
   } catch (e) {
@@ -52,7 +43,7 @@ onMounted(fetchLatestTutors);
       <n-space vertical size="medium">
         <div
           v-for="tutor in latestTutors"
-          :key="tutor.id"
+          :key="tutor.name + tutor.date"
           class="tutor-item-card"
         >
           <div class="tutor-info">
@@ -61,7 +52,7 @@ onMounted(fetchLatestTutors);
           </div>
 
           <div class="tutor-level">
-            <n-tag size="small" :bordered="false" :type="getTagType(tutor.level)">
+            <n-tag size="small" :bordered="false" type="info">
               {{ tutor.level }}
             </n-tag>
           </div>

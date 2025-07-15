@@ -12,13 +12,13 @@ const formatGroupType = (type) => {
     case 'privat':
       return 'Privat';
     case 'grup2':
-      return 'Kelompok 2 Siswa';
+      return '2 Siswa';
     case 'grup3':
-      return 'Kelompok 3 Siswa';
+      return '3 Siswa';
     case 'grup4':
-      return 'Kelompok 4 Siswa';
+      return '4 Siswa';
     case 'grup5':
-      return 'Kelompok 5 Siswa';
+      return '5 Siswa';
     case 'kelas':
       return 'Kelas';
     default:
@@ -27,17 +27,18 @@ const formatGroupType = (type) => {
 };
 
 const formatPrice = (price) => {
+  const numericPrice = Number(price); // konversi paksa ke number
   return new Intl.NumberFormat('id-ID', {
     style: 'decimal',
     minimumFractionDigits: 0,
-  }).format(price);
+  }).format(numericPrice);
 };
 
 onMounted(async () => {
   const token = localStorage.getItem('token');
   const slug = route.params.id;
   try {
-    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+    const res = await fetch(`/packages/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
@@ -60,7 +61,6 @@ onMounted(async () => {
         }
         return {
           type,
-          price: '...',
           discPrice: null,
         };
       });
@@ -73,6 +73,7 @@ onMounted(async () => {
     console.error(err);
   }
 });
+
 </script>
 
 <template>
@@ -83,14 +84,15 @@ onMounted(async () => {
         <h3 class="headersb4">{{ formatGroupType(group.type) }}</h3>
         <div class="detail-skema">
           <div>
-            <span v-if="group.discPrice" class="price-normal">
-              Rp {{ typeof group.price === 'number' ? formatPrice(group.price) : group.price }}
+            <span v-if="group.discPrice" class="bodyr1 price-cancel">
+              Rp {{ formatPrice(group.price) }}
             </span>
-            <span v-if="group.discPrice" class="price-discount">
-              Rp {{ typeof group.discPrice === 'number' ? formatPrice(group.discPrice) : group.discPrice }}
+            <br/>
+            <span v-if="group.discPrice" class="headerb2 price-discount">
+              Rp {{ formatPrice(group.discPrice) }}
             </span>
-            <span v-else>
-              Rp {{ typeof group.price === 'number' ? formatPrice(group.price) : group.price }}
+            <span v-else class="bodyr1 price-normal">
+              Rp {{ formatPrice(group.price)}}
             </span>
           </div>
         </div>
@@ -119,7 +121,7 @@ onMounted(async () => {
 .card-body {
   display: flex;
   flex-direction: row;
-  padding: 2rem 3rem;
+  padding: 2rem 1.5rem;
 }
 
 .col-skema {
@@ -139,17 +141,18 @@ onMounted(async () => {
   gap: 0.5rem;
 }
 
-.price-normal {
+.price-cancel {
   text-decoration: line-through;
   color: red;
-  font-size: 0.9rem;
   margin-right: 8px;
 }
 
 .price-discount {
-  font-weight: bold;
-  color: black;
-  font-size: 1.1rem;
+  color: #154288;
+}
+
+.price-normal {
+  color: #061222;
 }
 
 @media (max-width: 768px) {

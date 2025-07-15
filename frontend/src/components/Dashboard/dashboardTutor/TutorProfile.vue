@@ -1,13 +1,18 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { NSpace, NTag } from 'naive-ui';
+import { useRoute, useRouter } from 'vue-router'
+import { NSpace, NTag, useMessage } from 'naive-ui'; 
 
 import JadwalTutor from './programjadwaltutor/JadwalTutor.vue';
 import ProgramTerbuka from './programjadwaltutor/ProgramTerbuka.vue';
 import ButEditProfileAdmin from '@/components/dirButton/butEditProfileAdmin.vue';
 
+import {TrashOutline} from '@vicons/ionicons5';
+
+const router = useRouter();
 const route = useRoute();
+const message = useMessage
+
 const id = route.params.id;
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
@@ -37,7 +42,7 @@ onMounted(async () => {
   const id = route.params.id;
   const token = localStorage.getItem('token');
   // Fetch profile
-  const res = await fetch(`http://localhost:3000/users/${id}`, {
+  const res = await fetch(`/users/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   const { data } = await res.json();
@@ -53,13 +58,14 @@ onMounted(async () => {
     major: tutor.major || '-',
     teachLevel: tutor.teachLevel || '-',
     subjects: tutor.subjects || '-',
+    percent: tutor.percent || '-',
     photo: tutor.photo,
     days: tutor.daysName || [],
     birthDate: tutor.birthDate || '-',
   };
 
   // Fetch statistics
-  const statRes = await fetch(`http://localhost:3000/packages/statistics/${id}`, {
+  const statRes = await fetch(`/packages/statistics/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   if (statRes.ok) {
@@ -67,6 +73,31 @@ onMounted(async () => {
     statistics.value = statData;
   }
 });
+
+const handleDelete = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    message.error('Token tidak ditemukan'); 
+    return;
+  }
+  if (!confirm(`Yakin hapus tutor "${tutorProfile.value.name}"?`)) return;
+  try {
+    const res = await fetch(`/users/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Gagal menghapus tutor');
+    }
+    message.success('Tutor berhasil dihapus'); 
+    router.push('/dashboardadmin/tutor');
+  } catch (e) {
+    message.error(e.message || 'Gagal menghapus tutor'); 
+  }
+};
 </script>
 
 <template>
@@ -76,7 +107,7 @@ onMounted(async () => {
         <div class="header-part">
             <img
               class="img-tutor"
-              :src="tutorProfile.photo ? `http://localhost:3000${tutorProfile.photo}` : '/tutor/Tutor_Default.png'"
+              :src="tutorProfile.photo ? `${tutorProfile.photo}` : '/Tutor_Default.png'"
             />
           <div class="datadiri">
             <div class="headersb2">
@@ -87,6 +118,10 @@ onMounted(async () => {
         </div>
         <div class="headeer-part">
           <ButEditProfileAdmin :id="id"/>
+          <n-button type="error" ghost round @click="handleDelete">
+            <template #icon><n-icon :component="TrashOutline" /></template>
+            Hapus Akun
+          </n-button>
         </div>
       </div>
       <n-divider class="divider" />
@@ -106,7 +141,7 @@ onMounted(async () => {
       </div>
       <n-divider class="divider" />
       <div class="space-profile">
-        <n-space vertical>
+        <n-space vertical class="detail-space">
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/mail.svg" alt="">
@@ -123,13 +158,13 @@ onMounted(async () => {
           </div>
           <div class="detail-separator">
             <div class="detail-profile">
-              <img src="@/assets/icons/home.svg" alt="Gender">
+              <img src="@/assets/icons/home.svg" alt="alamat">
               <p>Alamat Rumah</p>
             </div>
             <p>: {{ tutorProfile.address }}</p>
           </div>
         </n-space>
-        <n-space vertical>
+        <n-space vertical class="detail-space">
           <div class="detail-separator">
             <div class="detail-profile">
               <img src="@/assets/icons/admin/gender.svg" alt="">
@@ -175,6 +210,13 @@ onMounted(async () => {
               <p>Mata Pelajaran</p>
             </div>
             <p>: {{ tutorProfile.subjects }}</p>
+          </div>
+          <!-- Backend sini -->
+          <div class="detail-separator">
+            <div class="detail-profile">
+              <p>Komisi Program</p>
+            </div>
+            <p>: {{ tutorProfile.percent }}%</p>
           </div>
         </n-space>
       </div>
@@ -230,6 +272,9 @@ onMounted(async () => {
   width: 60px;
   height: 60px;
   object-fit: cover;
+}
+.detail-space{
+  min-width: 460px;
 }
 .datadiri {
   display: flex;
@@ -289,6 +334,11 @@ onMounted(async () => {
 .headersb3 {
   color: #154484;
   margin-bottom: 1rem;
+}
+.headeer-part{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 .tag {
   background-color: #154484;

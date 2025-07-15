@@ -1,13 +1,8 @@
 import { prisma } from '../utils/db.js';
-
-const SALARY_PERCENTAGE = 0.9;
+import { SalaryService } from './salary.js';
 
 /**
  * Utility function to calculate attendance statistics.
- *
- * @param {Array} attendances - The list of attendance records.
- * @param {string} userId - The user ID.
- * @returns {Object} The attendance statistics (masuk, izin, alpha).
  */
 function calculateAttendanceStats(attendances, userId) {
   const userAttendance = attendances.filter(att => att.userId === userId);
@@ -20,10 +15,6 @@ function calculateAttendanceStats(attendances, userId) {
 
 /**
  * Helper to calculate attendance percentage.
- *
- * @param {number} totalMasuk - The total number of "masuk" attendances.
- * @param {number} totalSchedules - The total number of schedules.
- * @returns {number} The attendance percentage.
  */
 function calculateAttendancePercentage(totalMasuk, totalSchedules) {
   return totalSchedules > 0 ? (totalMasuk / totalSchedules) * 100 : 0;
@@ -31,23 +22,14 @@ function calculateAttendancePercentage(totalMasuk, totalSchedules) {
 
 /**
  * Helper to get tutor attendance and payroll stats.
- *
- * @async
- * @function getTutorStats
- * @param {Object} params - The parameters object.
- * @param {Array} params.schedules - The list of schedules.
- * @param {Object} params.order - The order object.
- * @param {Object} params.user - The user object.
- * @returns {Promise<Object>} The tutor statistics.
  */
 async function getTutorStats({ schedules, order, user }) {
   const tutorAttendance = schedules.flatMap(schedule =>
     schedule.attendances.filter(att => att.userId === user.id)
   );
   const totalAttendanceMasuk = tutorAttendance.filter(att => att.status === 'masuk').length;
-  const totalAttendancePercentage = calculateAttendancePercentage(totalAttendanceMasuk, schedules.length);
-  const salary = (order?.groupType?.price || 0) * SALARY_PERCENTAGE;
-  const payroll = salary * (totalAttendancePercentage / 100);
+  const totalSchedules = schedules.length;
+  const scheduleProgress = calculateAttendancePercentage(totalAttendanceMasuk, totalSchedules);
 
   const salaryRecord = await prisma.salary.findFirst({
     where: {
@@ -55,17 +37,37 @@ async function getTutorStats({ schedules, order, user }) {
       orderId: order?.id
     },
     select: {
-      status: true
+      id: true,
+      status: true,
+      total: true,
+      payroll: true
     }
   });
 
+  let salary, payroll;
+  if (salaryRecord) {
+    salary = salaryRecord.total;
+    payroll = salaryRecord.payroll;
+  } else {
+    const price = Number(order?.amount) || 0;
+    const tutor = await prisma.tutor.findUnique({
+      where: { userId: user.id }
+    });
+    const percent = tutor?.percent ? Number(tutor.percent) / 100 : 0.6;
+    const hadirPersen = totalSchedules > 0 ? totalAttendanceMasuk / totalSchedules : 0;
+    const totalSalary = price * percent;
+    salary = totalSalary;
+    payroll = totalSalary * hadirPersen;
+  }
+
   return {
     tutorId: user.id,
+    salaryId: salaryRecord?.id || null,
     name: user.name,
     ...calculateAttendanceStats(tutorAttendance, user.id),
-    totalSchedules: schedules.length,
-    scheduleProgress: totalAttendancePercentage,
-    totalAttendance: totalAttendancePercentage,
+    totalSchedules,
+    scheduleProgress,
+    totalAttendance: scheduleProgress,
     salary,
     payroll,
     status: salaryRecord?.status || 'pending'
@@ -119,21 +121,21 @@ async function createAttendance({ scheduleId, userId, status, reason = null }) {
     throw new Error('Attendance can only be done on the schedule date');
   }
 
-  if (user.role === 'siswa' && status === 'masuk') {
-    const tutorId = schedule.class.tutor?.id;
-    if (tutorId) {
-      const tutorAttendance = await prisma.attendance.findFirst({
-        where: {
-          scheduleId,
-          userId: tutorId,
-          status: 'masuk'
-        }
-      });
-      if (!tutorAttendance) {
-        throw new Error('Tutors must take attendance first');
-      }
-    }
-  }
+  // if (user.role === 'siswa' && status === 'masuk') {
+  //   const tutorId = schedule.class.tutor?.id;
+  //   if (tutorId) {
+  //     const tutorAttendance = await prisma.attendance.findFirst({
+  //       where: {
+  //         scheduleId,
+  //         userId: tutorId,
+  //         status: 'masuk'
+  //       }
+  //     });
+  //     if (!tutorAttendance) {
+  //       throw new Error('Tutors must take attendance first');
+  //     }
+  //   }
+  // }
 
   const attendance = await prisma.attendance.create({
     data: {
@@ -143,6 +145,8 @@ async function createAttendance({ scheduleId, userId, status, reason = null }) {
       reason
     }
   });
+
+  await createSalaryIfLastAttendance(schedule.class.id);
 
   return attendance;
 }
@@ -160,51 +164,50 @@ async function markAlphaForMissedSchedules() {
 
   const schedules = await prisma.schedule.findMany({
     where: {
-      date: {
-        lt: now
-      },
-      attendances: {
-        none: {}
-      }
+      date: { lt: now }
     },
     include: {
       class: {
         include: {
-          studentClasses: {
-            include: {
-              user: true
-            }
-          },
+          studentClasses: { include: { user: true } },
           tutor: true
         }
-      }
+      },
+      attendances: true
     }
   });
 
   for (const schedule of schedules) {
-    const { id: scheduleId, class: { studentClasses, tutorId } } = schedule;
+    const { id: scheduleId, class: { studentClasses, tutor }, attendances } = schedule;
+
+    const attendedUserIds = new Set(attendances.map(a => a.userId));
 
     for (const studentClass of studentClasses) {
+      const userId = studentClass.user.id;
+      if (!attendedUserIds.has(userId)) {
+        await prisma.attendance.create({
+          data: {
+            scheduleId,
+            userId,
+            status: 'alpha',
+            reason: null
+          }
+        });
+      }
+    }
+
+    if (tutor && !attendedUserIds.has(tutor.id)) {
       await prisma.attendance.create({
         data: {
           scheduleId,
-          userId: studentClass.user.id,
+          userId: tutor.id,
           status: 'alpha',
           reason: null
         }
       });
     }
 
-    if (tutorId) {
-      await prisma.attendance.create({
-        data: {
-          scheduleId,
-          userId: tutorId,
-          status: 'alpha',
-          reason: null
-        }
-      });
-    }
+    await createSalaryIfLastAttendance(schedule.class.id);
   }
 }
 
@@ -229,13 +232,13 @@ async function getMyAttendanceStatistics(user) {
             attendances: true
           }
         },
+        studentClasses: {
+          include: {
+            user: true
+          }
+        },
         order: {
           include: {
-            groupType: {
-              select: {
-                price: true
-              }
-            },
             bimbelPackage: {
               select: {
                 name: true,
@@ -254,6 +257,21 @@ async function getMyAttendanceStatistics(user) {
           order: classData.order,
           user
         });
+        const schedules = classData.schedules;
+        const siswaIds = classData.studentClasses.map(sc => sc.user.id);
+
+        let kosong = 0;
+        for (const schedule of schedules) {
+          const attendances = schedule.attendances;
+          const tutorMasuk = attendances.some(att => att.userId === user.id && att.status === 'masuk');
+          const siswaTidakMasuk = siswaIds.every(siswaId =>
+            !attendances.some(att => att.userId === siswaId && att.status === 'masuk')
+          );
+          if (tutorMasuk && siswaTidakMasuk) kosong++;
+        }
+
+        const totalPertemuan = schedules.length;
+        const kesesuaian = totalPertemuan > 0 ? ((totalPertemuan - kosong) / totalPertemuan) * 100 : 0;
 
         return {
           classId: classData.id,
@@ -262,7 +280,9 @@ async function getMyAttendanceStatistics(user) {
             name: classData.order?.bimbelPackage?.name || null,
             level: classData.order?.bimbelPackage?.level || null,
           },
-          tutorStats
+          tutorStats,
+          kosong,
+          kesesuaian 
         };
       })
     );
@@ -283,6 +303,11 @@ async function getMyAttendanceStatistics(user) {
               }
             },
             tutor: true,
+            studentClasses: {
+              include: {
+                user: true
+              }
+            },
             order: {
               include: {
                 bimbelPackage: {
@@ -300,7 +325,18 @@ async function getMyAttendanceStatistics(user) {
 
     return studentClasses.map(studentClass => {
       const { class: classData } = studentClass;
-      const { schedules, tutor, order } = classData;
+      const { schedules, tutor, order, studentClasses: allStudentClasses } = classData;
+      const siswaIds = allStudentClasses.map(sc => sc.user.id);
+
+      let kosong = 0;
+      for (const schedule of schedules) {
+        const attendances = schedule.attendances;
+        const tutorMasuk = tutor && attendances.some(att => att.userId === tutor.id && att.status === 'masuk');
+        const siswaTidakMasuk = siswaIds.every(siswaId =>
+          !attendances.some(att => att.userId === siswaId && att.status === 'masuk')
+        );
+        if (tutorMasuk && siswaTidakMasuk) kosong++;
+      }
 
       const studentAttendance = schedules.flatMap(schedule =>
         schedule.attendances.filter(att => att.userId === user.id)
@@ -339,7 +375,8 @@ async function getMyAttendanceStatistics(user) {
           level: order?.bimbelPackage?.level || null,
         },
         tutorStats,
-        studentStats
+        studentStats,
+        kosong 
       };
     });
   } else {
@@ -364,7 +401,6 @@ async function getRekapKelasById(classId) {
       tutor: true,
       order: {
         include: {
-          groupType: { select: { price: true } },
           bimbelPackage: {
             select: {
               name: true,
@@ -388,7 +424,6 @@ async function getRekapKelasById(classId) {
 
   if (!classData) throw new Error('Kelas tidak ditemukan');
 
-  // Gunakan getTutorStats agar payload tutor konsisten
   let tutorStats = null;
   if (classData.tutor) {
     tutorStats = await getTutorStats({
@@ -398,7 +433,6 @@ async function getRekapKelasById(classId) {
     });
   }
 
-  // Student stats
   const schedules = classData.schedules;
   const allAttendances = schedules.flatMap(s => s.attendances);
   const students = classData.studentClasses.map(sc => {
@@ -411,16 +445,34 @@ async function getRekapKelasById(classId) {
     };
   });
 
+  const siswaIds = classData.studentClasses.map(sc => sc.user.id);
+  let kosong = 0;
+  for (const schedule of schedules) {
+    const attendances = schedule.attendances;
+    const tutorMasuk = classData.tutor && attendances.some(att => att.userId === classData.tutor.id && att.status === 'masuk');
+    const siswaTidakMasuk = siswaIds.every(siswaId =>
+      !attendances.some(att => att.userId === siswaId && att.status === 'masuk')
+    );
+    if (tutorMasuk && siswaTidakMasuk) kosong++;
+  }
+
+  const totalPertemuan = schedules.length;
+  const kesesuaian = totalPertemuan > 0 ? ((totalPertemuan - kosong) / totalPertemuan) * 100 : 0;
+
+  const alerts = await alertAttendance(classId);
+
   return {
     name: classData.order?.bimbelPackage?.name || '',
     level: classData.order?.bimbelPackage?.level || '',
     classCode: classData.code,
-    tutorStats, // gunakan hasil getTutorStats
+    tutorStats,
     students,
     pertemuan: tutorStats?.totalSchedules || 0,
-    kosong: (tutorStats?.izin || 0) + (tutorStats?.alpha || 0),
+    kosong,
+    kesesuaian,
     progress: tutorStats?.scheduleProgress || 0,
-    absensi: tutorStats?.totalAttendance || 0
+    absensi: tutorStats?.totalAttendance || 0,
+    tinjauan: alerts.length 
   };
 }
 
@@ -533,7 +585,6 @@ async function createMasukNotification({ scheduleId, userId }) {
 
   else if (tutor && userId === tutor.id) {
     for (const siswa of siswaList) {
-
       await prisma.notification.create({
         data: {
           userId: siswa.id,
@@ -554,11 +605,180 @@ async function createMasukNotification({ scheduleId, userId }) {
   }
 }
 
+/**
+ * Cek dan create salary jika attendance terakhir pada schedule terakhir
+ * @param {string} classId
+ */
+async function createSalaryIfLastAttendance(classId) {
+  const schedules = await prisma.schedule.findMany({
+    where: { classId },
+    orderBy: { date: 'asc' }
+  });
+  if (!schedules.length) return;
+
+  const lastSchedule = schedules[schedules.length - 1];
+
+  const attendances = await prisma.attendance.findMany({
+    where: { scheduleId: lastSchedule.id }
+  });
+
+  const classData = await prisma.class.findUnique({
+    where: { id: classId },
+    include: {
+      tutor: { select: { id: true } },
+      studentClasses: { select: { userId: true } },
+      order: { select: { id: true, amount: true } }
+    }
+  });
+
+  if (!classData?.order) return;
+
+  const tutorId = classData.tutor?.id;
+  const orderId = classData.order.id;
+  const price = Number(classData.order.amount) || 0;
+  const studentIds = classData.studentClasses.map(sc => sc.userId);
+
+  const requiredUserIds = tutorId ? [tutorId, ...studentIds] : studentIds;
+
+  const attendedUserIds = attendances.map(a => a.userId);
+  const allAttended = requiredUserIds.every(uid => attendedUserIds.includes(uid));
+  if (!allAttended) return;
+
+  const existingSalary = await prisma.salary.findFirst({
+    where: { userId: tutorId, orderId }
+  });
+  if (existingSalary) return;
+
+  const tutor = await prisma.tutor.findUnique({
+    where: { userId: tutorId }
+  });
+  const percent = tutor?.percent ? Number(tutor.percent) / 100 : 0.6;
+
+  const totalSchedules = schedules.length;
+  const hadirCount = await prisma.attendance.count({
+    where: {
+      userId: tutorId,
+      scheduleId: { in: schedules.map(s => s.id) },
+      status: 'masuk'
+    }
+  });
+  const hadirPersen = totalSchedules > 0 ? hadirCount / totalSchedules : 0;
+
+  const totalSalary = price * percent;
+  const payroll = totalSalary * hadirPersen;
+
+  await SalaryService.createSalary({
+    tutorId,
+    orderId,
+    totalSalary,
+    payroll
+  });
+
+  await prisma.class.update({
+    where: { id: classId },
+    data: { status: 'selesai' }
+  });
+
+  const orderDetail = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { packageId: true }
+  });
+  if (orderDetail?.packageId) {
+    await prisma.bimbelPackage.update({
+      where: { id: orderDetail.packageId },
+      data: { isActive: true }
+    });
+  }
+}
+
+/**
+ * Mengumpulkan alert attendance untuk tutor yang telat absen masuk > 5 menit dan jadwal kosong.
+ * @param {string} classId
+ * @returns {Promise<Array>} Array of alert objects
+ */
+async function alertAttendance(classId) {
+  const classData = await prisma.class.findUnique({
+    where: { id: classId },
+    select: {
+      id: true,
+      tutor: { select: { id: true } },
+      studentClasses: { select: { user: { select: { id: true } } } },
+      schedules: {
+        select: {
+          date: true,
+          meet: true,
+          attendances: {
+            select: {
+              userId: true,
+              status: true,
+              createdAt: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!classData || !classData.tutor) return [];
+
+  const tutorId = classData.tutor.id;
+  const siswaIds = classData.studentClasses.map(sc => sc.user.id);
+
+  const alerts = [];
+
+  for (const schedule of classData.schedules) {
+    const attendances = schedule.attendances;
+
+    const tutorAttendance = attendances.find(att => att.userId === tutorId && att.status === 'masuk');
+    if (tutorAttendance) {
+      const waktuAbsen = tutorAttendance.createdAt
+      const jadwalMulai = new Date(schedule.date);
+      const waktuAbsenDate = new Date(waktuAbsen);
+      waktuAbsenDate.setHours(waktuAbsenDate.getHours() - 7);
+
+      const selisihMenit = Math.floor((waktuAbsenDate - jadwalMulai) / 60000);
+      if (selisihMenit > 15) {
+        alerts.push({
+          tanggal: jadwalMulai,
+          meet: schedule.meet,
+          waktuAbsen: waktuAbsenDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          jenis: 'Keterlambatan',
+          keterangan: `Tutor terlambat ${selisihMenit} menit`
+        });
+      }
+      const tutorMasuk = tutorAttendance !== undefined;
+      const siswaTidakMasuk = siswaIds.every(siswaId =>
+        !attendances.some(att => att.userId === siswaId && att.status === 'masuk')
+      );
+      const now = new Date();
+      if (
+        tutorMasuk &&
+        siswaTidakMasuk &&
+        now.getDate() !== jadwalMulai.getDate()
+      ) {
+        alerts.push({
+          tanggal: jadwalMulai,
+          meet: schedule.meet,
+          waktuAbsen: waktuAbsenDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          jenis: 'Pembatalan',
+          keterangan: 'Semua siswa dalam kelas tidak melakukan absensi'
+        });
+      }
+    }
+
+  }
+  
+
+  return alerts;
+}
+
 export const AttendanceService = {
   createAttendance,
   markAlphaForMissedSchedules,
   getMyAttendanceStatistics,
   getRekapKelasById,
   createIzinNotification,
-  createMasukNotification
+  createMasukNotification,
+  createSalaryIfLastAttendance,
+  alertAttendance,
 };

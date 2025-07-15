@@ -16,14 +16,14 @@ const isSubmitting = ref(false);
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+    const res = await fetch(`/packages/${slug}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
     programData.value = await res.json();
 
     // Cek role user
-    const userRes = await fetch('http://localhost:3000/users/me', {
+    const userRes = await fetch('/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (userRes.ok) {
@@ -116,7 +116,7 @@ async function handleConfirm() {
   };
 
   try {
-    const res = await fetch('http://localhost:3000/orders', {
+    const res = await fetch('/orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -215,7 +215,7 @@ const InfoRow = defineComponent({
       <div>
         <img
           class="program-photo"
-          :src="programData.photo ? `http://localhost:3000${programData.photo}` : '/tutor/Tutor_Default.png'"
+          :src="programData.photo ? `${programData.photo}` : '/Tutor_Default.png'"
           alt="Program Photo"
         />
       </div>

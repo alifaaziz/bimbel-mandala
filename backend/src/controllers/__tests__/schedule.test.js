@@ -81,12 +81,12 @@ describe('ScheduleController', () => {
       ScheduleService.getClosestSchedules.mockResolvedValue(schedulesMock);
 
       const { req, res } = setupExpressMock({
-        req: { query: { page: '2', limit: '3' } },
+        req: { query: { page: '2', limit: '3', search: 'FOKUS' } },
       });
 
       await ScheduleController.getClosestSchedules(req, res);
 
-      expect(ScheduleService.getClosestSchedules).toHaveBeenCalledWith(2, 3);
+      expect(ScheduleService.getClosestSchedules).toHaveBeenCalledWith(2, 3, 'FOKUS');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ data: schedulesMock });
     });
@@ -98,7 +98,7 @@ describe('ScheduleController', () => {
 
       await ScheduleController.getClosestSchedules(req, res);
 
-      expect(ScheduleService.getClosestSchedules).toHaveBeenCalledWith(1, 10);
+      expect(ScheduleService.getClosestSchedules).toHaveBeenCalledWith(1, 10, '');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ data: schedulesMock });
     });

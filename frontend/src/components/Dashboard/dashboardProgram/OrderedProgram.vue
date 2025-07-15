@@ -1,68 +1,91 @@
 <template>
   <div class="ordered-program-container">
-    <n-space vertical :size="20">
-      <n-h3 class="component-title">Program Terpesan</n-h3>
-
-      <div v-for="program in orderedPrograms" :key="program.id">
-        <n-card
-          class="program-card"
-          :bordered="false"
-          content-style="padding: 16px 24px;"
-        >
+    <div class="header-row">
+      <h2 class="main-title">Program Terpesan</h2>
+      <div class="pagination-wrapper">
+        <button
+          class="pagination-btn"
+          :disabled="page === 1"
+          @click="prevPage"
+        >&lt;</button>
+        <button
+          class="pagination-btn"
+          :disabled="page >= Math.ceil(total / pageSize)"
+          @click="nextPage"
+        >&gt;</button>
+      </div>
+    </div>
+    <n-card class="program-card">
+      <div v-if="loading" style="text-align:center;padding:24px;">Loading...</div>
+      <div v-else>
+        <div v-for="order in orders" :key="order.id" class="card-content">
           <n-thing>
             <template #header>
-              <span class="program-subject">{{ program.subject }}</span>
+              <span class="course-title">{{ order.packageName }} {{ order.level }}</span>
             </template>
-            
             <template #description>
-              <span class="program-teacher">{{ program.teacher }}</span>
-            </template>
-
-            <template #action>
-              <n-button
-                round
-                ghost
-                type="primary"
-                @click="handleAction(program)"
-              >
-                Aksi
-              </n-button>
+              <span class="instructor-name">{{ order.tutorName }}</span>
             </template>
           </n-thing>
-        </n-card>
+          <n-button ghost type="primary" @click="goToVerifProgram(order.id)">
+            Aksi
+          </n-button>
+        </div>
+        <div v-if="orders.length === 0" style="text-align:center;color:#888;">Tidak ada data</div>
       </div>
-    </n-space>
+    </n-card>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { NCard, NThing, NButton, NSpace, NH3, useMessage } from 'naive-ui';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { NCard, NButton, NH2, NThing } from 'naive-ui'
 
-// Opsional: untuk menampilkan notifikasi saat tombol "Aksi" diklik
-const message = useMessage();
+const router = useRouter()
+const orders = ref([])
+const page = ref(1)
+const pageSize = 2
+const total = ref(0)
+const loading = ref(false)
 
-// Data reaktif untuk program yang dipesan.
-// Dibuat sebagai array agar mudah jika ingin menampilkan lebih dari satu.
-const orderedPrograms = ref([
-  {
-    id: 1,
-    subject: 'Fisika SMA',
-    teacher: 'Pak Dendy Wan S.Pd'
-  },
-  // Anda bisa menambahkan program lain di sini
-  // {
-  //   id: 2,
-  //   subject: 'Kimia SMA',
-  //   teacher: 'Ibu Retno Wulan S.Si'
-  // }
-]);
+async function fetchOrders() {
+  loading.value = true
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`/orders?page=${page.value}&limit=${pageSize}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const json = await res.json()
+    orders.value = json.data.data || []
+    total.value = json.data.total || 0
+  } catch (err) {
+    orders.value = []
+    total.value = 0
+  } finally {
+    loading.value = false
+  }
+}
 
-// Fungsi yang dipanggil ketika tombol "Aksi" diklik
-const handleAction = (program) => {
-  console.log('Aksi untuk program:', program.subject);
-  message.info(`Tombol aksi untuk "${program.subject}" diklik!`);
-};
+function goToVerifProgram(id) {
+  router.push(`/dashboardadmin/programadmin/verif/${id}`)
+}
+
+function prevPage() {
+  if (page.value > 1) {
+    page.value--
+    fetchOrders()
+  }
+}
+
+function nextPage() {
+  if (page.value * pageSize < total.value) {
+    page.value++
+    fetchOrders()
+  }
+}
+
+onMounted(fetchOrders)
 </script>
 
 <style scoped>
@@ -71,34 +94,55 @@ const handleAction = (program) => {
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-  max-width: 400px; /* Batasi lebar agar tidak terlalu stretched */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  max-width: 400px;
 }
-
-.component-title {
-  margin: 0;
+.main-title {
   font-weight: 700;
-  color: #1e3a8a; /* Warna biru tua yang solid */
+  color: #1e3a8a;
+  margin-bottom: 16px;
 }
-
 .program-card {
-  background-color: #f1f5f9; /* Warna latar abu-abu muda */
-  border-radius: 12px; /* Membuat sudut lebih rounded */
+  border-radius: 12px !important;
+  background-color: #eef2f7 !important;
 }
-
-/* Kustomisasi n-thing agar sesuai desain */
-:deep(.n-thing-main) {
-  flex-grow: 1;
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 16px;
 }
-
-.program-subject {
-  font-weight: 600;
+.course-title {
   font-size: 1.15rem;
-  color: #1e293b;
+  font-weight: 600;
+  color: #1e1e1e;
 }
-
-.program-teacher {
+.instructor-name {
   font-size: 0.95rem;
-  color: #64748b;
+  color: #6b7280;
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.pagination-wrapper {
+  display: flex;
+  gap: 8px;
+}
+.pagination-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid #154484;
+  background: #fff;
+  color: #154484;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
 }
 </style>

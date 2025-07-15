@@ -12,6 +12,7 @@ model Tutor {
     teachLevel   String?      @map("teach_level") // Jenjang mengajar
     description  String?
     photo        String?
+    percent      Decimal      @db.Decimal(10, 2)
 
     user User @relation(fields: [userId], references: [id])
 

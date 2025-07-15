@@ -71,17 +71,18 @@ async function handleUpdateTutor() {
   if (formValue.value.user.alamat) tutorPayload.address = formValue.value.user.alamat;
   if (formValue.value.user.jenjangAjar) tutorPayload.teachLevel = formValue.value.user.jenjangAjar;
   if (formValue.value.user.pelajaran) tutorPayload.subjects = formValue.value.user.pelajaran;
+  if (formValue.value.user.komisi) tutorPayload.percent = formValue.value.user.komisi;
   if (formValue.value.user.prodi) tutorPayload.major = formValue.value.user.prodi;
 
   const payload = {
     ...userPayload,
     ...tutorPayload,
-    daysName, 
+    ...(daysName.length > 0 ? { daysName } : {}), 
     role: "tutor"
   };
 
   try {
-    const res = await fetch(`http://localhost:3000/users/${id}`, {
+    const res = await fetch(`/users/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -133,9 +134,11 @@ async function handleUpdateTutor() {
         </div>
         <div class="grid-form">
           <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-6">
+            <n-input-group-label style="border-radius: 8px 0 0 8px;">+62</n-input-group-label>
             <n-input
               v-model:value="formValue.user.wa"
               placeholder="Tuliskan No. WhatsApp tutor disini"
+              style="border-radius: 0 8px 8px 0;"
             />
           </n-form-item>
         </div>
@@ -161,6 +164,13 @@ async function handleUpdateTutor() {
             <n-input
               v-model:value="formValue.user.pelajaran"
               placeholder="Matematika, Bahasa Inggris, Fisika, dll."
+            />
+          </n-form-item>
+          <n-form-item label="Komisi Program" path="user.komisi" class="col-span-6">
+            <n-input
+              v-model:value="formValue.user.komisi"
+              placeholder="60%"
+              type="number"
             />
           </n-form-item>
           <n-form-item label="Hari Aktif Mengajar" path="user.days" class="col-span-6">

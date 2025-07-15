@@ -11,7 +11,7 @@ export default (app) => {
 
     router.patch('/status', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole(['admin']), OrderController.updateOrderStatus);
 
-    router.get('/', AuthMiddleware.isAuthorized,  OrderController.getAllOrders);
+    router.get('/', AuthMiddleware.isAuthorized,  OrderController.getPendingOrders);
 
     router.get('/:id', AuthMiddleware.isAuthorized, OrderController.getOrderById);
 

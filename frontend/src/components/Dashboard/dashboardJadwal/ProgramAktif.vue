@@ -28,7 +28,7 @@ export default {
         if (!token) {
           throw new Error('Token tidak ditemukan. Silakan login kembali.');
         }
-        const response = await fetch('http://localhost:3000/classes/running', {
+        const response = await fetch('/classes/running', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -39,11 +39,13 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        this.activePrograms = result.data.map((program) => ({
+        this.activePrograms = result.data
+          .map((program) => ({
             subject: `${program.programName} ${program.level}`,
-          teacher: program.tutorName,
-          code: program.classCode,
-        }));
+            teacher: program.tutorName,
+            code: program.classCode,
+          }))
+          .slice(0, 10); 
       } catch (error) {
         console.error('Error fetching running classes:', error);
         alert('Gagal mengambil data program aktif.');

@@ -18,7 +18,7 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('http://localhost:3000/schedules', {
+    const res = await fetch('/schedules', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -88,7 +88,7 @@ function confirmAbsen() {
     return
   }
 
-  fetch('http://localhost:3000/attendance/masuk', {
+  fetch('/attendance/masuk', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ function confirmIzin() {
     return
   }
 
-  fetch('http://localhost:3000/attendance/izin', {
+  fetch('/attendance/izin', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ function confirmIzin() {
   <div v-if="schedule" class="card-container">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `http://localhost:3000${schedule.photo}` : '/tutor/Tutor_Default.png'"
+      :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">

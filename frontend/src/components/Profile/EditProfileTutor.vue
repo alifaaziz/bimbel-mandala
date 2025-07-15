@@ -79,7 +79,7 @@ const submitForm = async () => {
     )
   )
   try {
-    const res = await fetch('http://localhost:3000/users/me', {
+    const res = await fetch('/users/me', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

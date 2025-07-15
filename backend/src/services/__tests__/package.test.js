@@ -77,7 +77,7 @@ describe('BimbelPackageService', () => {
       ]);
       mockPrisma.prisma.bimbelPackage.count.mockResolvedValueOnce(1);
 
-      const result = await BimbelPackageService.getAllBimbelPackages({ page: 1, pageSize: 10 });
+      const result = await BimbelPackageService.getAllBimbelPackages({ page: 1, pageSize: 10, search: 'Math' });
       expect(result.data[0]).toMatchObject({
         name: 'Math Package',
         tutorName: 'Tutor A',
@@ -86,6 +86,27 @@ describe('BimbelPackageService', () => {
         days: ['Senin']
       });
       expect(result.total).toBe(1);
+
+      // Pastikan query ke Prisma sesuai dengan search
+      expect(mockPrisma.prisma.bimbelPackage.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            deletedAt: null,
+            OR: [
+              { name: { contains: 'Math' } },
+              {
+                user: {
+                  is: {
+                    name: { contains: 'Math' }
+                  }
+                }
+              }
+            ]
+          }),
+          skip: 0,
+          take: 10
+        })
+      );
     });
 
     it('should use default page=1 and pageSize=10 if not provided', async () => {
@@ -1062,7 +1083,7 @@ describe('BimbelPackageService', () => {
           id: 1,
           name: 'Math Package',
           isActive: true,
-          user: { tutors: [{ photo: 'photo.jpg' }] },
+          user: { tutors: [{ photo: 'photo.jpg', percent: 90 }] }, 
           groupType: [{ type: 'privat', price: 100000, discPrice: 90000 }],
           packageDay: [{ day: { daysName: 'Senin' } }]
         }
@@ -1135,7 +1156,7 @@ describe('BimbelPackageService', () => {
           id: 5,
           name: 'With DiscPrice',
           isActive: true,
-          user: { tutors: [{ photo: 'photo.jpg' }] },
+          user: { tutors: [{ photo: 'photo.jpg', percent: 90 }] }, // percent 90
           groupType: [{ type: 'privat', price: 200000, discPrice: 100000 }],
           packageDay: []
         }
@@ -1165,6 +1186,7 @@ describe('BimbelPackageService', () => {
           { day: { daysName: 'Selasa' } }
         ]
       });
+      mockPrisma.prisma.tutor.findUnique.mockResolvedValueOnce({ percent: 90 }); // percent 90
       const result = await BimbelPackageService.getMyPackageBySlug('math-package', { id: 'tutor1', role: 'tutor' });
       expect(result).toMatchObject({
         id: 1,
@@ -1210,25 +1232,27 @@ describe('BimbelPackageService', () => {
       expect(result.groupType[0].discPrice).toBeNull();
     });
 
-    it('should multiply discPrice by 0.9 if discPrice is not null', async () => {
+    it('should multiply discPrice by 0.6 if tutor percent is not set', async () => {
       mockPrisma.prisma.bimbelPackage.findFirst.mockResolvedValueOnce({
-        id: 3,
-        name: 'With DiscPrice',
+        id: 10,
+        name: 'Default Percent Package',
         level: 'SMA',
         totalMeetings: 10,
         time: '10:00',
         duration: 60,
         area: 'Jakarta',
-        slug: 'with-discprice',
+        slug: 'default-percent-package',
         groupType: [
-          { type: 'privat', price: 200000, discPrice: 100000 }
+          { type: 'privat', price: 100000, discPrice: 90000 }
         ],
         packageDay: [
           { day: { daysName: 'Senin' } }
         ]
       });
-      const result = await BimbelPackageService.getMyPackageBySlug('with-discprice', { id: 'tutor1', role: 'tutor' });
-      expect(result.groupType[0].discPrice).toBe(90000);
+      mockPrisma.prisma.tutor.findUnique.mockResolvedValueOnce({ percent: undefined }); // percent tidak ada
+      const result = await BimbelPackageService.getMyPackageBySlug('default-percent-package', { id: 'tutorX', role: 'tutor' });
+      expect(result.groupType[0].discPrice).toBe(54000); // 90000 * 0.6
+      expect(result.groupType[0].price).toBe(60000);     // 100000 * 0.6
     });
   });
 

@@ -51,8 +51,14 @@ import DetailJadwalAktif from '@/components/Dashboard/dashboardJadwal/DetailJadw
 import ProgramAdmin from '@/components/Dashboard/dashboardProgram/ProgramAdmin.vue';
 import ProgramMain from '@/components/Dashboard/dashboardProgram/ProgramMain.vue';
 import ProgramAdd from '@/components/Dashboard/dashboardProgram/ProgramAdd.vue';
+import DetailProgramPrivat from '@/components/Dashboard/dashboardProgram/detailProgramPrivat.vue';
+import EditProgramForm from '@/components/Dashboard/dashboardProgram/EditProgramForm.vue';
+import VerifProgram from '@/components/Dashboard/dashboardProgram/VerificationPage.vue';
+import ProgramScheduleDetail from '@/components/Dashboard/dashboardProgram/ProgramScheduleDetail.vue';
 
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
+import DashboardBiaya from '@/components/Dashboard/dashboardCatatanBiaya/DashboardBiaya.vue';
+import DetailProgramSelesai from '@/components/Dashboard/dashboardCatatanBiaya/DetailProgramSelesai.vue';
 
 import Error404 from '@/components/error404.vue';
 import Error403 from '@/components/error403.vue';
@@ -267,6 +273,26 @@ const routes = [
             name: 'ProgramAdd',
             component: ProgramAdd,
           },
+          {
+            path: 'detailprogram/:slug',
+            name: 'DetailProgramPrivat',
+            component: DetailProgramPrivat,
+          },
+          {
+            path: 'editprogram/:slug',
+            name: 'EditProgramForm',
+            component: EditProgramForm,
+          },
+          {
+            path: 'verif/:id',
+            name: 'VerifProgram',
+            component: VerifProgram,
+          },
+          {
+            path: 'detail/:orderId',
+            name: 'ProgramScheduleDetail',
+            component: ProgramScheduleDetail,
+          },
         ]
       },
       {
@@ -280,7 +306,7 @@ const routes = [
             component: JadwalAdminView
           },
           {
-            path: 'detailjadwalaktif/:id',
+            path: 'detailjadwalaktif/:slug',
             name: 'DetailJadwalAktif',
             component: DetailJadwalAktif
           },
@@ -290,6 +316,18 @@ const routes = [
         path: 'catatanbiaya',
         name: 'CatatanBiaya',
         component: CatatanBiaya,
+        children: [
+          {
+            path: '',
+            name: 'DashboardBiaya',
+            component: DashboardBiaya
+          },
+          {
+            path: 'detail/:classId',
+            name: 'DetailProgramSelesai',
+            component: DetailProgramSelesai
+          },
+        ]
       },
     ]
   }
@@ -301,13 +339,15 @@ const router = createRouter({
 })
 
 import { ref, onMounted } from 'vue'
+import path from 'path';
+import VerificationPage from '@/components/Dashboard/dashboardProgram/VerificationPage.vue';
 
 const isTutor = ref(false)
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return
-  const res = await fetch('http://localhost:3000/users/me', {
+  const res = await fetch('/users/me', {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -327,7 +367,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   try {
-    const res = await fetch('http://localhost:3000/users/me', {
+    const res = await fetch('/users/me', {
       headers: {
         'Authorization': `Bearer ${token}`
       }

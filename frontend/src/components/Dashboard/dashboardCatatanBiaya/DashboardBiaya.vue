@@ -7,21 +7,21 @@
         <n-gi>
           <n-card>
             <n-statistic label="Biaya masuk">
-              Rp10.000.000
+              Rp{{ stats.totalIncome.toLocaleString('id-ID') }}
             </n-statistic>
           </n-card>
         </n-gi>
         <n-gi>
           <n-card>
             <n-statistic label="Biaya keluar">
-              Rp7.000.000
+              Rp{{ stats.totalSalary.toLocaleString('id-ID') }}
             </n-statistic>
           </n-card>
         </n-gi>
         <n-gi>
           <n-card>
             <n-statistic label="Program selesai">
-              100
+              {{ stats.finishedClassCount }}
             </n-statistic>
           </n-card>
         </n-gi>
@@ -29,7 +29,7 @@
           <n-card>
             <n-statistic label="Menunggu pembayaran">
               <n-text type="error">
-                1
+                {{ stats.pendingSalaryCount }}
               </n-text>
             </n-statistic>
           </n-card>
@@ -41,6 +41,7 @@
          
         <div class="search-container">
       <n-input
+      v-model:value="searchTerm"
       round
       size="large"
       placeholder="Cari program bimbel berdasarkan nama, tutor, atau kode program">
@@ -52,7 +53,7 @@
 
         <n-data-table
           :columns="columns"
-          :data="filteredData"
+          :data="originalData"
           :bordered="false"
           :single-line="false"
           :pagination="pagination"
@@ -64,143 +65,140 @@
 </template>
 
 <script setup>
-import { ref, h, computed } from 'vue';
+import { ref, h, computed, onMounted, watch } from 'vue';
 import { NTag, NButton, NIcon } from 'naive-ui';
-import { SearchOutline, EllipsisHorizontal } from '@vicons/ionicons5';
+import { EllipsisHorizontal } from '@vicons/ionicons5';
+import { useRouter } from 'vue-router'
 
-// --- Tipe data untuk kolom tabel ---
-/**
- * @type {import('naive-ui').DataTableColumns<RowData>}
- */
-const createColumns = ({ showDetail }) => {
-  return [
-    {
-      title: 'Bimbel',
-      key: 'bimbel',
-      render(row) {
-        // Render 2 baris teks: Mata Pelajaran dan Nama Tutor
-        return h(
-          'div',
-          {},
-          [
-            h('div', { style: 'font-weight: 500;' }, row.subject),
-            h('div', { style: 'font-size: 12px; color: grey;' }, row.tutor)
-          ]
-        );
-      }
-    },
-    {
-      title: 'Kode',
-      key: 'code',
-      align: 'center',
-    },
-    {
-      title: 'Tanggal Mulai',
-      key: 'startDate',
-      align: 'center',
-    },
-    {
-      title: 'Tanggal Selesai',
-      key: 'endDate',
-      align: 'center',
-    },
-    {
-      title: 'Status Pembayaran',
-      key: 'paymentStatus',
-      align: 'center',
-      render(row) {
-        // Render Tag (lencana) berdasarkan status
-        if (row.paymentStatus === 'Belum Terbayar') {
-          return h(NTag, { type: 'warning', bordered: false }, { default: () => row.paymentStatus });
-        }
-        return h(NTag, { type: 'info', bordered: false }, { default: () => row.paymentStatus });
-      }
-    },
-    {
-      title: 'Detail',
-      key: 'actions',
-      align: 'center',
-      render(row) {
-        // Render tombol aksi
-        return h(
-          NButton,
-          {
-            tertiary: true,
-            circle: true,
-            onClick: () => showDetail(row)
-          },
-          { default: () => h(NIcon, null, { default: () => h(EllipsisHorizontal) }) }
-        );
-      }
-    }
-  ];
-};
+const router = useRouter();
 
-// --- Data Dummy untuk Tabel ---
-const originalData = ref([
-  {
-    key: 0,
-    subject: 'Matematika SMA',
-    tutor: 'Pak Dendy Wan S.Pd',
-    code: '#11132',
-    startDate: '27 Januari 2025',
-    endDate: '28 Juli 2025',
-    paymentStatus: 'Belum Terbayar'
-  },
-  {
-    key: 1,
-    subject: 'B. Indonesia SMP',
-    tutor: 'Bu Jenny Budi S.Pd',
-    code: '#11131',
-    startDate: '20 Januari 2025',
-    endDate: '21 Juli 2025',
-    paymentStatus: 'Terbayar'
-  },
-  {
-    key: 2,
-    subject: 'Fisika SMA',
-    tutor: 'Pak Muhammad Rendy S.Pd',
-    code: '#11130',
-    startDate: '13 Januari 2025',
-    endDate: '14 Juli 2025',
-    paymentStatus: 'Terbayar'
-  },
-   {
-    key: 3,
-    subject: 'Kimia SMA',
-    tutor: 'Bu Anisa Putri S.Si',
-    code: '#11129',
-    startDate: '06 Januari 2025',
-    endDate: '07 Juli 2025',
-    paymentStatus: 'Terbayar'
-  }
-]);
-
-// --- State untuk Search & Filter ---
+const originalData = ref([]);
 const searchTerm = ref('');
-const filteredData = computed(() => {
-  if (!searchTerm.value) {
-    return originalData.value;
-  }
-  return originalData.value.filter(item =>
-    item.subject.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-    item.tutor.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-    item.code.toLowerCase().includes(searchTerm.value.toLowerCase())
-  );
+const page = ref(1);
+const pageSize = ref(5);
+const total = ref(0);
+const totalPages = ref(1);
+
+const stats = ref({
+  totalIncome: 0,
+  totalSalary: 0,
+  finishedClassCount: 0,
+  pendingSalaryCount: 0
 });
 
+const fetchRecap = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(
+      `/salaries/recap?search=${encodeURIComponent(searchTerm.value)}&page=${page.value}&limit=${pageSize.value}`,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+    const result = await response.json();
+    if (result.data) {
+      originalData.value = result.data.map((item, idx) => ({
+        key: idx,
+        classId: item.classId,
+        subject: item.packageName,
+        tutor: item.tutorName,
+        code: item.classCode,
+        startDate: new Date(item.startDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
+        endDate: new Date(item.endDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
+        paymentStatus: item.salaryStatus === 'pending' ? 'Belum Terbayar' : 'Terbayar'
+      }));
+      total.value = result.total || result.data.length;
+      totalPages.value = result.totalPages || 1;
+    }
+  } catch (err) {
+    console.error('Gagal fetch data recap:', err);
+  }
+};
 
-// --- Fungsi Aksi dan Konfigurasi Tabel ---
+const fetchStats = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch('/salaries/stats', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await response.json();
+    if (result.data) {
+      stats.value = result.data;
+    }
+  } catch (err) {
+    console.error('Gagal fetch statistik:', err);
+  }
+};
+
+onMounted(() => {
+  fetchStats();
+  fetchRecap();
+});
+
+let searchTimeout = null;
+watch(searchTerm, () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    page.value = 1;
+    fetchRecap();
+  }, 400);
+});
+watch(page, () => {
+  fetchRecap();
+});
+
 const showDetail = (row) => {
-  // Ganti dengan logika Anda, misal membuka modal atau navigasi
-  alert(`Melihat detail untuk program dengan kode: ${row.code}`);
+  router.push(`/dashboardadmin/catatanbiaya/detail/${row.classId}`);
 };
 
-const columns = createColumns({ showDetail });
+const columns = [
+  {
+    title: 'Bimbel',
+    key: 'bimbel',
+    render(row) {
+      return h('div', {}, [
+        h('div', { style: 'font-weight: 500;' }, row.subject),
+        h('div', { style: 'font-size: 12px; color: grey;' }, row.tutor)
+      ]);
+    }
+  },
+  { title: 'Kode', key: 'code', align: 'center' },
+  { title: 'Tanggal Mulai', key: 'startDate', align: 'center' },
+  { title: 'Tanggal Selesai', key: 'endDate', align: 'center' },
+  {
+    title: 'Status Pembayaran',
+    key: 'paymentStatus',
+    align: 'center',
+    render(row) {
+      if (row.paymentStatus === 'Belum Terbayar') {
+        return h(NTag, { type: 'warning', bordered: false }, { default: () => row.paymentStatus });
+      }
+      return h(NTag, { type: 'info', bordered: false }, { default: () => row.paymentStatus });
+    }
+  },
+  {
+    title: 'Detail',
+    key: 'actions',
+    align: 'center',
+    render(row) {
+      return h(
+        NButton,
+        {
+          tertiary: true,
+          circle: true,
+          onClick: () => showDetail(row)
+        },
+        { default: () => h(NIcon, null, { default: () => h(EllipsisHorizontal) }) }
+      );
+    }
+  }
+];
 
-const pagination = {
-  pageSize: 5 // Menampilkan 5 item per halaman
-};
+const pagination = computed(() => ({
+  page: page.value,
+  pageSize: pageSize.value,
+  pageCount: totalPages.value,
+  showSizePicker: false,
+  onUpdatePage: (newPage) => { page.value = newPage; }
+}));
 
 </script>
 

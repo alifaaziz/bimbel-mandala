@@ -78,17 +78,21 @@ async function getStudentClassesByUserId(req, res) {
 }
 
 /**
- * Handles the request to get all finished classes.
+ * Handles the request to get a class by id.
  *
  * @async
- * @function getFinishedClasses
+ * @function getClassById
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
- * @returns {Promise<void>} Resolves with the finished classes.
+ * @returns {Promise<void>} Resolves with the class detail.
  */
-async function getFinishedClasses(req, res) {
-  const finishedClasses = await ClassService.getFinishedClasses();
-  res.status(200).json({ data: finishedClasses });
+async function getClassById(req, res) {
+  const { id } = req.params;
+  const classDetail = await ClassService.getClassById(id);
+  if (!classDetail) {
+    return res.status(404).json({ message: 'Class not found' });
+  }
+  res.status(200).json({ data: classDetail });
 }
 
 export const ClassController = {
@@ -97,5 +101,5 @@ export const ClassController = {
   getMyClass: asyncWrapper(getMyClass),
   getRunningClass: asyncWrapper(getRunningClass),
   getStudentClassesByUserId: asyncWrapper(getStudentClassesByUserId),
-  getFinishedClasses: asyncWrapper(getFinishedClasses)
+  getClassById: asyncWrapper(getClassById)
 };

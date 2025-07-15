@@ -89,6 +89,7 @@ CREATE TABLE `orders` (
     `user_id` VARCHAR(191) NOT NULL,
     `package_id` VARCHAR(191) NOT NULL,
     `group_type_id` VARCHAR(191) NOT NULL,
+    `amount` DECIMAL(10, 2) NULL,
     `address` VARCHAR(191) NULL,
     `status` ENUM('pending', 'paid', 'cancel', 'kelas') NOT NULL DEFAULT 'pending',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -138,6 +139,7 @@ CREATE TABLE `Salary` (
     `userId` VARCHAR(191) NOT NULL,
     `orderId` VARCHAR(191) NOT NULL,
     `total` DECIMAL(10, 2) NOT NULL,
+    `payroll` DECIMAL(10, 2) NOT NULL,
     `status` ENUM('terbayar', 'pending') NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -234,6 +236,7 @@ CREATE TABLE `tutors` (
     `teach_level` VARCHAR(191) NULL,
     `description` VARCHAR(191) NULL,
     `photo` VARCHAR(191) NULL,
+    `percent` DECIMAL(10, 2) NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

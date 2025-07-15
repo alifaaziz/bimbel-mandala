@@ -11,10 +11,11 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
  * @returns {Promise<void>} Resolves with the list of bimbel packages.
  */
 async function getAllBimbelPackages(req, res) {
-    const { page = 1, limit = 8 } = req.query;
+    const { page = 1, limit = 8, search = '' } = req.query;
     const paginationOptions = {
       page: parseInt(page, 10),
       pageSize: parseInt(limit, 10),
+      search: search
     };
     const packages = await BimbelPackageService.getAllBimbelPackages(paginationOptions);
     res.status(200).json(packages);

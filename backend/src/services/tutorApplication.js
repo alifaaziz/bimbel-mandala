@@ -94,6 +94,7 @@ async function verifyTutor(applicationId) {
         teachLevel: application.teachLevel,
         description: application.description,
         photo: application.photo,
+        percent: 60
       },
     });
 

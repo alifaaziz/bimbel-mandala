@@ -34,6 +34,13 @@ export default (app) => {
     )
 
     router.get(
+        '/tutors/all',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        UserController.getAllTutors
+    );
+
+    router.get(
         '/students',
         AuthMiddleware.isAuthorized,
         AuthMiddleware.hasRole('admin'),
@@ -45,6 +52,13 @@ export default (app) => {
         AuthMiddleware.isAuthorized,
         AuthMiddleware.hasRole('admin'),
         UserController.getNewStudents
+    );
+    
+    router.get(
+        '/new-tutors',
+        AuthMiddleware.isAuthorized,
+        AuthMiddleware.hasRole('admin'),
+        UserController.getNewTutors
     );
 
     router.get(

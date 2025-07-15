@@ -1,209 +1,341 @@
-<template>
-  <div class="page-container">
-    <n-space vertical :size="32">
-      <n-card :bordered="false" content-style="padding: 0;">
-        <n-grid :x-gap="24" :y-gap="24" cols="1 s:1 m:3" responsive="screen">
-          <n-gi span="1">
-            <n-image
-              width="100%"
-              height="100%"
-              object-fit="cover"
-              :src="data.program.tutorImage"
-              alt="Foto Tutor"
-              style="border-radius: 12px;"
-            />
-          </n-gi>
-          <n-gi span="2">
-            <n-space vertical size="medium">
-              <n-space align="center" justify="space-between">
-                <div class="title-group">
-                    <h3 class="program-name">{{ data.program.subject }}</h3>
-                    <p class="tutor-name">{{ data.program.tutorName }}</p>
-                </div>
-                <n-tag :bordered="false" type="info" class="level-tag">{{ data.program.level }}</n-tag>
-              </n-space>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 
-              <n-space>
-                <n-tag
-                  v-for="day in allDays"
-                  :key="day"
-                  :type="data.program.activeDays.includes(day) ? 'primary' : 'default'"
-                  :bordered="false"
-                >
-                  {{ day }}
-                </n-tag>
-              </n-space>
+const route = useRoute();
+const router = useRouter();
 
-              <n-descriptions label-placement="left" :column="1" :label-style="{width: '120px'}">
-                <n-descriptions-item label="Area">{{ data.program.area }}</n-descriptions-item>
-                <n-descriptions-item label="Pertemuan">{{ data.program.meetings }}</n-descriptions-item>
-                <n-descriptions-item label="Pukul">{{ data.program.time }}</n-descriptions-item>
-                <n-descriptions-item label="Durasi">{{ data.program.duration }}</n-descriptions-item>
-              </n-descriptions>
+const programData = ref({
+  id: '',
+  packageName: '',
+  tutorName: '',
+  level: '',
+  area: '',
+  totalMeetings: null,
+  time: '',
+  duration: null,
+  type: '',
+  paid: null,
+  studentName: '',
+  address: '',
+  startDate: '',
+  days: [],
+  photo: '',
+});
 
-              <div>
-                <p class="program-type">{{ data.program.type }}</p>
-                <p class="price">{{ formatRupiah(data.program.price) }}</p>
-              </div>
-            </n-space>
-          </n-gi>
-        </n-grid>
-      </n-card>
+const loading = ref(false);
 
-      <div class="registration-details">
-        <h3 class="section-title">Data Pendaftaran Program</h3>
-        <n-descriptions label-placement="top" :column="1" size="large" :separator="false" content-style="margin-bottom: 24px;">
-            <n-descriptions-item>
-                <template #label>
-                    <n-space align="center" :size="8">
-                        <n-icon :component="PersonOutline" />
-                        <span>Siswa</span>
-                    </n-space>
-                </template>
-                {{ data.registration.students }}
-            </n-descriptions-item>
-
-            <n-descriptions-item>
-                <template #label>
-                    <n-space align="center" :size="8">
-                        <n-icon :component="HomeOutline" />
-                        <span>Lokasi les Privat</span>
-                    </n-space>
-                </template>
-                <n-input :value="data.registration.location" disabled />
-            </n-descriptions-item>
-
-            <n-descriptions-item>
-                <template #label>
-                    <n-space align="center" :size="8">
-                        <n-icon :component="PeopleOutline" />
-                        <span>Peserta</span>
-                    </n-space>
-                </template>
-                {{ data.registration.participantInfo }}
-            </n-descriptions-item>
-
-            <n-descriptions-item>
-                <template #label>
-                    <n-space align="center" :size="8">
-                        <n-icon :component="CalendarOutline" />
-                        <span>Tanggal Mulai</span>
-                    </n-space>
-                </template>
-                {{ data.registration.startDate }}
-            </n-descriptions-item>
-        </n-descriptions>
-      </div>
-
-
-      <n-space justify="start" size="large">
-        <n-button type="primary" size="large" @click="handleVerify">Verifikasi Pembuatan Jadwal</n-button>
-        <n-button ghost size="large" @click="handleCancel">Batal</n-button>
-      </n-space>
-
-    </n-space>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import { useMessage, NSpace, NCard, NGrid, NGi, NImage, NTag, NDescriptions, NDescriptionsItem, NButton, NIcon, NInput } from 'naive-ui';
-import { PersonOutline, HomeOutline, PeopleOutline, CalendarOutline } from '@vicons/ionicons5';
-
-const message = useMessage();
-const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum\'at', 'Sabtu'];
-
-// --- Data Halaman (bisa diambil dari API) ---
-const data = ref({
-  program: {
-    tutorImage: 'https://images.unsplash.com/photo-1542327897-4141c5336f09?q=80&w=2524&auto=format&fit=crop', // Placeholder image
-    subject: 'Matematika',
-    tutorName: 'Pak Dendy Wan S.Pd',
-    level: 'SMA',
-    activeDays: ['Senin', 'Rabu', 'Kamis', 'Sabtu'],
-    area: 'Semarang',
-    meetings: '6 Bulan (3x perminggu)',
-    time: '15:00 WIB',
-    duration: '120 Menit',
-    type: 'Privat/Kelompok',
-    price: 1540000
-  },
-  registration: {
-    students: 'Areli Saverro Biyantora, Alif Abdul Aziz, Raihan Muhammad R. R.',
-    location: 'Jln. Sekaran No.05 RT003/001',
-    participantInfo: 'Kelompok 3 Peserta',
-    startDate: '24 Maret 2025'
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  const id = route.params.id;
+  if (!id || !token) return;
+  try {
+    const res = await fetch(`/orders/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    if (json.data) {
+      Object.assign(programData.value, json.data);
+    }
+  } catch (err) {
+    console.error('Gagal fetch order:', err);
   }
 });
 
-
-// --- Helper dan Handler ---
-const formatRupiah = (number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  }).format(number);
+const badgeClass = (level: string) => {
+  switch (level.toLowerCase()) {
+    case 'sd':
+      return 'grade-sd';
+    case 'smp':
+      return 'grade-smp';
+    case 'sma':
+      return 'grade-sma';
+    default:
+      return '';
+  }
 };
 
-const handleVerify = () => {
-  message.success('Jadwal telah diverifikasi!');
-};
-const handleCancel = () => {
-  message.warning('Aksi dibatalkan.');
-};
+async function handleValidateClick() {
+  const token = localStorage.getItem('token');
+  const orderId = route.params.id;
+  if (!orderId || !token) return;
 
+  loading.value = true;
+  try {
+    await fetch('/orders/status', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        orderId,
+        status: 'paid'
+      })
+    });
+    // Setelah fetch selesai, loading tetap aktif selama 2 detik
+    setTimeout(() => {
+      router.push(`/dashboardadmin/programadmin/detail/${orderId}`);
+      loading.value = false;
+    }, 2000);
+  } catch (err) {
+    alert('Gagal verifikasi order');
+    console.error(err);
+    loading.value = false;
+  }
+}
+
+function handleBackClick() {
+  router.back();
+}
+
+const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+const typeLabel = (type) => {
+  switch (type) {
+    case 'privat':
+      return 'Privat';
+    case 'grup2':
+      return 'Kelompok 2 Peserta';
+    case 'grup3':
+      return 'Kelompok 3 Peserta';
+    case 'grup4':
+      return 'Kelompok 4 Peserta';
+    case 'grup5':
+      return 'Kelompok 5 Peserta';
+    case 'kelas':
+      return 'Kelas';
+    default:
+      return type;
+  }
+};
 </script>
 
+<template>
+  <div class="detail-flow">
+    <div class="detail-ccontainer">
+      
+      <div class="header-program">
+        <img
+          class="tutor-photo"
+            :src="programData.photo ? `${programData.photo}` : '/Tutor_Default.png'"
+          alt="Tutor Photo"
+        />
+        <div class="card-content">
+          <div class="header-section">
+            <div>
+              <div class="subject headersb1">{{ programData.packageName }}</div>
+              <div class="tutor-name bodym2">{{ programData.tutorName }}</div>
+            </div>
+            <div>
+              <div
+                class="headerb1"
+                :class="badgeClass(programData.level)"
+              >
+              {{ programData.level }}
+              </div>
+            </div>
+          </div>
+          <n-space class="bodyr2">
+            <n-tag
+              v-for="(day, index) in allDays"
+              :key="index"
+              class="tag"
+              :class="{ 'tag-unselected': !programData.days.includes(day) }"
+            >
+              {{ day }}
+            </n-tag>
+          </n-space>
+          <div class="info-section bodyr2">
+            <div class="info-row">
+              <span class="label-data"><strong>Area</strong></span>
+              <span class="value">: {{ programData.area }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label-data"><strong>Pertemuan</strong></span>
+              <span class="value">: {{ programData.totalMeetings }} pertemuan</span>
+            </div>
+            <div class="info-row">
+              <span class="label-data"><strong>Pukul</strong></span>
+              <span class="value">
+                : {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="label-data"><strong>Durasi</strong></span>
+              <span class="value">: {{ programData.duration }} menit</span>
+            </div>
+          </div>
+            <div class="meeting-link bodysb1">
+            {{ programData.type === 'kelas' ? 'Kelas' : 'Privat/Kelompok' }}
+            </div>
+          <p class="headerb3">
+            {{ Number(programData.paid).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }) }}
+          </p>
+        </div>
+      </div>
+      <n-divider class="divider" />
+      <h4 class="headerb2">Data Pendaftaran Program</h4>
+
+      <div>
+          <h4 class="bodysb2">Siswa</h4>
+          <p class="bodyr2">{{ programData.studentName }}</p>
+      </div>
+
+      <div>
+          <h4 class="bodysb2">Lokasi Les Privat</h4>
+          <p class="bodyr2">{{ programData.address }}</p>
+      </div>
+
+      <div>
+          <h4 class="bodysb2">Peserta</h4>
+          <p class="bodyr2">{{ typeLabel(programData.type) }}</p>
+      </div>
+
+      <div>
+          <h4 class="bodysb2">Tanggal Mulai</h4>
+            <p class="bodyr2">
+            {{
+              programData.startDate
+              ? new Date(programData.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+              : ''
+            }}
+            </p>
+      </div>
+
+      <n-divider class="divider" />
+      <div class="button" style="position: relative;">
+        <butPrimerNormal
+          @click="handleValidateClick"
+          :loading="loading"
+          label="Verifikasi Pembuatan Jadwal"
+        />
+        <butSecondNormal
+          @click="handleBackClick"
+          label="Batal"
+        />
+        <div v-if="loading" class="btn-spinner-overlay">
+          <div class="btn-spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-.page-container {
-  padding: 24px;
-  max-width: 900px;
-  margin: auto;
+.detail-flow{
+  background-color: #0B2343;
+  padding: 20px;
+  overflow-y: auto;
+  width: 100%;
 }
-.title-group {
-    display: flex;
-    flex-direction: column;
-}
-.program-name {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0;
-  line-height: 1.2;
-}
-.tutor-name {
-    margin: 4px 0 0 0;
-    color: #4b5563;
-    font-size: 1rem;
-}
-.level-tag {
-  background-color: #1e3a8a;
-  color: white;
-  font-weight: 600;
+.detail-ccontainer{
+  width: 100%;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 20px;
   height: fit-content;
 }
-.program-type {
-  font-weight: 600;
-  color: #f97316; /* Warna Oranye */
-  margin: 8px 0 4px 0;
+.headerb2{
+  color: #154484;
 }
-.price {
-  font-weight: 700;
-  color: #1e3a8a;
-  font-size: 1.25rem;
-  margin: 0;
+.divider {
+  border-top: 1px solid #FEEBD9 !important;
 }
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1e3a8a;
-    border-bottom: 2px solid #eef2ff;
-    padding-bottom: 12px;
-    margin-bottom: 24px;
+.header-program {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
-.n-descriptions :deep(.n-descriptions-item-label) {
-    color: #4b5563;
-    font-weight: 600;
+.button{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.tutor-photo {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 16px;
+}
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: #061222;
+}
+.bodysb2 {
+  margin-top: 1rem;
+}
+.header-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.headersb1 {
+  color: #154484;
+}
+.info-section {
+  display: flex;
+  flex-direction: column;
+  color: #333;
+}
+.label-data{
+  display: inline-block; 
+  width: 100px;
+}
+.tag {
+  background-color: #154484;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  transition: background 0.2s, color 0.2s;
+}
+.tag-unselected {
+  background-color: #e0e0e0;
+  color: #888;
+}
+.meeting-link {
+  color: #FB8312;
+}
+.divider {
+  border-top: 1px solid #FEEBD9 !important;
+}
+.bodysb2, .headerb3 {
+  color: #154484;
+}
+.tabel {
+  margin-top: 1rem;
+}
+.btn-spinner-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 160px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.btn-spinner {
+  width: 28px;
+  height: 28px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #154484;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  background: transparent;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
 }
 </style>

@@ -25,14 +25,24 @@ async function createOrder(userId, packageId, groupTypeId, address) {
   const groupType = await prisma.groupType.findUnique({
     where: { id: groupTypeId }
   });
-  
+
+  let amount = 0;
+  if (groupType) {
+    if (groupType.discPrice != null && Number(groupType.discPrice) > 0) {
+      amount = Number(groupType.discPrice);
+    } else {
+      amount = Number(groupType.price) || 0;
+    }
+  }
+
   await prisma.order.create({
     data: {
       userId,
       packageId,
       groupTypeId,
       address,
-      status: 'pending'
+      status: 'pending',
+      amount
     }
   });
 
@@ -153,36 +163,53 @@ async function updateOrderStatus(orderId, status) {
 }
 
 /**
- * Gets all orders (optional).
+ * Gets pending orders with pagination.
  *
  * @async
- * @function getAllOrders
- * @returns {Promise<Array>} The list of orders.
+ * @function getPendingOrders
+ * @param {Object} options - Pagination options.
+ * @param {number} options.page - Page number (1-based).
+ * @param {number} options.limit - Items per page.
+ * @returns {Promise<Object>} The paginated orders and total count.
  */
-async function getAllOrders() {
-  const orders = await prisma.order.findMany({
-    include: {
-      bimbelPackage: {
-        select: {
-          name: true,
-          level: true,
-          user: {
-            select: {
-              name: true
+async function getPendingOrders({ page = 1, limit = 10 } = {}) {
+  const skip = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    prisma.order.findMany({
+      skip,
+      take: limit,
+      where: { status: 'pending' }, 
+      orderBy: { createdAt: 'desc' },
+      include: {
+        bimbelPackage: {
+          select: {
+            name: true,
+            level: true,
+            user: {
+              select: {
+                name: true
+              }
             }
           }
         }
       }
-    }
-  });
+    }),
+    prisma.order.count({ where: { status: 'pending' } }) 
+  ]);
 
-  return orders.map(order => ({
-    id: order.id,
-    packageName: order.bimbelPackage?.name || null,
-    level: order.bimbelPackage?.level || null,
-    tutorName: order.bimbelPackage?.user?.name || null,
-    status: order.status,
-  }));
+  return {
+    data: orders.map(order => ({
+      id: order.id,
+      packageName: order.bimbelPackage?.name || null,
+      level: order.bimbelPackage?.level || null,
+      tutorName: order.bimbelPackage?.user?.name || null,
+      status: order.status,
+    })),
+    total,
+    page,
+    pageSize: limit
+  };
 }
 
 /**
@@ -206,7 +233,8 @@ async function getOrderById(id) {
           totalMeetings: true,
           time: true,
           duration: true,
-          user: { select: { name: true } },
+          slug: true,
+          user: { select: { name: true, tutors: { select: { photo: true } } } },
           groupType: {
             select: {
               id: true,
@@ -292,7 +320,10 @@ async function getOrderById(id) {
     paid,
     studentName,
     address: order.address,
-    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null // format YYYY-MM-DD
+    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null, // format YYYY-MM-DD
+    days: packageDays,
+    photo: order.bimbelPackage?.user?.tutors?.[0]?.photo || null,
+    slug: order.bimbelPackage?.slug || null,
   };
 }
 
@@ -342,7 +373,7 @@ async function cancelPendingOrders() {
 export const OrderService = {
   createOrder,
   updateOrderStatus,
-  getAllOrders,
+  getPendingOrders,
   getOrderById,
   deleteOrder,
   cancelPendingOrders

@@ -34,7 +34,8 @@ describe('OrderService', () => {
           packageId: 'pkg1',
           groupTypeId: 'grp1',
           address: 'address',
-          status: 'pending'
+          status: 'pending',
+          amount: 0 
         }
       });
       expect(mockPrisma.bimbelPackage.update).toHaveBeenCalledWith({
@@ -49,6 +50,24 @@ describe('OrderService', () => {
       await OrderService.createOrder('user1', 'pkg1', 'grp1', 'address');
       expect(mockPrisma.order.create).toHaveBeenCalled();
       expect(mockPrisma.bimbelPackage.update).not.toHaveBeenCalled();
+    });
+
+    it('should use discPrice as amount if discPrice is present and > 0', async () => {
+      mockPrisma.groupType.findUnique.mockResolvedValueOnce({ type: 'reguler', price: 100000, discPrice: 90000 });
+      mockPrisma.order.create.mockResolvedValueOnce({});
+      mockPrisma.bimbelPackage.update.mockResolvedValueOnce({});
+      await OrderService.createOrder('user1', 'pkg1', 'grp1', 'address');
+      expect(mockPrisma.order.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'user1',
+          packageId: 'pkg1',
+          groupTypeId: 'grp1',
+          address: 'address',
+          status: 'pending',
+          amount: 90000 // discPrice
+        }
+      });
+      expect(mockPrisma.bimbelPackage.update).toHaveBeenCalled();
     });
   });
 
@@ -203,8 +222,8 @@ describe('OrderService', () => {
     });
   });
 
-  describe('getAllOrders', () => {
-    it('should return all orders with mapped fields', async () => {
+  describe('getPendingOrders', () => {
+    it('should return pending orders with mapped fields and pagination', async () => {
       mockPrisma.order.findMany.mockResolvedValueOnce([
         {
           id: 1,
@@ -214,26 +233,33 @@ describe('OrderService', () => {
         {
           id: 2,
           bimbelPackage: null,
-          status: 'cancel'
-        }
-      ]);
-      const result = await OrderService.getAllOrders();
-      expect(result).toEqual([
-        {
-          id: 1,
-          packageName: 'Paket A',
-          level: 'SMA',
-          tutorName: 'Budi',
           status: 'pending'
-        },
-        {
-          id: 2,
-          packageName: null,
-          level: null,
-          tutorName: null,
-          status: 'cancel'
         }
       ]);
+      mockPrisma.order.count.mockResolvedValueOnce(2);
+
+      const result = await OrderService.getPendingOrders({ page: 1, limit: 10 });
+      expect(result).toEqual({
+        data: [
+          {
+            id: 1,
+            packageName: 'Paket A',
+            level: 'SMA',
+            tutorName: 'Budi',
+            status: 'pending'
+          },
+          {
+            id: 2,
+            packageName: null,
+            level: null,
+            tutorName: null,
+            status: 'pending'
+          }
+        ],
+        total: 2,
+        page: 1,
+        pageSize: 10
+      });
     });
   });
 

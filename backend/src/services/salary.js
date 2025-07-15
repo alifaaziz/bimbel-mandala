@@ -23,12 +23,13 @@ function getTutorName(user) {
  * @param {number} data.totalSalary - The total salary amount.
  * @returns {Promise<Object>} The created salary record.
  */
-async function createSalary({ tutorId, orderId, totalSalary }) {
+async function createSalary({ tutorId, orderId, totalSalary, payroll }) {
     const salary = await prisma.salary.create({
         data: {
             userId: tutorId,
             orderId,
             total: totalSalary,
+            payroll,
             status: 'pending'
         }
     });
@@ -107,7 +108,7 @@ async function getFinanceStats() {
  * @function getFinanceRecap
  * @returns {Promise<Array>} The finance recap list.
  */
-async function getFinanceRecap() {
+async function getFinanceRecap(search = '', page = 1, limit = 5) {
     const orders = await prisma.order.findMany({
         where: { status: 'paid' },
         include: {
@@ -126,6 +127,7 @@ async function getFinanceRecap() {
             },
             class: {
                 select: {
+                    id: true,
                     code: true,
                     status: true,
                     schedules: {
@@ -144,25 +146,22 @@ async function getFinanceRecap() {
 
     const recap = [];
     for (const order of orders) {
-        // Nama tutor dengan Pak/Bu dari bimbelPackage.user
         const tutorName = getTutorName(order.bimbelPackage?.user);
 
-        // Untuk setiap class dalam order, hanya yang statusnya 'selesai'
         for (const cls of order.class) {
             if (cls.status !== 'selesai') continue;
 
-            // Tanggal mulai (meet 1)
             let startDate = null;
             if (cls.schedules?.length) {
                 const meet1 = cls.schedules.find(sch => sch.meet === 1);
                 startDate = meet1 ? meet1.date : null;
             }
 
-            // Tanggal selesai dari salary.createdAt
             const endDate = order.salary?.[0]?.createdAt || null;
             const salaryStatus = order.salary?.[0]?.status || null;
 
             recap.push({
+                classId: cls.id,
                 packageName: order.bimbelPackage?.name || null,
                 tutorName,
                 classCode: cls.code || null,
@@ -173,7 +172,26 @@ async function getFinanceRecap() {
         }
     }
 
-    return recap;
+    const filteredRecap = search
+        ? recap.filter(item =>
+            (item.packageName && item.packageName.toLowerCase().includes(search.toLowerCase())) ||
+            (item.tutorName && item.tutorName.toLowerCase().includes(search.toLowerCase())) ||
+            (item.classCode && item.classCode.toLowerCase().includes(search.toLowerCase()))
+        )
+        : recap;
+
+    const total = filteredRecap.length;
+    const totalPages = Math.ceil(total / limit);
+    const offset = (page - 1) * limit;
+    const paginatedRecap = filteredRecap.slice(offset, offset + limit);
+
+    return {
+        data: paginatedRecap,
+        total,
+        page,
+        limit,
+        totalPages
+    };
 }
 
 export const SalaryService = {

@@ -21,7 +21,7 @@ const loading = ref(false);
 const fetchTutors = async () => {
   loading.value = true;
   try {
-    const res = await fetch(`http://localhost:3000/users/tutors?page=${page.value}&limit=${pageSize.value}`);
+    const res = await fetch(`/users/tutors?page=${page.value}&limit=${pageSize.value}`);
     const json = await res.json();
     tutors.value = json.data.map(t => ({
       key: t.id,
@@ -45,7 +45,7 @@ const fetchAllTutors = async () => {
   loading.value = true;
   try {
     // Ambil semua data tutor untuk pencarian
-    const res = await fetch(`http://localhost:3000/users/tutors?page=1&limit=${total.value || 1000}`);
+    const res = await fetch(`/users/tutors?page=1&limit=${total.value || 1000}`);
     const json = await res.json();
     allTutors.value = json.data.map(t => ({
       key: t.id,
@@ -165,7 +165,7 @@ const handleDeleteTutor = async (row) => {
   }
   try {
     loading.value = true;
-    const res = await fetch(`http://localhost:3000/users/${row.key}`, {
+    const res = await fetch(`/users/${row.key}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

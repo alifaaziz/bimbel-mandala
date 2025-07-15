@@ -21,7 +21,7 @@ export default defineComponent({
       // Fetch data jadwal dari backend
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`http://localhost:3000/schedules/closest/${slug}`, {
+        const res = await fetch(`/schedules/closest/${slug}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

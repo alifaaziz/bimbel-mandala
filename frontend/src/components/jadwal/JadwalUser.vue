@@ -143,7 +143,7 @@ export default defineComponent({
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:3000/schedules?page=${pagination.value.page}&limit=${pagination.value.pageSize}`, {
+        const res = await fetch(`/schedules?page=${pagination.value.page}&limit=${pagination.value.pageSize}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         const result = await res.json();

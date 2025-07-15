@@ -94,51 +94,60 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
  * @param {Object} [options] - Pagination options.
  * @param {number} [options.page=1] - Page number (1-based).
  * @param {number} [options.pageSize=10] - Number of items per page.
+ * @param {string} [options.search=''] - Search term for package name or tutor name.
  * @returns {Promise<Object>} The paginated list of bimbel packages and total count.
  */
-async function getAllBimbelPackages({ page = 1, pageSize = 10 } = {}) {
+async function getAllBimbelPackages({ page = 1, pageSize = 10, search = '' } = {}) {
   const skip = (page - 1) * pageSize;
-  const [packages, total] = await Promise.all([
-    prisma.bimbelPackage.findMany({
-      where: {
-        deletedAt: null
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            tutors: {
-              select: {
-                photo: true
-              }
+
+  const whereClause = {
+    deletedAt: null,
+    ...(search && {
+      OR: [
+        { name: { contains: search } },
+        {
+          user: {
+            is: {
+              name: { contains: search }
             }
           }
-        },
-        groupType: {
-          select: {
-            type: true,
-            price: true,
-            discPrice: true
+        }
+      ]
+    })
+  };
+
+  const packages = await prisma.bimbelPackage.findMany({
+    where: whereClause,
+    include: {
+      user: {
+        select: {
+          name: true,
+          tutors: {
+            select: { photo: true }
           }
-        },
-        packageDay: {
-          select: {
-            day: {
-              select: {
-                daysName: true
-              }
-            }
+        }
+      },
+      groupType: {
+        select: {
+          type: true,
+          price: true,
+          discPrice: true
+        }
+      },
+      packageDay: {
+        select: {
+          day: {
+            select: { daysName: true }
           }
-        },
+        }
       },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      skip,
-      take: pageSize
-    }),
-    prisma.bimbelPackage.count({})
-  ]);
+    },
+    orderBy: { createdAt: 'desc' },
+    skip,
+    take: pageSize
+  });
+
+  const total = await prisma.bimbelPackage.count({ where: whereClause });
 
   return {
     data: packages.map(pkg => ({
@@ -182,6 +191,7 @@ async function getBimbelPackageBySlug(slug) {
     include: {
       user: {
         select: {
+          id: true,
           name: true,
           tutors: {
             select: {
@@ -225,8 +235,10 @@ async function getBimbelPackageBySlug(slug) {
     area: pkg.area,
     slug: pkg.slug,
     status: pkg.isActive ? 'aktif' : 'nonaktif',
+    tutorId: pkg.user.id,
     tutorName: pkg.user.name,
     photo: pkg.user.tutors[0]?.photo,
+    discount: pkg.discount,
     groupType: pkg.groupType.map(gt => ({
       id: gt.id,
       type: gt.type,
@@ -893,7 +905,8 @@ async function getMyPackages(user) {
         select: {
           tutors: {
             select: {
-              photo: true
+              photo: true,
+              percent: true
             }
           }
         }
@@ -930,8 +943,8 @@ async function getMyPackages(user) {
     photo: pkg.user.tutors[0]?.photo || null,
     groupType: pkg.groupType.map(gt => ({
       type: gt.type,
-      price: gt.price * 0.9,
-      discPrice: gt.discPrice !== null ? gt.discPrice * 0.9 : null
+      price: gt.price * pkg.user.tutors[0]?.percent / 100,
+      discPrice: gt.discPrice !== null ? gt.discPrice * pkg.user.tutors[0]?.percent / 100 : null
     })),
     days: pkg.packageDay.map(day => day.day.daysName)
   }));
@@ -955,7 +968,7 @@ async function getMyPackageBySlug(slug, user) {
   const pkg = await prisma.bimbelPackage.findFirst({
     where: {
       slug: slug,
-      userId: user.id ,
+      userId: user.id,
       deletedAt: null
     },
     include: {
@@ -978,6 +991,11 @@ async function getMyPackageBySlug(slug, user) {
     }
   });
 
+  const tutor = await prisma.tutor.findUnique({
+    where: { userId: user.id },
+    select: { percent: true }
+  });
+
   if (!pkg) {
     return null;
   }
@@ -991,10 +1009,11 @@ async function getMyPackageBySlug(slug, user) {
     duration: pkg.duration,
     area: pkg.area,
     slug: pkg.slug,
+    percent: tutor?.percent ? Number(tutor.percent) : null, 
     groupType: pkg.groupType.map(gt => ({
       type: gt.type,
-      price: gt.price * 0.9,
-      discPrice: gt.discPrice !== null ? gt.discPrice * 0.9 : null
+      price: gt.price * (tutor?.percent ? Number(tutor.percent) / 100 : 0.6),
+      discPrice: gt.discPrice !== null ? gt.discPrice * (tutor?.percent ? Number(tutor.percent) / 100 : 0.6) : null
     })),
     days: pkg.packageDay.map(day => day.day.daysName)
   };
