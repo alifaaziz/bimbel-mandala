@@ -215,7 +215,7 @@ const InfoRow = defineComponent({
       <div>
         <img
           class="program-photo"
-          :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/tutor/Tutor_Default.png'"
+          :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/Tutor_Default.png'"
           alt="Program Photo"
         />
       </div>

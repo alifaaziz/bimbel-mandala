@@ -98,7 +98,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         <div class="header-program">
           <img
             class="tutor-photo"
-            :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/tutor/Tutor_Default.png'"
+            :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/Tutor_Default.png'"
             alt="Tutor Photo"
           />
           <div class="card-content">

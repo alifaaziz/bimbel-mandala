@@ -159,7 +159,7 @@ import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
 import ButSecondNormalDanger from "@/components/dirButton/butSecondNormalDanger.vue";
 
-const TutorDefault = "/tutor/Tutor_Default.png";
+const TutorDefault = "/Tutor_Default.png";
 const formRef = ref(null);
 const message = useMessage();
 const size = ref("medium");

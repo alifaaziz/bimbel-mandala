@@ -42,7 +42,7 @@ onMounted(() => {
     <div class="header-program">
       <img
         class="tutor-photo"
-        :src="programData.tutorPhoto ? `http://localhost:3000/public/${programData.tutorPhoto}` : '/tutor/Tutor_Default.png'"
+        :src="programData.tutorPhoto ? `http://localhost:3000/public/${programData.tutorPhoto}` : '/Tutor_Default.png'"
         alt="Tutor Photo"
       />
       <div class="card-content">

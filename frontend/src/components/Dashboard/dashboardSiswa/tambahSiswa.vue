@@ -167,18 +167,22 @@ function handleValidateClick(e) {
         </div>
         <div class="grid-form">
           <n-form-item label="No. WhatsApp Siswa" path="user.wa" class="col-span-2">
+           <n-input-group-label style="border-radius: 8px 0 0 8px;">+62</n-input-group-label>
            <n-input
               v-model:value="formValue.user.wa"
               placeholder="Tuliskan no. WhatsApp siswa disini"
               type="tel"
+              style="border-radius: 0 8px 8px 0;"
             />
           </n-form-item> 
           <n-form-item label="No. Telp Wali Siswa" path="user.wali" class="col-span-2">
+           <n-input-group-label style="border-radius: 8px 0 0 8px;">+62</n-input-group-label>
            <n-input
               v-model:value="formValue.user.wali"
               placeholder="Tuliskan no. telp wali siswa disini"
               type="tel"
-            />
+              style="border-radius: 0 8px 8px 0;"
+           />
           </n-form-item> 
         </div>
         <div class="grid-form">

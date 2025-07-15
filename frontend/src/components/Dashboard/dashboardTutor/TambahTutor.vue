@@ -51,9 +51,11 @@
             />
           </n-form-item>
           <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-3">
+            <n-input-group-label style="border-radius: 8px 0 0 8px;">+62</n-input-group-label>
             <n-input
               v-model:value="formValue.user.wa"
               placeholder="Tuliskan No. WhatsApp tutor disini"
+              style="border-radius: 0 8px 8px 0;"
             />
           </n-form-item>
         </div>

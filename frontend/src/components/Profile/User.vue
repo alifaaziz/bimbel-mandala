@@ -55,7 +55,7 @@ onMounted(async () => {
         <div v-if="user.role === 'tutor'">
             <img
             class="img-tutor"
-            :src="tutor?.photo ? `http://localhost:3000/public${tutor.photo}` : '/tutor/Tutor_Default.png'"
+            :src="tutor?.photo ? `http://localhost:3000/public${tutor.photo}` : '/Tutor_Default.png'"
           />
         </div>
         <div class="identitas">

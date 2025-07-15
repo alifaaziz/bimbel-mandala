@@ -192,7 +192,7 @@ function closeSuccessModal() {
   <div v-if="schedule" class="card-container">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `http://localhost:3000/public${schedule.photo}` : '/tutor/Tutor_Default.png'"
+      :src="schedule.photo ? `http://localhost:3000/public${schedule.photo}` : '/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">

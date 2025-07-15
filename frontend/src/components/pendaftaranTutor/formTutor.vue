@@ -159,7 +159,16 @@ export default {
 
         <div class="form-group half-width">
           <label for="whatsapp">No. WhatsApp</label>
-          <input type="text" id="whatsapp" placeholder="08xx xxxx xxxx" v-model="formData.whatsapp" />
+          <div style="display: flex; align-items: center;">
+            <span style="padding: 12px; background: #eee; border: 1px solid #ccc; border-right: none; border-radius: 8px 0 0 8px; color: black;">+62</span>
+            <input
+              type="text"
+              id="whatsapp"
+              placeholder="8xx xxxx xxxx"
+              v-model="formData.whatsapp"
+              style="flex: 1; border: 1px solid #ccc; border-radius: 0 8px 8px 0; padding: 0.5rem;"
+            />
+          </div>
         </div>
       </form>
     </div>
