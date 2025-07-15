@@ -1,4 +1,3 @@
-import { startTime } from 'pino-http';
 import { prisma } from '../utils/db.js';
 import { ScheduleService } from './schedule.js';
 
@@ -37,16 +36,7 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
             price: true,
             discPrice: true
           }
-        },
-        packageDay: {
-          select: {
-            day: {
-              select: {
-                daysName: true
-              }
-            }
-          }
-        },
+        }
       },
       orderBy: {
         createdAt: 'desc'
@@ -56,7 +46,8 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
     }),
     prisma.bimbelPackage.count({
       where: {
-        isActive: true
+        isActive: true,
+        deletedAt: null
       }
     })
   ]);
@@ -78,7 +69,7 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
         price: gt.price,
         discPrice: gt.discPrice
       })),
-      days: pkg.packageDay.map(day => day.day.daysName)
+      days: pkg.days ? JSON.parse(pkg.days) : [] 
     })),
     total,
     page,
@@ -133,14 +124,7 @@ async function getAllBimbelPackages({ page = 1, pageSize = 10, search = '' } = {
           price: true,
           discPrice: true
         }
-      },
-      packageDay: {
-        select: {
-          day: {
-            select: { daysName: true }
-          }
-        }
-      },
+      }
     },
     orderBy: { createdAt: 'desc' },
     skip,
@@ -166,7 +150,7 @@ async function getAllBimbelPackages({ page = 1, pageSize = 10, search = '' } = {
         price: gt.price,
         discPrice: gt.discPrice
       })),
-      days: pkg.packageDay.map(day => day.day.daysName)
+      days: pkg.days ? JSON.parse(pkg.days) : [] 
     })),
     total,
     page,
@@ -207,16 +191,7 @@ async function getBimbelPackageBySlug(slug) {
           price: true,
           discPrice: true
         }
-      },
-      packageDay: {
-        select: {
-          day: {
-            select: {
-              daysName: true
-            }
-          }
-        }
-      },
+      }
     },
   });
 
@@ -245,7 +220,7 @@ async function getBimbelPackageBySlug(slug) {
       price: gt.price,
       discPrice: gt.discPrice 
     })),
-    days: pkg.packageDay.map(day => day.day.daysName)
+    days: pkg.days ? JSON.parse(pkg.days) : [] 
   };
 }
 
@@ -265,18 +240,21 @@ async function createBimbelPackage(data) {
     throw new Error('Tutor (user) tidak ditemukan');
   }
 
-  const dayIds = await prisma.day.findMany({
-    where: {
-      daysName: {
-        in: days
+  let daysArr = [];
+  if (Array.isArray(days)) {
+    daysArr = days;
+  } else if (typeof days === 'string') {
+    try {
+      daysArr = JSON.parse(days);
+      if (!Array.isArray(daysArr)) {
+        daysArr = [daysArr];
       }
-    },
-    select: {
-      id: true
+    } catch {
+      daysArr = days.split(',').map(d => d.trim());
     }
-  });
+  }
 
-  if (dayIds.length === 0) {
+  if (!daysArr.length) {
     throw new Error('Invalid days provided');
   }
 
@@ -309,6 +287,7 @@ async function createBimbelPackage(data) {
       userId: tutorId,
       discount,
       slug,
+      days: JSON.stringify(daysArr), 
       groupType: {
         create: calculatedGroupType.map(gt => ({
           type: gt.type,
@@ -316,20 +295,10 @@ async function createBimbelPackage(data) {
           discPrice: gt.discPrice,
           maxStudent: gt.maxStudent
         }))
-      },
-      packageDay: {
-        create: dayIds.map(day => ({
-          day: {
-            connect: {
-              id: day.id
-            }
-          }
-        }))
       }
     },
     include: {
-      groupType: true,
-      packageDay: true
+      groupType: true
     }
   });
 
@@ -353,11 +322,21 @@ async function createClassBimbelPackage(data) {
   const tutor = await prisma.user.findUnique({ where: { id: tutorId } });
   if (!tutor) throw new Error('Tutor (user) tidak ditemukan');
 
-  const dayIds = await prisma.day.findMany({
-    where: { daysName: { in: days } },
-    select: { id: true }
-  });
-  if (dayIds.length === 0) throw new Error('Invalid days provided');
+  let daysArr = [];
+  if (Array.isArray(days)) {
+    daysArr = days;
+  } else if (typeof days === 'string') {
+    try {
+      daysArr = JSON.parse(days);
+      if (!Array.isArray(daysArr)) {
+        daysArr = [daysArr];
+      }
+    } catch {
+      daysArr = days.split(',').map(d => d.trim());
+    }
+  }
+
+  if (!daysArr.length) throw new Error('Invalid days provided');
 
   let discPrice = null;
   if (typeof discount === 'number' && discount > 0) {
@@ -371,7 +350,6 @@ async function createClassBimbelPackage(data) {
     slug = `${slugBase}-${randomString}`;
   } while (await prisma.bimbelPackage.findUnique({ where: { slug } }));
 
-  // 1. Buat bimbel package
   const createdPackage = await prisma.bimbelPackage.create({
     data: {
       name,
@@ -384,6 +362,7 @@ async function createClassBimbelPackage(data) {
       discount,
       slug,
       startDate,
+      days: JSON.stringify(daysArr), 
       groupType: {
         create: {
           type: 'kelas',
@@ -391,20 +370,13 @@ async function createClassBimbelPackage(data) {
           discPrice,
           maxStudent
         }
-      },
-      packageDay: {
-        create: dayIds.map(day => ({
-          day: { connect: { id: day.id } }
-        }))
       }
     },
     include: {
-      groupType: true,
-      packageDay: { include: { day: true } }
+      groupType: true
     }
   });
 
-  // 2. Buat dummy order untuk relasi class
   const dummyOrder = await prisma.order.create({
     data: {
       userId: tutorId,
@@ -415,7 +387,6 @@ async function createClassBimbelPackage(data) {
     }
   });
 
-  // 3. Buat class dengan orderId dummy
   const classCode = `CLS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
   const createdClass = await prisma.class.create({
     data: {
@@ -427,10 +398,8 @@ async function createClassBimbelPackage(data) {
     }
   });
 
-  // 4. Buat jadwal otomatis
   await ScheduleService.createSchedules(createdClass.id);
 
-  // 5. Return hasil
   return {
     message: 'Class bimbel package created successfully',
     data: {
@@ -452,7 +421,7 @@ async function createClassBimbelPackage(data) {
         discPrice: gt.discPrice,
         maxStudent: gt.maxStudent
       })),
-      days: createdPackage.packageDay.map(pd => pd.day.daysName),
+      days: daysArr,
       classId: createdClass.id
     }
   };
@@ -473,17 +442,26 @@ async function updateBimbelPackage(slug, data) {
   const existing = await prisma.bimbelPackage.findUnique({
     where: { slug },
     include: {
-      groupType: true,
-      packageDay: {
-        include: {
-          day: true
-        }
-      }
+      groupType: true
     }
   });
 
   if (!existing) {
     throw new Error('Package not found');
+  }
+
+  let daysArr = [];
+  if (Array.isArray(days)) {
+    daysArr = days;
+  } else if (typeof days === 'string') {
+    try {
+      daysArr = JSON.parse(days);
+      if (!Array.isArray(daysArr)) {
+        daysArr = [daysArr];
+      }
+    } catch {
+      daysArr = days.split(',').map(d => d.trim());
+    }
   }
 
   const updateData = {
@@ -494,7 +472,8 @@ async function updateBimbelPackage(slug, data) {
     duration,
     area,
     userId: tutorId,
-    discount
+    discount,
+    days: daysArr.length ? JSON.stringify(daysArr) : existing.days 
   };
 
   if (data.groupType) {
@@ -525,34 +504,11 @@ async function updateBimbelPackage(slug, data) {
     }
   }
 
-  if (data.days) {
-    await prisma.packageDay.deleteMany({
-      where: { packageId: existing.id }
-    });
-
-    const dayIds = await prisma.day.findMany({
-      where: {
-        daysName: { in: data.days }
-      },
-      select: { id: true }
-    });
-
-    for (const day of dayIds) {
-      await prisma.packageDay.create({
-        data: {
-          packageId: existing.id,
-          dayId: day.id
-        }
-      });
-    }
-  }
-
   const updatedPackage = await prisma.bimbelPackage.update({
     where: { slug },
     data: updateData,
     include: {
-      groupType: true,
-      packageDay: { include: { day: true } }
+      groupType: true
     }
   });
 
@@ -576,7 +532,7 @@ async function updateBimbelPackage(slug, data) {
         discPrice: gt.discPrice,
         maxStudent: gt.maxStudent
       })),
-      days: updatedPackage.packageDay.map(pd => pd.day.daysName)
+      days: updatedPackage.days ? JSON.parse(updatedPackage.days) : []
     }
   };
 }
@@ -596,12 +552,25 @@ async function updateClassBimbelPackage(slug, data) {
   const existing = await prisma.bimbelPackage.findUnique({
     where: { slug },
     include: {
-      groupType: true,
-      packageDay: { include: { day: true } }
+      groupType: true
     }
   });
 
   if (!existing) throw new Error('Package not found');
+
+  let daysArr = [];
+  if (Array.isArray(days)) {
+    daysArr = days;
+  } else if (typeof days === 'string') {
+    try {
+      daysArr = JSON.parse(days);
+      if (!Array.isArray(daysArr)) {
+        daysArr = [daysArr];
+      }
+    } catch {
+      daysArr = days.split(',').map(d => d.trim());
+    }
+  }
 
   const updateData = {
     name,
@@ -612,7 +581,8 @@ async function updateClassBimbelPackage(slug, data) {
     area,
     userId: tutorId,
     discount,
-    startDate
+    startDate,
+    days: daysArr.length ? JSON.stringify(daysArr) : existing.days
   };
 
   if (existing.groupType.length > 0) {
@@ -633,30 +603,11 @@ async function updateClassBimbelPackage(slug, data) {
     }
   }
 
-  if (days) {
-    await prisma.packageDay.deleteMany({ where: { packageId: existing.id } });
-
-    const dayIds = await prisma.day.findMany({
-      where: { daysName: { in: days } },
-      select: { id: true }
-    });
-
-    for (const day of dayIds) {
-      await prisma.packageDay.create({
-        data: {
-          packageId: existing.id,
-          dayId: day.id
-        }
-      });
-    }
-  }
-
   const updatedPackage = await prisma.bimbelPackage.update({
     where: { slug },
     data: updateData,
     include: {
-      groupType: true,
-      packageDay: { include: { day: true } }
+      groupType: true
     }
   });
 
@@ -681,7 +632,7 @@ async function updateClassBimbelPackage(slug, data) {
         discPrice: gt.discPrice,
         maxStudent: gt.maxStudent
       })),
-      days: updatedPackage.packageDay.map(pd => pd.day.daysName)
+      days: updatedPackage.days ? JSON.parse(updatedPackage.days) : []
     }
   };
 }
@@ -793,15 +744,6 @@ async function getBimbelPackagesByPopularity() {
           price: true,
           discPrice: true
         }
-      },
-      packageDay: {
-        select: {
-          day: {
-            select: {
-              daysName: true
-            }
-          }
-        }
       }
     }
   });
@@ -827,7 +769,7 @@ async function getBimbelPackagesByPopularity() {
         price: gt.price,
         discPrice: gt.discPrice
       })),
-      days: pkg.packageDay.map(day => day.day.daysName),
+      days: pkg.days ? JSON.parse(pkg.days) : [], 
       orderCount
     };
   });
@@ -917,15 +859,6 @@ async function getMyPackages(user) {
           price: true,
           discPrice: true
         }
-      },
-      packageDay: {
-        select: {
-          day: {
-            select: {
-              daysName: true
-            }
-          }
-        }
       }
     }
   });
@@ -946,7 +879,7 @@ async function getMyPackages(user) {
       price: gt.price * pkg.user.tutors[0]?.percent / 100,
       discPrice: gt.discPrice !== null ? gt.discPrice * pkg.user.tutors[0]?.percent / 100 : null
     })),
-    days: pkg.packageDay.map(day => day.day.daysName)
+    days: pkg.days ? JSON.parse(pkg.days) : [] 
   }));
 }
 
@@ -978,15 +911,6 @@ async function getMyPackageBySlug(slug, user) {
           price: true,
           discPrice: true
         }
-      },
-      packageDay: {
-        select: {
-          day: {
-            select: {
-              daysName: true
-            }
-          }
-        }
       }
     }
   });
@@ -1015,7 +939,7 @@ async function getMyPackageBySlug(slug, user) {
       price: gt.price * (tutor?.percent ? Number(tutor.percent) / 100 : 0.6),
       discPrice: gt.discPrice !== null ? gt.discPrice * (tutor?.percent ? Number(tutor.percent) / 100 : 0.6) : null
     })),
-    days: pkg.packageDay.map(day => day.day.daysName)
+    days: pkg.days ? JSON.parse(pkg.days) : [] 
   };
 }
 
@@ -1151,15 +1075,6 @@ async function getRecommendations(user) {
           discPrice: true
         }
       },
-      packageDay: {
-        select: {
-          day: {
-            select: {
-              daysName: true
-            }
-          }
-        }
-      },
       orders: true
     }
   });
@@ -1196,7 +1111,7 @@ async function getRecommendations(user) {
       price: gt.price,
       discPrice: gt.discPrice
     })),
-    days: pkg.packageDay.map(day => day.day.daysName),
+    days: pkg.days ? JSON.parse(pkg.days) : [], // <-- langsung dari kolom days
     orderCount: pkg.orderCount
   }));
 }
@@ -1224,16 +1139,7 @@ async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {
       ]
     }),
     ...(level && { level }),
-    ...(durasi && { duration: durasi }),
-    ...(hari && {
-      packageDay: {
-        some: {
-          day: {
-            daysName: { in: hari }
-          }
-        }
-      }
-    })
+    ...(durasi && { duration: durasi })
   };
 
   const packages = await prisma.bimbelPackage.findMany({
@@ -1255,15 +1161,6 @@ async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {
           price: true,
           discPrice: true
         }
-      },
-      packageDay: {
-        select: {
-          day: {
-            select: {
-              daysName: true
-            }
-          }
-        }
       }
     },
     orderBy: {
@@ -1271,7 +1168,15 @@ async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {
     }
   });
 
-  return packages.map(pkg => ({
+  let filteredPackages = packages;
+  if (hari && hari.length) {
+    filteredPackages = packages.filter(pkg => {
+      const daysArr = pkg.days ? JSON.parse(pkg.days) : [];
+      return hari.every(h => daysArr.includes(h));
+    });
+  }
+
+  return filteredPackages.map(pkg => ({
     name: pkg.name,
     level: pkg.level,
     totalMeetings: pkg.totalMeetings,
@@ -1287,7 +1192,7 @@ async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {
       price: gt.price,
       discPrice: gt.discPrice
     })),
-    days: pkg.packageDay.map(day => day.day.daysName)
+    days: pkg.days ? JSON.parse(pkg.days) : [] 
   }));
 }
 
@@ -1321,11 +1226,6 @@ async function getBimbelPackagesByUserId(userId) {
           price: true,
           discPrice: true
         }
-      },
-      packageDay: {
-        select: {
-          day: { select: { daysName: true } }
-        }
       }
     }
   });
@@ -1341,7 +1241,7 @@ async function getBimbelPackagesByUserId(userId) {
     groupType: pkg.groupType.map(gt => ({
       type: gt.type,
     })),
-    days: pkg.packageDay.map(day => day.day.daysName)
+    days: pkg.days ? JSON.parse(pkg.days) : [] 
   }));
 }
 

@@ -1,9 +1,0 @@
-model Day {
-    id        String    @id @default(uuid(7))
-    daysName  String    @map("days_name")
-
-    tutorDay  TutorDay[]
-    packageDay  PackageDay[]
-
-    @@map("days")
-}

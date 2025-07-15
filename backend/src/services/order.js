@@ -224,7 +224,7 @@ async function getOrderById(id) {
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
-      user: { select: { name: true } }, // siswa yang order
+      user: { select: { name: true } },
       bimbelPackage: {
         select: {
           name: true,
@@ -243,11 +243,7 @@ async function getOrderById(id) {
               discPrice: true
             }
           },
-          packageDay: {
-            select: {
-              day: { select: { daysName: true } }
-            }
-          }
+          days: true // <-- ambil langsung kolom days
         }
       },
       groupType: {
@@ -275,7 +271,7 @@ async function getOrderById(id) {
   const studentName = order.user?.name || null;
 
   // Hari-hari paket
-  const packageDays = order.bimbelPackage?.packageDay?.map(pd => pd.day.daysName) || [];
+  const packageDays = order.bimbelPackage?.days ? JSON.parse(order.bimbelPackage.days) : [];
 
   // Cari hari terdekat dari hari ini
   function getNextDateForDay(dayName) {
@@ -320,8 +316,8 @@ async function getOrderById(id) {
     paid,
     studentName,
     address: order.address,
-    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null, // format YYYY-MM-DD
-    days: packageDays,
+    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null,
+    days: packageDays, // <-- langsung dari kolom days
     photo: order.bimbelPackage?.user?.tutors?.[0]?.photo || null,
     slug: order.bimbelPackage?.slug || null,
   };

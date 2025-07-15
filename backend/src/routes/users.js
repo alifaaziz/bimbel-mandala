@@ -25,6 +25,7 @@ export default (app) => {
         AuthMiddleware.isAuthorized,
         upload.single('photo'),
         UserValidation.isValidUserUpdatePayload,
+        UserValidation.isValidUpdatePayload,
         UserController.updateCurrentUser
     );
     
@@ -72,6 +73,7 @@ export default (app) => {
         '/:id',
         AuthMiddleware.isAuthorized,
         AuthMiddleware.hasRole('admin'),
+        UserValidation.isValidUpdatePayload,
         UserController.updateUserById
     );
 

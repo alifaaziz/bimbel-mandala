@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { TutorApplicationController } from '../controllers/tutorApplication.js';
 import { AuthMiddleware } from '../middlewares/auth.js';
 import { upload } from '../middlewares/upload.js';
+import { TutorApplicationValidation } from '../middlewares/validation/tutorApplication.js';
 
 const router = Router();
 
@@ -10,7 +11,7 @@ export default (app) => {
 
     router.get('/', AuthMiddleware.isAuthorized, AuthMiddleware.hasRole('admin'), TutorApplicationController.getTutorApplications);
 
-    router.post('/', upload.single('photo'), TutorApplicationController.applyTutor);
+    router.post('/', upload.single('photo'), TutorApplicationValidation.isValidApplyTutorPayload, TutorApplicationController.applyTutor);
 
     router.post('/verify/:id', AuthMiddleware.isAuthorized, TutorApplicationController.verifyTutor);
 
