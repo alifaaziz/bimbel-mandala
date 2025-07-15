@@ -162,7 +162,7 @@ export default {
           <div style="display: flex; align-items: center;">
             <span style="padding: 12px; background: #eee; border: 1px solid #ccc; border-right: none; border-radius: 8px 0 0 8px; color: black;">+62</span>
             <input
-              type="text"
+              type="number"
               id="whatsapp"
               placeholder="8xx xxxx xxxx"
               v-model="formData.whatsapp"
@@ -410,6 +410,19 @@ input::placeholder {
 .day-button:hover {
   background-color: #154484;
   color: white;
+}
+
+/* Hilangkan spinner di input type number (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hilangkan spinner di input type number (Firefox) */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: none;
 }
 
 /* Responsive */

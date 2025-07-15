@@ -35,6 +35,24 @@ async function main() {
   loaders(app, server);
   routes(app);
 
+  // app.get('*', (req, res, next) => {
+  //     if (req.path.includes('.')) return next();
+  //     if (
+  //       req.path.startsWith('/auth') ||
+  //       req.path.startsWith('/users') ||
+  //       req.path.startsWith('/notification') ||
+  //       req.path.startsWith('/docs') ||
+  //       req.path.startsWith('/status') ||
+  //       req.path.startsWith('/packages') ||
+  //       req.path.startsWith('/classes') ||
+  //       req.path.startsWith('/attendance') ||
+  //       req.path.startsWith('/orders') ||
+  //       req.path.startsWith('/apply') ||
+  //       req.path.startsWith('/salaries')
+  //     ) return next();
+  //     res.sendFile(path.resolve(__dirname, '../public/index.html'));
+  //   });
+
   errorMiddleware(app);
 
   server.listen(appEnv.PORT, () => {

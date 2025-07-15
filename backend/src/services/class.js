@@ -399,7 +399,7 @@ async function getClassById(classId) {
                             user: {
                                 select: {
                                     name: true,
-                                    tutors: { select: { photo: true, percent: true } }
+                                    tutors: { select: { photo: true, percent: true, phone: true } }
                                 }
                             },
                             packageDay: {
@@ -433,6 +433,7 @@ async function getClassById(classId) {
         level: bimbelPackage?.level || null,
         tutorName: bimbelPackage?.user?.name || null,
         tutorPhoto: bimbelPackage?.user?.tutors?.[0]?.photo || null,
+        phoneNumber: bimbelPackage?.user?.tutors?.[0]?.phone || null,
         days: packageDays ? packageDays.map(day => day.day.daysName) : [],
         area: bimbelPackage?.area || null,
         time: bimbelPackage?.time || null,

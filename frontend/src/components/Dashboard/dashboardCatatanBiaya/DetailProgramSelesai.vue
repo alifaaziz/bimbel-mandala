@@ -35,8 +35,7 @@ onMounted(() => {
 });
 
 function waTutor() {
-  const phoneNumber = '';
-  const url = `https://wa.me/${phoneNumber}`;
+  const url = `https://wa.me/62${programData.value.phoneNumber}`;
   window.open(url, '_blank');
 }
 
