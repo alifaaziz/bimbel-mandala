@@ -4,9 +4,11 @@ import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue';
 import { useRouter, useRoute } from 'vue-router'
 import SkemaBiaya from './SkemaBiaya.vue';
 import {TrashOutline} from '@vicons/ionicons5';
+import { useMessage } from 'naive-ui';
 
 const router = useRouter();
 const route = useRoute();
+const message = useMessage();
 
 const programData = ref<any>(null);
 const sortedGroupType = ref<any[]>([]);
@@ -30,6 +32,33 @@ function editProgram() {
   if (programData.value?.slug) {
     router.push(`/dashboardadmin/programadmin/editprogram/${programData.value.slug}`);
   }
+}
+
+function handleDelete() {
+  const token = localStorage.getItem('token');
+  const slug = programData.value?.slug;
+  if (!token || !slug) {
+    message.error('Token atau slug tidak ditemukan');
+    return;
+  }
+  if (!confirm(`Yakin hapus program "${programData.value.name}"?`)) return;
+  fetch(`http://localhost:3000/packages/${slug}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+    .then(async res => {
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Gagal menghapus program');
+      }
+      message.success('Program berhasil dihapus');
+      router.push('/dashboardadmin/programadmin');
+    })
+    .catch(e => {
+      message.error(e.message || 'Gagal menghapus program');
+    });
 }
 
 onMounted(async () => {

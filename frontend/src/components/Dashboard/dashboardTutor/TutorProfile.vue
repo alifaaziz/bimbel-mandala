@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { NSpace, NTag } from 'naive-ui';
+import { useRoute, useRouter } from 'vue-router'
+import { NSpace, NTag, useMessage } from 'naive-ui'; 
 
 import JadwalTutor from './programjadwaltutor/JadwalTutor.vue';
 import ProgramTerbuka from './programjadwaltutor/ProgramTerbuka.vue';
@@ -9,7 +9,10 @@ import ButEditProfileAdmin from '@/components/dirButton/butEditProfileAdmin.vue'
 
 import {TrashOutline} from '@vicons/ionicons5';
 
+const router = useRouter();
 const route = useRoute();
+const message = useMessage
+
 const id = route.params.id;
 const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
@@ -70,6 +73,31 @@ onMounted(async () => {
     statistics.value = statData;
   }
 });
+
+const handleDelete = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    message.error('Token tidak ditemukan'); 
+    return;
+  }
+  if (!confirm(`Yakin hapus tutor "${tutorProfile.value.name}"?`)) return;
+  try {
+    const res = await fetch(`http://localhost:3000/users/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Gagal menghapus tutor');
+    }
+    message.success('Tutor berhasil dihapus'); 
+    router.push('/dashboardadmin/tutor');
+  } catch (e) {
+    message.error(e.message || 'Gagal menghapus tutor'); 
+  }
+};
 </script>
 
 <template>
