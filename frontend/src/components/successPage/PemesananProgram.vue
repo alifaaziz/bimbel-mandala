@@ -13,8 +13,8 @@ const programLevel = route.query.level || 'Jenjang Tidak Diketahui';
 const groupType = route.query.groupType || 'Tipe Grup Tidak Diketahui';
 
 function waAdmin() {
-  const phoneNumber = '6285855852485'; // Ganti dengan nomor WhatsApp admin
-  const message = `Halo, saya ingin mengonfirmasi pendaftaran program bimbingan belajar ${programName} ${programLevel} dengan tutor ${tutorName}.`;
+  const phoneNumber = '6285540000900'; // Ganti dengan nomor WhatsApp admin
+  const message = `Halo, saya ingin mengonfirmasi pendaftaran program bimbingan belajar ${programName} ${programLevel} dengan tipe ${groupType}.`;
   const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   window.open(url, '_blank');
 }

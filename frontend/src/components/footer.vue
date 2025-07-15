@@ -12,9 +12,9 @@
 
         <div class="footer-section">
           <h4>Contact us</h4>
-          <p>mandala@gmail.com</p>
-          <p>+62-0000-0000</p>
-          <p>xxx,xxx, Semarang</p>
+          <p>info@bimbelmandala.id</p>
+          <p>+62 855-4000-0900</p>
+          <p>Jl.Taman Sari Hill Residen. Blok B01. No. 10 Kel. Mangunharjo, Kec Tembalang. Kota Semarang</p>
         </div>
 
         <!-- About Section -->
@@ -23,7 +23,7 @@
           <ul>
             <li><a href="#">Tentang Kami</a></li>
             <li><a href="#">Profile Tutor</a></li>
-            <li><a href="#">Karir</a></li>
+            <li><a href="/pendaftarantutor">Karir</a></li>
             <li><a href="#">Galeri</a></li>
           </ul>
         </div>

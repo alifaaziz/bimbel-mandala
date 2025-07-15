@@ -33,6 +33,13 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 onMounted(() => {
   fetchDetail();
 });
+
+function waTutor() {
+  const phoneNumber = '';
+  const url = `https://wa.me/${phoneNumber}`;
+  window.open(url, '_blank');
+}
+
 </script>
 
 <template>
@@ -89,7 +96,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="meeting-link bodysb1">Selesai</div>
-        <butWaTambahPrimerNormal />
+        <butWaTambahPrimerNormal @click="waTutor" />
       </div>
     </div>
     <div class="siswa">
