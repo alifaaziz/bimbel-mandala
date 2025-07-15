@@ -95,12 +95,12 @@ export default (app) => {
           const { token, isNew } = req.user || {};
           if (token) {
             if (isNew) {
-              res.redirect(`${appEnv.FRONTEND_URL}/google/success?token=${token}&new=1`);
+              res.redirect(`/google/success?token=${token}&new=1`);
             } else {
-              res.redirect(`${appEnv.FRONTEND_URL}/google/success?token=${token}`);
+              res.redirect(`/google/success?token=${token}`);
             }
           } else {
-            res.redirect(`${appEnv.FRONTEND_URL}/login?error=google`);
+            res.redirect(`/login?error=google`);
           }
         }
     );
