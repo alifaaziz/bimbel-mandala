@@ -1,26 +1,8 @@
-import { date } from 'zod';
 import { prisma } from '../../../utils/db.js';
 import bcrypt from 'bcrypt';
 import { ScheduleService } from '../../../services/schedule.js';
 
 async function main() {
-    // Seed days
-    const days = [
-        { id: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", daysName: 'Senin' },
-        { id: "0195c5ed-3fc8-7496-b6b3-97e307a38413", daysName: 'Selasa' },
-        { id: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", daysName: 'Rabu' },
-        { id: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", daysName: 'Kamis' },
-        { id: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", daysName: 'Jumat' },
-        { id: "0195c5ed-3fc8-7819-8210-360b97629ef2", daysName: 'Sabtu' },
-        { id: "0195c5ed-3fc8-79f2-9084-48030730bdba", daysName: 'Minggu' },
-    ];
-
-    for (const day of days) {
-        await prisma.day.create({
-            data: day,
-        });
-    }
-
     // Seed users
     const users = [
         {
@@ -536,7 +518,12 @@ async function main() {
             teachLevel: 'SMP',
             description: 'Experienced tutor in Mathematics, once guided a math competition at the rt level in mijen sub-district. hardworking and responsive.',
             photo: '/tutors/1.png',
-            percent: 70
+            percent: 70,
+            days: JSON.stringify([
+                "Senin",
+                "Rabu",
+                "Kamis"
+            ])
         },
         {
             id: "019618a1-68a4-76ba-97fe-accd364715e8",
@@ -552,11 +539,15 @@ async function main() {
             teachLevel: 'SMA',
             description: 'Experienced tutor in English, once guided an English competition at the rt level in tembalang sub-district. hardworking and responsive.',
             photo: '/tutors/2.png',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ])
         },
         {
             id: "0196b294-4791-7688-b84e-d445b3c179a7",
-            userId: "0196b294-4791-7972-912a-33627d5b14a7",
+            userId: "0196b294-4791-7972-912a-33627d5b14a7", // Ratna Dewi M.Pd
             birthDate: new Date('1995-05-05'),
             gender: `Female`,
             phone: '1234567890',
@@ -568,11 +559,15 @@ async function main() {
             teachLevel: 'SMA',
             description: 'Experienced tutor in Chemistry, once guided a chemistry competition at the rt level in tembalang sub-district. hardworking and responsive.',
             photo: '/tutors/4.png',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Rabu"
+            ])
         },
         {
             id: "0196b294-4791-7159-8bfe-a78b6cb6d210",
-            userId: "0196b294-4791-7972-912a-33627d5b14a8",
+            userId: "0196b294-4791-7972-912a-33627d5b14a8", // Fajar Nugroho, S.T
             birthDate: new Date('1998-02-02'),
             gender: 'Male',
             phone: '1234567890',
@@ -584,11 +579,15 @@ async function main() {
             teachLevel: 'SMA',
             description: 'Experienced tutor in Physics, once guided a physics competition at the rt level in tembalang sub-district. hardworking and responsive.',
             photo: '/tutors/3.png',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ])
         },
         {
             id: "0196b294-4791-7793-9e50-871941b175a0",
-            userId: "0196b294-4791-7972-912a-33627d5b14a9",
+            userId: "0196b294-4791-7972-912a-33627d5b14a9", // Intan Lestari, S.Si
             birthDate: new Date('1997-04-04'),
             gender: 'Female',
             phone: '1234567890',
@@ -599,7 +598,11 @@ async function main() {
             school: 'Universitas Bikini Bottom',
             teachLevel: 'SMA',
             description: 'Experienced tutor in Biology, once guided a biology competition at the rt level in tembalang sub-district. hardworking and responsive.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Jumat",
+                "Sabtu"
+            ])
         },
         {
             id: "01979a81-cc2d-76ff-8ec8-7ad40efe4999",
@@ -614,7 +617,11 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Islamic studies, dedicated and passionate about teaching.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ])
         },
         {
             id: "01979a8a-d5c8-71ba-9bd5-75e76b166429",
@@ -629,7 +636,11 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Pendidikan Pancasila, dedicated and passionate about teaching.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Rabu",
+                "Jumat"
+            ])
         },
         {
             id: "01979a92-eefe-7aef-8175-49e2c7f8da9b",
@@ -644,7 +655,11 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Bahasa Indonesia, passionate about teaching at elementary level.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ])
         },
         {
             id: "01979a92-eefe-79cd-b645-e1c1566f0ddf",
@@ -659,7 +674,11 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Mathematics, dedicated to helping elementary students excel.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Jumat"
+            ])
         },
         {
             id: "01979a92-eefe-7965-91b4-0139dcd8ad1a",
@@ -674,7 +693,11 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in PJOK, enthusiastic about physical education for young learners.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Selasa",
+                "Sabtu"
+            ])
         },
         {
             id: "01979a92-eefe-79b7-a33f-92d802fb9bac",
@@ -689,7 +712,11 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Seni Budaya, creative and passionate about arts education.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Rabu",
+                "Jumat"
+            ])
         },
         {
             id: "01979a92-eefe-7d78-b9ac-e570ddc914e2",
@@ -704,7 +731,11 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in IPAS, committed to science education for elementary students.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Kamis",
+                "Sabtu"
+            ])
         },
         {
             id: "01979a92-eefe-783c-a68e-2066ef410830",
@@ -719,7 +750,11 @@ async function main() {
             school: 'Universitas Bina Sekolah',
             teachLevel: 'SD',
             description: 'Experienced tutor in Bahasa Inggris, passionate about teaching English to young learners.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ])
         },
         {
             id: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e",
@@ -734,7 +769,12 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Bahasa Indonesia tingkat SMP dan SMA.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Rabu",
+                "Sabtu"
+            ])
         },
         {
             id: "0197b421-92cc-7b38-8e52-f786b7603fb2",
@@ -749,7 +789,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Matematika tingkat SMP dan SMA.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ])
         },
         {
             id: "0197b421-92cc-717d-99d0-e595f2c5b6e2",
@@ -764,7 +808,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar IPA tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ])
         },
         {
             id: "0197b421-92cc-7e5b-addd-fe579bc048c2",
@@ -779,7 +827,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar IPS tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ])
         },
         {
             id: "0197b421-92cc-70a9-ab90-c53667ebee61",
@@ -794,7 +846,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar PPKn tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Rabu"
+            ])
         },
         {
             id: "0197b421-92cc-765b-a22a-ab51d0b2d6c4",
@@ -809,7 +865,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Pendidikan Agama Islam tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ])
         },
         {
             id: "0197b421-92cc-7085-88f1-366574bd9a17",
@@ -824,7 +884,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Pendidikan Agama Kristen tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ])
         },
         {
             id: "0197b421-92cc-7854-a588-26af45c3cf3a",
@@ -839,7 +903,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Bahasa Inggris tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ])
         },
         {
             id: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9",
@@ -854,7 +922,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar PJOK tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Rabu",
+                "Jumat"
+            ])
         },
         {
             id: "0197b421-92cc-732e-b902-d6fb4363579e",
@@ -869,7 +941,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Informatika tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ])
         },
         {
             id: "0197b421-92cc-730c-9985-10f25a88fd83",
@@ -884,7 +960,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Seni Musik tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ])
         },
         {
             id: "0197b421-92cc-7ca6-b637-cb8f6eeead5c",
@@ -899,7 +979,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Seni Rupa tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Rabu",
+                "Jumat"
+            ])
         },
         {
             id: "0197b421-92cc-7bfa-bec7-df624300ad89",
@@ -914,7 +998,11 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Prakarya tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ])
         },
         {
             id: "0197b421-92cc-776c-8070-d476ed031f5b",
@@ -929,306 +1017,17 @@ async function main() {
             school: 'Universitas Negeri Semarang',
             teachLevel: 'SMP',
             description: 'Berpengalaman mengajar Bahasa Jawa tingkat SMP.',
-            percent: 60
+            percent: 60,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ])
         }
     ];
 
     for (const tutor of tutors) {
         await prisma.tutor.create({
             data: tutor,
-        });
-    }
-
-    // Seed tutor days
-    const tutorDays = [
-        {
-            id: "0195c5ed-3fc9-74cd-bfeb-3d928c1ffd93",
-            tutorId: "0195c5ed-3fc9-7a1f-92ed-f2a421fd5fac", 
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", 
-        },
-        {
-            id: "0195c5ed-3fc9-7f04-be58-f58a0ee62af0",
-            tutorId: "0195c5ed-3fc9-7a1f-92ed-f2a421fd5fac", 
-            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21",
-        },
-        {
-            id: "0195c5f7-7d94-7b2c-920e-fb544ef4e926",
-            tutorId: "0195c5ed-3fc9-7a1f-92ed-f2a421fd5fac", 
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2",
-        },
-        {
-            id: "019618a1-68a4-7f81-8724-1236b9138665",
-            tutorId: "019618a1-68a4-76ba-97fe-accd364715e8",
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413",
-        },
-        {
-            id: "019618a1-68a4-70e1-948f-618b94aa3bdb",
-            tutorId: "019618a1-68a4-76ba-97fe-accd364715e8",
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0",
-        },
-        {
-            id: "a1111111-0000-0000-0000-000000000001",
-            tutorId: "0196b294-4791-7688-b84e-d445b3c179a7", 
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52",
-        },
-        {
-            id: "a1111111-0000-0000-0000-000000000002",
-            tutorId: "0196b294-4791-7688-b84e-d445b3c179a7",
-            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21",
-        },
-        {
-            id: "a2222222-0000-0000-0000-000000000001",
-            tutorId: "0196b294-4791-7159-8bfe-a78b6cb6d210", 
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", 
-        },
-        {
-            id: "a2222222-0000-0000-0000-000000000002",
-            tutorId: "0196b294-4791-7159-8bfe-a78b6cb6d210",
-            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4",
-        },
-        {
-            id: "a3333333-0000-0000-0000-000000000001",
-            tutorId: "0196b294-4791-7793-9e50-871941b175a0",
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0",
-        },
-        {
-            id: "a3333333-0000-0000-0000-000000000002",
-            tutorId: "0196b294-4791-7793-9e50-871941b175a0",
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2",
-        },
-        // Ahmad Fadli, S.Pd.I
-        {
-            id: "a7777777-0000-0000-0000-000000000001",
-            tutorId: "01979a81-cc2d-76ff-8ec8-7ad40efe4999", // Ahmad Fadli, S.Pd.I
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "a7777777-0000-0000-0000-000000000002",
-            tutorId: "01979a81-cc2d-76ff-8ec8-7ad40efe4999", // Ahmad Fadli, S.Pd.I
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        // Siti Aisyah, S.Pd
-        {
-            id: "a8888888-0000-0000-0000-000000000001",
-            tutorId: "01979a8a-d5c8-71ba-9bd5-75e76b166429", // Siti Aisyah, S.Pd
-            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "a8888888-0000-0000-0000-000000000002",
-            tutorId: "01979a8a-d5c8-71ba-9bd5-75e76b166429", // Siti Aisyah, S.Pd
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        // Rina Kartika, S.Pd
-        {
-            id: "a9999999-0000-0000-0000-000000000001",
-            tutorId: "01979a92-eefe-7aef-8175-49e2c7f8da9b", // Rina Kartika, S.Pd
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "a9999999-0000-0000-0000-000000000002",
-            tutorId: "01979a92-eefe-7aef-8175-49e2c7f8da9b", // Rina Kartika, S.Pd
-            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        // Dimas Prasetyo, S.Pd
-        {
-            id: "a1010101-0000-0000-0000-000000000001",
-            tutorId: "01979a92-eefe-79cd-b645-e1c1566f0ddf", // Dimas Prasetyo, S.Pd
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "a1010101-0000-0000-0000-000000000002",
-            tutorId: "01979a92-eefe-79cd-b645-e1c1566f0ddf", // Dimas Prasetyo, S.Pd
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        // Mega Ayuningtyas, S.Pd
-        {
-            id: "a1111112-0000-0000-0000-000000000001",
-            tutorId: "01979a92-eefe-7965-91b4-0139dcd8ad1a", // Mega Ayuningtyas, S.Pd
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "a1111112-0000-0000-0000-000000000002",
-            tutorId: "01979a92-eefe-7965-91b4-0139dcd8ad1a", // Mega Ayuningtyas, S.Pd
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        // Hendri Setiawan, S.Pd
-        {
-            id: "a1212121-0000-0000-0000-000000000001",
-            tutorId: "01979a92-eefe-79b7-a33f-92d802fb9bac", // Hendri Setiawan, S.Pd
-            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "a1212121-0000-0000-0000-000000000002",
-            tutorId: "01979a92-eefe-79b7-a33f-92d802fb9bac", // Hendri Setiawan, S.Pd
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        // Siti Rahmawati, S.Pd
-        {
-            id: "a1313131-0000-0000-0000-000000000001",
-            tutorId: "01979a92-eefe-7d78-b9ac-e570ddc914e2", // Siti Rahmawati, S.Pd
-            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "a1313131-0000-0000-0000-000000000002",
-            tutorId: "01979a92-eefe-7d78-b9ac-e570ddc914e2", // Siti Rahmawati, S.Pd
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        // Anastasia Widya, S.Pd
-        {
-            id: "a1414141-0000-0000-0000-000000000001",
-            tutorId: "01979a92-eefe-783c-a68e-2066ef410830", // Anastasia Widya, S.Pd
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "a1414141-0000-0000-0000-000000000002",
-            tutorId: "01979a92-eefe-783c-a68e-2066ef410830", // Anastasia Widya, S.Pd
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "a1515151-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e", // Ahmad Fauzi, S.Pd.
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "a1515151-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e",
-            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "a1616161-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-7b38-8e52-f786b7603fb2", // Lestari Widyaningsih, S.Pd.
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "a1616161-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-7b38-8e52-f786b7603fb2",
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "a1717171-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-717d-99d0-e595f2c5b6e2", // Dedi Prasetyo, S.Pd.
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "a1717171-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-717d-99d0-e595f2c5b6e2",
-            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "a1818181-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-7e5b-addd-fe579bc048c2", // Ratna Melani, S.Pd.
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "a1818181-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-7e5b-addd-fe579bc048c2",
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "a1919191-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-70a9-ab90-c53667ebee61", // Budi Santoso, S.Pd.
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "a1919191-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-70a9-ab90-c53667ebee61",
-            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "a2020202-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-765b-a22a-ab51d0b2d6c4", // Siti Nurhaliza, S.Pd.I
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "a2020202-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-765b-a22a-ab51d0b2d6c4",
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "a2121212-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-7085-88f1-366574bd9a17", // Agustinus Yulianto, S.Pd.K
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "a2121212-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-7085-88f1-366574bd9a17",
-            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "a2222222-0000-0000-0000-000000000003",
-            tutorId: "0197b421-92cc-7854-a588-26af45c3cf3a", // Yohana Maria, S.Pd.
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "a2222222-0000-0000-0000-000000000004",
-            tutorId: "0197b421-92cc-7854-a588-26af45c3cf3a",
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "a2323232-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9", // Rudi Hartono, S.Or.
-            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "a2323232-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9",
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "a2424242-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-732e-b902-d6fb4363579e", // Diana Prameswari, S.Pd.
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "a2424242-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-732e-b902-d6fb4363579e",
-            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "a2525252-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-730c-9985-10f25a88fd83", // Erwin Saputra, S.Sn.
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "a2525252-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-730c-9985-10f25a88fd83",
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "a2626262-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-7ca6-b637-cb8f6eeead5c", // Maya Lestari, S.Sn.
-            daysId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "a2626262-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-7ca6-b637-cb8f6eeead5c",
-            daysId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "a2727272-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-7bfa-bec7-df624300ad89", // Anjar Widodo, S.Pd.
-            daysId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "a2727272-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-7bfa-bec7-df624300ad89",
-            daysId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "a2828282-0000-0000-0000-000000000001",
-            tutorId: "0197b421-92cc-776c-8070-d476ed031f5b", // Novi Rachmawati, S.Pd.
-            daysId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "a2828282-0000-0000-0000-000000000002",
-            tutorId: "0197b421-92cc-776c-8070-d476ed031f5b",
-            daysId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-    ];
-
-    for (const tutorDay of tutorDays) {
-        await prisma.tutorDay.create({
-            data: tutorDay,
         });
     }
 
@@ -1411,6 +1210,11 @@ async function main() {
             userId: '0195c5ed-3fc9-771d-bced-9c4b10afd9a2', // Dendy Wan S.Pd
             discount: 10,
             isActive: false,
+            days: JSON.stringify([
+                "Senin",
+                "Rabu",
+                "Sabtu"
+            ]),
         },
         {
             id: "019618a1-68a4-7f67-acd4-aeccf37ca7c7",
@@ -1422,42 +1226,58 @@ async function main() {
             area: 'Semarang',
             slug: 'bahasa-inggris-sma-14klui',
             userId: '019618a1-68a4-71c5-9f8d-5ef6ef4fc1aa', // Venita S.Pd
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ]),
         },
         {
             id: "0196b294-4791-7b00-8000-000000000011",
             name: "Kimia",
             level: "SMA",
-            totalMeetings: 24, // 2 hari/minggu * 4 minggu/bulan * 3 bulan
+            totalMeetings: 24,
             time: new Date("1970-01-01T08:00:00Z"),
             duration: 90,
             area: "Semarang",
             slug: "kimia-sma-dg67ty",
             userId: "0196b294-4791-7972-912a-33627d5b14a7", // Ratna Dewi M.Pd
             discount: 10,
+            days: JSON.stringify([
+                "Senin",
+                "Rabu"
+            ]),
         },
         {
             id: "0196b294-4791-7b00-8000-000000000012",
             name: "Fisika",
             level: "SMA",
-            totalMeetings: 24, // 2 hari/minggu * 4 minggu/bulan * 3 bulan
+            totalMeetings: 24,
             time: new Date("1970-01-01T08:00:00Z"),
             duration: 90,
             area: "Semarang",
             slug: "fisika-sma-0ki8er",
             userId: "0196b294-4791-7972-912a-33627d5b14a8", // Fajar Nugroho, S.T
             discount: 10,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ]),
         },
         {
             id: "0196b294-4791-7b00-8000-000000000013",
             name: "Biologi",
             level: "SMA",
-            totalMeetings: 24, // 2 hari/minggu * 4 minggu/bulan * 3 bulan
+            totalMeetings: 24,
             time: new Date("1970-01-01T08:00:00Z"),
             duration: 90,
             area: "Semarang",
             slug: "biologi-sma-l4l4qw",
             userId: "0196b294-4791-7972-912a-33627d5b14a9", // Intan Lestari, S.Si
             discount: 10,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ]),
         },
         {
             id: "0196b294-4791-7b00-8000-000000000014",
@@ -1470,6 +1290,10 @@ async function main() {
             slug: "fokus-utbk-sma-9j8k7l",
             userId: "0195c5ed-3fc9-771d-bced-9c4b10afd9a2", // Dendy Wan S.Pd
             startDate: new Date("2024-07-21T08:00:00Z"),
+            days: JSON.stringify([
+                "Senin",
+                "Rabu"
+            ]),
         },
         {
             id: "01979a8a-d5c8-71ba-9bd5-75e76b166430",
@@ -1483,6 +1307,10 @@ async function main() {
             userId: "01979a8a-d5c8-71ba-9bd5-75e76b166429", // Siti Aisyah, S.Pd
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Rabu",
+                "Jumat"
+            ]),
         },
         {
             id: "01979a8b-e9c9-709a-a8d6-c741b8a14abd",
@@ -1496,6 +1324,10 @@ async function main() {
             userId: "01979a8b-e9c9-709a-a8d6-c741b8a14abc", // Rina Kartika, S.Pd
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ]),
         },
         {
             id: "01979a8d-7e80-7055-a1b1-93c5b270acbe",
@@ -1509,6 +1341,10 @@ async function main() {
             userId: "01979a8d-7e80-7055-a1b1-93c5b270acbd", // Dimas Prasetyo, S.Pd
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Senin",
+                "Jumat"
+            ]),
         },
         {
             id: "01979a8d-ae94-73cb-8864-ce9f864fc1a1",
@@ -1522,6 +1358,10 @@ async function main() {
             userId: "01979a8d-ae94-73cb-8864-ce9f864fc1a0", // Mega Ayuningtyas, S.Pd
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Selasa",
+                "Sabtu"
+            ]),
         },
         {
             id: "01979a8f-4a1a-7693-83e2-ff00c9e31fad",
@@ -1535,6 +1375,10 @@ async function main() {
             userId: "01979a8f-4a1a-7693-83e2-ff00c9e31fac", // Hendri Setiawan, S.Pd
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Rabu",
+                "Jumat"
+            ]),
         },
         {
             id: "01979a90-8fd7-734e-a4a7-43ef668ce7cb",
@@ -1548,6 +1392,10 @@ async function main() {
             userId: "01979a90-8fd7-734e-a4a7-43ef668ce7ca", // Siti Rahmawati, S.Pd
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Kamis",
+                "Sabtu"
+            ]),
         },
         {
             id: "01979a91-6fde-7196-ba74-891549333b27",
@@ -1561,6 +1409,10 @@ async function main() {
             userId: "01979a91-6fde-7196-ba74-891549333b26", // Anastasia Widya, S.Pd
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ]),
         },
         {
             id: "01979a81-cc2d-76ff-8ec8-7ad40efe499a",
@@ -1574,6 +1426,10 @@ async function main() {
             userId: "01979a81-cc2d-76ff-8ec8-7ad40efe4999", // Ahmad Fadli, S.Pd.I
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ]),
         },
         {
             id: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f",
@@ -1587,6 +1443,11 @@ async function main() {
             userId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6e",
             discount: 10,
             isActive: true,
+            days: JSON.stringify([
+                "Senin",
+                "Rabu",
+                "Sabtu"
+            ]),
         },
         {
             id: "0197b421-92cc-7b38-8e52-f786b7603fb3",
@@ -1600,6 +1461,10 @@ async function main() {
             userId: "0197b421-92cc-7b38-8e52-f786b7603fb2",
             discount: 5,
             isActive: true,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ]),
         },
         {
             id: "0197b421-92cc-717d-99d0-e595f2c5b6e3",
@@ -1613,6 +1478,10 @@ async function main() {
             userId: "0197b421-92cc-717d-99d0-e595f2c5b6e2",
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ]),
         },
         {
             id: "0197b421-92cc-7e5b-addd-fe579bc048c3",
@@ -1626,6 +1495,10 @@ async function main() {
             userId: "0197b421-92cc-7e5b-addd-fe579bc048c2",
             discount: 5,
             isActive: true,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ]),
         },
         {
             id: "0197b421-92cc-70a9-ab90-c53667ebee62",
@@ -1639,6 +1512,10 @@ async function main() {
             userId: "0197b421-92cc-70a9-ab90-c53667ebee61",
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Senin",
+                "Rabu"
+            ]),
         },
         {
             id: "0197b421-92cc-765b-a22a-ab51d0b2d6c5",
@@ -1652,6 +1529,10 @@ async function main() {
             userId: "0197b421-92cc-765b-a22a-ab51d0b2d6c4",
             discount: 10,
             isActive: true,
+            days: JSON.stringify([
+                "Selasa",
+                "Jumat"
+            ]),
         },
         {
             id: "0197b421-92cc-7085-88f1-366574bd9a18",
@@ -1665,6 +1546,10 @@ async function main() {
             userId: "0197b421-92cc-7085-88f1-366574bd9a17",
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ]),
         },
         {
             id: "0197b421-92cc-7854-a588-26af45c3cf3b",
@@ -1678,6 +1563,10 @@ async function main() {
             userId: "0197b421-92cc-7854-a588-26af45c3cf3a",
             discount: 5,
             isActive: true,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ]),
         },
         {
             id: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea",
@@ -1691,6 +1580,10 @@ async function main() {
             userId: "0197b421-92cc-7bea-b2c8-b38bb12ce3e9",
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Rabu",
+                "Jumat"
+            ]),
         },
         {
             id: "0197b421-92cc-732e-b902-d6fb4363579f",
@@ -1704,6 +1597,10 @@ async function main() {
             userId: "0197b421-92cc-732e-b902-d6fb4363579e",
             discount: 10,
             isActive: true,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ]),
         },
         {
             id: "0197b421-92cc-730c-9985-10f25a88fd84",
@@ -1716,6 +1613,10 @@ async function main() {
             slug: "seni-musik-smp-1erwin",
             userId: "0197b421-92cc-730c-9985-10f25a88fd83",
             isActive: true,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ]),
         },
         {
             id: "0197b421-92cc-7ca6-b637-cb8f6eeead5d",
@@ -1729,6 +1630,10 @@ async function main() {
             userId: "0197b421-92cc-7ca6-b637-cb8f6eeead5c",
             discount: 5,
             isActive: true,
+            days: JSON.stringify([
+                "Rabu",
+                "Jumat"
+            ]),
         },
         {
             id: "0197b421-92cc-7bfa-bec7-df624300ad8a",
@@ -1742,6 +1647,10 @@ async function main() {
             userId: "0197b421-92cc-7bfa-bec7-df624300ad89",
             discount: 0,
             isActive: true,
+            days: JSON.stringify([
+                "Sabtu",
+                "Kamis"
+            ]),
         },
         {
             id: "0197b421-92cc-776c-8070-d476ed031f5c",
@@ -1755,6 +1664,10 @@ async function main() {
             userId: "0197b421-92cc-776c-8070-d476ed031f5b",
             discount: 10,
             isActive: true,
+            days: JSON.stringify([
+                "Senin",
+                "Selasa"
+            ]),
         },
     ];
 
@@ -2818,306 +2731,6 @@ async function main() {
         });
     }
 
-    // Seed Packages Day
-    const packagesDays = [
-        {
-            id : "0195c714-07f8-752f-9851-39965d06919e",
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52" // Senin
-        },
-        {
-            id : "0195c714-07f8-7774-8c05-0b5addb724b0",
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21" // Rabu
-        },
-        {
-            id : "0195c714-07f8-74ac-8c81-b47289e3596b",
-            packageId: "0195c63c-8fce-7c44-bf47-013da86078a3", // Matematika SMP
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2" // Sabtu
-        },
-        {
-            id: "019618a1-68a4-75d2-b3c6-a0879be13185",
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "019618a1-68a4-7f43-bba4-4e8f5b047428",
-            packageId: "019618a1-68a4-7f67-acd4-aeccf37ca7c7", // Bahasa Inggris SMA
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "0196b294-4791-7b00-8000-000000000401",
-            packageId: "0196b294-4791-7b00-8000-000000000011",  // Kimia SMA
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "0196b294-4791-7b00-8000-000000000402",
-            packageId: "0196b294-4791-7b00-8000-000000000011", // Kimia SMA
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "0196b294-4791-7b00-8000-000000000501",
-            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "0196b294-4791-7b00-8000-000000000502",
-            packageId: "0196b294-4791-7b00-8000-000000000012", // Fisika SMA
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "0196b294-4791-7b00-8000-000000000601",
-            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "0196b294-4791-7b00-8000-000000000602",
-            packageId: "0196b294-4791-7b00-8000-000000000013", // Biologi SMA
-            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "0196b294-4791-7b00-8000-000000000701",
-            packageId: "0196b294-4791-7b00-8000-000000000014", // FOKUS UTBK
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "0196b294-4791-7b00-8000-000000000702",
-            packageId: "0196b294-4791-7b00-8000-000000000014", // FOKUS UTBK
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "01979a8a-d5c8-71ba-9bd5-75e76b166440",
-            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430", // Pendidikan Pancasila SD
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu (Siti Aisyah, S.Pd)
-        },
-        {
-            id: "01979a8a-d5c8-71ba-9bd5-75e76b166441",
-            packageId: "01979a8a-d5c8-71ba-9bd5-75e76b166430", // Pendidikan Pancasila SD
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat (Siti Aisyah, S.Pd)
-        },
-        {
-            id: "01979a8b-e9c9-709a-a8d6-c741b8a14ace",
-            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd", // Bahasa Indonesia SD
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu (Rina Kartika, S.Pd)
-        },
-        {
-            id: "01979a8b-e9c9-709a-a8d6-c741b8a14acf",
-            packageId: "01979a8b-e9c9-709a-a8d6-c741b8a14abd", // Bahasa Indonesia SD
-            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis (Rina Kartika, S.Pd)
-        },
-        {
-            id: "01979a8d-7e80-7055-a1b1-93c5b270acde",
-            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe", // Matematika SD
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin (Dimas Prasetyo, S.Pd)
-        },
-        {
-            id: "01979a8d-7e80-7055-a1b1-93c5b270acdf",
-            packageId: "01979a8d-7e80-7055-a1b1-93c5b270acbe", // Matematika SD
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat (Dimas Prasetyo, S.Pd)
-        },
-        {
-            id: "01979a8d-ae94-73cb-8864-ce9f864fc1b0",
-            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1", // PJOK SD
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa (Mega Ayuningtyas, S.Pd)
-        },
-        {
-            id: "01979a8d-ae94-73cb-8864-ce9f864fc1b1",
-            packageId: "01979a8d-ae94-73cb-8864-ce9f864fc1a1", // PJOK SD
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu (Mega Ayuningtyas, S.Pd)
-        },
-        {
-            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fbe",
-            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad", // Seni Budaya SD
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu (Hendri Setiawan, S.Pd)
-        },
-        {
-            id: "01979a8f-4a1a-7693-83e2-ff00c9e31fbf",
-            packageId: "01979a8f-4a1a-7693-83e2-ff00c9e31fad", // Seni Budaya SD
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat (Hendri Setiawan, S.Pd)
-        },
-        {
-            id: "01979a90-8fd7-734e-a4a7-43ef668ce7dc",
-            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb", // IPAS SD
-            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis (Siti Rahmawati, S.Pd)
-        },
-        {
-            id: "01979a90-8fd7-734e-a4a7-43ef668ce7dd",
-            packageId: "01979a90-8fd7-734e-a4a7-43ef668ce7cb", // IPAS SD
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu (Siti Rahmawati, S.Pd)
-        },
-        {
-            id: "01979a91-6fde-7196-ba74-891549333b38",
-            packageId: "01979a91-6fde-7196-ba74-891549333b27", // Bahasa Inggris SD
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin (Anastasia Widya, S.Pd)
-        },
-        {
-            id: "01979a91-6fde-7196-ba74-891549333b39",
-            packageId: "01979a91-6fde-7196-ba74-891549333b27", // Bahasa Inggris SD
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa (Anastasia Widya, S.Pd)
-        },
-        {
-            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499c",
-            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a", // Pendidikan Agama Islam & Budi Pekerti SD
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin (Ahmad Fadli, S.Pd.I)
-        },
-        {
-            id: "01979a81-cc2d-76ff-8ec8-7ad40efe499d",
-            packageId: "01979a81-cc2d-76ff-8ec8-7ad40efe499a", // Pendidikan Agama Islam & Budi Pekerti SD
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa (Ahmad Fadli, S.Pd.I)
-        },
-        {
-            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af80",
-            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f", // Bahasa Indonesia SMP
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af81",
-            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f", // Bahasa Indonesia SMP
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "0197b421-92cc-7d21-b0e6-0ce4adb7af82",
-            packageId: "0197b421-92cc-7d21-b0e6-0ce4adb7af6f", // Bahasa Indonesia SMP
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "0197b421-92cc-7b38-8e52-f786b7603fb9",
-            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3", // Matematika SMP
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "0197b421-92cc-7b38-8e52-f786b7603fba",
-            packageId: "0197b421-92cc-7b38-8e52-f786b7603fb3", // Matematika SMP
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "0197b421-92cc-717d-99d0-e595f2c5b6e9",
-            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3", // IPA SMP
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "0197b421-92cc-717d-99d0-e595f2c5b6ea",
-            packageId: "0197b421-92cc-717d-99d0-e595f2c5b6e3", // IPA SMP
-            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "0197b421-92cc-7e5b-addd-fe579bc048c9",
-            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3", // IPS SMP
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "0197b421-92cc-7e5b-addd-fe579bc048ca",
-            packageId: "0197b421-92cc-7e5b-addd-fe579bc048c3", // IPS SMP
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "0197b421-92cc-70a9-ab90-c53667ebee68",
-            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62", // PPKn SMP
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "0197b421-92cc-70a9-ab90-c53667ebee69",
-            packageId: "0197b421-92cc-70a9-ab90-c53667ebee62", // PPKn SMP
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "0197b421-92cc-765b-a22a-ab51d0b2d6cb",
-            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5", // PAI SMP
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "0197b421-92cc-765b-a22a-ab51d0b2d6cc",
-            packageId: "0197b421-92cc-765b-a22a-ab51d0b2d6c5", // PAI SMP
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "0197b421-92cc-7085-88f1-366574bd9a1e",
-            packageId: "0197b421-92cc-7085-88f1-366574bd9a18", // PAK SMP
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "0197b421-92cc-7085-88f1-366574bd9a1f",
-            packageId: "0197b421-92cc-7085-88f1-366574bd9a18", // PAK SMP
-            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "0197b421-92cc-7854-a588-26af45c3cf41",
-            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b", // Bahasa Inggris SMP
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "0197b421-92cc-7854-a588-26af45c3cf42",
-            packageId: "0197b421-92cc-7854-a588-26af45c3cf3b", // Bahasa Inggris SMP
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3f0",
-            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea", // PJOK SMP
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "0197b421-92cc-7bea-b2c8-b38bb12ce3f1",
-            packageId: "0197b421-92cc-7bea-b2c8-b38bb12ce3ea", // PJOK SMP
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "0197b421-92cc-732e-b902-d6fb436357a5",
-            packageId: "0197b421-92cc-732e-b902-d6fb4363579f", // Informatika SMP
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "0197b421-92cc-732e-b902-d6fb436357a6",
-            packageId: "0197b421-92cc-732e-b902-d6fb4363579f", // Informatika SMP
-            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "0197b421-92cc-730c-9985-10f25a88fd90",
-            packageId: "0197b421-92cc-730c-9985-10f25a88fd84", // Seni Musik SMP
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "0197b421-92cc-730c-9985-10f25a88fd91",
-            packageId: "0197b421-92cc-730c-9985-10f25a88fd84", // Seni Musik SMP
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-        {
-            id: "0197b421-92cc-7ca6-b637-cb8f6eeead63",
-            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d", // Seni Rupa SMP
-            dayId: "0195c5ed-3fc8-7553-a32d-dcda3aed1d21", // Rabu
-        },
-        {
-            id: "0197b421-92cc-7ca6-b637-cb8f6eeead64",
-            packageId: "0197b421-92cc-7ca6-b637-cb8f6eeead5d", // Seni Rupa SMP
-            dayId: "0195c5ed-3fc8-7f0b-920f-20ddcfbb23d0", // Jumat
-        },
-        {
-            id: "0197b421-92cc-7bfa-bec7-df624300ad90",
-            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a", // Prakarya SMP
-            dayId: "0195c5ed-3fc8-7819-8210-360b97629ef2", // Sabtu
-        },
-        {
-            id: "0197b421-92cc-7bfa-bec7-df624300ad91",
-            packageId: "0197b421-92cc-7bfa-bec7-df624300ad8a", // Prakarya SMP
-            dayId: "0195c5ed-3fc8-7164-9ffd-ec049b3082a4", // Kamis
-        },
-        {
-            id: "0197b421-92cc-776c-8070-d476ed031f62",
-            packageId: "0197b421-92cc-776c-8070-d476ed031f5c", // Bahasa Jawa SMP
-            dayId: "0195c5ed-3fc8-7959-bf34-26c3775d7e52", // Senin
-        },
-        {
-            id: "0197b421-92cc-776c-8070-d476ed031f63",
-            packageId: "0197b421-92cc-776c-8070-d476ed031f5c", // Bahasa Jawa SMP
-            dayId: "0195c5ed-3fc8-7496-b6b3-97e307a38413", // Selasa
-        },
-    ]
-
-    for (const packageDay of packagesDays) {
-        await prisma.packageDay.create({
-            data: packageDay,
-        });
-    }
-
     // Seed Orders
     const orders = [
         {
@@ -3587,6 +3200,59 @@ async function main() {
     for (const tutorApplication of tutorApplications) {
         await prisma.tutorApplication.create({
             data: tutorApplication,
+        });
+    }
+
+    const payments =[{
+            id: "01980001-0000-0000-0000-000000000006",
+            platform: "BNI",
+            accountNumber: "1234567890",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000007",
+            platform: "BRI",
+            accountNumber: "0987654321",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000008",
+            platform: "Mandiri",
+            accountNumber: "1122334455",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000009",
+            platform: "BCA",
+            accountNumber: "5566778899",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000010",
+            platform: "OVO",
+            accountNumber: "1234567890",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000011",
+            platform: "Gopay",
+            accountNumber: "0987654321",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000012",
+            platform: "Dana",
+            accountNumber: "1122334455",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000013",
+            platform: "Linkaja",
+            accountNumber: "5566778899",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000014",
+            platform: "ShopeePay",
+            accountNumber: "1234567890",
+        }
+    ];
+
+    for (const payment of payments) {
+        await prisma.payment.create({
+            data: payment,
         });
     }
 

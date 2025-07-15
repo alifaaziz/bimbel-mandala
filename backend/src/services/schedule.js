@@ -14,15 +14,7 @@ async function createSchedules(classId) {
     include: {
       order: {
         include: {
-          bimbelPackage: {
-            include: {
-              packageDay: {
-                include: {
-                  day: true
-                }
-              }
-            }
-          }
+          bimbelPackage: true 
         }
       }
     }
@@ -34,7 +26,7 @@ async function createSchedules(classId) {
 
   const { order } = classData;
   const { bimbelPackage } = order;
-  const { packageDay, totalMeetings, time, name, level, startDate } = bimbelPackage;
+  const { days, totalMeetings, time, name, level, startDate } = bimbelPackage;
 
   if (!totalMeetings || totalMeetings <= 0) {
     throw new Error('Invalid totalMeetings in bimbelPackage');
@@ -43,9 +35,20 @@ async function createSchedules(classId) {
   if (!time || isNaN(new Date(time).getTime())) {
     throw new Error('Invalid time format in bimbelPackage');
   }
+
+  let daysArr = [];
+  if (Array.isArray(days)) {
+    daysArr = days;
+  } else if (typeof days === 'string') {
+    try {
+      daysArr = JSON.parse(days);
+    } catch {
+      daysArr = days.split(',').map(d => d.trim());
+    }
+  }
+
   const weekDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-  let days = packageDay.map((pd) => pd.day.daysName);
-  days = days.sort((a, b) => weekDays.indexOf(a) - weekDays.indexOf(b));
+  daysArr = daysArr.sort((a, b) => weekDays.indexOf(a) - weekDays.indexOf(b));
 
   let startDateObj;
   if (
@@ -66,7 +69,7 @@ async function createSchedules(classId) {
   let currentDate = new Date(startDateObj);
 
   while (meet <= totalMeetings) {
-    for (const dayName of days) {
+    for (const dayName of daysArr) {
       if (meet > totalMeetings) break;
 
       const dayIndex = getDayIndex(dayName);
