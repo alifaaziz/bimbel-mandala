@@ -277,7 +277,7 @@ const handleApplyChanges = async (e) => {
     console.error(err);
   } finally {
     loading.value = false;
-  }
+    }
 };
 
 const handleCancelEdit = () => {

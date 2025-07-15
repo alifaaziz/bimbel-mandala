@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue';
 import { useRouter, useRoute } from 'vue-router'
 import SkemaBiaya from './SkemaBiaya.vue';
+import {TrashOutline} from '@vicons/ionicons5';
 
 const router = useRouter();
 const route = useRoute();
@@ -115,7 +116,14 @@ onMounted(async () => {
               </template>
             </p>
           </n-space>
-          <butPrimerNormal label="Edit Program" @click="editProgram"/>
+          <div style="display: flex; gap: 1rem;">
+            <butPrimerNormal label="Edit Program" @click="editProgram"/>
+          <n-button type="error" ghost round @click="handleDelete">
+            <template #icon><n-icon :component="TrashOutline" /></template>
+            Hapus Akun
+          </n-button>
+          </div>
+          
         </div>
       </div>
       <SkemaBiaya class="tabel" />
