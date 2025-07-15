@@ -22,7 +22,7 @@ onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return
   try {
-    const res = await fetch('http://localhost:3000/users/me', {
+    const res = await fetch('/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     })
     const data = await res.json()

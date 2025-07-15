@@ -36,7 +36,7 @@ const newStudents = ref([]);
 async function fetchNewStudents() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:3000/users/new-students?limit=5', {
+    const res = await fetch('/users/new-students?limit=5', {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

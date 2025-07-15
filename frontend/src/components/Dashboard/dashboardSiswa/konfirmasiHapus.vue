@@ -72,7 +72,7 @@ const showModal = computed({
 const handleConfirm = async () => {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/users/${props.studentId}`, {
+    const res = await fetch(`/users/${props.studentId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

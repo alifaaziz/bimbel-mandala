@@ -52,7 +52,7 @@ const rekap = ref([])
 onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return
-  const res = await fetch('http://localhost:3000/attendance/my', {
+  const res = await fetch('/attendance/my', {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await res.json()

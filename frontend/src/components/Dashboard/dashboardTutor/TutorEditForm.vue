@@ -82,7 +82,7 @@ async function handleUpdateTutor() {
   };
 
   try {
-    const res = await fetch(`http://localhost:3000/users/${id}`, {
+    const res = await fetch(`/users/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

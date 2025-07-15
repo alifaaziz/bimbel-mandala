@@ -34,7 +34,7 @@ function formatTutorStatus(status) {
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
-  const res = await fetch('http://localhost:3000/users/me', {
+  const res = await fetch('/users/me', {
     headers: { Authorization: `Bearer ${token}` }
   })
   const result = await res.json()
@@ -55,7 +55,7 @@ onMounted(async () => {
         <div v-if="user.role === 'tutor'">
             <img
             class="img-tutor"
-            :src="tutor?.photo ? `http://localhost:3000/public${tutor.photo}` : '/Tutor_Default.png'"
+            :src="tutor?.photo ? `${tutor.photo}` : '/Tutor_Default.png'"
           />
         </div>
         <div class="identitas">

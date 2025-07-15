@@ -12,7 +12,7 @@ const classId = route.params.classId || route.params.id;
 
 const fetchDetail = async () => {
   const token = localStorage.getItem('token');
-  const res = await fetch(`http://localhost:3000/classes/${classId}`, {
+  const res = await fetch(`/classes/${classId}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   const result = await res.json();
@@ -48,7 +48,7 @@ function waTutor() {
     <div class="header-program">
       <img
         class="tutor-photo"
-        :src="programData.tutorPhoto ? `http://localhost:3000/public/${programData.tutorPhoto}` : '/Tutor_Default.png'"
+        :src="programData.tutorPhoto ? `/${programData.tutorPhoto}` : '/Tutor_Default.png'"
         alt="Tutor Photo"
       />
       <div class="card-content">

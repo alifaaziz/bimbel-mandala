@@ -36,7 +36,7 @@ function verifyOtp() {
     return;
   }
 
-  fetch('http://localhost:3000/auth/otp/verify', {
+  fetch('/auth/otp/verify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -83,7 +83,7 @@ function resendOtp() {
     return;
   }
 
-  fetch('http://localhost:3000/auth/otp', {
+  fetch('/auth/otp', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

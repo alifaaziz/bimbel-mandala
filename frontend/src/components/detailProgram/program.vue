@@ -19,7 +19,7 @@ onMounted(async () => {
   try {
     const token = localStorage.getItem('token');
 
-    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+    const res = await fetch(`/packages/${slug}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
@@ -33,7 +33,7 @@ onMounted(async () => {
       }
     }
 
-    const userRes = await fetch('http://localhost:3000/users/me', {
+    const userRes = await fetch('/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (userRes.ok) {
@@ -41,7 +41,7 @@ onMounted(async () => {
       isTutor.value = data.data?.role === 'tutor';
     }
 
-    const classesRes = await fetch('http://localhost:3000/classes/my', {
+    const classesRes = await fetch('/classes/my', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (classesRes.ok) {

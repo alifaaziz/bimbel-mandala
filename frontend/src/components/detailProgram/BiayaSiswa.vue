@@ -38,7 +38,7 @@ onMounted(async () => {
   const token = localStorage.getItem('token');
   const slug = route.params.id;
   try {
-    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+    const res = await fetch(`/packages/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');

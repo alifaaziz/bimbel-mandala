@@ -32,7 +32,7 @@ onMounted(async () => {
   const id = route.params.orderId;
   if (!id || !token) return;
   try {
-    const res = await fetch(`http://localhost:3000/orders/${id}`, {
+    const res = await fetch(`/orders/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();
@@ -98,7 +98,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         <div class="header-program">
           <img
             class="tutor-photo"
-            :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/Tutor_Default.png'"
+            :src="programData.photo ? `${programData.photo}` : '/Tutor_Default.png'"
             alt="Tutor Photo"
           />
           <div class="card-content">

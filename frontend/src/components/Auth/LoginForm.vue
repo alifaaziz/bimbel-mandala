@@ -42,7 +42,7 @@ async function handleLogin() {
   if (!emailError.value && !passwordError.value) {
     isLoading.value = true
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch('/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value }),
@@ -61,7 +61,7 @@ async function handleLogin() {
       localStorage.setItem('token', data.data.token)
       isLoggedIn.value = true
 
-      const userRes = await fetch('http://localhost:3000/users/me', {
+      const userRes = await fetch('/users/me', {
       headers: {
         'Authorization': `Bearer ${data.data.token}`,
         'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ function handleForgotPassword() {
 }
 
 function handleGoogleLogin() {
-  window.location.href = 'http://localhost:3000/auth/google'
+  window.location.href = '/auth/google'
 }
 
 </script>

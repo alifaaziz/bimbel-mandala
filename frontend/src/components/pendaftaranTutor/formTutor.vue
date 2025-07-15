@@ -66,7 +66,7 @@ export default {
         payload.append("photo", this.formData.foto);
 
         // Kirim data ke server
-        const res = await fetch("http://localhost:3000/apply", {
+        const res = await fetch("/apply", {
           method: "POST",
           body: payload,
         });

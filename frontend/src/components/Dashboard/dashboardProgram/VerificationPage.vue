@@ -32,7 +32,7 @@ onMounted(async () => {
   const id = route.params.id;
   if (!id || !token) return;
   try {
-    const res = await fetch(`http://localhost:3000/orders/${id}`, {
+    const res = await fetch(`/orders/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();
@@ -64,7 +64,7 @@ async function handleValidateClick() {
 
   loading.value = true;
   try {
-    await fetch('http://localhost:3000/orders/status', {
+    await fetch('/orders/status', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ const typeLabel = (type) => {
       <div class="header-program">
         <img
           class="tutor-photo"
-            :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/Tutor_Default.png'"
+            :src="programData.photo ? `${programData.photo}` : '/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">

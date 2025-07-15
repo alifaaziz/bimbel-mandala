@@ -78,7 +78,7 @@ async function submitStudent() {
   if (user.wali) payload.parentPhone = user.wali;
 
   try {
-    const res = await fetch("http://localhost:3000/auth/add-student", {
+    const res = await fetch("/auth/add-student", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

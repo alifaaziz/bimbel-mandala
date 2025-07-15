@@ -153,7 +153,7 @@ const programScheduleData = ref([]);
 async function fetchSiswaDetail() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/users/${route.params.id}`, {
+    const res = await fetch(`/users/${route.params.id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -178,7 +178,7 @@ async function fetchSiswaDetail() {
 async function fetchRegisteredPrograms() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/classes/student/${route.params.id}`, {
+    const res = await fetch(`/classes/student/${route.params.id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -203,7 +203,7 @@ async function fetchRegisteredPrograms() {
 async function fetchProgramSchedule() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/schedules/user/${route.params.id}`, {
+    const res = await fetch(`/schedules/user/${route.params.id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -246,7 +246,7 @@ const handleDelete = () => {
 const confirmDelete = async () => {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/users/${route.params.id}`, {
+    const res = await fetch(`/users/${route.params.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

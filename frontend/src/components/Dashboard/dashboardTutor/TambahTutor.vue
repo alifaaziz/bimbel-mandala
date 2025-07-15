@@ -295,7 +295,7 @@ async function handleSubmit() {
 
       const token = localStorage.getItem('token');
 
-      const res = await fetch("http://localhost:3000/auth/add-user", {
+      const res = await fetch("/auth/add-user", {
         method: "POST",
         body: payload,
         headers: {

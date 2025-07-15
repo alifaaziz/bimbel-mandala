@@ -21,7 +21,7 @@ const formatPrice = (price) => {
 onMounted(async () => {
   const token = localStorage.getItem('token');
   try {
-    const res = await fetch(`http://localhost:3000/attendance/${classId}`, {
+    const res = await fetch(`/attendance/${classId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error('Gagal mengambil data absensi');
@@ -60,7 +60,7 @@ function downloadRekap() {
   const token = localStorage.getItem('token');
   const classId = route.params.classId || route.params.id;
   if (!token || !classId) return;
-  fetch(`http://localhost:3000/attendance/download/${classId}`, {
+  fetch(`/attendance/download/${classId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ async function updatePaymentStatus(value) {
   const status = value ? 'terbayar' : 'pending';
 
   try {
-    const res = await fetch('http://localhost:3000/salaries', {
+    const res = await fetch('/salaries', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

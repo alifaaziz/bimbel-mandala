@@ -124,7 +124,7 @@ async function submitEditProfile() {
   payload.role = "siswa"; 
 
   try {
-    const res = await fetch(`http://localhost:3000/users/${userId}`, {
+    const res = await fetch(`/users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

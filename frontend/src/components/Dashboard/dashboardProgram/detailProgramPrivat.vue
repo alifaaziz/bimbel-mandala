@@ -42,7 +42,7 @@ function handleDelete() {
     return;
   }
   if (!confirm(`Yakin hapus program "${programData.value.name}"?`)) return;
-  fetch(`http://localhost:3000/packages/${slug}`, {
+  fetch(`/packages/${slug}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -65,7 +65,7 @@ onMounted(async () => {
   const token = localStorage.getItem('token');
   const slug = route.params.slug;
   try {
-    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
+    const res = await fetch(`/packages/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
@@ -93,7 +93,7 @@ onMounted(async () => {
       <div class="header-program">
         <img
           class="tutor-photo"
-            :src="programData.photo ? `http://localhost:3000/public${programData.photo}` : '/Tutor_Default.png'"
+            :src="programData.photo ? `${programData.photo}` : '/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">

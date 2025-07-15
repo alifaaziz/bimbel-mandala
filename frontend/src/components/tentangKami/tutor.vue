@@ -6,7 +6,7 @@ const tutors = ref([]);
 
 const fetchTutors = async () => {
   try {
-    const response = await fetch('http://localhost:3000/users/tutors'); 
+    const response = await fetch('/users/tutors'); 
     const data = await response.json();
     tutors.value = data.data;
   } catch (error) {
@@ -37,7 +37,7 @@ onMounted(() => {
         </div>
       </template>
       <template #cover>
-        <img :src="item.photo ? `http://localhost:3000/public${item.photo}` : 'tutor/Tutor_Default.png'" alt="Card Image">
+        <img :src="item.photo ? `${item.photo}` : 'tutor/Tutor_Default.png'" alt="Card Image">
       </template>
       <div class="bodyr3 content">
         {{ item.description }}

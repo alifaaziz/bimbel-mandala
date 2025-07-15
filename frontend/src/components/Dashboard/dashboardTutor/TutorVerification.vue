@@ -192,7 +192,7 @@ onMounted(async () => {
   const id = route.params.id;
   const token = localStorage.getItem("token");
   try {
-    const res = await fetch(`http://localhost:3000/apply/${id}`, {
+    const res = await fetch(`/apply/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const { data } = await res.json();
@@ -209,7 +209,7 @@ onMounted(async () => {
     formValue.value.user.pelajaran = data.subjects || "";
 
     if (data.photo) {
-      photoUrl.value = `http://localhost:3000/public${data.photo}`;
+      photoUrl.value = `${data.photo}`;
     } else {
       photoUrl.value = TutorDefault;
     }
@@ -308,7 +308,7 @@ async function handleReject() {
   const token = localStorage.getItem("token");
   if (!id) return;
   try {
-    const res = await fetch(`http://localhost:3000/apply/reject/${id}`, {
+    const res = await fetch(`/apply/reject/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -329,7 +329,7 @@ async function handleVerify() {
   if (!id) return;
   isLoading.value = true;
   try {
-    const res = await fetch(`http://localhost:3000/apply/verify/${id}`, {
+    const res = await fetch(`/apply/verify/${id}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` }
     });

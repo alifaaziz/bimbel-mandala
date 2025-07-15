@@ -40,7 +40,7 @@ async function fetchScheduleDetail() {
     return
   }
   try {
-    const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
+    const res = await fetch(`/schedules/${slug}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -73,7 +73,7 @@ function handleReschedule() {
 
   const newDate = new Date(`${rescheduleDate.value}T${rescheduleTime.value}:00`);
 
-  fetch(`http://localhost:3000/schedules/reschedule/${id}`, {
+  fetch(`/schedules/reschedule/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ function closeRescheduleModal() {
       <div class="header-program">
         <img
           class="tutor-photo"
-            :src="schedule.photo ? `http://localhost:3000/public${schedule.photo}` : '/Tutor_Default.png'"
+            :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">

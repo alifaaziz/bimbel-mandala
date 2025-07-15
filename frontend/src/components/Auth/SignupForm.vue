@@ -41,7 +41,7 @@ async function handleSignup() {
   if (!emailError.value && !passwordError.value) {
     isLoading.value = true
     try {
-      const response = await fetch('http://localhost:3000/auth/register', {
+      const response = await fetch('/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ async function handleSignup() {
 
 // Tambahkan fungsi untuk login dengan Google
 async function handleGoogleLogin() {
-  window.location.href = 'http://localhost:3000/auth/google'
+  window.location.href = '/auth/google'
 }
 
 const emit = defineEmits(['toggle-form'])

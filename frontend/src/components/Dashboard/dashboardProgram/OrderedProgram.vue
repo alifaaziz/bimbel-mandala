@@ -53,7 +53,7 @@ async function fetchOrders() {
   loading.value = true
   const token = localStorage.getItem('token')
   try {
-    const res = await fetch(`http://localhost:3000/orders?page=${page.value}&limit=${pageSize}`, {
+    const res = await fetch(`/orders?page=${page.value}&limit=${pageSize}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     const json = await res.json()
