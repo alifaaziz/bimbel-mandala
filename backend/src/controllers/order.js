@@ -14,8 +14,8 @@ import { asyncWrapper } from '../utils/asyncWrapper.js';
  */
 async function createOrder(req, res) {
     const userId = res.locals.user.id;
-    const { packageId, groupTypeId, address } = req.body;
-    await OrderService.createOrder(userId, packageId, groupTypeId, address);
+    const { packageId, groupTypeId, address, paymentId } = req.body;
+    await OrderService.createOrder(userId, packageId, groupTypeId, address, paymentId);
     res.status(201).json({ message: 'Order created successfully'});
 }
 
