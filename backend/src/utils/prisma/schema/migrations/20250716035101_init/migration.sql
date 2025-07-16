@@ -152,6 +152,7 @@ CREATE TABLE `schedules` (
     `status` ENUM('jadwal_ulang', 'terjadwal', 'masuk', 'izin', 'alpha') NOT NULL,
     `information` VARCHAR(191) NULL,
     `slug` VARCHAR(191) NOT NULL,
+    `endShow` DATETIME(3) NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

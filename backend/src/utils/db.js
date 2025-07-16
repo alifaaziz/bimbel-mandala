@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { appEnv } from './env.js';
+import payment from '../routes/payment.js';
 
 const omittedTimestampFields = ({
   createdAt: true,
@@ -32,7 +33,7 @@ const omitConfig = {
   class: {
     ...omittedTimestampFields
   },
-  attendance: {
+  payment: {
     ...omittedTimestampFields
   },
 };

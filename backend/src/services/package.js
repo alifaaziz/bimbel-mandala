@@ -909,7 +909,8 @@ async function getMyPackageBySlug(slug, user) {
         select: {
           type: true,
           price: true,
-          discPrice: true
+          discPrice: true,
+          maxStudent: true
         }
       }
     }
@@ -934,11 +935,15 @@ async function getMyPackageBySlug(slug, user) {
     area: pkg.area,
     slug: pkg.slug,
     percent: tutor?.percent ? Number(tutor.percent) : null, 
-    groupType: pkg.groupType.map(gt => ({
-      type: gt.type,
-      price: gt.price * (tutor?.percent ? Number(tutor.percent) / 100 : 0.6),
-      discPrice: gt.discPrice !== null ? gt.discPrice * (tutor?.percent ? Number(tutor.percent) / 100 : 0.6) : null
-    })),
+    groupType: pkg.groupType.map(gt => {
+      const basePrice = gt.discPrice !== null ? Number(gt.discPrice) : Number(gt.price);
+      const percentValue = tutor?.percent ? Number(tutor.percent) / 100 : 0.6;
+      return {
+        type: gt.type,
+        price: basePrice * percentValue,
+        maxStudent: Number(gt.maxStudent)
+      };
+    }),
     days: pkg.days ? JSON.parse(pkg.days) : [] 
   };
 }

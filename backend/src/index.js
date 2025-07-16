@@ -44,6 +44,7 @@ async function main() {
       req.path.startsWith('/docs') ||
       req.path.startsWith('/status') ||
       req.path.startsWith('/packages') ||
+      req.path.startsWith('/payments') ||
       req.path.startsWith('/classes') ||
       req.path.startsWith('/attendance') ||
       req.path.startsWith('/orders') ||

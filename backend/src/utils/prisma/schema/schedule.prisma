@@ -6,6 +6,7 @@ model Schedule {
   status   SchedulesStatus
   information String?
   slug     String           @unique
+  endShow  DateTime
 
   class    Class            @relation(fields: [classId], references: [id])
   attendances Attendance[]

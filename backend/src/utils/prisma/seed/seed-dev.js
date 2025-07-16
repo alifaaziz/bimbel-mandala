@@ -2901,6 +2901,7 @@ async function main() {
             meet: 1,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-qwert11',
+            endShow: new Date('2025-04-08T10:00:00Z'), 
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000002",
@@ -2909,6 +2910,7 @@ async function main() {
             meet: 2,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-yuia11',
+            endShow: new Date('2025-04-11T10:00:00Z'),
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000003",
@@ -2917,6 +2919,7 @@ async function main() {
             meet: 3,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-kslo11',
+            endShow: new Date('2025-04-15T10:00:00Z'),
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000004",
@@ -2925,6 +2928,7 @@ async function main() {
             meet: 4,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-ynki23',
+            endShow: new Date('2025-04-18T10:00:00Z'),
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000005",
@@ -2933,6 +2937,7 @@ async function main() {
             meet: 5,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-pal311',
+            endShow: new Date('2025-04-22T10:00:00Z'),
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000006",
@@ -2941,6 +2946,7 @@ async function main() {
             meet: 6,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-3nam11',
+            endShow: new Date('2025-04-25T10:00:00Z'),
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000007",
@@ -2949,6 +2955,7 @@ async function main() {
             meet: 7,
             status: 'jadwal_ulang',
             slug: 'bahasa-inggris-sma-ABC123-7uju11',
+            endShow: new Date('2025-04-28T10:00:00Z'),
         },
         {
             id: "019618a1-68a4-7a00-8000-000000000008",
@@ -2957,6 +2964,7 @@ async function main() {
             meet: 8,
             status: 'terjadwal',
             slug: 'bahasa-inggris-sma-ABC123-l4pa11',
+            endShow: new Date('2025-07-10T10:00:00Z'),
         },
         {
             id: "0197d449-8bd0-7e6f-a77f-0b9be7400001",
@@ -2965,6 +2973,7 @@ async function main() {
             meet: 1,
             status: 'terjadwal',
             slug: 'fokus-utbk-sma-ask123',
+            endShow: new Date('2025-07-21T09:30:00Z'),
         },
         {
             id: "0197d449-8bd0-7e6f-a77f-0b9be7400002",
@@ -2973,6 +2982,7 @@ async function main() {
             meet: 2,
             status: 'terjadwal',
             slug: 'fokus-utbk-sma-ask456',
+            endShow: new Date('2025-07-23T09:30:00Z'),
         },
         {
             id: "0197d449-8bd0-7e6f-a77f-0b9be7400003",
@@ -2981,6 +2991,7 @@ async function main() {
             meet: 3,
             status: 'terjadwal',
             slug: 'fokus-utbk-sma-ask789',
+            endShow: new Date('2025-07-28T09:30:00Z'),
         },
         {
             id: "0197d449-8bd0-7e6f-a77f-0b9be7400004",
@@ -2989,6 +3000,7 @@ async function main() {
             meet: 4,
             status: 'terjadwal',
             slug: 'fokus-utbk-sma-ask987',
+            endShow: new Date('2025-07-30T09:30:00Z'),
         },
     ];
     for (const schedule of schedulesClass) {
