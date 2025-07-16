@@ -17,7 +17,8 @@ const rescheduleTime = ref('')
 const selectedSchedule = ref<any>(null)
 const showEditInfoModal = ref(false)
 const editInfoText = ref('')
-
+const absenTime = ref('');
+const isLate = ref(false);
 const route = useRoute()
 
 onMounted(async () => {
@@ -38,7 +39,25 @@ onMounted(async () => {
 
 // Absen
 function openAbsenModal() {
-  showAbsenModal.value = true
+  const now = new Date();
+  absenTime.value = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+  if (schedule.value?.time && schedule.value?.date) {
+    const [hour, minute] = schedule.value.time.split(':').map(Number);
+    const scheduledDate = new Date(schedule.value.date); // Ini sudah lokal ID string
+    const scheduled = new Date(scheduledDate);
+    scheduled.setHours(hour);
+    scheduled.setMinutes(minute);
+    scheduled.setSeconds(0);
+
+    // Tambahkan 15 menit ke waktu jadwal
+    const lateLimit = new Date(scheduled.getTime() + 15 * 60 * 1000);
+    isLate.value = now > lateLimit;
+  } else {
+    isLate.value = false;
+  }
+
+  showAbsenModal.value = true;
 }
 
 function closeAbsenModal() {
@@ -286,10 +305,14 @@ async function saveEditInfo() {
       <div class="popup-content">
         <h3 class="headersb2">Absensi</h3>
         <p class="bodyr2">Silahkan melakukan absensi untuk sesi Bimbingan belajar kali ini.</p>
-      </div>
-      <div class="modal-actions">
-        <button class="buttonm1" @click="confirmAbsen">Masuk</button>
-        <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        <p class="bodyr2">Jam saat ini: <strong>{{ absenTime }}</strong></p>
+        <p v-if="isLate" class="bodyr2" style="color: #d03050;">
+          Anda terlambat lebih dari 15 menit. Harap konfirmasi dengan admin.
+        </p>
+        <div class="modal-actions">
+          <button class="buttonm1" @click="confirmAbsen">Masuk</button>
+          <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        </div>
       </div>
     </div>
   </div>

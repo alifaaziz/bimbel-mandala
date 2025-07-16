@@ -156,7 +156,7 @@ export default defineComponent({
             event.stopPropagation();
             return;
           }
-          router.push(`http://localhost:3000/detailjadwal/${row.slug}`);
+          router.push(`/detailjadwal/${row.slug}`);
         }
       };
     };
