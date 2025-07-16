@@ -131,6 +131,21 @@ async function getScheduleByUserId(req, res) {
   res.status(200).json({ data: schedules });
 }
 
+/**
+ * Handles the request to get the highlight schedule for the logged-in user.
+ *
+ * @function getHighlightSchedule
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the highlight schedule.
+ */
+async function getHighlightSchedule(req, res) {
+  const userId = res.locals.user.id;
+  const schedule = await ScheduleService.getHighlightSchedule(userId);
+  res.status(200).json({ data: schedule });
+}
+
 export const ScheduleController = {
   createSchedules: asyncWrapper(createSchedules),
   reschedule: asyncWrapper(reschedule),
@@ -139,5 +154,6 @@ export const ScheduleController = {
   getScheduleBySlug: asyncWrapper(getScheduleBySlug),
   updateScheduleInformation: asyncWrapper(updateScheduleInformation),
   getClosestScheduleBySlug: asyncWrapper(getClosestScheduleBySlug),
-  getScheduleByUserId: asyncWrapper(getScheduleByUserId)
+  getScheduleByUserId: asyncWrapper(getScheduleByUserId),
+  getHighlightSchedule: asyncWrapper(getHighlightSchedule),
 };

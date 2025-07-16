@@ -26,7 +26,7 @@ async function createSchedules(classId) {
 
   const { order } = classData;
   const { bimbelPackage } = order;
-  const { days, totalMeetings, time, name, level, startDate } = bimbelPackage;
+  const { days, totalMeetings, time, name, level, startDate, duration } = bimbelPackage;
 
   if (!totalMeetings || totalMeetings <= 0) {
     throw new Error('Invalid totalMeetings in bimbelPackage');
@@ -80,6 +80,9 @@ async function createSchedules(classId) {
         const timeDate = new Date(time);
         scheduleWithTime.setHours(timeDate.getHours(), timeDate.getMinutes(), 0, 0);
 
+        const endShow = new Date(scheduleWithTime);
+        endShow.setMinutes(endShow.getMinutes() + duration);
+
         const slugBase = `${name.toLowerCase().replace(/\s+/g, '-')}-${level.toLowerCase().replace(/\s+/g, '-')}-${classData.code}`;
         let slug;
         do {
@@ -90,6 +93,7 @@ async function createSchedules(classId) {
         schedules.push({
           classId,
           date: scheduleWithTime,
+          endShow, 
           meet: meet++,
           status: 'terjadwal',
           slug
@@ -297,51 +301,116 @@ async function updateScheduleInformation(scheduleId, information) {
 async function getClosestSchedules(page = 1, limit = 10, search = '') {
   const offset = (page - 1) * limit;
 
-  const whereClause = {
-    date: { gte: new Date() },
-    ...(search && {
-      OR: [
-        { class: { code: { contains: search } } }, 
-        { class: { order: { bimbelPackage: { name: { contains: search } } } } }, 
-        { class: { tutor: { name: { contains: search } } } } 
-      ]
-    })
-  };
+  const now = new Date();
+  now.setHours(now.getHours() + 7);
 
-  const [schedules, total] = await Promise.all([
-    prisma.schedule.findMany({
-      where: whereClause,
+  const searchFilter = search
+    ? {
+        OR: [
+          { class: { code: { contains: search } } },
+          { class: { order: { bimbelPackage: { name: { contains: search } } } } },
+          { class: { tutor: { name: { contains: search } } } }
+        ]
+      }
+    : {};
+
+  const [totalUpcoming, totalPast] = await Promise.all([
+    prisma.schedule.count({
+      where: {
+        endShow: { gte: now },
+        ...searchFilter
+      }
+    }),
+    prisma.schedule.count({
+      where: {
+        endShow: { lt: now },
+        ...searchFilter
+      }
+    })
+  ]);
+
+  const total = totalUpcoming + totalPast;
+  const totalPages = Math.ceil(total / limit);
+
+  let schedules = [];
+  if (offset < totalUpcoming) {
+    const takeUpcoming = Math.min(limit, totalUpcoming - offset);
+    const upcomingSchedules = await prisma.schedule.findMany({
+      where: {
+        endShow: { gte: now },
+        ...searchFilter
+      },
       include: {
         class: {
           include: {
             order: {
               include: {
-                bimbelPackage: {
-                  include: {
-                    user: true,
-                    groupType: true
-                  }
-                },
+                bimbelPackage: { include: { user: true, groupType: true } },
                 groupType: true
               }
             },
-            tutor: {
-              include: { tutors: true }
-            }
+            tutor: { include: { tutors: true } }
           }
         }
       },
-      orderBy: [
-        { date: 'asc' },
-        { id: 'asc' } 
-      ],
+      orderBy: [{ date: 'asc' }, { id: 'asc' }],
       skip: offset,
+      take: takeUpcoming
+    });
+
+    schedules = upcomingSchedules;
+
+    if (takeUpcoming < limit) {
+      const takePast = limit - takeUpcoming;
+      const pastSchedules = await prisma.schedule.findMany({
+        where: {
+          endShow: { lt: now },
+          ...searchFilter
+        },
+        include: {
+          class: {
+            include: {
+              order: {
+                include: {
+                  bimbelPackage: { include: { user: true, groupType: true } },
+                  groupType: true
+                }
+              },
+              tutor: { include: { tutors: true } }
+            }
+          }
+        },
+        orderBy: [{ date: 'asc' }, { id: 'asc' }],
+        skip: 0,
+        take: takePast
+      });
+      schedules = [...schedules, ...pastSchedules];
+    }
+  } else {
+    const pastOffset = offset - totalUpcoming;
+    schedules = await prisma.schedule.findMany({
+      where: {
+        endShow: { lt: now },
+        ...searchFilter
+      },
+      include: {
+        class: {
+          include: {
+            order: {
+              include: {
+                bimbelPackage: { include: { user: true, groupType: true } },
+                groupType: true
+              }
+            },
+            tutor: { include: { tutors: true } }
+          }
+        }
+      },
+      orderBy: [{ date: 'asc' }, { id: 'asc' }],
+      skip: pastOffset,
       take: limit
-    }),
-    prisma.schedule.count({
-      where: whereClause
-    })
-  ]);
+    });
+  }
 
   const data = schedules.map(schedule => {
     const classData = schedule.class;
@@ -352,16 +421,38 @@ async function getClosestSchedules(page = 1, limit = 10, search = '') {
     const tutorGender = tutor?.tutors?.[0]?.gender;
     const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
 
+    const attendance = schedule.attendances?.find(a => a.userId === userId) || null;
+
+    let status = attendance ? attendance.status : schedule.status;
+    let waktuAbsen = null;
+
+    if (attendance && attendance.status === "masuk" && attendance.createdAt) {
+      waktuAbsen = attendance.createdAt;
+      const scheduleDate = new Date(schedule.date);
+      const attendanceDate = new Date(attendance.createdAt);
+      const diffMs = attendanceDate - scheduleDate;
+      const diffMinutes = diffMs / (1000 * 60);
+      if (diffMinutes > 15) {
+        status = "terlambat";
+      }
+    }
+
     return {
       id: schedule.id,
       classCode: classData.code,
       packageName: bimbelPackage?.name || null,
+      level: bimbelPackage?.level || null,
       tutorName: tutorName,
       groupType: groupType?.type || null,
       meet: schedule.meet,
       date: schedule.date,
+      endShow: schedule.endShow,
       duration: bimbelPackage?.duration || null,
-      status: schedule.status,
+      address: order?.address || null,
+      info: schedule.information || null,
+      status: status,
+      waktuAbsen: waktuAbsen,
+      photo: tutor?.tutors?.[0]?.photo || null,
       slug: schedule.slug || null,
     };
   });
@@ -371,7 +462,7 @@ async function getClosestSchedules(page = 1, limit = 10, search = '') {
     total,
     page,
     limit,
-    totalPages: Math.ceil(total / limit),
+    totalPages,
   };
 }
 
@@ -412,21 +503,31 @@ async function getSchedulesForStudent(userId, page = 1, limit = 10) {
     return { data: [], total: 0, page, limit, totalPages: 0 };
   }
 
-  const [schedules, total] = await Promise.all([
-    prisma.schedule.findMany({
-      where: { classId: { in: runningClassIds } },
+  const now = new Date();
+  now.setHours(now.getHours() + 7);
+
+  const [totalUpcoming, totalPast] = await Promise.all([
+    prisma.schedule.count({
+      where: { classId: { in: runningClassIds }, endShow: { gte: now } }
+    }),
+    prisma.schedule.count({
+      where: { classId: { in: runningClassIds }, endShow: { lt: now } }
+    })
+  ]);
+
+  const total = totalUpcoming + totalPast;
+  const totalPages = Math.ceil(total / limit);
+
+  let schedules = [];
+  if (offset < totalUpcoming) {
+    const takeUpcoming = Math.min(limit, totalUpcoming - offset);
+    const upcomingSchedules = await prisma.schedule.findMany({
+      where: { classId: { in: runningClassIds }, endShow: { gte: now } },
       include: {
         class: {
           include: {
-            order: {
-              include: {
-                bimbelPackage: true,
-                groupType: true,
-              },
-            },
-            tutor: {
-              include: { tutors: true },
-            },
+            order: { include: { bimbelPackage: true, groupType: true } },
+            tutor: { include: { tutors: true } },
           },
         },
         attendances: {
@@ -436,12 +537,54 @@ async function getSchedulesForStudent(userId, page = 1, limit = 10) {
       },
       orderBy: { date: 'asc' },
       skip: offset,
+      take: takeUpcoming,
+    });
+
+    schedules = upcomingSchedules;
+
+    if (takeUpcoming < limit) {
+      const takePast = limit - takeUpcoming;
+      const pastSchedules = await prisma.schedule.findMany({
+        where: { classId: { in: runningClassIds }, endShow: { lt: now } },
+        include: {
+          class: {
+            include: {
+              order: { include: { bimbelPackage: true, groupType: true } },
+              tutor: { include: { tutors: true } },
+            },
+          },
+          attendances: {
+            where: { userId },
+            select: { status: true },
+          },
+        },
+        orderBy: { date: 'asc' },
+        skip: 0,
+        take: takePast,
+      });
+      schedules = [...schedules, ...pastSchedules];
+    }
+  } else {
+    const pastOffset = offset - totalUpcoming;
+    schedules = await prisma.schedule.findMany({
+      where: { classId: { in: runningClassIds }, endShow: { lt: now } },
+      include: {
+        class: {
+          include: {
+            order: { include: { bimbelPackage: true, groupType: true } },
+            tutor: { include: { tutors: true } },
+          },
+        },
+        attendances: {
+          where: { userId },
+          select: { status: true },
+        },
+      },
+      orderBy: { date: 'asc' },
+      skip: pastOffset,
       take: limit,
-    }),
-    prisma.schedule.count({
-      where: { classId: { in: runningClassIds } },
-    }),
-  ]);
+    });
+  }
 
   const data = schedules.map((schedule) => {
     const classData = schedule.class;
@@ -453,6 +596,20 @@ async function getSchedulesForStudent(userId, page = 1, limit = 10) {
     const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
     const attendance = schedule.attendances?.[0] || null;
 
+    let status = attendance ? attendance.status : schedule.status;
+    let waktuAbsen = null;
+
+    if (attendance && attendance.status === "masuk" && attendance.createdAt) {
+      waktuAbsen = attendance.createdAt;
+      const scheduleDate = new Date(schedule.date);
+      const attendanceDate = new Date(attendance.createdAt);
+      const diffMs = attendanceDate - scheduleDate;
+      const diffMinutes = diffMs / (1000 * 60);
+      if (diffMinutes > 15) {
+        status = "terlambat";
+      }
+    }
+
     return {
       id: schedule.id,
       classCode: classData.code,
@@ -462,10 +619,12 @@ async function getSchedulesForStudent(userId, page = 1, limit = 10) {
       groupType: groupType?.type || null,
       meet: schedule.meet,
       date: schedule.date,
+      endShow: schedule.endShow,
       duration: bimbelPackage?.duration || null,
       address: order?.address || null,
       info: schedule.information || null,
-      status: attendance ? attendance.status : schedule.status,
+      status: status,
+      waktuAbsen: waktuAbsen,
       photo: tutor?.tutors?.[0]?.photo || null,
       slug: schedule.slug || null,
     };
@@ -476,7 +635,7 @@ async function getSchedulesForStudent(userId, page = 1, limit = 10) {
     total,
     page,
     limit,
-    totalPages: Math.ceil(total / limit),
+    totalPages,
   };
 }
 
@@ -494,10 +653,7 @@ async function getSchedulesForTutor(userId, page = 1, limit = 10) {
   const offset = (page - 1) * limit;
 
   const runningClasses = await prisma.class.findMany({
-    where: {
-      tutorId: userId,
-      status: 'berjalan'
-    },
+    where: { tutorId: userId, status: 'berjalan' },
     select: { id: true }
   });
   const runningClassIds = runningClasses.map(cls => cls.id);
@@ -506,33 +662,79 @@ async function getSchedulesForTutor(userId, page = 1, limit = 10) {
     return { data: [], total: 0, page, limit, totalPages: 0 };
   }
 
-  const [schedules, total] = await Promise.all([
-    prisma.schedule.findMany({
-      where: { classId: { in: runningClassIds } },
+  const now = new Date();
+  now.setHours(now.getHours() + 7);
+
+  const [totalUpcoming, totalPast] = await Promise.all([
+    prisma.schedule.count({
+      where: { classId: { in: runningClassIds }, endShow: { gte: now } }
+    }),
+    prisma.schedule.count({
+      where: { classId: { in: runningClassIds }, endShow: { lt: now } }
+    })
+  ]);
+
+  const total = totalUpcoming + totalPast;
+  const totalPages = Math.ceil(total / limit);
+
+  let schedules = [];
+  if (offset < totalUpcoming) {
+    const takeUpcoming = Math.min(limit, totalUpcoming - offset);
+    const upcomingSchedules = await prisma.schedule.findMany({
+      where: { classId: { in: runningClassIds }, endShow: { gte: now } },
       include: {
         class: {
           include: {
-            order: {
-              include: {
-                bimbelPackage: true,
-                groupType: true,
-              },
-            },
-            tutor: {
-              include: { tutors: true },
-            },
+            order: { include: { bimbelPackage: true, groupType: true } },
+            tutor: { include: { tutors: true } },
           },
         },
         attendances: true,
       },
       orderBy: { date: 'asc' },
       skip: offset,
+      take: takeUpcoming,
+    });
+
+    schedules = upcomingSchedules;
+
+    if (takeUpcoming < limit) {
+      const takePast = limit - takeUpcoming;
+      const pastSchedules = await prisma.schedule.findMany({
+        where: { classId: { in: runningClassIds }, endShow: { lt: now } },
+        include: {
+          class: {
+            include: {
+              order: { include: { bimbelPackage: true, groupType: true } },
+              tutor: { include: { tutors: true } },
+            },
+          },
+          attendances: true,
+        },
+        orderBy: { date: 'asc' },
+        skip: 0,
+        take: takePast,
+      });
+      schedules = [...schedules, ...pastSchedules];
+    }
+  } else {
+    const pastOffset = offset - totalUpcoming;
+    schedules = await prisma.schedule.findMany({
+      where: { classId: { in: runningClassIds }, endShow: { lt: now } },
+      include: {
+        class: {
+          include: {
+            order: { include: { bimbelPackage: true, groupType: true } },
+            tutor: { include: { tutors: true } },
+          },
+        },
+        attendances: true,
+      },
+      orderBy: { date: 'asc' },
+      skip: pastOffset,
       take: limit,
-    }),
-    prisma.schedule.count({
-      where: { classId: { in: runningClassIds } },
-    }),
-  ]);
+    });
+  }
 
   const data = schedules.map((schedule) => {
     const classData = schedule.class;
@@ -544,6 +746,20 @@ async function getSchedulesForTutor(userId, page = 1, limit = 10) {
     const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
     const attendance = schedule.attendances?.[0] || null;
 
+    let status = attendance ? attendance.status : schedule.status;
+    let waktuAbsen = null;
+
+    if (attendance && attendance.createdAt) {
+      waktuAbsen = attendance.createdAt;
+      const scheduleDate = new Date(schedule.date);
+      const attendanceDate = new Date(attendance.createdAt);
+      const diffMs = attendanceDate - scheduleDate;
+      const diffMinutes = diffMs / (1000 * 60);
+      if (diffMinutes > 15) {
+        status = "terlambat";
+      }
+    }
+
     return {
       id: schedule.id,
       classCode: classData.code,
@@ -553,10 +769,11 @@ async function getSchedulesForTutor(userId, page = 1, limit = 10) {
       groupType: groupType?.type || null,
       meet: schedule.meet,
       date: schedule.date,
+      endShow: schedule.endShow,
       duration: bimbelPackage?.duration || null,
       address: order?.address || null,
       info: schedule.information || null,
-      status: attendance ? attendance.status : schedule.status,
+      status: status,
       photo: tutor?.tutors?.[0]?.photo || null,
       slug: schedule.slug || null,
     };
@@ -567,7 +784,7 @@ async function getSchedulesForTutor(userId, page = 1, limit = 10) {
     total,
     page,
     limit,
-    totalPages: Math.ceil(total / limit),
+    totalPages,
   };
 }
 
@@ -609,7 +826,7 @@ async function getSchedulesByRole(userId, page, limit) {
  */
 async function getScheduleBySlug(slug) {
   const schedule = await prisma.schedule.findUnique({
-    where: { slug }, // Cari berdasarkan slug
+    where: { slug }, 
     include: {
       class: {
         include: {
@@ -720,9 +937,9 @@ async function getClosestScheduleBySlug(slug) {
       attendances: true
     },
     orderBy: {
-      date: 'asc' // Urutkan berdasarkan tanggal terdekat
+      date: 'asc' 
     },
-    take: 5 // Ambil hanya 5 jadwal terdekat
+    take: 5 
   });
 
   if (!schedules || schedules.length === 0) {
@@ -826,6 +1043,151 @@ async function getScheduleByUserId(userId) {
   });
 }
 
+/**
+ * Get highlight schedule: jadwal terdekat yang belum terlewat,
+ * hanya muncul jika sekarang minimal 1 jam sebelum jadwal dimulai.
+ * 
+ * @async
+ * @function getHighlightSchedule
+ * @param {String} userId - (optional) filter by student/tutor userId
+ * @returns {Promise<Object|null>} Jadwal highlight atau null jika tidak ada
+ */
+async function getHighlightSchedule(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true }
+  });
+
+  if (!user) return null;
+
+  const now = new Date();
+  now.setHours(now.getHours() + 7);
+
+  let classIds = [];
+
+  if (user.role === 'siswa') {
+    const studentClasses = await prisma.studentClass.findMany({
+      where: { userId },
+      select: { classId: true }
+    });
+    classIds = studentClasses.map(sc => sc.classId);
+    if (classIds.length === 0) return null;
+  } else if (user.role === 'tutor') {
+    const tutorClasses = await prisma.class.findMany({
+      where: { tutorId: userId },
+      select: { id: true }
+    });
+    classIds = tutorClasses.map(cls => cls.id);
+    if (classIds.length === 0) return null;
+  } else {
+    return null;
+  }
+
+  const nextSchedule = await prisma.schedule.findFirst({
+    where: {
+      classId: { in: classIds },
+      date: { gte: now }
+    },
+    include: {
+      class: {
+        include: {
+          order: { include: { bimbelPackage: true, groupType: true } },
+          tutor: { include: { tutors: true } }
+        }
+      },
+      attendances: {
+        where: { userId },
+        select: { status: true, createdAt: true, userId: true }
+      }
+    },
+    orderBy: { date: 'asc' }
+  });
+
+  if (nextSchedule) {
+    const diffMs = new Date(nextSchedule.date) - now;
+    if (diffMs <= 3600000 && diffMs > 0) {
+      return mapScheduleHighlight(nextSchedule, userId);
+    }
+  }
+  
+  const prevSchedule = await prisma.schedule.findFirst({
+    where: {
+      classId: { in: classIds },
+      date: { lt: now }
+    },
+    include: {
+      class: {
+        include: {
+          order: { include: { bimbelPackage: true, groupType: true } },
+          tutor: { include: { tutors: true } }
+        }
+      },
+      attendances: {
+        where: { userId },
+        select: { status: true, createdAt: true, userId: true }
+      }
+    },
+    orderBy: { date: 'desc' }
+  });
+
+  if (prevSchedule) {
+    return mapScheduleHighlight(prevSchedule, userId);
+  }
+
+  return null;
+}
+
+function mapScheduleHighlight(schedule, userId) {
+  const classData = schedule.class;
+  const order = classData?.order;
+  const bimbelPackage = order?.bimbelPackage;
+  const groupType = order?.groupType;
+  const tutor = classData?.tutor;
+  const tutorGender = tutor?.tutors?.[0]?.gender;
+  const tutorName = tutor ? getTutorName({ gender: tutorGender, user: { name: tutor.name } }) : null;
+
+  let attendanceStatus = schedule.status;
+  let attendanceCreatedAt = null;
+  if (schedule.attendances && schedule.attendances.length > 0) {
+    const userAttendance = schedule.attendances.find(a => a.userId === userId);
+    if (userAttendance) {
+      attendanceStatus = userAttendance.status;
+      attendanceCreatedAt = userAttendance.createdAt || null;
+
+      if (
+        userAttendance.status === "masuk" &&
+        userAttendance.createdAt
+      ) {
+        const scheduleDate = new Date(schedule.date);
+        const attendanceDate = new Date(userAttendance.createdAt);
+        const diffMs = attendanceDate - scheduleDate;
+        const diffMinutes = diffMs / (1000 * 60);
+        if (diffMinutes > 15) {
+          attendanceStatus = "terlambat";
+        }
+      }
+    }
+  }
+
+  return {
+    id: schedule.id,
+    classCode: classData.code,
+    packageName: bimbelPackage?.name || null,
+    level: bimbelPackage?.level || null,
+    tutorName: tutorName,
+    groupType: groupType?.type || null,
+    meet: schedule.meet,
+    date: schedule.date,
+    duration: bimbelPackage?.duration || null,
+    address: order?.address || null,
+    info: schedule.information || null,
+    status: attendanceStatus,
+    waktuAbsen: attendanceCreatedAt,
+    photo: tutor?.tutors?.[0]?.photo || null,
+    slug: schedule.slug || null,
+  };
+}
+
 
 export const ScheduleService = {
   createSchedules,
@@ -839,5 +1201,6 @@ export const ScheduleService = {
   getNextDate,
   getTutorName,
   getClosestScheduleBySlug,
-  getScheduleByUserId
+  getScheduleByUserId,
+  getHighlightSchedule
 };
