@@ -288,7 +288,7 @@ const handleCancelEdit = () => {
 async function fetchTutorOptions() {
   const token = localStorage.getItem('token');
   try {
-    const res = await fetch('localhost:3000/users/tutors/all', {
+    const res = await fetch('http://localhost:3000/users/tutors/all', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();

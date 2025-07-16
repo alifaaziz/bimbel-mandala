@@ -40,7 +40,7 @@ function formatJam(dateStr) {
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (!token) return;
-  const res = await fetch('localhost:3000/schedules', {
+  const res = await fetch('http://localhost:3000/schedules', {
     headers: { Authorization: `Bearer ${token}` }
   });
   if (res.ok) {
@@ -80,7 +80,7 @@ function goToDetail(item) {
       >
         <template #cover>
           <img 
-            :src="item.photo ? `${item.photo}` : '/Tutor_Default.png'"
+            :src="item.photo ? `http://localhost:3000/${item.photo}` : '/Tutor_Default.png'"
           />
         </template>
         <template #header>

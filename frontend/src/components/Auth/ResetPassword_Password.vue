@@ -32,7 +32,7 @@ const submitPassword = async () => {
 
   loading.value = true;
   try {
-    const response = await fetch('localhost:3000/auth/password-reset/confirm', {
+    const response = await fetch('http://localhost:3000/auth/password-reset/confirm', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

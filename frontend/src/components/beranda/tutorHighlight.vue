@@ -7,7 +7,7 @@ const displayedTutors = ref([]);
 
 onMounted(async () => {
   try {
-    const res = await fetch('localhost:3000/users/tutors/');
+    const res = await fetch('http://localhost:3000/users/tutors/');
     const json = await res.json();
     displayedTutors.value = json.data.slice(0, 4);
   } catch (e) {
@@ -34,7 +34,7 @@ onMounted(async () => {
         </template>
         <template #cover>
           <img
-            :src="item.photo ? `${item.photo}` : 'https://via.placeholder.com/400x300?text=No+Photo'"
+            :src="item.photo ? `http://localhost:3000/${item.photo}` : 'https://via.placeholder.com/400x300?text=No+Photo'"
             alt="Card Image"
           >
         </template>

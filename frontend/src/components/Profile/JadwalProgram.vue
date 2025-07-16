@@ -16,7 +16,7 @@ export default defineComponent({
       window.addEventListener("resize", updateIsMobile);
 
       const token = localStorage.getItem('token');
-      const res = await fetch('localhost:3000/schedules', {
+      const res = await fetch('http://localhost:3000/schedules', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await res.json();

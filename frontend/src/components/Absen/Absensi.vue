@@ -18,7 +18,7 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('localhost:3000/schedules', {
+    const res = await fetch('http://localhost:3000/schedules', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -171,7 +171,7 @@ function confirmIzin() {
   <div v-if="schedule" class="card-container">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
+      :src="schedule.photo ? `http://localhost:3000/${schedule.photo}` : '/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">
@@ -267,7 +267,6 @@ function confirmIzin() {
 .card-container {
   display: flex;
   gap: 4rem;
-  padding: 1rem;
   background-color: white;
   border-radius: 16px;
   margin-bottom: 2rem;

@@ -16,7 +16,7 @@ const latestTutors = ref([]);
 const fetchLatestTutors = async () => {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('localhost:3000/users/new-tutors', {
+    const res = await fetch('http://localhost:3000/users/new-tutors', {
       headers: {
         'Authorization': `Bearer ${token}`
       }

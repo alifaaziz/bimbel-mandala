@@ -64,7 +64,7 @@ async function handleValidateClick() {
 
   loading.value = true;
   try {
-    await fetch('localhost:3000/orders/status', {
+    await fetch('http://localhost:3000/orders/status', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

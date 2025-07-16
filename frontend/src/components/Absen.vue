@@ -17,7 +17,7 @@ onMounted(async () => {
   const token = localStorage.getItem('token');
   if (!token) return;
 
-  const resUser = await fetch('localhost:3000/users/me', {
+  const resUser = await fetch('http://localhost:3000/users/me', {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   if (resUser.ok) {
@@ -25,7 +25,7 @@ onMounted(async () => {
     userRole.value = data.data?.role || null;
   }
 
-  const resStat = await fetch('localhost:3000/packages/statistics/my', {
+  const resStat = await fetch('http://localhost:3000/packages/statistics/my', {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   if (resStat.ok) {

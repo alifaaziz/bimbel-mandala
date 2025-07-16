@@ -9,7 +9,6 @@ import CaraPendaftaran from './CaraPendaftaran.vue';
 import ProgramTerdaftar from './ProgramTerdaftar/ProgramTerdaftar.vue';
 
 const route = useRoute();
-const router = useRouter();
 const slug = route.params.id as string; // Ambil slug dari route params
 const programData = ref<any>(null);
 const isTutor = ref(false);
@@ -33,7 +32,7 @@ onMounted(async () => {
       }
     }
 
-    const userRes = await fetch('localhost:3000/users/me', {
+    const userRes = await fetch('http://localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (userRes.ok) {
@@ -41,7 +40,7 @@ onMounted(async () => {
       isTutor.value = data.data?.role === 'tutor';
     }
 
-    const classesRes = await fetch('localhost:3000/classes/my', {
+    const classesRes = await fetch('http://localhost:3000/classes/my', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (classesRes.ok) {
@@ -56,7 +55,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <ProgramTerdaftar v-if="isRegisteredProgram" />
     
     <template v-else>
@@ -76,6 +75,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
 .container-detail {
   display: flex;
   align-items: flex-start;

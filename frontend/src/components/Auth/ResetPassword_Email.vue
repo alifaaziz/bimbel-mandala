@@ -19,7 +19,7 @@ export default {
       }
       this.loading = true;
       try {
-        const response = await fetch('localhost:3000/auth/password-reset', {
+        const response = await fetch('http://localhost:3000/auth/password-reset', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

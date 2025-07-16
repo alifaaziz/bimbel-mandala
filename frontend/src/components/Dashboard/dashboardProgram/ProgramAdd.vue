@@ -1,3 +1,158 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
+import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
+import { 
+  NCard, NSpace, NForm, NFormItem, NInput, NSelect, NTimePicker, NInputNumber, 
+  NGrid, NGi, NDivider, NH2, NDatePicker
+} from 'naive-ui';
+
+const formRef = ref(null);
+const formValue = ref({
+  namaProgram: null,
+  area: 'Semarang',
+  tutor: null,
+  jenjang: null,
+  tipe: null,
+  jam: null,
+  durasi: null,
+  jangkaWaktu: null,
+  biaya: { 
+    privat: null,
+    kelompok2: null,
+    kelompok3: null,
+    kelompok4: null,
+    kelompok5: null,
+  },
+  diskon: null,
+  detailKelas: { 
+    maksimalSiswa: null,
+    tanggalMulai: null,
+    perAnak: null,
+  }
+});
+
+// Switch enable state
+const isPrivatEnabled = ref(false)
+const isKelompok2Enabled = ref(false)
+const isKelompok3Enabled = ref(false)
+const isKelompok4Enabled = ref(false)
+const isKelompok5Enabled = ref(false)
+
+const daysValue = ref([]);
+const tutorOptions = ref([]);
+
+async function fetchTutorOptions() {
+  const token = localStorage.getItem('token');
+  try {
+    const res = await fetch('http://localhost:3000/users/tutors/all', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    tutorOptions.value = (json.data || []).map(tutor => ({
+      label: tutor.name,
+      value: tutor.id
+    }));
+  } catch (err) {
+    tutorOptions.value = [];
+    console.error('Gagal fetch tutor:', err);
+  }
+}
+
+onMounted(fetchTutorOptions);
+
+const jenjangOptions = ref([
+  { label: 'SD', value: 'SD' },
+  { label: 'SMP', value: 'SMP' },
+  { label: 'SMA', value: 'SMA' },
+]);
+
+const tipeOptions = ref([
+  { label: 'Privat/Kelompok', value: 'Privat/Kelompok' },
+  { label: 'Kelas', value: 'Kelas' },
+]);
+
+const durasiOptions = ref([
+  { label: '60 Menit', value: 60 },
+  { label: '90 Menit', value: 90 },
+  { label: '120 Menit', value: 120 },
+]);
+
+const daysOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
+
+function toggleDay(day) {
+  if (daysValue.value.includes(day)) {
+    daysValue.value = daysValue.value.filter(d => d !== day);
+  } else {
+    daysValue.value.push(day);
+  }
+}
+
+const router = useRouter();
+const loading = ref(false);
+
+async function handleValidateClick() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  loading.value = true; 
+
+  const tipe = formValue.value.tipe;
+  const payload = {
+    name: formValue.value.namaProgram,
+    level: formValue.value.jenjang,
+    totalMeetings: formValue.value.jangkaWaktu,
+    time: formValue.value.jam ? new Date(formValue.value.jam).toISOString() : null, 
+    duration: formValue.value.durasi,
+    area: formValue.value.area,
+    tutorId: formValue.value.tutor,
+    days: [...daysValue.value],
+    discount: formValue.value.diskon || 0
+  };
+
+  try {
+    if (tipe === 'Privat/Kelompok') {
+      payload.groupType = [
+        { type: 'privat', price: formValue.value.biaya.privat, maxStudent: 1 },
+        { type: 'grup2', price: formValue.value.biaya.kelompok2, maxStudent: 2 },
+        { type: 'grup3', price: formValue.value.biaya.kelompok3, maxStudent: 3 },
+        { type: 'grup4', price: formValue.value.biaya.kelompok4, maxStudent: 4 },
+        { type: 'grup5', price: formValue.value.biaya.kelompok5, maxStudent: 5 }
+      ];
+      await fetch('http://localhost:3000/packages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+    } else if (tipe === 'Kelas') {
+      payload.price = formValue.value.detailKelas.perAnak;
+      payload.maxStudent = formValue.value.detailKelas.maksimalSiswa;
+      payload.startDate = formValue.value.detailKelas.tanggalMulai
+        ? new Date(formValue.value.detailKelas.tanggalMulai).toISOString()
+        : null;
+      await fetch('http://localhost:3000/packages/class', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+    router.push('/dashboardadmin/programadmin'); 
+  } catch (err) {
+    alert('Gagal membuat program');
+    console.error(err);
+  } finally {
+    loading.value = false; 
+  }
+}
+</script>
+
 <template>
   <div class="add-container">
     <div class="add-contents">
@@ -79,48 +234,108 @@
               <div v-if="formValue.tipe === 'Privat/Kelompok'">
                 <n-divider class="divider" />
                 <n-space vertical size="large">
-                  <n-h2 style="font-weight: 600;">Biaya</n-h2>
+                  <div>
+                    <n-h2 style="font-weight: 600;">Biaya</n-h2>
+                    <p class="bodyr3">Hanya buka dan isi jenis program yang ingin dibuka saja.</p>
+                  </div>
                   <n-grid :x-gap="24" :y-gap="20" :cols="2">
+                    <!-- Privat -->
                     <n-gi>
                       <n-form-item label="Privat">
-                        <n-input-number v-model:value="formValue.biaya.privat" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.privat"
+                            placeholder="Please Input"
+                            :disabled="!isPrivatEnabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isPrivatEnabled" size="small" />
+                        </n-space>
                       </n-form-item>
                     </n-gi>
+
+                    <!-- Kelompok 2 -->
                     <n-gi>
                       <n-form-item label="Kelompok 2 siswa">
-                        <n-input-number v-model:value="formValue.biaya.kelompok2" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.kelompok2"
+                            placeholder="Please Input"
+                            :disabled="!isKelompok2Enabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isKelompok2Enabled" size="small" />
+                        </n-space>
                       </n-form-item>
                     </n-gi>
+
+                    <!-- Kelompok 3 -->
                     <n-gi>
                       <n-form-item label="Kelompok 3 siswa">
-                        <n-input-number v-model:value="formValue.biaya.kelompok3" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.kelompok3"
+                            placeholder="Please Input"
+                            :disabled="!isKelompok3Enabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isKelompok3Enabled" size="small" />
+                        </n-space>
                       </n-form-item>
                     </n-gi>
+
+                    <!-- Kelompok 4 -->
                     <n-gi>
                       <n-form-item label="Kelompok 4 siswa">
-                        <n-input-number v-model:value="formValue.biaya.kelompok4" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.kelompok4"
+                            placeholder="Please Input"
+                            :disabled="!isKelompok4Enabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isKelompok4Enabled" size="small" />
+                        </n-space>
                       </n-form-item>
                     </n-gi>
+
+                    <!-- Kelompok 5 -->
                     <n-gi>
                       <n-form-item label="Kelompok 5 siswa">
-                        <n-input-number v-model:value="formValue.biaya.kelompok5" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.kelompok5"
+                            placeholder="Please Input"
+                            :disabled="!isKelompok5Enabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isKelompok5Enabled" size="small" />
+                        </n-space>
                       </n-form-item>
                     </n-gi>
+
+                    <!-- Diskon -->
                     <n-gi>
                       <n-form-item label="Diskon">
-                        <n-input-number v-model:value="formValue.diskon" placeholder="Please Input" style="width: 100%;">
-                           <template #suffix">%</template>
-                        </n-input-number>
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.diskon"
+                            placeholder="Please Input"
+                            style="width: 100%;"
+                          >
+                            <template #suffix>%</template>
+                          </n-input-number>
+                        </n-space>
                       </n-form-item>
                     </n-gi>
                   </n-grid>
@@ -160,9 +375,9 @@
           <div class="catatan">
             <h3 class="bodysb1">Catatan:</h3>
             <ul style="padding-left: 20px; line-height: 1.6;">
-              <li>Paket Privat/Kelompok: Biaya siswa mengacu pada paket privat. Biaya Kelompok otomatis dibuat menjadi 80% biaya siswa/anak paket diatasnya. Contoh biaya per anak paket kelompok 3 siswa adalah 80% biaya anak privat dan biaya siswa/anak paket kelompok 5 siswa adalah 80% biaya siswa/anak paket kelompok 3 siswa.</li>
+              <li>Komisi Tutor: Komisi tutor mengikuti komisi pada profile tutor, besaran komisi bisa diedit di profile tutor.</li>
               <li>Paket Kelas: Biaya siswa tipe program kelas disamaratakan tanpa melihat jumlah siswa.</li>
-              <li>Honor Tutor merupakan 70% dari biaya total program.</li>
+              <li>Paket Kelas: Lokasi kelas wajib diisi dengan lengkap</li>
             </ul>
           </div>
 
@@ -186,154 +401,6 @@
     
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
-import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
-import { 
-  NCard, NSpace, NForm, NFormItem, NInput, NSelect, NTimePicker, NInputNumber, 
-  NGrid, NGi, NDivider, NH2, NDatePicker
-} from 'naive-ui';
-
-const formRef = ref(null);
-const formValue = ref({
-  namaProgram: null,
-  area: 'Semarang',
-  tutor: null,
-  jenjang: null,
-  tipe: null,
-  jam: null,
-  durasi: null,
-  jangkaWaktu: null,
-  biaya: { 
-    privat: null,
-    kelompok2: null,
-    kelompok3: null,
-    kelompok4: null,
-    kelompok5: null,
-  },
-  diskon: null,
-  detailKelas: { 
-    maksimalSiswa: null,
-    tanggalMulai: null,
-    perAnak: null,
-  }
-});
-
-const daysValue = ref([]);
-const tutorOptions = ref([]);
-
-async function fetchTutorOptions() {
-  const token = localStorage.getItem('token');
-  try {
-    const res = await fetch('localhost:3000/users/tutors/all', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const json = await res.json();
-    tutorOptions.value = (json.data || []).map(tutor => ({
-      label: tutor.name,
-      value: tutor.id
-    }));
-  } catch (err) {
-    tutorOptions.value = [];
-    console.error('Gagal fetch tutor:', err);
-  }
-}
-
-onMounted(fetchTutorOptions);
-
-const jenjangOptions = ref([
-  { label: 'SD', value: 'SD' },
-  { label: 'SMP', value: 'SMP' },
-  { label: 'SMA', value: 'SMA' },
-]);
-
-const tipeOptions = ref([
-  { label: 'Privat/Kelompok', value: 'Privat/Kelompok' },
-  { label: 'Kelas', value: 'Kelas' },
-]);
-
-const durasiOptions = ref([
-  { label: '60 Menit', value: 60 },
-  { label: '90 Menit', value: 90 },
-  { label: '120 Menit', value: 120 },
-]);
-
-const daysOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at", 'Sabtu'];
-
-function toggleDay(day) {
-  if (daysValue.value.includes(day)) {
-    daysValue.value = daysValue.value.filter(d => d !== day);
-  } else {
-    daysValue.value.push(day);
-  }
-}
-
-const router = useRouter();
-const loading = ref(false);
-
-async function handleValidateClick() {
-  const token = localStorage.getItem('token');
-  if (!token) return;
-
-  loading.value = true; 
-
-  const tipe = formValue.value.tipe;
-  const payload = {
-    name: formValue.value.namaProgram,
-    level: formValue.value.jenjang,
-    totalMeetings: formValue.value.jangkaWaktu,
-    time: formValue.value.jam ? new Date(formValue.value.jam).toISOString() : null, 
-    duration: formValue.value.durasi,
-    area: formValue.value.area,
-    tutorId: formValue.value.tutor,
-    days: [...daysValue.value],
-    discount: formValue.value.diskon || 0
-  };
-
-  try {
-    if (tipe === 'Privat/Kelompok') {
-      payload.groupType = [
-        { type: 'privat', price: formValue.value.biaya.privat, maxStudent: 1 },
-        { type: 'grup2', price: formValue.value.biaya.kelompok2, maxStudent: 2 },
-        { type: 'grup3', price: formValue.value.biaya.kelompok3, maxStudent: 3 },
-        { type: 'grup4', price: formValue.value.biaya.kelompok4, maxStudent: 4 },
-        { type: 'grup5', price: formValue.value.biaya.kelompok5, maxStudent: 5 }
-      ];
-      await fetch('localhost:3000/packages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-    } else if (tipe === 'Kelas') {
-      payload.price = formValue.value.detailKelas.perAnak;
-      payload.maxStudent = formValue.value.detailKelas.maksimalSiswa;
-      payload.startDate = formValue.value.detailKelas.tanggalMulai
-        ? new Date(formValue.value.detailKelas.tanggalMulai).toISOString()
-        : null;
-      await fetch('localhost:3000/packages/class', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-    }
-    router.push('/dashboardadmin/programadmin'); 
-  } catch (err) {
-    alert('Gagal membuat program');
-    console.error(err);
-  } finally {
-    loading.value = false; 
-  }
-}
-</script>
 
 <style scoped>
 .n-h2, .n-h3 {

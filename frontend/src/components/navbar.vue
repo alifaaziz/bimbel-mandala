@@ -110,7 +110,7 @@ const closeNotifications = (event) => {
 const markAllNotificationsRead = async () => {
   try {
     const token = localStorage.getItem('token');
-    await fetch('localhost:3000/notification', {
+    await fetch('http://localhost:3000/notification', {
       method: 'POST',
       headers: {
         'Authorization': token ? `Bearer ${token}` : '',
@@ -138,7 +138,7 @@ onMounted(async () => {
 
   const token = localStorage.getItem('token')
   if (!token) return
-  const res = await fetch('localhost:3000/users/me', {
+  const res = await fetch('http://localhost:3000/users/me', {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
 async function fetchNotifications() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('localhost:3000/notification', {
+    const res = await fetch('http://localhost:3000/notification', {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     const result = await res.json();
@@ -169,7 +169,7 @@ async function fetchNotifications() {
       read: item.viewed,
       createdAt: item.createdAt,
       photo: item.photo
-        ? (item.photo.startsWith('http') ? item.photo : `${item.photo}`)
+        ? (item.photo.startsWith('http') ? item.photo : `http://localhost:3000/${item.photo}`)
         : '/mandala.png',
       reason: item.reason,
       scheduleId: item.scheduleId

@@ -33,7 +33,7 @@ async function fetchUserRole() {
   if (!token) return;
 
   try {
-    const res = await fetch('localhost:3000/users/me', {
+    const res = await fetch('http://localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -56,7 +56,7 @@ async function fetchData() {
   if (isTutor.value) {
     // Jika pengguna adalah tutor, gunakan endpoint /packages/my
     try {
-      const res = await fetch('localhost:3000/packages/my', {
+      const res = await fetch('http://localhost:3000/packages/my', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -137,7 +137,7 @@ function handleButton(slug) {
       <n-card v-for="program in filteredPrograms" :key="program.slug" class="n-card">
         <div class="card-content">
           <div class="card-image">
-            <img :src="program.photo ? `${program.photo}` : '/Tutor_Default.png'" />
+            <img :src="program.photo ? `http://localhost:3000/${program.photo}` : '/Tutor_Default.png'" />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
           </div>
           <div class="card-text">
