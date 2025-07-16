@@ -82,6 +82,17 @@
       <div class="sidebar-bottom bodyr1">
         <ul>
           <li class="nav-item">
+          <router-link
+            class="nav-but"
+            to="/dashboardadmin/metodePembayaran"
+            :class="{ active: activeMenu === 'Metode Pembayaran' }"
+            @click.native="setActive('Metode Pembayaran')"
+          >
+            <img src="@/assets/icons/admin/money.svg" alt="CB Icon" class="icon-white">
+            <span>Pembayaran</span>
+          </router-link>
+          </li>
+          <li class="nav-item">
             <a class="nav-but" href="#" @click.prevent="handleLogout">
               <img src="@/assets/icons/admin/logout.svg" alt="Logout Icon" class="icon-white">
               <span>Log Out</span>

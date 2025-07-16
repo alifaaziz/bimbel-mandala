@@ -4,6 +4,9 @@ import { useRoute } from 'vue-router'
 // import Scheduled from '../Absen/Scheduled.vue'
 import butAbsen from '../dirButton/butAbsen.vue'
 import butIzin from '../dirButton/butIzin.vue'
+// --- [BARU] Impor untuk Tombol Hubungi Admin ---
+import { NButton, NIcon } from 'naive-ui'
+import { LogoWhatsapp } from '@vicons/ionicons5'
 
 // const isScheduled = ref(true)
 const showAbsenModal = ref(false)
@@ -130,6 +133,13 @@ function confirmIzin() {
     })
 }
 
+// --- [BARU] Fungsi untuk menghubungi admin ---
+function handleContact() {
+  // Ganti dengan nomor WhatsApp Admin yang sebenarnya (tanpa spasi atau simbol)
+  const adminWhatsappNumber = '6285540000900';
+  window.open(`https://wa.me/${adminWhatsappNumber}`, '_blank');
+}
+
 function formatTanggal(dateStr: string) {
   const date = new Date(dateStr);
   const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
@@ -205,6 +215,12 @@ function statusLabel(status: string) {
       <div class="button-group">
         <butAbsen @click="openAbsenModal"/>
         <butIzin @click="openIzinModal"/>
+        <n-button type="primary" size="large" round @click="handleContact">
+          <template #icon>
+            <n-icon :component="LogoWhatsapp" />
+          </template>
+          Hubungi Admin
+        </n-button>
       </div>
     </div>
     <div class="detail-jadwal">
@@ -230,7 +246,6 @@ function statusLabel(status: string) {
     </div>
   </div>
 
-  <!-- Absen -->
   <div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
     <div class="modal-content">
       <div class="popup-content">
@@ -244,7 +259,6 @@ function statusLabel(status: string) {
     </div>
   </div>
 
-  <!-- Izin -->
   <div v-if="showIzinModal" class="modal-overlay" @click.self="closeIzinModal">
     <div class="modal-content">
       <div class="popup-content">
@@ -345,6 +359,7 @@ function statusLabel(status: string) {
   gap: 1rem;
   margin-top: 1rem;
   flex-wrap: wrap;
+  align-items: center; /* Menyelaraskan tombol secara vertikal */
 }
 
 .modal-overlay {
@@ -485,6 +500,4 @@ function statusLabel(status: string) {
     width: 100%;
   }
 }
-
-
 </style>

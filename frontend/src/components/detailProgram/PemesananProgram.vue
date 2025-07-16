@@ -305,6 +305,7 @@ const banks = [
         <div class="input-pemesanan">
           <p class="bodym2">Lokasi Bimbingan Belajar</p>
           <n-input
+            type="text"
             round
             v-model:value="address"
             placeholder="Alamat Lokasi Bimbing"

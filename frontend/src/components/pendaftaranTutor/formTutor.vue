@@ -122,7 +122,7 @@ const cancelForm = () => {
       <div class="form">
         <div class="form-group full-width">
           <n-form-item label="Nama Lengkap" path="nama">
-            <n-input v-model:value="formData.nama" placeholder="Tuliskan nama Anda" />
+            <n-input type="text" v-model:value="formData.nama" placeholder="Tuliskan nama Anda" />
           </n-form-item>
         </div>
 
@@ -166,19 +166,19 @@ const cancelForm = () => {
         <div class="form-group half-width">
           <n-form-item label="No. WhatsApp" path="whatsapp">
             <n-input-group-label>+62</n-input-group-label>
-            <n-input v-model:value="formData.whatsapp" placeholder="8xx xxxx xxxx" prefix="+62" />
+            <n-input type="tel" v-model:value="formData.whatsapp" placeholder="8xx xxxx xxxx" prefix="+62" />
           </n-form-item>
         </div>
 
         <div class="form-group full-width">
           <n-form-item label="Asal Universitas" path="universitas">
-            <n-input v-model:value="formData.universitas" placeholder="Tuliskan asal universitas" />
+            <n-input type="text" v-model:value="formData.universitas" placeholder="Tuliskan asal universitas" />
           </n-form-item>
         </div>
 
         <div class="form-group half-width">
           <n-form-item label="Program Studi" path="prodi">
-            <n-input v-model:value="formData.prodi" placeholder="Tuliskan Program Studi Anda" />
+            <n-input type="text" v-model:value="formData.prodi" placeholder="Tuliskan Program Studi Anda" />
           </n-form-item>
         </div>
 
@@ -199,13 +199,13 @@ const cancelForm = () => {
 
         <div class="form-group half-width">
           <n-form-item label="Jenjang" path="jenjang">
-            <n-input v-model:value="formData.jenjang" placeholder="SMP, SMA" />
+            <n-input type="text" v-model:value="formData.jenjang" placeholder="SMP, SMA" />
           </n-form-item>
         </div>
 
         <div class="form-group half-width">
           <n-form-item label="Mata Pelajaran" path="mapel">
-            <n-input v-model:value="formData.mapel" placeholder="Matematika, Fisika, Kimia" />
+            <n-input type="text" v-model:value="formData.mapel" placeholder="Matematika, Fisika, Kimia" />
           </n-form-item>
         </div>
 

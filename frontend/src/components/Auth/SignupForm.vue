@@ -91,6 +91,10 @@ function goToLogin() {
   emit('toggle-form')
 }
 
+function goToMenjadiTutor() {
+  router.push('/pendaftarantutor')
+}
+
 </script>
 
 <template>
@@ -104,6 +108,7 @@ function goToLogin() {
       <div class="form-input">
         <p class="bodym2">Nama Lengkap</p>
         <n-input
+          type="text"
           round
           v-model:value="name"
           placeholder="Nama Lengkap"
@@ -173,6 +178,12 @@ function goToLogin() {
           Masuk disini
         </button>
       </p>
+      <p class="bodym3" style="margin-top: 1rem;">
+      Ingin menjadi tutor?
+      <button @click="goToMenjadiTutor" class="toggle-link">
+        Daftar disini
+      </button>
+    </p>
     </div>
   </div>
 </template>
@@ -184,6 +195,11 @@ function goToLogin() {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.menjadi-tutor{
+  margin: 1rem 0;
+  text-align: left;
 }
 
 .form-wrapper > div {

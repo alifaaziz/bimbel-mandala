@@ -4,6 +4,7 @@
 
     <div class="search-container">
       <n-input
+        type="text"
         round
         size="large"
         placeholder="Cari jadwal program bimbel...">
@@ -23,7 +24,7 @@
               <th>Kode <i class="fas fa-chevron-down sort-icon"></i></th>
               <th>Tanggal <i class="fas fa-chevron-down sort-icon"></i></th>
               <th>Jam <i class="fas fa-chevron-down sort-icon"></i></th>
-              <th>Detail</th>
+              <th>Status</th> <th>Detail</th>
             </tr>
           </thead>
           <tbody>
@@ -35,6 +36,15 @@
               <td>#{{ item.kode }}</td>
               <td>{{ item.tanggal }}</td>
               <td>{{ item.jam }}</td>
+              <td>
+                <n-tag
+                  :type="getStatusInfo(item.status).type"
+                  :bordered="false"
+                  round
+                  style="width: 100px; justify-content: center;">
+                  {{ getStatusInfo(item.status).label }}
+                </n-tag>
+              </td>
               <td>
                 <button class="detail-button" @click="showDetail(item)">
                   <img src="@/assets/icons/more-horizontal.svg" alt="">
@@ -59,6 +69,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+// [TAMBAH] Impor NTag dari Naive UI
+import { NInput, NPagination, NTag } from 'naive-ui';
+
 
 const scheduleItems = ref([]);
 const page = ref(1);
@@ -102,7 +115,8 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
         hour: '2-digit',
         minute: '2-digit'
       }),
-      slug: item.slug
+      slug: item.slug,
+      status: item.status // [TAMBAH] Pastikan field 'status' diambil dari API
     }));
 
     page.value = result.data.page;
@@ -113,6 +127,28 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
     alert('Gagal mengambil data jadwal terdekat.');
   }
 };
+
+// [TAMBAH] Fungsi untuk memproses status dan mengembalikan tipe & label
+const getStatusInfo = (status) => {
+  let type = 'default';
+  let label = status;
+
+  switch (status) {
+    case 'terjadwal':
+      type = 'success';
+      label = 'Terjadwal';
+      break;
+    case 'jadwal_ulang':
+      type = 'warning';
+      label = 'Jadwal Ulang';
+      break;
+    default:
+      type = 'default';
+      label = status;
+  }
+  return { type, label };
+};
+
 
 const showDetail = (item) => {
   const id = item.slug;
@@ -130,6 +166,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Tidak ada perubahan pada CSS, jadi saya singkat untuk keringkasan */
 .dashboard-view {
   width: 100%;
   background-color: white;
@@ -149,7 +186,7 @@ onMounted(() => {
 .img-search {
   width: 16px;
   height: auto;
-   margin-right: 8px;
+    margin-right: 8px;
 }
 
 .table-responsive {

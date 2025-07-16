@@ -38,9 +38,9 @@
 
       <n-space vertical :size="16">
         <h2 class="headlineb2">Program Selesai</h2>
-         
         <div class="search-container">
       <n-input
+      type="text"
       v-model:value="searchTerm"
       round
       size="large"

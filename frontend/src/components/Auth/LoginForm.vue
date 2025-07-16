@@ -176,13 +176,6 @@ function handleGoogleLogin() {
         </button>
       </p>
 
-      <p class="bodym3">
-        Ingin menjadi tutor?
-        <button @click="goToTutorSignup" class="toggle-link">
-          Daftar disini
-        </button>
-      </p>
-
     </div>
   </div>
 </template>
