@@ -6,7 +6,7 @@ const programs = ref([])
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
-  const res = await fetch('/packages/my', {
+  const res = await fetch('http://localhost:3000/packages/my', {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await res.json()

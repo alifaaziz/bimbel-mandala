@@ -17,6 +17,8 @@ const lastRescheduleDate = ref('')
 const lastRescheduleTime = ref('')
 const selectedSchedule = ref<any>(null)
 const schedule = ref<any>(null)
+const absenTime = ref('');
+const isLate = ref(false);
 
 // Ambil jadwal dari backend
 onMounted(async () => {
@@ -24,7 +26,7 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('/schedules', {
+    const res = await fetch('http://localhost:3000/schedules', {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (!res.ok) throw new Error('Gagal mengambil jadwal')
@@ -78,8 +80,27 @@ const tagTypeMap: Record<string, "default" | "error" | "success" | "warning" | "
 
 // Absen
 function openAbsenModal() {
-  showAbsenModal.value = true
+  const now = new Date();
+  absenTime.value = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+  if (schedule.value?.time && schedule.value?.date) {
+    const [hour, minute] = schedule.value.time.split(':').map(Number);
+    const scheduledDate = new Date(schedule.value.date); // Ini sudah lokal ID string
+    const scheduled = new Date(scheduledDate);
+    scheduled.setHours(hour);
+    scheduled.setMinutes(minute);
+    scheduled.setSeconds(0);
+
+    // Tambahkan 15 menit ke waktu jadwal
+    const lateLimit = new Date(scheduled.getTime() + 15 * 60 * 1000);
+    isLate.value = now > lateLimit;
+  } else {
+    isLate.value = false;
+  }
+
+  showAbsenModal.value = true;
 }
+
 function closeAbsenModal() {
   showAbsenModal.value = false
 }
@@ -192,7 +213,7 @@ function closeSuccessModal() {
   <div v-if="schedule" class="card-container">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
+      :src="schedule.photo ? `http://localhost:3000/${schedule.photo}` : '/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">
@@ -253,10 +274,14 @@ function closeSuccessModal() {
       <div class="popup-content">
         <h3 class="headersb2">Absensi</h3>
         <p class="bodyr2">Silahkan melakukan absensi untuk sesi Bimbingan belajar kali ini.</p>
-      </div>
-      <div class="modal-actions">
-        <button class="buttonm1" @click="confirmAbsen">Masuk</button>
-        <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        <p class="bodyr2">Jam saat ini: <strong>{{ absenTime }}</strong></p>
+        <p v-if="isLate" class="bodyr2" style="color: #d03050;">
+          Anda terlambat lebih dari 15 menit. Harap konfirmasi dengan admin.
+        </p>
+        <div class="modal-actions">
+          <button class="buttonm1" @click="confirmAbsen">Masuk</button>
+          <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        </div>
       </div>
     </div>
   </div>

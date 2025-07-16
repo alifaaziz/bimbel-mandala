@@ -1,192 +1,3 @@
-<template>
-  <div class="add-container">
-    <div class="add-contents">
-      <n-card :bordered="false" size="huge" style="width: 100%; border-radius: 16px; margin: auto;">
-          <div class="headersb1">Tambah Program</div>
-        <n-divider class="divider" />
-        <n-space vertical size="large">
-          
-          <n-form ref="formRef" :model="formValue">
-            <n-space vertical size="large">
-    
-              <n-h2 style="font-weight: 600;">Detail Program</n-h2>
-              
-              <n-form-item label="Nama Program" path="namaProgram">
-                <n-input v-model:value="formValue.namaProgram" placeholder="Tuliskan nama program" />
-              </n-form-item>
-    
-              <n-form-item label="Area/lokasi" path="area">
-                <n-input v-model:value="formValue.area" placeholder="Semarang" />
-              </n-form-item>
-    
-              <n-grid :x-gap="24" :y-gap="0" :cols="3">
-                <n-gi>
-                  <n-form-item label="Tutor" path="tutor">
-                    <n-select v-model:value="formValue.tutor" :options="tutorOptions" placeholder="Please Select"/>
-                  </n-form-item>
-                </n-gi>
-                <n-gi>
-                  <n-form-item label="Jenjang" path="jenjang">
-                    <n-select v-model:value="formValue.jenjang" :options="jenjangOptions" placeholder="Please Select"/>
-                  </n-form-item>
-                </n-gi>
-                <n-gi>
-                  <n-form-item label="Tipe" path="tipe">
-                    <n-select v-model:value="formValue.tipe" :options="tipeOptions" placeholder="Please Select"/>
-                  </n-form-item>
-                </n-gi>
-              </n-grid>
-    
-              <n-grid :x-gap="24" :y-gap="0" :cols="2">
-                <n-gi>
-                  <n-form-item label="JAM" path="jam">
-                    <n-time-picker
-                      v-model:value="formValue.jam"
-                      style="width: 100%;"
-                      format="HH:mm"
-                      placeholder="Select Time"
-                    />
-                  </n-form-item>
-                </n-gi>
-                <n-gi>
-                  <n-form-item label="Durasi per sesi" path="durasi">
-                    <n-select v-model:value="formValue.durasi" :options="durasiOptions" placeholder="Please Select" />
-                  </n-form-item>
-                </n-gi>
-              </n-grid>
-              
-              <n-grid :x-gap="24" :y-gap="0" :cols="7" style="align-items: center;">
-                <n-gi :span="2">
-                  <n-form-item label="Jangka Waktu (Pertemuan)" path="jangkaWaktu">
-                    <n-input-number v-model:value="formValue.jangkaWaktu" placeholder="8" style="width: 100%;" />
-                  </n-form-item>
-                </n-gi>
-                <n-gi :span="5">
-                  <div class="days">
-                    <button
-                      v-for="(day, index) in daysOptions"
-                      :key="index"
-                      :class="['day-button', { active: daysValue.includes(day) }]"
-                      type="button"
-                      @click="toggleDay(day)"
-                    >
-                      {{ day }}
-                    </button>
-                  </div>
-                </n-gi>
-              </n-grid>
-    
-              <div v-if="formValue.tipe === 'Privat/Kelompok'">
-                <n-divider class="divider" />
-                <n-space vertical size="large">
-                  <n-h2 style="font-weight: 600;">Biaya</n-h2>
-                  <n-grid :x-gap="24" :y-gap="20" :cols="2">
-                    <n-gi>
-                      <n-form-item label="Privat">
-                        <n-input-number v-model:value="formValue.biaya.privat" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
-                      </n-form-item>
-                    </n-gi>
-                    <n-gi>
-                      <n-form-item label="Kelompok 2 siswa">
-                        <n-input-number v-model:value="formValue.biaya.kelompok2" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
-                      </n-form-item>
-                    </n-gi>
-                    <n-gi>
-                      <n-form-item label="Kelompok 3 siswa">
-                        <n-input-number v-model:value="formValue.biaya.kelompok3" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
-                      </n-form-item>
-                    </n-gi>
-                    <n-gi>
-                      <n-form-item label="Kelompok 4 siswa">
-                        <n-input-number v-model:value="formValue.biaya.kelompok4" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
-                      </n-form-item>
-                    </n-gi>
-                    <n-gi>
-                      <n-form-item label="Kelompok 5 siswa">
-                        <n-input-number v-model:value="formValue.biaya.kelompok5" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
-                      </n-form-item>
-                    </n-gi>
-                    <n-gi>
-                      <n-form-item label="Diskon">
-                        <n-input-number v-model:value="formValue.diskon" placeholder="Please Input" style="width: 100%;">
-                           <template #suffix">%</template>
-                        </n-input-number>
-                      </n-form-item>
-                    </n-gi>
-                  </n-grid>
-                </n-space>
-              </div>
-              
-              <div v-else-if="formValue.tipe === 'Kelas'">
-                <n-divider class="divider" />
-                <n-space vertical size="large">
-                  <n-h2 style="font-weight: 600;">Detail Kelas</n-h2>
-                  <n-grid :x-gap="24" :y-gap="20" :cols="2">
-                    <n-gi>
-                      <n-form-item label="Maksimal Siswa">
-                        <n-input-number v-model:value="formValue.detailKelas.maksimalSiswa" placeholder="Please Input" style="width: 100%;" />
-                      </n-form-item>
-                    </n-gi>
-                    <n-gi>
-                      <n-form-item label="Tanggal Mulai">
-                        <n-date-picker v-model:value="formValue.detailKelas.tanggalMulai" type="date" style="width: 100%;" />
-                      </n-form-item>
-                    </n-gi>
-                    <n-gi :span="2">
-                      <n-form-item label="Per-anak">
-                        <n-input-number v-model:value="formValue.detailKelas.perAnak" placeholder="Please Input" style="width: 100%;">
-                          <template #prefix>Rp.</template>
-                        </n-input-number>
-                      </n-form-item>
-                    </n-gi>
-                  </n-grid>
-                </n-space>
-              </div>
-    
-            </n-space>
-          </n-form>
-          <n-divider class="divider" />
-          
-          <div class="catatan">
-            <h3 class="bodysb1">Catatan:</h3>
-            <ul style="padding-left: 20px; line-height: 1.6;">
-              <li>Paket Privat/Kelompok: Biaya siswa mengacu pada paket privat. Biaya Kelompok otomatis dibuat menjadi 80% biaya siswa/anak paket diatasnya. Contoh biaya per anak paket kelompok 3 siswa adalah 80% biaya anak privat dan biaya siswa/anak paket kelompok 5 siswa adalah 80% biaya siswa/anak paket kelompok 3 siswa.</li>
-              <li>Paket Kelas: Biaya siswa tipe program kelas disamaratakan tanpa melihat jumlah siswa.</li>
-              <li>Honor Tutor merupakan 70% dari biaya total program.</li>
-            </ul>
-          </div>
-
-          <n-divider class="divider" />
-    
-          <div class="button">
-        <butPrimerNormal
-          @click="handleValidateClick"
-          :loading="loading"
-          label="Buat Program"
-        />
-        <butSecondNormal
-          @click="handleBackClick"
-          label="Batal"
-        />
-      </div>
-    
-        </n-space>
-      </n-card>
-    </div>
-    
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -222,13 +33,20 @@ const formValue = ref({
   }
 });
 
+// Switch enable state
+const isPrivatEnabled = ref(false)
+const isKelompok2Enabled = ref(false)
+const isKelompok3Enabled = ref(false)
+const isKelompok4Enabled = ref(false)
+const isKelompok5Enabled = ref(false)
+
 const daysValue = ref([]);
 const tutorOptions = ref([]);
 
 async function fetchTutorOptions() {
   const token = localStorage.getItem('token');
   try {
-    const res = await fetch('/users/tutors/all', {
+    const res = await fetch('http://localhost:3000/users/tutors/all', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();
@@ -302,7 +120,7 @@ async function handleValidateClick() {
         { type: 'grup4', price: formValue.value.biaya.kelompok4, maxStudent: 4 },
         { type: 'grup5', price: formValue.value.biaya.kelompok5, maxStudent: 5 }
       ];
-      await fetch('/packages', {
+      await fetch('http://localhost:3000/packages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -316,7 +134,7 @@ async function handleValidateClick() {
       payload.startDate = formValue.value.detailKelas.tanggalMulai
         ? new Date(formValue.value.detailKelas.tanggalMulai).toISOString()
         : null;
-      await fetch('/packages/class', {
+      await fetch('http://localhost:3000/packages/class', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -334,6 +152,255 @@ async function handleValidateClick() {
   }
 }
 </script>
+
+<template>
+  <div class="add-container">
+    <div class="add-contents">
+      <n-card :bordered="false" size="huge" style="width: 100%; border-radius: 16px; margin: auto;">
+          <div class="headersb1">Tambah Program</div>
+        <n-divider class="divider" />
+        <n-space vertical size="large">
+          
+          <n-form ref="formRef" :model="formValue">
+            <n-space vertical size="large">
+    
+              <n-h2 style="font-weight: 600;">Detail Program</n-h2>
+              
+              <n-form-item label="Nama Program" path="namaProgram">
+                <n-input v-model:value="formValue.namaProgram" placeholder="Tuliskan nama program" />
+              </n-form-item>
+    
+              <n-form-item label="Area/lokasi" path="area">
+                <n-input v-model:value="formValue.area" placeholder="Semarang" />
+              </n-form-item>
+    
+              <n-grid :x-gap="24" :y-gap="0" :cols="2">
+                <n-gi>
+                  <n-form-item label="Jenjang" path="jenjang">
+                    <n-select v-model:value="formValue.jenjang" :options="jenjangOptions" placeholder="Please Select"/>
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="Tipe" path="tipe">
+                    <n-select v-model:value="formValue.tipe" :options="tipeOptions" placeholder="Please Select"/>
+                  </n-form-item>
+                </n-gi>
+              </n-grid>
+    
+              <n-grid :x-gap="24" :y-gap="0" :cols="3">
+                <n-gi>
+                  <n-form-item label="JAM" path="jam">
+                    <n-time-picker
+                      v-model:value="formValue.jam"
+                      style="width: 100%;"
+                      format="HH:mm"
+                      placeholder="Select Time"
+                    />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="Durasi per sesi" path="durasi">
+                    <n-select v-model:value="formValue.durasi" :options="durasiOptions" placeholder="Please Select" />
+                  </n-form-item>
+                </n-gi>
+                <n-gi>
+                  <n-form-item label="Jangka Waktu (Pertemuan)" path="jangkaWaktu">
+                    <n-input-number v-model:value="formValue.jangkaWaktu" placeholder="8" style="width: 100%;" />
+                  </n-form-item>
+                </n-gi>
+              </n-grid>
+              
+              <n-grid :x-gap="24" :y-gap="0" :cols="7" style="align-items: center;">
+                <n-gi :span="4">
+                  <div class="days">
+                    <button
+                      v-for="(day, index) in daysOptions"
+                      :key="index"
+                      :class="['day-button', { active: daysValue.includes(day) }]"
+                      type="button"
+                      @click="toggleDay(day)"
+                    >
+                      {{ day }}
+                    </button>
+                  </div>
+                </n-gi>
+                <n-gi :span="3">
+                  <n-form-item label="Tutor" path="tutor">
+                    <n-select v-model:value="formValue.tutor" :options="tutorOptions" placeholder="Please Select"style="width: 100%;"/>
+                  </n-form-item>
+                </n-gi>
+              </n-grid>
+    
+              <div v-if="formValue.tipe === 'Privat/Kelompok'">
+                <n-divider class="divider" />
+                <n-space vertical size="large">
+                  <div>
+                    <n-h2 style="font-weight: 600;">Biaya</n-h2>
+                    <p class="bodyr3">Hanya buka dan isi jenis program yang ingin dibuka saja.</p>
+                  </div>
+                  <n-grid :x-gap="24" :y-gap="20" :cols="2">
+                    <!-- Privat -->
+                    <n-gi>
+                      <n-form-item label="Privat">
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.privat"
+                            placeholder="Please Input"
+                            :disabled="!isPrivatEnabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isPrivatEnabled" size="small" />
+                        </n-space>
+                      </n-form-item>
+                    </n-gi>
+
+                    <!-- Kelompok 2 -->
+                    <n-gi>
+                      <n-form-item label="Kelompok 2 siswa">
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.kelompok2"
+                            placeholder="Please Input"
+                            :disabled="!isKelompok2Enabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isKelompok2Enabled" size="small" />
+                        </n-space>
+                      </n-form-item>
+                    </n-gi>
+
+                    <!-- Kelompok 3 -->
+                    <n-gi>
+                      <n-form-item label="Kelompok 3 siswa">
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.kelompok3"
+                            placeholder="Please Input"
+                            :disabled="!isKelompok3Enabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isKelompok3Enabled" size="small" />
+                        </n-space>
+                      </n-form-item>
+                    </n-gi>
+
+                    <!-- Kelompok 4 -->
+                    <n-gi>
+                      <n-form-item label="Kelompok 4 siswa">
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.kelompok4"
+                            placeholder="Please Input"
+                            :disabled="!isKelompok4Enabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isKelompok4Enabled" size="small" />
+                        </n-space>
+                      </n-form-item>
+                    </n-gi>
+
+                    <!-- Kelompok 5 -->
+                    <n-gi>
+                      <n-form-item label="Kelompok 5 siswa">
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.biaya.kelompok5"
+                            placeholder="Please Input"
+                            :disabled="!isKelompok5Enabled"
+                            style="width: 100%;"
+                          >
+                            <template #prefix>Rp.</template>
+                          </n-input-number>
+                          <n-switch v-model:value="isKelompok5Enabled" size="small" />
+                        </n-space>
+                      </n-form-item>
+                    </n-gi>
+
+                    <!-- Diskon -->
+                    <n-gi>
+                      <n-form-item label="Diskon">
+                        <n-space justify="space-between" align="center">
+                          <n-input-number
+                            v-model:value="formValue.diskon"
+                            placeholder="Please Input"
+                            style="width: 100%;"
+                          >
+                            <template #suffix>%</template>
+                          </n-input-number>
+                        </n-space>
+                      </n-form-item>
+                    </n-gi>
+                  </n-grid>
+                </n-space>
+              </div>
+              
+              <div v-else-if="formValue.tipe === 'Kelas'">
+                <n-divider class="divider" />
+                <n-space vertical size="large">
+                  <n-h2 style="font-weight: 600;">Detail Kelas</n-h2>
+                  <n-grid :x-gap="24" :y-gap="20" :cols="2">
+                    <n-gi>
+                      <n-form-item label="Maksimal Siswa">
+                        <n-input-number v-model:value="formValue.detailKelas.maksimalSiswa" placeholder="Please Input" style="width: 100%;" />
+                      </n-form-item>
+                    </n-gi>
+                    <n-gi>
+                      <n-form-item label="Tanggal Mulai">
+                        <n-date-picker v-model:value="formValue.detailKelas.tanggalMulai" type="date" style="width: 100%;" />
+                      </n-form-item>
+                    </n-gi>
+                    <n-gi :span="2">
+                      <n-form-item label="Per-anak">
+                        <n-input-number v-model:value="formValue.detailKelas.perAnak" placeholder="Please Input" style="width: 100%;">
+                          <template #prefix>Rp.</template>
+                        </n-input-number>
+                      </n-form-item>
+                    </n-gi>
+                  </n-grid>
+                </n-space>
+              </div>
+    
+            </n-space>
+          </n-form>
+          <n-divider class="divider" />
+          
+          <div class="catatan">
+            <h3 class="bodysb1">Catatan:</h3>
+            <ul style="padding-left: 20px; line-height: 1.6;">
+              <li>Komisi Tutor: Komisi tutor mengikuti komisi pada profile tutor, besaran komisi bisa diedit di profile tutor.</li>
+              <li>Paket Kelas: Biaya siswa tipe program kelas disamaratakan tanpa melihat jumlah siswa.</li>
+              <li>Paket Kelas: Lokasi kelas wajib diisi dengan lengkap</li>
+            </ul>
+          </div>
+
+          <n-divider class="divider" />
+    
+          <div class="button">
+        <butPrimerNormal
+          @click="handleValidateClick"
+          :loading="loading"
+          label="Buat Program"
+        />
+        <butSecondNormal
+          @click="handleBackClick"
+          label="Batal"
+        />
+      </div>
+    
+        </n-space>
+      </n-card>
+    </div>
+    
+  </div>
+</template>
 
 <style scoped>
 .n-h2, .n-h3 {
@@ -368,7 +435,7 @@ async function handleValidateClick() {
 
 .days {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .day-button {

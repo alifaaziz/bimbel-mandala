@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue'
 import butSecondSmall from '@/components/dirButton/butSecondSmall.vue'
 import butPrimerSmall from '@/components/dirButton/butPrimerSmall.vue'
+import Absensi from './Absensi.vue'
 
 const showRescheduleModal = ref(false)
 const rescheduleDate = ref('')
@@ -40,7 +41,7 @@ async function fetchScheduleDetail() {
     return
   }
   try {
-    const res = await fetch(`/schedules/${slug}`, {
+    const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -111,7 +112,7 @@ function closeRescheduleModal() {
       <div class="header-program">
         <img
           class="tutor-photo"
-            :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
+            :src="schedule.photo ? `http://localhost:3000/${schedule.photo}` : '/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">
@@ -183,6 +184,9 @@ function closeRescheduleModal() {
             <span class="value">: 08xxxxxxxxx</span>
           </div>
         </div>
+      </div>
+      <div class="detail-program">
+        <Absensi />
       </div>
     </div>
     <div v-else-if="isLoading" class="detail-content">

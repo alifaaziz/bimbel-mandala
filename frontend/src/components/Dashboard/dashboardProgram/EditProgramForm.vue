@@ -247,7 +247,7 @@ const handleApplyChanges = async (e) => {
         { type: 'grup4', price: formModel.value.costs.group4 },
         { type: 'grup5', price: formModel.value.costs.group5 }
       ];
-      await fetch(`/packages/${slug}`, {
+      await fetch(`http://localhost:3000/packages/${slug}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -261,7 +261,7 @@ const handleApplyChanges = async (e) => {
       payload.startDate = formModel.value.startDate
         ? new Date(formModel.value.startDate).toISOString()
         : null;
-      await fetch(`/packages/class/${slug}`, {
+      await fetch(`http://localhost:3000/packages/class/${slug}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -288,7 +288,7 @@ const handleCancelEdit = () => {
 async function fetchTutorOptions() {
   const token = localStorage.getItem('token');
   try {
-    const res = await fetch('/users/tutors/all', {
+    const res = await fetch('http://localhost:3000/users/tutors/all', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();
@@ -307,7 +307,7 @@ async function fetchPackageData() {
   const token = localStorage.getItem('token');
   if (!slug || !token) return;
   try {
-    const res = await fetch(`/packages/${slug}`, {
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();

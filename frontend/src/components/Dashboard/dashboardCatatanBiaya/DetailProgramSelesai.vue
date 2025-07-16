@@ -12,7 +12,7 @@ const classId = route.params.classId || route.params.id;
 
 const fetchDetail = async () => {
   const token = localStorage.getItem('token');
-  const res = await fetch(`/classes/${classId}`, {
+  const res = await fetch(`http://localhost:3000/classes/${classId}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   const result = await res.json();

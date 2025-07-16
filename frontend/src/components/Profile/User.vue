@@ -34,7 +34,7 @@ function formatTutorStatus(status) {
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
-  const res = await fetch('/users/me', {
+  const res = await fetch('http://localhost:3000/users/me', {
     headers: { Authorization: `Bearer ${token}` }
   })
   const result = await res.json()

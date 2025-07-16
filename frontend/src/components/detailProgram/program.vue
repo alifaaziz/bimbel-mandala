@@ -9,31 +9,34 @@ import CaraPendaftaran from './CaraPendaftaran.vue';
 import ProgramTerdaftar from './ProgramTerdaftar/ProgramTerdaftar.vue';
 
 const route = useRoute();
-const router = useRouter();
 const slug = route.params.id as string; // Ambil slug dari route params
 const programData = ref<any>(null);
 const isTutor = ref(false);
 const isRegisteredProgram = ref(false); // State untuk mengecek apakah program terdaftar
+const isKelasType = ref(false);
 
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token');
 
-    const res = await fetch(`/packages/${slug}`, {
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
     const program = await res.json();
     programData.value = program;
 
-    if (program.status === 'aktif') {
-      const hasKelas = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
-      if (!hasKelas) {
-        return;
-      }
-    }
+    isKelasType.value = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
 
-    const userRes = await fetch('/users/me', {
+    // if (program.status === 'aktif') {
+    //   const hasKelas = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
+    //   isKelasType.value = hasKelas;
+    //   if (!hasKelas) {
+    //     return;
+    //   }
+    // }
+
+    const userRes = await fetch('http://localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (userRes.ok) {
@@ -41,7 +44,7 @@ onMounted(async () => {
       isTutor.value = data.data?.role === 'tutor';
     }
 
-    const classesRes = await fetch('/classes/my', {
+    const classesRes = await fetch('http://localhost:3000/classes/my', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (classesRes.ok) {
@@ -56,7 +59,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <ProgramTerdaftar v-if="isRegisteredProgram" />
     
     <template v-else>
@@ -66,7 +69,7 @@ onMounted(async () => {
           <HonorTutor />
         </div>
         <div v-else>
-          <BiayaSiswa />
+          <BiayaSiswa v-if="!isKelasType" />
         </div>
         <InfoProgram />
         <CaraPendaftaran />
@@ -76,6 +79,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
 .container-detail {
   display: flex;
   align-items: flex-start;

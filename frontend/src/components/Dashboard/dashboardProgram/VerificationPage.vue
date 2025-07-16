@@ -32,7 +32,7 @@ onMounted(async () => {
   const id = route.params.id;
   if (!id || !token) return;
   try {
-    const res = await fetch(`/orders/${id}`, {
+    const res = await fetch(`http://localhost:3000/orders/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();
@@ -64,7 +64,7 @@ async function handleValidateClick() {
 
   loading.value = true;
   try {
-    await fetch('/orders/status', {
+    await fetch('http://localhost:3000/orders/status', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

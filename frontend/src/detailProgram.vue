@@ -4,7 +4,7 @@ import navbarDetail from './components/detailProgram/navbarDetail.vue'
 
 <template>
   <div>
-    <navbarDetail />
+    <!-- <navbarDetail /> -->
     <div>
       <router-view />
     </div>

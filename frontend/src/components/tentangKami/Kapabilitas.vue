@@ -10,7 +10,7 @@ const dataKababilitas = ref({
 
 onMounted(async () => {
     try {
-        const res = await fetch('/users/statistics');
+        const res = await fetch('http://localhost:3000/users/statistics');
         const result = await res.json();
         const stats = result.data || {};
         dataKababilitas.value = {

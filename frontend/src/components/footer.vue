@@ -6,25 +6,17 @@
       <div class="footer-container">
         <!-- Contact Section -->
         <div class="footer-section">
-          <h4>About us</h4>
+          <h4>Tentang Kami</h4>
           <p class="about">Bimbel Mandala adalah bimbingan belajar terpercaya, meraih prestasi akademik melalui metode belajar yang interaktif dan menyenangkan.</p>
-        </div>
-
-        <div class="footer-section">
-          <h4>Contact us</h4>
-          <p>info@bimbelmandala.id</p>
-          <p>+62 855-4000-0900</p>
-          <p>Jl.Taman Sari Hill Residen. Blok B01. No. 10 Kel. Mangunharjo, Kec Tembalang. Kota Semarang</p>
         </div>
 
         <!-- About Section -->
         <div class="footer-section">
           <h4>Bimbel Mandala</h4>
           <ul>
-            <li><a href="#">Tentang Kami</a></li>
-            <li><a href="#">Profile Tutor</a></li>
+            <li><a href="/tentangkami">Tentang Kami</a></li>
+            <li><a href="/tentangkami">Profile Tutor</a></li>
             <li><a href="/pendaftarantutor">Karir</a></li>
-            <li><a href="#">Galeri</a></li>
           </ul>
         </div>
 
@@ -32,11 +24,26 @@
         <div class="footer-section">
           <h4>Layanan</h4>
           <ul>
-            <li><a href="#">Informasi</a></li>
-            <li><a href="#">Saran</a></li>
-            <li><a href="#">Acara</a></li>
+            <li><a href="/tentangkami">Informasi</a></li>
+            <!-- <li><a href="#">Saran</a></li>
+            <li><a href="#">Acara</a></li> -->
+            <p>info@bimbelmandala.id</p>
+            <p>+62 855-4000-0900</p>
           </ul>
         </div>
+
+        <div class="footer-section">
+          <!-- <h4>Contact us</h4> -->
+          <h4>Temukan Kami</h4>
+          <p>Jl.Taman Sari Hill Residen. Blok B01. No. 10 Kel. Mangunharjo, Kec Tembalang. Kota Semarang</p>
+          <iframe 
+          style="border-radius: 8px;"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3959.7511531449627!2d110.45863817574087!3d-7.038505268964127!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e70894e88615ef1%3A0x40991ad781fce8e9!2sCampus%20World!5e0!3m2!1sid!2sid!4v1750736272560!5m2!1sid!2sid" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+
       </div>
     </div>
 

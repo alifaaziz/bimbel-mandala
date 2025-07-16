@@ -11,7 +11,7 @@ onMounted(async () => {
   window.scrollTo(0, 0);
   const token = localStorage.getItem('token');
   if (!token) return;
-  const res = await fetch('/users/me', {
+  const res = await fetch('http://localhost:3000/users/me', {
     headers: {
       'Authorization': `Bearer ${token}`
     }
