@@ -73,7 +73,7 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Token tidak ditemukan. Silakan login kembali.');
     const response = await fetch(
-      `/schedules/closest?page=${requestedPage}&limit=${limit.value}&search=${encodeURIComponent(searchText.value)}`,
+      `http://localhost:3000/salaries/recap?search=${encodeURIComponent(searchText.value)}`,
       {
         headers: {
           'Authorization': `Bearer ${token}`,
