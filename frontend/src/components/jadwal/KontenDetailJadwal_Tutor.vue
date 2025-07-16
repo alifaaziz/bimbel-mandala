@@ -25,7 +25,7 @@ onMounted(async () => {
   if (!token) return
 
   const slug = route.params.slug
-  const res = await fetch(`/schedules/${slug}`, {
+  const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -183,7 +183,7 @@ async function saveEditInfo() {
     return;
   }
 
-  const res = await fetch(`/schedules/${schedule.value.id}`, {
+  const res = await fetch(`http://localhost:3000/schedules/${schedule.value.id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

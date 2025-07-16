@@ -192,7 +192,7 @@ onMounted(async () => {
   const id = route.params.id;
   const token = localStorage.getItem("token");
   try {
-    const res = await fetch(`/apply/${id}`, {
+    const res = await fetch(`http://localhost:3000/apply/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const { data } = await res.json();
@@ -308,7 +308,7 @@ async function handleReject() {
   const token = localStorage.getItem("token");
   if (!id) return;
   try {
-    const res = await fetch(`/apply/reject/${id}`, {
+    const res = await fetch(`http://localhost:3000/apply/reject/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -329,7 +329,7 @@ async function handleVerify() {
   if (!id) return;
   isLoading.value = true;
   try {
-    const res = await fetch(`/apply/verify/${id}`, {
+    const res = await fetch(`http://localhost:3000/apply/verify/${id}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` }
     });

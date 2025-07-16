@@ -42,7 +42,7 @@ onMounted(async () => {
   const id = route.params.id;
   const token = localStorage.getItem('token');
   // Fetch profile
-  const res = await fetch(`/users/${id}`, {
+  const res = await fetch(`http://localhost:3000/users/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   const { data } = await res.json();
@@ -65,7 +65,7 @@ onMounted(async () => {
   };
 
   // Fetch statistics
-  const statRes = await fetch(`/packages/statistics/${id}`, {
+  const statRes = await fetch(`http://localhost:3000/packages/statistics/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   if (statRes.ok) {
@@ -82,7 +82,7 @@ const handleDelete = async () => {
   }
   if (!confirm(`Yakin hapus tutor "${tutorProfile.value.name}"?`)) return;
   try {
-    const res = await fetch(`/users/${id}`, {
+    const res = await fetch(`http://localhost:3000/users/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

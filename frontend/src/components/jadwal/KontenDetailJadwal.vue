@@ -17,7 +17,7 @@ onMounted(async () => {
   if (!token) return
 
   const slug = route.params.slug
-  const res = await fetch(`/schedules/${slug}`, {
+  const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
