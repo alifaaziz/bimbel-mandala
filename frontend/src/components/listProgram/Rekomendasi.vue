@@ -12,7 +12,7 @@ const router = useRouter();
 onMounted(async () => {
   const token = localStorage.getItem('token');
   try {
-    const res = await fetch('/packages/recommendations', {
+    const res = await fetch('localhost:3000/packages/recommendations', {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {

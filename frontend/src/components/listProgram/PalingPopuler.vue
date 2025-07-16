@@ -9,7 +9,7 @@ const router = useRouter();
 
 onMounted(async () => {
   try {
-    const res = await fetch('/packages/populer');
+    const res = await fetch('localhost:3000/packages/populer');
     const data = await res.json();
     limitedPrograms.value = data.slice(0, 4);
   } catch (err) {

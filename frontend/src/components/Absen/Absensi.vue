@@ -18,7 +18,7 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('/schedules', {
+    const res = await fetch('localhost:3000/schedules', {
       headers: {
         Authorization: `Bearer ${token}`
       }

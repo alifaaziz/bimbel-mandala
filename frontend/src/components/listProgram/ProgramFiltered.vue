@@ -33,7 +33,7 @@ async function fetchUserRole() {
   if (!token) return;
 
   try {
-    const res = await fetch('/users/me', {
+    const res = await fetch('localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -56,7 +56,7 @@ async function fetchData() {
   if (isTutor.value) {
     // Jika pengguna adalah tutor, gunakan endpoint /packages/my
     try {
-      const res = await fetch('/packages/my', {
+      const res = await fetch('localhost:3000/packages/my', {
         headers: { Authorization: `Bearer ${token}` }
       });
 

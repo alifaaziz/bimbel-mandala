@@ -54,7 +54,7 @@ export default defineComponent({
     onMounted(async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('/schedules', {
+        const res = await fetch('localhost:3000/schedules', {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         const result = await res.json();

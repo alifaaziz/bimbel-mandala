@@ -23,7 +23,7 @@ onMounted(async () => {
     programData.value = await res.json();
 
     // Cek role user
-    const userRes = await fetch('/users/me', {
+    const userRes = await fetch('localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (userRes.ok) {
@@ -116,7 +116,7 @@ async function handleConfirm() {
   };
 
   try {
-    const res = await fetch('/orders', {
+    const res = await fetch('localhost:3000/orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

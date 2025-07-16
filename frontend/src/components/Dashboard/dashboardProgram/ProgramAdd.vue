@@ -228,7 +228,7 @@ const tutorOptions = ref([]);
 async function fetchTutorOptions() {
   const token = localStorage.getItem('token');
   try {
-    const res = await fetch('/users/tutors/all', {
+    const res = await fetch('localhost:3000/users/tutors/all', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();
@@ -302,7 +302,7 @@ async function handleValidateClick() {
         { type: 'grup4', price: formValue.value.biaya.kelompok4, maxStudent: 4 },
         { type: 'grup5', price: formValue.value.biaya.kelompok5, maxStudent: 5 }
       ];
-      await fetch('/packages', {
+      await fetch('localhost:3000/packages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -316,7 +316,7 @@ async function handleValidateClick() {
       payload.startDate = formValue.value.detailKelas.tanggalMulai
         ? new Date(formValue.value.detailKelas.tanggalMulai).toISOString()
         : null;
-      await fetch('/packages/class', {
+      await fetch('localhost:3000/packages/class', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

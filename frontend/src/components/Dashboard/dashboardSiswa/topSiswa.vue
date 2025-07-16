@@ -30,7 +30,7 @@ const topStudents = ref([]);
 async function fetchTopStudents() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('/users/students', {
+    const res = await fetch('localhost:3000/users/students', {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

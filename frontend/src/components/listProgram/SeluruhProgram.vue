@@ -32,7 +32,7 @@ function handlePageChange(page) {
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (token) {
-    const res = await fetch('/users/me', {
+    const res = await fetch('localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
@@ -41,7 +41,7 @@ onMounted(async () => {
       if (isTutor.value) {
         title.value = 'Program Terbuka';
         try {
-          const myProgramsRes = await fetch('/packages/my', {
+          const myProgramsRes = await fetch('localhost:3000/packages/my', {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (myProgramsRes.ok) {

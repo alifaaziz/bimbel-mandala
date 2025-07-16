@@ -14,7 +14,7 @@ onMounted(async () => {
   // Ambil role user dari API
   const token = localStorage.getItem('token');
   if (token) {
-    const res = await fetch('/users/me', {
+    const res = await fetch('localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
@@ -23,7 +23,7 @@ onMounted(async () => {
       if (isTutor.value) {
         title.value = 'Terbuka';
         try {
-          const myProgramsRes = await fetch('/packages/my', {
+          const myProgramsRes = await fetch('localhost:3000/packages/my', {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (myProgramsRes.ok) {
@@ -42,7 +42,7 @@ onMounted(async () => {
   // Fetch program populer jika bukan tutor
   if (!isTutor.value) {
     try {
-      const res = await fetch('/packages/populer');
+      const res = await fetch('localhost:3000/packages/populer');
       const data = await res.json();
       limitedPrograms.value = data.slice(0, 2);
     } catch (err) {

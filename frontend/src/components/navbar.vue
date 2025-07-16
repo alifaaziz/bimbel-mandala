@@ -110,7 +110,7 @@ const closeNotifications = (event) => {
 const markAllNotificationsRead = async () => {
   try {
     const token = localStorage.getItem('token');
-    await fetch('/notification', {
+    await fetch('localhost:3000/notification', {
       method: 'POST',
       headers: {
         'Authorization': token ? `Bearer ${token}` : '',
@@ -138,7 +138,7 @@ onMounted(async () => {
 
   const token = localStorage.getItem('token')
   if (!token) return
-  const res = await fetch('/users/me', {
+  const res = await fetch('localhost:3000/users/me', {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
 async function fetchNotifications() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('/notification', {
+    const res = await fetch('localhost:3000/notification', {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     const result = await res.json();

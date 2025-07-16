@@ -19,7 +19,7 @@ onMounted(async () => {
     programData.value = await res.json();
 
     // Cek role user
-    const userRes = await fetch('/users/me', {
+    const userRes = await fetch('localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (userRes.ok) {

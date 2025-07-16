@@ -7,7 +7,7 @@ const displayedTutors = ref([]);
 
 onMounted(async () => {
   try {
-    const res = await fetch('/users/tutors/');
+    const res = await fetch('localhost:3000/users/tutors/');
     const json = await res.json();
     displayedTutors.value = json.data.slice(0, 4);
   } catch (e) {

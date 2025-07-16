@@ -6,7 +6,7 @@ const tutors = ref([]);
 
 const fetchTutors = async () => {
   try {
-    const response = await fetch('/users/tutors'); 
+    const response = await fetch('localhost:3000/users/tutors'); 
     const data = await response.json();
     tutors.value = data.data;
   } catch (error) {

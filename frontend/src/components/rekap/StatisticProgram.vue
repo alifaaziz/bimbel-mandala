@@ -11,7 +11,7 @@ const isTutor = ref(false)
 onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return
-  const res = await fetch('/packages/statistics/my', {
+  const res = await fetch('localhost:3000/packages/statistics/my', {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await res.json()

@@ -40,7 +40,7 @@ function formatJam(dateStr) {
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (!token) return;
-  const res = await fetch('/schedules', {
+  const res = await fetch('localhost:3000/schedules', {
     headers: { Authorization: `Bearer ${token}` }
   });
   if (res.ok) {

@@ -33,7 +33,7 @@ onMounted(async () => {
       }
     }
 
-    const userRes = await fetch('/users/me', {
+    const userRes = await fetch('localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (userRes.ok) {
@@ -41,7 +41,7 @@ onMounted(async () => {
       isTutor.value = data.data?.role === 'tutor';
     }
 
-    const classesRes = await fetch('/classes/my', {
+    const classesRes = await fetch('localhost:3000/classes/my', {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (classesRes.ok) {

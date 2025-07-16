@@ -20,7 +20,7 @@ const unreadCount = computed(() => notifications.value.filter(n => !n.read).leng
 async function fetchNotifications() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('/notification', {
+    const res = await fetch('localhost:3000/notification', {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     const result = await res.json();

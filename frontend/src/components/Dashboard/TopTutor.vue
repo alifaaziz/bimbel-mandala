@@ -31,7 +31,7 @@ export default {
         if (!token) {
           throw new Error('Token tidak ditemukan. Silakan login kembali.');
         }
-        const response = await fetch('/users/tutors', {
+        const response = await fetch('localhost:3000/users/tutors', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

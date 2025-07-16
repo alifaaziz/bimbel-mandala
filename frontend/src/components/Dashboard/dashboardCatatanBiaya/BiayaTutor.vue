@@ -89,7 +89,7 @@ async function updatePaymentStatus(value) {
   const status = value ? 'terbayar' : 'pending';
 
   try {
-    const res = await fetch('/salaries', {
+    const res = await fetch('localhost:3000/salaries', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
