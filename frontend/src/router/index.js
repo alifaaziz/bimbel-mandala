@@ -60,6 +60,8 @@ import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBi
 import DashboardBiaya from '@/components/Dashboard/dashboardCatatanBiaya/DashboardBiaya.vue';
 import DetailProgramSelesai from '@/components/Dashboard/dashboardCatatanBiaya/DetailProgramSelesai.vue';
 
+import MetodePembayaran from '@/components/Dashboard/dashboardPembayaran/MetodePembayaran.vue';
+
 import Error404 from '@/components/error404.vue';
 import Error403 from '@/components/error403.vue';
 
@@ -329,6 +331,11 @@ const routes = [
           },
         ]
       },
+      {
+        path: 'metodePembayaran',
+        name: 'MetodePembayaran',
+        component: MetodePembayaran
+      }
     ]
   }
 ]

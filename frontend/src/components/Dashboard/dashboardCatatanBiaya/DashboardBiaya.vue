@@ -38,7 +38,6 @@
 
       <n-space vertical :size="16">
         <h2 class="headlineb2">Program Selesai</h2>
-         
         <div class="search-container">
       <n-input
       v-model:value="searchTerm"
