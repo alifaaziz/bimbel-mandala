@@ -86,9 +86,9 @@ const removeMethod = (id) => {
     <n-modal v-model:show="showModal" title="Tambah Metode Pembayaran" preset="dialog">
       <div style="display: flex; flex-direction: column; gap: 1rem;">
         <n-select v-model:value="newPayment.type" :options="typeOptions" placeholder="Pilih Tipe"/>
-        <n-input v-model:value="newPayment.name" placeholder="Nama Bank / E-Wallet"/>
-        <n-input v-model:value="newPayment.accountNumber" placeholder="Nomor Rekening / HP"/>
-        <n-input v-model:value="newPayment.accountName" placeholder="Nama Pemilik"/>
+        <n-input type="text" v-model:value="newPayment.name" placeholder="Nama Bank / E-Wallet"/>
+        <n-input-number v-model:value="newPayment.accountNumber" placeholder="Nomor Rekening / HP"/>
+        <n-input type="text" v-model:value="newPayment.accountName" placeholder="Nama Pemilik"/>
         <n-button type="primary" block @click="addPaymentMethod">Simpan</n-button>
       </div>
     </n-modal>

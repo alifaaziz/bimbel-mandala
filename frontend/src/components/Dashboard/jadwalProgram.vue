@@ -4,6 +4,7 @@
 
     <div class="search-container">
       <n-input
+        type="text"
         round
         size="large"
         placeholder="Cari jadwal program bimbel...">

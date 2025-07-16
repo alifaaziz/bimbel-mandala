@@ -4,6 +4,7 @@
     <div class="search-tambah">
       <div class="search-container">
         <n-input
+        type="text"
         v-model:value="searchText"
         round
         size="large"
