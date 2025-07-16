@@ -79,8 +79,8 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
-      }
-    );
+      }
+    );
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     scheduleItems.value = result.data.data.map(item => ({

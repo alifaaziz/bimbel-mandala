@@ -87,6 +87,10 @@ function goToSignup() {
   emit('toggle-form')
 }
 
+function goToTutorSignup() {
+  router.push('/pendaftarantutor')
+} 
+
 function handleForgotPassword() {
   router.push('/resetpassword')
 }
@@ -171,6 +175,7 @@ function handleGoogleLogin() {
           Daftar disini
         </button>
       </p>
+
     </div>
   </div>
 </template>
