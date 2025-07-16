@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PaymentController } from '../controllers/payment.js';
 import { AuthMiddleware } from '../middlewares/auth.js';
+import { PaymentValidationMiddleware } from '../middlewares/validation/payment.js';
 
 export default (app) => {
   const router = Router();
@@ -11,6 +12,7 @@ export default (app) => {
     '/',
     AuthMiddleware.isAuthorized,
     AuthMiddleware.hasRole('admin'),
+    PaymentValidationMiddleware.isValidCreatePaymentPayload,
     PaymentController.createPayment
   );
 
@@ -24,6 +26,7 @@ export default (app) => {
     '/:id',
     AuthMiddleware.isAuthorized,
     AuthMiddleware.hasRole('admin'),
+    PaymentValidationMiddleware.isValidUpdatePaymentPayload,
     PaymentController.updatePayment
   );
 
