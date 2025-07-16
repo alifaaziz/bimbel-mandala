@@ -98,8 +98,6 @@ async function createAttendance({ scheduleId, userId, status, reason = null }) {
     throw new Error('Attendance can only be done once');
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-
   const schedule = await prisma.schedule.findUnique({
     where: { id: scheduleId },
     include: {
@@ -111,31 +109,33 @@ async function createAttendance({ scheduleId, userId, status, reason = null }) {
     throw new Error('Schedule not found');
   }
 
-  const today = new Date();
-  const scheduleDate = new Date(schedule.date);
-  if (
-    scheduleDate.getFullYear() !== today.getFullYear() ||
-    scheduleDate.getMonth() !== today.getMonth() ||
-    scheduleDate.getDate() !== today.getDate()
-  ) {
-    throw new Error('Attendance can only be done on the schedule date');
-  }
+  const now = new Date();
+  now.setHours(now.getHours() + 7);
 
-  // if (user.role === 'siswa' && status === 'masuk') {
-  //   const tutorId = schedule.class.tutor?.id;
-  //   if (tutorId) {
-  //     const tutorAttendance = await prisma.attendance.findFirst({
-  //       where: {
-  //         scheduleId,
-  //         userId: tutorId,
-  //         status: 'masuk'
-  //       }
-  //     });
-  //     if (!tutorAttendance) {
-  //       throw new Error('Tutors must take attendance first');
-  //     }
-  //   }
-  // }
+  const scheduleDate = new Date(schedule.date);
+
+  if (status === 'izin') {
+    const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const scheduleDateOnly = new Date(scheduleDate.getFullYear(), scheduleDate.getMonth(), scheduleDate.getDate());
+
+    if (nowDate > scheduleDateOnly) {
+      throw new Error('Attendance can only be made before or on the scheduled date.');
+    }
+  } else {
+    const diffMs = scheduleDate - now;
+    const diffMinutes = diffMs / (1000 * 60);
+    if (diffMinutes > 60) {
+      throw new Error('Attendance can only be done within 1 hour before the schedule starts');
+    }
+
+    if (
+      scheduleDate.getFullYear() !== now.getFullYear() ||
+      scheduleDate.getMonth() !== now.getMonth() ||
+      scheduleDate.getDate() !== now.getDate()
+    ) {
+      throw new Error('Attendance can only be done on the schedule date');
+    }
+  }
 
   const attendance = await prisma.attendance.create({
     data: {
@@ -584,6 +584,13 @@ async function createMasukNotification({ scheduleId, userId }) {
   }
 
   else if (tutor && userId === tutor.id) {
+    const jadwalMulai = new Date(schedule.date);
+    const now = new Date();
+    now.setHours(now.getHours() + 7);
+
+    const diffMs = now - jadwalMulai;
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
     for (const siswa of siswaList) {
       await prisma.notification.create({
         data: {
@@ -594,14 +601,26 @@ async function createMasukNotification({ scheduleId, userId }) {
         }
       });
     }
-    await prisma.notification.create({
-      data: {
-        userId: tutor.id,
-        type: "Absensi",
-        description: `<strong>Anda</strong> melakukan absen masuk pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong>`,
-        photo: tutorPhoto
-      }
-    });
+    
+    if (diffMinutes > 15) {
+      await prisma.notification.create({
+        data: {
+          userId: tutor.id,
+          type: "Keterlambatan",
+          description: `<strong>Anda</strong> terlambat absen masuk pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong> (${diffMinutes} menit setelah jadwal)`,
+          photo: tutorPhoto
+        }
+      });
+    } else {
+      await prisma.notification.create({
+        data: {
+          userId: tutor.id,
+          type: "Absensi",
+          description: `<strong>Anda</strong> melakukan absen masuk pada <strong>${bimbelPackage.name} ${bimbelPackage.level} #${classCode}</strong>`,
+          photo: tutorPhoto
+        }
+      });
+    }
   }
 }
 
@@ -772,6 +791,69 @@ async function alertAttendance(classId) {
   return alerts;
 }
 
+/**
+ * Get attendance summary by schedule slug.
+ * @param {string} slug
+ * @returns {Promise<Array>} Array of attendance summary
+ */
+async function getAttendanceBySlug(slug) {
+  const schedule = await prisma.schedule.findUnique({
+    where: { slug },
+    include: {
+      class: {
+        include: {
+          tutor: true,
+          studentClasses: { include: { user: true } }
+        }
+      },
+      attendances: true
+    }
+  });
+
+  if (!schedule) throw new Error('Schedule not found');
+
+  const scheduleDate = new Date(schedule.date);
+  const tutorId = schedule.class.tutor?.id;
+  const siswaList = schedule.class.studentClasses.map(sc => sc.user);
+
+  const users = [
+    ...(tutorId ? [schedule.class.tutor] : []),
+    ...siswaList
+  ];
+
+  const summary = users
+    .map(user => {
+      const att = schedule.attendances.find(a => a.userId === user.id);
+      if (!att) return null;
+
+      let status = att.status;
+      let jamAbsen = att.createdAt
+        ? new Date(att.createdAt).toISOString().slice(11, 16)
+        : null;
+      let reason = att.reason || null;
+
+      if (tutorId && user.id === tutorId && att.status === 'masuk' && att.createdAt) {
+        const attendanceDate = new Date(att.createdAt);
+        const diffMs = attendanceDate - scheduleDate;
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        if (diffMinutes > 15) {
+          status = 'terlambat';
+          reason = `Tutor terlambat ${diffMinutes} menit`;
+        }
+      }
+
+      return {
+        name: user.name,
+        jamAbsen,
+        status,
+        reason
+      };
+    })
+    .filter(item => item !== null); // hanya yang sudah absen
+
+  return summary;
+}
+
 export const AttendanceService = {
   createAttendance,
   markAlphaForMissedSchedules,
@@ -781,4 +863,5 @@ export const AttendanceService = {
   createMasukNotification,
   createSalaryIfLastAttendance,
   alertAttendance,
+  getAttendanceBySlug,
 };
