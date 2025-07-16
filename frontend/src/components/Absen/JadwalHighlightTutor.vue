@@ -26,6 +26,7 @@ function statusLabel(status) {
     case "masuk": return "Masuk";
     case "terjadwal": return "Terjadwal";
     case "jadwal_ulang": return "Jadwal Ulang";
+    case "terlambat": return "Terlambat";
     case "izin": return "Izin";
     default: return status;
   }

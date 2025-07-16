@@ -148,22 +148,14 @@ function getTutorName(tutor) {
  */
 async function getMyClass(userId, role) {
     if (role === 'tutor') {
-        // Untuk tutor: ambil class di mana tutorId = userId
+        // Untuk tutor
         const classes = await prisma.class.findMany({
             where: { tutorId: userId },
             include: {
                 order: {
                     include: {
                         groupType: { select: { type: true } },
-                        bimbelPackage: {
-                            include: {
-                                packageDay: {
-                                    select: {
-                                        day: { select: { daysName: true } }
-                                    }
-                                }
-                            }
-                        }
+                        bimbelPackage: { select: { name: true, level: true, slug: true, time: true, duration: true, days: true } }
                     }
                 },
                 tutor: {
@@ -178,19 +170,10 @@ async function getMyClass(userId, role) {
         return classes.map(cls => {
             const bimbelPackage = cls.order?.bimbelPackage;
             const groupType = cls.order?.groupType;
-            const packageDays = bimbelPackage?.packageDay;
-
             const tutorName = getTutorName(cls.tutor);
-
-            const programName = bimbelPackage
-                ? `${bimbelPackage.name} ${bimbelPackage.level}`
-                : null;
-
+            const programName = bimbelPackage ? `${bimbelPackage.name} ${bimbelPackage.level}` : null;
             const slug = bimbelPackage?.slug || null;
-
-            const days = packageDays
-                ? packageDays.map(day => day.day.daysName).join(', ')
-                : null;
+            const days = bimbelPackage?.days ? JSON.parse(bimbelPackage.days).join(', ') : null;
 
             return {
                 status: cls.status,
@@ -205,7 +188,7 @@ async function getMyClass(userId, role) {
             };
         });
     } else {
-        // Untuk siswa: ambil dari studentClass
+        // Untuk siswa
         const studentClasses = await prisma.studentClass.findMany({
             where: { userId },
             include: {
@@ -214,15 +197,7 @@ async function getMyClass(userId, role) {
                         order: {
                             include: {
                                 groupType: { select: { type: true } },
-                                bimbelPackage: {
-                                    include: {
-                                        packageDay: {
-                                            select: {
-                                                day: { select: { daysName: true } }
-                                            }
-                                        }
-                                    }
-                                }
+                                bimbelPackage: { select: { name: true, level: true, slug: true, time: true, duration: true, days: true } }
                             }
                         },
                         tutor: {
@@ -240,19 +215,10 @@ async function getMyClass(userId, role) {
             const cls = studentClass.class;
             const bimbelPackage = cls.order?.bimbelPackage;
             const groupType = cls.order?.groupType;
-            const packageDays = bimbelPackage?.packageDay;
-
             const tutorName = getTutorName(cls.tutor);
-
-            const programName = bimbelPackage
-                ? `${bimbelPackage.name} ${bimbelPackage.level}`
-                : null;
-
+            const programName = bimbelPackage ? `${bimbelPackage.name} ${bimbelPackage.level}` : null;
             const slug = bimbelPackage?.slug || null;
-
-            const days = packageDays
-                ? packageDays.map(day => day.day.daysName).join(', ')
-                : null;
+            const days = bimbelPackage?.days ? JSON.parse(bimbelPackage.days).join(', ') : null;
 
             return {
                 status: cls.status,
@@ -321,9 +287,7 @@ async function getStudentClassesByUserId(userId) {
                 select: {
                     status: true,
                     code: true,
-                    tutor: {
-                        select: { name: true }
-                    },
+                    tutor: { select: { name: true } },
                     order: {
                         select: {
                             groupType: { select: { type: true } },
@@ -333,11 +297,7 @@ async function getStudentClassesByUserId(userId) {
                                     level: true,
                                     time: true,
                                     duration: true,
-                                    packageDay: {
-                                        select: {
-                                            day: { select: { daysName: true } }
-                                        }
-                                    }
+                                    days: true 
                                 }
                             }
                         }
@@ -351,7 +311,6 @@ async function getStudentClassesByUserId(userId) {
         const cls = studentClass.class;
         const bimbelPackage = cls.order?.bimbelPackage;
         const groupType = cls.order?.groupType;
-        const packageDays = bimbelPackage?.packageDay;
 
         return {
             programName: bimbelPackage?.name || null,
@@ -359,7 +318,7 @@ async function getStudentClassesByUserId(userId) {
             tutorName: cls.tutor?.name || null,
             status: cls.status,
             groupType: groupType?.type || null,
-            days: packageDays ? packageDays.map(day => day.day.daysName).join(', ') : null,
+            days: bimbelPackage?.days ? JSON.parse(bimbelPackage.days).join(', ') : null, 
             time: bimbelPackage?.time || null,
             duration: bimbelPackage?.duration || null,
             code: cls.code
@@ -402,11 +361,7 @@ async function getClassById(classId) {
                                     tutors: { select: { photo: true, percent: true, phone: true } }
                                 }
                             },
-                            packageDay: {
-                                select: {
-                                    day: { select: { daysName: true } }
-                                }
-                            }
+                            days: true 
                         }
                     }
                 }
@@ -418,11 +373,10 @@ async function getClassById(classId) {
 
     const bimbelPackage = cls.order?.bimbelPackage;
     const groupType = cls.order?.groupType;
-    const packageDays = bimbelPackage?.packageDay;
 
     const price = Number(cls.order?.amount) || 0;
     const maxStudent = groupType?.maxStudent || 1;
-    const honor = price * bimbelPackage?.user?.tutors?.[0]?.percent / 100 || 0;
+    const honor = price * (bimbelPackage?.user?.tutors?.[0]?.percent || 0) / 100 || 0;
     const studentPrice = maxStudent ? price / maxStudent : 0;
     const students = cls.studentClasses.map(sc => sc.user.name).join(', ');
 
@@ -434,7 +388,7 @@ async function getClassById(classId) {
         tutorName: bimbelPackage?.user?.name || null,
         tutorPhoto: bimbelPackage?.user?.tutors?.[0]?.photo || null,
         phoneNumber: bimbelPackage?.user?.tutors?.[0]?.phone || null,
-        days: packageDays ? packageDays.map(day => day.day.daysName) : [],
+        days: bimbelPackage?.days ? JSON.parse(bimbelPackage.days) : [], 
         area: bimbelPackage?.area || null,
         time: bimbelPackage?.time || null,
         duration: bimbelPackage?.duration || null,

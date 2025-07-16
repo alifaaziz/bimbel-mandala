@@ -111,7 +111,7 @@ function closeRescheduleModal() {
       <div class="header-program">
         <img
           class="tutor-photo"
-            :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
+            :src="schedule.photo ? `http://localhost:3000/${schedule.photo}` : '/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">

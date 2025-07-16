@@ -206,7 +206,7 @@ async function saveEditInfo() {
   <div class="card-container" v-if="schedule">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
+      :src="schedule.photo ? `http://localhost:3000/${schedule.photo}` : '/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">

@@ -61,7 +61,7 @@ function formatRupiah(value) {
 onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return
-  const res = await fetch('/attendance/my', {
+  const res = await fetch('http://localhost:3000/attendance/my', {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await res.json()

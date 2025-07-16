@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { NCard } from 'naive-ui';
 import butSecondSmall from '../dirButton/butSecondSmall.vue';
@@ -32,7 +32,7 @@ function handlePageChange(page) {
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (token) {
-    const res = await fetch('/users/me', {
+    const res = await fetch('http://localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
@@ -41,7 +41,7 @@ onMounted(async () => {
       if (isTutor.value) {
         title.value = 'Program Terbuka';
         try {
-          const myProgramsRes = await fetch('/packages/my', {
+          const myProgramsRes = await fetch('http://localhost:3000/packages/my', {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (myProgramsRes.ok) {
@@ -100,7 +100,7 @@ function handleButton(slug) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo ? `${program.photo}` : '/Tutor_Default.png'" 
+              :src="program.photo ? `http://localhost:3000/${program.photo}` : '/Tutor_Default.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>

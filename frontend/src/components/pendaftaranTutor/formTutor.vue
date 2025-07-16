@@ -1,256 +1,241 @@
-<script>
-import { NButton } from 'naive-ui';
-import butPrimerHuge from '../dirButton/butPrimerHuge.vue';
-import butSecondHuge from '../dirButton/butSecondHuge.vue';
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import {
+  NForm, NFormItem, NInput, NSelect, useMessage
+} from 'naive-ui'
+import butPrimerHuge from '../dirButton/butPrimerHuge.vue'
+import butSecondHuge from '../dirButton/butSecondHuge.vue'
 
-export default {
-  components: {
-    NButton,
-    butPrimerHuge,
-    butSecondHuge,
-  },
-  data() {
-    return {
-      days: ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"],
-      selectedDays: [],
-      formData: {
-        nama: "",
-        tanggalLahir: "",
-        jenisKelamin: "",
-        foto: null,
-        email: "",
-        whatsapp: "",
-        universitas: "",
-        prodi: "",
-        status: "",
-        jenjang: "",
-        mapel: "",
-        deskripsi: "",
-      },
-      isSubmitting: false, // Untuk mencegah pengiriman ganda
-    };
-  },
-  methods: {
-    toggleDay(day) {
-      if (this.selectedDays.includes(day)) {
-        this.selectedDays = this.selectedDays.filter((d) => d !== day);
-      } else {
-        this.selectedDays.push(day);
-      }
-    },
-    async submitForm() {
-      if (this.isSubmitting) return; // Cegah pengiriman ganda
-      this.isSubmitting = true;
+const router = useRouter()
+const message = useMessage()
+const formRef = ref(null)
 
-      try {
-        // Validasi data
-        if (!this.formData.nama || !this.formData.email || !this.formData.tanggalLahir || !this.formData.jenisKelamin || !this.formData.foto) {
-          alert("Harap lengkapi semua data yang wajib diisi.");
-          this.isSubmitting = false;
-          return;
-        }
+const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
+const selectedDays = ref([])
 
-        // Buat payload
-        const payload = new FormData();
-        payload.append("name", this.formData.nama);
-        payload.append("email", this.formData.email);
-        payload.append("birthDate", new Date(this.formData.tanggalLahir).toISOString());
-        payload.append("gender", this.formData.jenisKelamin === "Laki-Laki" ? "Male" : "Female");
-        payload.append("phone", this.formData.whatsapp);
-        payload.append("subjects", this.formData.mapel);
-        payload.append("status", this.mapStatusToEnum(this.formData.status));
-        payload.append("major", this.formData.prodi);
-        payload.append("school", this.formData.universitas);
-        payload.append("teachLevel", this.formData.jenjang);
-        payload.append("description", this.formData.deskripsi);
-        payload.append("photo", this.formData.foto);
+const isSubmitting = ref(false)
 
-        // Kirim data ke server
-        const res = await fetch("/apply", {
-          method: "POST",
-          body: payload,
-        });
+const formData = ref({
+  nama: "",
+  tanggalLahir: "",
+  jenisKelamin: "",
+  foto: null,
+  email: "",
+  whatsapp: "",
+  universitas: "",
+  prodi: "",
+  status: "",
+  jenjang: "",
+  mapel: "",
+  deskripsi: ""
+})
 
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.message || "Gagal mendaftar sebagai tutor.");
-        }
+const rules = {
+  nama: { required: true, message: 'Nama wajib diisi', trigger: 'blur' },
+  tanggalLahir: { required: true, message: 'Tanggal lahir wajib diisi', trigger: 'blur' },
+  jenisKelamin: { required: true, message: 'Jenis kelamin wajib dipilih', trigger: 'change' },
+  email: { required: true, message: 'Email wajib diisi', trigger: 'blur' },
+  whatsapp: { required: true, message: 'Nomor WhatsApp wajib diisi', trigger: 'blur' },
+  universitas: { required: true, message: 'Universitas wajib diisi', trigger: 'blur' },
+  prodi: { required: true, message: 'Program studi wajib diisi', trigger: 'blur' },
+  status: { required: true, message: 'Status wajib dipilih', trigger: 'change' },
+  jenjang: { required: true, message: 'Jenjang wajib diisi', trigger: 'blur' },
+  mapel: { required: true, message: 'Mata pelajaran wajib diisi', trigger: 'blur' },
+}
 
-        alert("Pendaftaran berhasil! Kami akan menghubungi Anda segera.");
-        this.$router.push("/registersuccess");
-      } catch (err) {
-        console.error("Error:", err);
-        alert("Terjadi kesalahan saat mendaftar. Silakan coba lagi.");
-      } finally {
-        this.isSubmitting = false;
-      }
-    },
-    cancelForm() {
-      this.$router.push("/");
-    },
-    mapStatusToEnum(status) {
-      switch (status) {
-        case "Mahasiswa Semester 1-2":
-          return "TH1";
-        case "Mahasiswa Semester 3-4":
-          return "TH2";
-        case "Mahasiswa Semester 5-6":
-          return "TH3";
-        case "Mahasiswa Semester 7-8":
-          return "TH4";
-        case "Mahasiswa Semester >8":
-          return "TH5";
-        case "Sarjana S1":
-          return "S1";
-        case "Magister S2":
-          return "S2";
-        case "Doktor S3":
-          return "S3";
-        default:
-          return "";
-      }
-    },
-  },
-};
+const toggleDay = (day) => {
+  if (selectedDays.value.includes(day)) {
+    selectedDays.value = selectedDays.value.filter(d => d !== day)
+  } else {
+    selectedDays.value.push(day)
+  }
+}
+
+const mapStatusToEnum = (status) => {
+  switch (status) {
+    case "Mahasiswa Semester 1-2": return "TH1"
+    case "Mahasiswa Semester 3-4": return "TH2"
+    case "Mahasiswa Semester 5-6": return "TH3"
+    case "Mahasiswa Semester 7-8": return "TH4"
+    case "Mahasiswa Semester >8": return "TH5"
+    case "Sarjana S1": return "S1"
+    case "Magister S2": return "S2"
+    case "Doktor S3": return "S3"
+    default: return ""
+  }
+}
+
+const submitForm = async () => {
+  if (isSubmitting.value) return
+  isSubmitting.value = true
+
+  try {
+    await formRef.value?.validate()
+
+    if (!formData.value.foto) {
+      message.error("Foto wajib diunggah.")
+      isSubmitting.value = false
+      return
+    }
+
+    const payload = new FormData()
+    payload.append("name", formData.value.nama)
+    payload.append("email", formData.value.email)
+    payload.append("birthDate", new Date(formData.value.tanggalLahir).toISOString())
+    payload.append("gender", formData.value.jenisKelamin === "Laki-Laki" ? "Male" : "Female")
+    payload.append("phone", formData.value.whatsapp)
+    payload.append("subjects", formData.value.mapel)
+    payload.append("status", mapStatusToEnum(formData.value.status))
+    payload.append("major", formData.value.prodi)
+    payload.append("school", formData.value.universitas)
+    payload.append("teachLevel", formData.value.jenjang)
+    payload.append("description", formData.value.deskripsi)
+    payload.append("photo", formData.value.foto)
+
+    const res = await fetch("/apply", { method: "POST", body: payload })
+    if (!res.ok) throw new Error((await res.json()).message || "Gagal mendaftar sebagai tutor.")
+
+    message.success("Pendaftaran berhasil! Kami akan menghubungi Anda segera.")
+    router.push("/registersuccess")
+  } catch (err) {
+    console.error("Error:", err)
+    message.error("Terjadi kesalahan saat mendaftar. Silakan coba lagi.")
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+const cancelForm = () => {
+  router.push("/")
+}
 </script>
 
 <template>
   <div class="container-form">
-    <!-- sfc2: Header Tutor -->
     <div class="header-tutor">
       <h1 class="title title-header">Selamat Datang <br /> Calon Tutor Mandala</h1>
-      <p class="subtitle">
-        Silahkan mendaftar dan menjadi bagian dari Bimbel Mandala untuk memberikan
-        pengetahuan ke lebih banyak siswa.
-      </p>
+      <p class="subtitle">Silahkan mendaftar dan menjadi bagian dari Bimbel Mandala.</p>
     </div>
 
-    <!-- sfc3: Informasi Pribadi -->
-    <div class="info-pribadi">
-      <h2 class="title">Informasi Pribadi</h2>
-      <form class="form">
+    <n-form ref="formRef" :model="formData" :rules="rules" label-placement="top">
+      <div class="form">
         <div class="form-group full-width">
-          <label for="nama">Nama Lengkap</label>
-          <input type="text" id="nama" placeholder="Tuliskan nama Anda disini" v-model="formData.nama" />
+          <n-form-item label="Nama Lengkap" path="nama">
+            <n-input v-model:value="formData.nama" placeholder="Tuliskan nama Anda" />
+          </n-form-item>
         </div>
 
         <div class="form-group third-width">
-          <label for="tanggal-lahir">Tanggal Lahir</label>
-          <input type="date" id="tanggal-lahir" v-model="formData.tanggalLahir" />
+          <n-form-item label="Tanggal Lahir" path="tanggalLahir">
+            <n-input type="date" v-model:value="formData.tanggalLahir" placeholder="" />
+          </n-form-item>
         </div>
 
         <div class="form-group third-width">
-          <label for="jenis-kelamin">Jenis Kelamin</label>
-          <select id="jenis-kelamin" v-model="formData.jenisKelamin">
-            <option>Laki-Laki</option>
-            <option>Perempuan</option>
-          </select>
+          <n-form-item label="Jenis Kelamin" path="jenisKelamin">
+            <n-select :options="[
+              { label: 'Laki-Laki', value: 'Laki-Laki' },
+              { label: 'Perempuan', value: 'Perempuan' }
+            ]" placeholder="Pilih Jenis Kelamin" v-model:value="formData.jenisKelamin" />
+          </n-form-item>
         </div>
 
         <div class="form-group third-width">
-          <label for="foto">Upload Foto</label>
-          <input type="file" id="foto" @change="e => formData.foto = e.target.files[0]" />
+          <label class="bodyr3">Upload Foto</label>
+          <n-upload
+            aria-label="Upload"
+            action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
+            :headers="{
+              'naive-info': 'hello!',
+            }"
+            :data="{
+              'naive-data': 'cool! naive!',
+            }"
+          >
+            <n-button>Upload File</n-button>
+          </n-upload>
         </div>
 
         <div class="form-group half-width">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" placeholder="Tuliskan e-mail anda" v-model="formData.email" />
+          <n-form-item label="E-mail" path="email">
+            <n-input type="email" v-model:value="formData.email" placeholder="Tuliskan email Anda" />
+          </n-form-item>
         </div>
 
         <div class="form-group half-width">
-          <label for="whatsapp">No. WhatsApp</label>
-          <div style="display: flex; align-items: center;">
-            <span style="padding: 12px; background: #eee; border: 1px solid #ccc; border-right: none; border-radius: 8px 0 0 8px; color: black;">+62</span>
-            <input
-              type="number"
-              id="whatsapp"
-              placeholder="8xx xxxx xxxx"
-              v-model="formData.whatsapp"
-              style="flex: 1; border: 1px solid #ccc; border-radius: 0 8px 8px 0; padding: 0.5rem;"
-            />
+          <n-form-item label="No. WhatsApp" path="whatsapp">
+            <n-input-group-label>+62</n-input-group-label>
+            <n-input v-model:value="formData.whatsapp" placeholder="8xx xxxx xxxx" prefix="+62" />
+          </n-form-item>
+        </div>
+
+        <div class="form-group full-width">
+          <n-form-item label="Asal Universitas" path="universitas">
+            <n-input v-model:value="formData.universitas" placeholder="Tuliskan asal universitas" />
+          </n-form-item>
+        </div>
+
+        <div class="form-group half-width">
+          <n-form-item label="Program Studi" path="prodi">
+            <n-input v-model:value="formData.prodi" placeholder="Tuliskan Program Studi Anda" />
+          </n-form-item>
+        </div>
+
+        <div class="form-group half-width">
+          <n-form-item label="Status" path="status">
+            <n-select v-model:value="formData.status" placeholder="Pilih Status" :options="[
+              { label: 'Mahasiswa Semester 1-2', value: 'Mahasiswa Semester 1-2' },
+              { label: 'Mahasiswa Semester 3-4', value: 'Mahasiswa Semester 3-4' },
+              { label: 'Mahasiswa Semester 5-6', value: 'Mahasiswa Semester 5-6' },
+              { label: 'Mahasiswa Semester 7-8', value: 'Mahasiswa Semester 7-8' },
+              { label: 'Mahasiswa Semester >8', value: 'Mahasiswa Semester >8' },
+              { label: 'Sarjana S1', value: 'Sarjana S1' },
+              { label: 'Magister S2', value: 'Magister S2' },
+              { label: 'Doktor S3', value: 'Doktor S3' }
+            ]" />
+          </n-form-item>
+        </div>
+
+        <div class="form-group half-width">
+          <n-form-item label="Jenjang" path="jenjang">
+            <n-input v-model:value="formData.jenjang" placeholder="SMP, SMA" />
+          </n-form-item>
+        </div>
+
+        <div class="form-group half-width">
+          <n-form-item label="Mata Pelajaran" path="mapel">
+            <n-input v-model:value="formData.mapel" placeholder="Matematika, Fisika, Kimia" />
+          </n-form-item>
+        </div>
+
+        <div class="form-group full-width">
+          <n-form-item label="Deskripsi">
+            <n-input type="textarea" v-model:value="formData.deskripsi" placeholder="Tuliskan pengalaman mengajar Anda" />
+          </n-form-item>
+        </div>
+
+        <div class="form-group full-width">
+          <h2 class="headersb2">Hari Aktif</h2>
+          <div class="days">
+            <button
+              v-for="(day, index) in days"
+              :key="index"
+              type="button"
+              :class="['day-button', { active: selectedDays.includes(day) }]"
+              @click="toggleDay(day)"
+            >
+              {{ day }}
+            </button>
           </div>
         </div>
-      </form>
-    </div>
 
-    <!-- sfc5: Pendidikan -->
-    <div class="pendidikan">
-      <h2 class="title">Pendidikan</h2>
-      <form class="form">
-        <div class="form-group full-width">
-          <label for="universitas">Asal Universitas</label>
-          <input type="text" id="universitas" placeholder="Tuliskan asal universitas" v-model="formData.universitas" />
+        <div class="button-action">
+          <butPrimerHuge label="Daftar Sebagai Tutor" @click="submitForm" />
+          <butSecondHuge label="Batal" @click="cancelForm" />
         </div>
-
-        <div class="form-group half-width">
-          <label for="prodi">Program Studi</label>
-          <input type="text" id="prodi" placeholder="Tuliskan Program Studi Anda" v-model="formData.prodi" />
-        </div>
-
-        <div class="form-group half-width">
-          <label for="status">Status</label>
-          <select id="status" v-model="formData.status">
-            <option>Mahasiswa Semester 1-2</option>
-            <option>Mahasiswa Semester 3-4</option>
-            <option>Mahasiswa Semester 5-6</option>
-            <option>Mahasiswa Semester 7-8</option>
-            <option>Mahasiswa Semester >8</option>
-            <option>Sarjana S1</option>
-            <option>Magister S2</option>
-            <option>Doktor S3</option>
-          </select>
-        </div>
-      </form>
-    </div>
-
-    <!-- sfc4: Mengajar -->
-    <div class="mengajar">
-      <h2 class="title">Mengajar</h2>
-      <form class="form">
-        <div class="form-group half-width">
-          <label for="jenjang">Jenjang</label>
-          <input type="text" id="jenjang" placeholder="SMP, SMA" v-model="formData.jenjang" />
-        </div>
-
-        <div class="form-group half-width">
-          <label for="mapel">Mata Pelajaran</label>
-          <input type="text" id="mapel" placeholder="Matematika, Fisika, Kimia" v-model="formData.mapel" />
-        </div>
-
-        <div class="form-group full-width">
-          <label for="deskripsi">Deskripsi</label>
-          <input type="text" id="deskripsi" placeholder="Tuliskan pengalaman mengajar Anda" v-model="formData.deskripsi"></input>
-        </div>
-      </form>
-    </div>
-
-    <!-- sfc1: Hari Mengajar -->
-    <div class="hari-mengajar">
-      <h2 class="title">Hari aktif</h2>
-      <div class="days">
-        <button
-          v-for="(day, index) in days"
-          :key="index"
-          type="button"
-          :class="['day-button', { active: selectedDays.includes(day) }]"
-          @click="toggleDay(day)"
-        >
-          {{ day }}
-        </button>
       </div>
-    </div>
-    <div class="button-action">
-      <!-- Tombol Submit -->
-      <butPrimerHuge 
-      label="Daftar Sebagai Tutor" 
-      @click="submitForm"
-      />
-      <!-- Tombol batal -->
-      <butSecondHuge 
-      label="Batal" 
-      @click="cancelForm"
-      />
-    </div>
+    </n-form>
   </div>
 </template>
 
@@ -310,6 +295,11 @@ form {
   text-align: center;
 }
 
+.headersb2{
+  color: #154484;
+  margin-bottom: 0.5rem;
+}
+
 /* Layout untuk header */
 .header-tutor {
   text-align: center;
@@ -350,9 +340,7 @@ form {
 }
 
 label {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #154484;
+  color: black;
   margin-bottom: 0.5rem;
 }
 
@@ -392,7 +380,6 @@ input::placeholder {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
 }
 
 .day-button {

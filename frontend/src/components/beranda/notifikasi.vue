@@ -20,7 +20,7 @@ const unreadCount = computed(() => notifications.value.filter(n => !n.read).leng
 async function fetchNotifications() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('/notification', {
+    const res = await fetch('http://localhost:3000/notification', {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     const result = await res.json();
@@ -31,7 +31,7 @@ async function fetchNotifications() {
       read: item.viewed,
       createdAt: item.createdAt,
       photo: item.photo
-        ? (item.photo.startsWith('http') ? item.photo : `${item.photo}`)
+        ? (item.photo.startsWith('http') ? item.photo : `http://localhost:3000/${item.photo}`)
         : '/mandala.png',
       reason: item.reason,
       scheduleId: item.scheduleId

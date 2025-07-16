@@ -16,6 +16,7 @@ export default (app) => {
 
     router.post(
         '/register',
+        AuthValidationMiddleware.isValidRegisterPayload,
         AuthController.register
     );
 
@@ -45,6 +46,7 @@ export default (app) => {
     
     router.post(
         '/password-change',
+        AuthValidationMiddleware.isValidChangePasswordPayload,
         AuthMiddleware.isAuthorized,
         AuthController.changePassword
     );
@@ -70,8 +72,9 @@ export default (app) => {
     router.post(
         '/add-user',
         AuthMiddleware.isAuthorized,
-        upload.single('photo'),
         AuthMiddleware.hasRole('admin'),
+        upload.single('photo'),
+        AuthValidationMiddleware.isValidAddUserPayload,
         AuthController.createUserWithRole
     );
     
@@ -79,6 +82,7 @@ export default (app) => {
         '/add-student',
         AuthMiddleware.isAuthorized,
         AuthMiddleware.hasRole('admin'),
+        AuthValidationMiddleware.isValidAddStudentPayload,
         AuthController.addStudentByAdmin
     );
 
@@ -92,15 +96,16 @@ export default (app) => {
         '/google/callback',
         passport.authenticate('google', { failureRedirect: '/' }),
         (req, res) => {
+
           const { token, isNew } = req.user || {};
           if (token) {
             if (isNew) {
-              res.redirect(`${appEnv.FRONTEND_URL}/google/success?token=${token}&new=1`);
+              res.redirect(`/google/success?token=${token}&new=1`);
             } else {
-              res.redirect(`${appEnv.FRONTEND_URL}/google/success?token=${token}`);
+              res.redirect(`/google/success?token=${token}`);
             }
           } else {
-            res.redirect(`${appEnv.FRONTEND_URL}/login?error=google`);
+            res.redirect('/login?error=google');
           }
         }
     );

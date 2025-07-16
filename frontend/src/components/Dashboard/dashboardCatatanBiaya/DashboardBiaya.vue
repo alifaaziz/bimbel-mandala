@@ -116,7 +116,7 @@ const fetchRecap = async () => {
 const fetchStats = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch('/salaries/stats', {
+    const response = await fetch('http://localhost:3000/salaries/stats', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const result = await response.json();
