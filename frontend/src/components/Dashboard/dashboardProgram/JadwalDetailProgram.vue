@@ -23,7 +23,7 @@ export default defineComponent({
 
       const token = localStorage.getItem('token');
       if (!props.slug || !token) return;
-      const res = await fetch(`/schedules/closest/${props.slug}`, {
+      const res = await fetch(`http://localhost:3000/schedules/closest/${props.slug}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await res.json();

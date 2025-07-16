@@ -19,7 +19,7 @@ export default defineComponent({
 
       const token = localStorage.getItem('token');
       const userId = route.params.id;
-      const res = await fetch(`/schedules/user/${userId}`, {
+      const res = await fetch(`http://localhost:3000/schedules/user/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await res.json();

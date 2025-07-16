@@ -73,14 +73,14 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Token tidak ditemukan. Silakan login kembali.');
     const response = await fetch(
-      `http://localhost:3000/salaries/recap?search=${encodeURIComponent(searchText.value)}`,
+      `http://localhost:3000/schedules/closest?page=${requestedPage}&limit=${limit.value}&search=${encodeURIComponent(searchText.value)}`,
       {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
-      }
-    );
+      }
+    );
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     scheduleItems.value = result.data.data.map(item => ({

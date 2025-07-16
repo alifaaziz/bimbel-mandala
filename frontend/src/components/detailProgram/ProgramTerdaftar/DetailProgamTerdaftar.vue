@@ -13,7 +13,7 @@ onMounted(async () => {
     const token = localStorage.getItem('token');
 
     // Fetch program berdasarkan slug
-    const res = await fetch(`/packages/${slug}`, {
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
 

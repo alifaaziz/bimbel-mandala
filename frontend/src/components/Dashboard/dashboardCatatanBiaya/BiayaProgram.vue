@@ -33,7 +33,7 @@ const formatPrice = (price) => {
 onMounted(async () => {
   const token = localStorage.getItem('token');
   try {
-    const res = await fetch(`/classes/${classId}`, {
+    const res = await fetch(`http://localhost:3000/classes/${classId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error('Gagal mengambil data kelas');

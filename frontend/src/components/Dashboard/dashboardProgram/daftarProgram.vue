@@ -107,7 +107,7 @@ export default {
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
-          `/packages/all?page=${this.page}&limit=${this.limit}&search=${encodeURIComponent(this.searchText)}`,
+          `http://localhost:3000/packages/all?page=${this.page}&limit=${this.limit}&search=${encodeURIComponent(this.searchText)}`,
           { headers: { 'Authorization': `Bearer ${token}` } }
         );
         const result = await response.json();

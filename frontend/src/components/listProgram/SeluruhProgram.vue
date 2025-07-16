@@ -15,7 +15,7 @@ const totalPages = ref(1);
 
 async function fetchPrograms() {
   try {
-    const res = await fetch(`/packages?page=${currentPage.value}&limit=${itemsPerPage}`);
+    const res = await fetch(`http://localhost:3000/packages?page=${currentPage.value}&limit=${itemsPerPage}`);
     const data = await res.json();
     limitedPrograms.value = data.data; // Data program
     totalPages.value = Math.ceil(data.total / itemsPerPage); // Total halaman

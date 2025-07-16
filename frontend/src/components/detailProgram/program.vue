@@ -13,24 +13,28 @@ const slug = route.params.id as string; // Ambil slug dari route params
 const programData = ref<any>(null);
 const isTutor = ref(false);
 const isRegisteredProgram = ref(false); // State untuk mengecek apakah program terdaftar
+const isKelasType = ref(false);
 
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token');
 
-    const res = await fetch(`/packages/${slug}`, {
+    const res = await fetch(`http://localhost:3000/packages/${slug}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     if (!res.ok) throw new Error('Gagal mengambil data program');
     const program = await res.json();
     programData.value = program;
 
-    if (program.status === 'aktif') {
-      const hasKelas = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
-      if (!hasKelas) {
-        return;
-      }
-    }
+    isKelasType.value = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
+
+    // if (program.status === 'aktif') {
+    //   const hasKelas = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
+    //   isKelasType.value = hasKelas;
+    //   if (!hasKelas) {
+    //     return;
+    //   }
+    // }
 
     const userRes = await fetch('http://localhost:3000/users/me', {
       headers: { Authorization: `Bearer ${token}` }
@@ -65,7 +69,7 @@ onMounted(async () => {
           <HonorTutor />
         </div>
         <div v-else>
-          <BiayaSiswa />
+          <BiayaSiswa v-if="!isKelasType" />
         </div>
         <InfoProgram />
         <CaraPendaftaran />

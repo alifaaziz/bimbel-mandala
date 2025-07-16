@@ -7,6 +7,7 @@ import jadwalHighlight from './Absen/jadwalHighlight.vue';
 import JadwalHighlightTutor from './Absen/JadwalHighlightTutor.vue';
 import NoProgram from './Absen/NoProgram.vue';
 import NoProgramTutor from './Absen/NoProgramTutor.vue';
+import NoJadwal from './Absen/noJadwal.vue';
 
 import { ref, onMounted } from 'vue';
 
@@ -52,6 +53,7 @@ onMounted(async () => {
       </template>
       <template v-else>
         <Absensi />
+        <NoJadwal />
         <jadwalHighlight />
       </template>
     </template>

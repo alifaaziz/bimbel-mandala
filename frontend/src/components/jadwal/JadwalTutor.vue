@@ -23,6 +23,7 @@ function statusLabel(status) {
   switch (status) {
     case "masuk": return "Masuk";
     case "terjadwal": return "Terjadwal";
+    case "terlambat": return "Terlambat";
     case "jadwal_ulang": return "Jadwal Ulang";
     case "izin": return "Izin";
     default: return status;
@@ -108,7 +109,7 @@ export default defineComponent({
       const utcDate = new Date(dateStr);
       const newDate = utcDate.toISOString()
 
-      fetch(`/schedules/reschedule/${selectedSchedule.value.key}`, {
+      fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +144,8 @@ export default defineComponent({
     const tagTypeMap = {
       Masuk: "info",
       Terjadwal: "success",
-      "Jadwal Ulang": "warning"
+      "Jadwal Ulang": "warning",
+      Terlambat: "error",
     };
 
     const rowProps = (row) => {
@@ -238,7 +240,7 @@ export default defineComponent({
     async function fetchSchedules() {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`/schedules?page=${pagination.value.page}&limit=${pagination.value.pageSize}`, {
+        const res = await fetch(`http://localhost:3000/schedules?page=${pagination.value.page}&limit=${pagination.value.pageSize}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         const result = await res.json();

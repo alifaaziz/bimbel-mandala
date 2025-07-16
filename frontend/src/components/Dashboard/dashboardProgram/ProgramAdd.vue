@@ -174,12 +174,7 @@ async function handleValidateClick() {
                 <n-input v-model:value="formValue.area" placeholder="Semarang" />
               </n-form-item>
     
-              <n-grid :x-gap="24" :y-gap="0" :cols="3">
-                <n-gi>
-                  <n-form-item label="Tutor" path="tutor">
-                    <n-select v-model:value="formValue.tutor" :options="tutorOptions" placeholder="Please Select"/>
-                  </n-form-item>
-                </n-gi>
+              <n-grid :x-gap="24" :y-gap="0" :cols="2">
                 <n-gi>
                   <n-form-item label="Jenjang" path="jenjang">
                     <n-select v-model:value="formValue.jenjang" :options="jenjangOptions" placeholder="Please Select"/>
@@ -192,7 +187,7 @@ async function handleValidateClick() {
                 </n-gi>
               </n-grid>
     
-              <n-grid :x-gap="24" :y-gap="0" :cols="2">
+              <n-grid :x-gap="24" :y-gap="0" :cols="3">
                 <n-gi>
                   <n-form-item label="JAM" path="jam">
                     <n-time-picker
@@ -208,15 +203,15 @@ async function handleValidateClick() {
                     <n-select v-model:value="formValue.durasi" :options="durasiOptions" placeholder="Please Select" />
                   </n-form-item>
                 </n-gi>
-              </n-grid>
-              
-              <n-grid :x-gap="24" :y-gap="0" :cols="7" style="align-items: center;">
-                <n-gi :span="2">
+                <n-gi>
                   <n-form-item label="Jangka Waktu (Pertemuan)" path="jangkaWaktu">
                     <n-input-number v-model:value="formValue.jangkaWaktu" placeholder="8" style="width: 100%;" />
                   </n-form-item>
                 </n-gi>
-                <n-gi :span="5">
+              </n-grid>
+              
+              <n-grid :x-gap="24" :y-gap="0" :cols="7" style="align-items: center;">
+                <n-gi :span="4">
                   <div class="days">
                     <button
                       v-for="(day, index) in daysOptions"
@@ -228,6 +223,11 @@ async function handleValidateClick() {
                       {{ day }}
                     </button>
                   </div>
+                </n-gi>
+                <n-gi :span="3">
+                  <n-form-item label="Tutor" path="tutor">
+                    <n-select v-model:value="formValue.tutor" :options="tutorOptions" placeholder="Please Select"style="width: 100%;"/>
+                  </n-form-item>
                 </n-gi>
               </n-grid>
     
@@ -435,7 +435,7 @@ async function handleValidateClick() {
 
 .days {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .day-button {

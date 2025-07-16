@@ -13,7 +13,7 @@ const total = ref(0);
 
 const fetchRegistrants = async () => {
   try {
-    const res = await fetch(`/apply?page=${page.value}&limit=${pageSize}`, {
+    const res = await fetch(`http://localhost:3000/apply?page=${page.value}&limit=${pageSize}`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
       }
