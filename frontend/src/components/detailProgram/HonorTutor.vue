@@ -28,7 +28,8 @@ const formatGroupType = (type) => {
 
 onMounted(async () => {
   const token = localStorage.getItem('token');
-  const slug = route.params.id; // Ambil slug dari route params
+  const slug = route.params.id;
+
   try {
     const res = await fetch(`http://localhost:3000/packages/my/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -36,13 +37,22 @@ onMounted(async () => {
     if (!res.ok) throw new Error('Gagal mengambil data program');
     const data = await res.json();
 
-    // Validasi data sebelum mengakses properti
     if (data) {
-      program.value = data; // Simpan data program ke state
+      program.value = data;
 
-      // Urutkan groupTypes berdasarkan urutan tertentu
+      // Ubah 'privat' menjadi 'kelas' jika tipe program adalah 'kelas'
+      let rawGroups = data.groupType || [];
+      if (data.type === 'kelas') {
+        rawGroups = rawGroups.map(group => {
+          if (group.type === 'privat') {
+            return { ...group, type: 'kelas' };
+          }
+          return group;
+        });
+      }
+
       const order = ['privat', 'grup2', 'grup3', 'grup4', 'grup5', 'kelas'];
-      groupTypes.value = (data.groupType || []).sort(
+      groupTypes.value = rawGroups.sort(
         (a, b) => order.indexOf(a.type) - order.indexOf(b.type)
       );
     } else {
@@ -101,7 +111,7 @@ onMounted(async () => {
 .col-skema {
     max-width: 200px;
     flex: 1;
-    margin: 0 auto;
+    margin: 0 20px;
 }
 
 
