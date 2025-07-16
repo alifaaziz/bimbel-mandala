@@ -3,6 +3,60 @@ import bcrypt from 'bcrypt';
 import { ScheduleService } from '../../../services/schedule.js';
 
 async function main() {
+    // Seed Payments
+    const payments =[{
+            id: "01980001-0000-0000-0000-000000000006",
+            platform: "BNI",
+            accountNumber: "1234567890",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000007",
+            platform: "BRI",
+            accountNumber: "0987654321",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000008",
+            platform: "Mandiri",
+            accountNumber: "1122334455",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000009",
+            platform: "BCA",
+            accountNumber: "5566778899",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000010",
+            platform: "OVO",
+            accountNumber: "1234567890",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000011",
+            platform: "Gopay",
+            accountNumber: "0987654321",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000012",
+            platform: "Dana",
+            accountNumber: "1122334455",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000013",
+            platform: "Linkaja",
+            accountNumber: "5566778899",
+        },
+        {
+            id: "01980001-0000-0000-0000-000000000014",
+            platform: "ShopeePay",
+            accountNumber: "1234567890",
+        }
+    ];
+
+    for (const payment of payments) {
+        await prisma.payment.create({
+            data: payment,
+        });
+    }
+
     // Seed users
     const users = [
         {
@@ -2740,6 +2794,7 @@ async function main() {
             groupTypeId: "0195c63c-8fce-7232-990e-6d11e9ff2d02", // privat
             amount: 1386000, // 10% discount applied
             address: 'Jl. Merdeka No. 1',
+            paymentId: "01980001-0000-0000-0000-000000000006", //BNI
             status: 'paid'
         },
         {
@@ -2749,6 +2804,7 @@ async function main() {
             groupTypeId: "019618a1-68a4-7a75-948f-e8df29d3bb9c", // grup2
             address: 'Jl. Merdeka No. 2',
             amount: 1020000,
+            paymentId: "01980001-0000-0000-0000-000000000007", // BCA
             status: 'paid',
         },
         {
@@ -2758,6 +2814,7 @@ async function main() {
             groupTypeId: "0196b294-4791-7b00-8000-000000000101", // privat
             amount: 2250000, // 10% discount applied
             address: 'Jl. Merdeka No. 3',
+            paymentId: "01980001-0000-0000-0000-000000000008", // Mandiri
             status: 'pending',
         },
         {
@@ -3200,59 +3257,6 @@ async function main() {
     for (const tutorApplication of tutorApplications) {
         await prisma.tutorApplication.create({
             data: tutorApplication,
-        });
-    }
-
-    const payments =[{
-            id: "01980001-0000-0000-0000-000000000006",
-            platform: "BNI",
-            accountNumber: "1234567890",
-        },
-        {
-            id: "01980001-0000-0000-0000-000000000007",
-            platform: "BRI",
-            accountNumber: "0987654321",
-        },
-        {
-            id: "01980001-0000-0000-0000-000000000008",
-            platform: "Mandiri",
-            accountNumber: "1122334455",
-        },
-        {
-            id: "01980001-0000-0000-0000-000000000009",
-            platform: "BCA",
-            accountNumber: "5566778899",
-        },
-        {
-            id: "01980001-0000-0000-0000-000000000010",
-            platform: "OVO",
-            accountNumber: "1234567890",
-        },
-        {
-            id: "01980001-0000-0000-0000-000000000011",
-            platform: "Gopay",
-            accountNumber: "0987654321",
-        },
-        {
-            id: "01980001-0000-0000-0000-000000000012",
-            platform: "Dana",
-            accountNumber: "1122334455",
-        },
-        {
-            id: "01980001-0000-0000-0000-000000000013",
-            platform: "Linkaja",
-            accountNumber: "5566778899",
-        },
-        {
-            id: "01980001-0000-0000-0000-000000000014",
-            platform: "ShopeePay",
-            accountNumber: "1234567890",
-        }
-    ];
-
-    for (const payment of payments) {
-        await prisma.payment.create({
-            data: payment,
         });
     }
 

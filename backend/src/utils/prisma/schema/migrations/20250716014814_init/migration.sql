@@ -84,6 +84,7 @@ CREATE TABLE `orders` (
     `group_type_id` VARCHAR(191) NOT NULL,
     `amount` DECIMAL(10, 2) NULL,
     `address` VARCHAR(191) NULL,
+    `payment_id` VARCHAR(191) NULL,
     `status` ENUM('pending', 'paid', 'cancel', 'kelas') NOT NULL DEFAULT 'pending',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -276,6 +277,9 @@ ALTER TABLE `orders` ADD CONSTRAINT `orders_package_id_fkey` FOREIGN KEY (`packa
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_group_type_id_fkey` FOREIGN KEY (`group_type_id`) REFERENCES `group_types`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `orders` ADD CONSTRAINT `orders_payment_id_fkey` FOREIGN KEY (`payment_id`) REFERENCES `Payment`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `otps` ADD CONSTRAINT `otps_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

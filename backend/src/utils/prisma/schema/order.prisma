@@ -5,11 +5,13 @@ model Order {
     groupTypeId String      @map("group_type_id")
     amount      Decimal?    @db.Decimal(10, 2)
     address     String?     
+    paymentId   String?     @map("payment_id")
     status      OrderStatus @default(pending)
 
     user User @relation(fields: [userId], references: [id])
     bimbelPackage BimbelPackage @relation(fields: [packageId], references: [id])
     groupType GroupType @relation(fields: [groupTypeId], references: [id])
+    payment Payment? @relation(fields: [paymentId], references: [id])
 
     class       Class[]
     salary      Salary[]
