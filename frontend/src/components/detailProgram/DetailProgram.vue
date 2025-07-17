@@ -157,6 +157,11 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         </div>
         <div>
           <n-space vertical size="medium" class="space-detail bodyr2">
+            <InfoRow
+              label="Kapasitas Tersedia"
+              :value="`${programData.groupType[0].quota - programData.groupType[0].currentStudents} dari ${programData.groupType[0].quota}`"
+              v-if="programData.groupType && programData.groupType.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))"
+            />
             <InfoRow label="Area/Lokasi" :value="programData.area" />
             <InfoRow
               label="Mulai"
