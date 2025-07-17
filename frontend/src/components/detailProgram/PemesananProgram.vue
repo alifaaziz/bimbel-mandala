@@ -44,6 +44,10 @@ onMounted(async () => {
       { label: "Kelas", value: "kelas", disabled: !availableGroupTypes.includes("kelas") },
     ];
 
+    if (programData.value.groupType.length === 1) {
+      selectedOption.value = programData.value.groupType[0].type;
+    }
+
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:3000/payments', {

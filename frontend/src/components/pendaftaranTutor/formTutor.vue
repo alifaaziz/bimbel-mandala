@@ -23,6 +23,7 @@ const formData = ref({
   foto: null,
   email: "",
   whatsapp: "",
+  alamat: "",
   universitas: "",
   prodi: "",
   status: "",
@@ -37,6 +38,7 @@ const rules = {
   jenisKelamin: { required: true, message: 'Jenis kelamin wajib dipilih', trigger: 'change' },
   email: { required: true, message: 'Email wajib diisi', trigger: 'blur' },
   whatsapp: { required: true, message: 'Nomor WhatsApp wajib diisi', trigger: 'blur' },
+  alamat: { required: true, message: 'Alamat wajib diisi', trigger: 'blur' },
   universitas: { required: true, message: 'Universitas wajib diisi', trigger: 'blur' },
   prodi: { required: true, message: 'Program studi wajib diisi', trigger: 'blur' },
   status: { required: true, message: 'Status wajib dipilih', trigger: 'change' },
@@ -85,15 +87,17 @@ const submitForm = async () => {
     payload.append("birthDate", new Date(formData.value.tanggalLahir).toISOString())
     payload.append("gender", formData.value.jenisKelamin === "Laki-Laki" ? "Male" : "Female")
     payload.append("phone", formData.value.whatsapp)
+    payload.append("address", formData.value.alamat)
     payload.append("subjects", formData.value.mapel)
     payload.append("status", mapStatusToEnum(formData.value.status))
     payload.append("major", formData.value.prodi)
     payload.append("school", formData.value.universitas)
     payload.append("teachLevel", formData.value.jenjang)
-    payload.append("description", formData.value.deskripsi)
+    payload.append("description", formData.value.deskripsi);
+    payload.append("days", JSON.stringify(selectedDays.value));
     payload.append("photo", formData.value.foto)
 
-    const res = await fetch("/apply", { method: "POST", body: payload })
+    const res = await fetch("http://localhost:3000/apply", { method: "POST", body: payload })
     if (!res.ok) throw new Error((await res.json()).message || "Gagal mendaftar sebagai tutor.")
 
     message.success("Pendaftaran berhasil! Kami akan menghubungi Anda segera.")
@@ -108,6 +112,12 @@ const submitForm = async () => {
 
 const cancelForm = () => {
   router.push("/")
+}
+
+const upload = ref(null);
+
+function handleChange({ fileList }) {
+  formData.value.foto = fileList.length > 0 ? fileList[0].file : null;
 }
 </script>
 
@@ -144,14 +154,11 @@ const cancelForm = () => {
         <div class="form-group third-width">
           <label class="bodyr3">Upload Foto</label>
           <n-upload
-            aria-label="Upload"
+            ref="upload"
             action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
-            :headers="{
-              'naive-info': 'hello!',
-            }"
-            :data="{
-              'naive-data': 'cool! naive!',
-            }"
+            :default-upload="false"
+            :max="1"
+            @change="handleChange"
           >
             <n-button>Upload File</n-button>
           </n-upload>
@@ -167,6 +174,12 @@ const cancelForm = () => {
           <n-form-item label="No. WhatsApp" path="whatsapp">
             <n-input-group-label>+62</n-input-group-label>
             <n-input type="tel" v-model:value="formData.whatsapp" placeholder="8xx xxxx xxxx" prefix="+62" />
+          </n-form-item>
+        </div>
+
+        <div class="form-group full-width">
+          <n-form-item label="Alamat" path="alamat">
+            <n-input type="text" v-model:value="formData.alamat" placeholder="Tuliskan alamat Anda" />
           </n-form-item>
         </div>
 
