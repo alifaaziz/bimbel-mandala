@@ -68,7 +68,7 @@ async function fetchSiswa() {
   loading.value = true;
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/users/new-students?page=${page.value}&limit=${pageSize.value}`, {
+    const res = await fetch(`/users/new-students?page=${page.value}&limit=${pageSize.value}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -95,7 +95,7 @@ async function fetchAllSiswa() {
   loading.value = true;
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch(`http://localhost:3000/users/new-students?page=1&limit=${total.value}`, {
+    const res = await fetch(`/users/new-students?page=1&limit=${total.value}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

@@ -93,7 +93,7 @@ function confirmReschedule() {
   const utcDate = new Date(dateStr);
   const newDate = utcDate.toISOString();
 
-  fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
+  fetch(`/schedules/reschedule/${selectedSchedule.value.key}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ const pagedMobileData = computed(() => {
 onMounted(async () => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:3000/schedules", {
+    const res = await fetch("/schedules", {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     const result = await res.json();

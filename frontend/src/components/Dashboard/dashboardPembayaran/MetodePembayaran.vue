@@ -15,7 +15,7 @@ const newPayment = ref({
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch('http://localhost:3000/payments', {
+    const res = await fetch('/payments', {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
     if (res.ok) {
@@ -39,7 +39,7 @@ const addPaymentMethod = async () => {
 
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch('http://localhost:3000/payments', {
+    const res = await fetch('/payments', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const removeMethod = async (id) => {
   if (confirm('Yakin ingin menghapus metode pembayaran ini?')) {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/payments/${id}`, {
+      const res = await fetch(`/payments/${id}`, {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });

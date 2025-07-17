@@ -16,7 +16,7 @@ const totalPages = ref(1);
 
 async function fetchPrograms() {
   try {
-    const res = await fetch(`http://localhost:3000/packages?page=${currentPage.value}&limit=${itemsPerPage}`);
+    const res = await fetch(`/packages?page=${currentPage.value}&limit=${itemsPerPage}`);
     const data = await res.json();
     limitedPrograms.value = data.data; // Data program
     totalPages.value = Math.ceil(data.total / itemsPerPage); // Total halaman
@@ -33,7 +33,7 @@ function handlePageChange(page) {
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (token) {
-    const res = await fetch('http://localhost:3000/users/me', {
+    const res = await fetch('/users/me', {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
@@ -42,7 +42,7 @@ onMounted(async () => {
       if (isTutor.value) {
         title.value = 'Program Terbuka';
         try {
-          const myProgramsRes = await fetch('http://localhost:3000/packages/my', {
+          const myProgramsRes = await fetch('/packages/my', {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (myProgramsRes.ok) {
@@ -95,7 +95,7 @@ function handleButton(slug) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo ? `http://localhost:3000/${program.photo}` : '/Tutor_Default.png'" 
+              :src="program.photo ? `${program.photo}` : '/Tutor_Default.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>

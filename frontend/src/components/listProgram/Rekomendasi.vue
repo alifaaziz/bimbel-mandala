@@ -13,7 +13,7 @@ const router = useRouter();
 onMounted(async () => {
   const token = localStorage.getItem('token');
   try {
-    const res = await fetch('http://localhost:3000/packages/recommendations', {
+    const res = await fetch('/packages/recommendations', {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
@@ -61,7 +61,7 @@ function handleButton(slug) {
           <div class="card-content">
             <div class="card-image">
               <img 
-                :src="program.photo ? `http://localhost:3000/${program.photo}` : '/Tutor_Default.png'" 
+                :src="program.photo ? `${program.photo}` : '/Tutor_Default.png'" 
                 :alt="`Image of ${program.name}`" 
               />
               <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>

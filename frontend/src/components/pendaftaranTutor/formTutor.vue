@@ -97,7 +97,7 @@ const submitForm = async () => {
     payload.append("days", JSON.stringify(selectedDays.value));
     payload.append("photo", formData.value.foto)
 
-    const res = await fetch("http://localhost:3000/apply", { method: "POST", body: payload })
+    const res = await fetch("/apply", { method: "POST", body: payload })
     if (!res.ok) throw new Error((await res.json()).message || "Gagal mendaftar sebagai tutor.")
 
     message.success("Pendaftaran berhasil! Kami akan menghubungi Anda segera.")

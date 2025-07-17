@@ -105,11 +105,12 @@ export default {
     }
   },
   methods: {
+    formatWaktu,
     async fetchPackages() {
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
-          `http://localhost:3000/packages/all?page=${this.page}&limit=${this.limit}&search=${encodeURIComponent(this.searchText)}`,
+          `/packages/all?page=${this.page}&limit=${this.limit}&search=${encodeURIComponent(this.searchText)}`,
           { headers: { 'Authorization': `Bearer ${token}` } }
         );
         const result = await response.json();

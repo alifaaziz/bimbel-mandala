@@ -33,7 +33,7 @@ onMounted(async () => {
   const id = route.params.orderId;
   if (!id || !token) return;
   try {
-    const res = await fetch(`http://localhost:3000/orders/${id}`, {
+    const res = await fetch(`/orders/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();

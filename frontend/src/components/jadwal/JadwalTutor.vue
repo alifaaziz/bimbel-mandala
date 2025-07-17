@@ -98,7 +98,7 @@ export default defineComponent({
       const utcDate = new Date(dateStr);
       const newDate = utcDate.toISOString()
 
-      fetch(`http://localhost:3000/schedules/reschedule/${selectedSchedule.value.key}`, {
+      fetch(`/schedules/reschedule/${selectedSchedule.value.key}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -229,7 +229,7 @@ export default defineComponent({
     async function fetchSchedules() {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:3000/schedules?page=${pagination.value.page}&limit=${pagination.value.pageSize}`, {
+        const res = await fetch(`/schedules?page=${pagination.value.page}&limit=${pagination.value.pageSize}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         const result = await res.json();

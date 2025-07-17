@@ -11,7 +11,7 @@ const router = useRouter()
 onMounted(async () => {
   const token = localStorage.getItem('token')
   const userId = route.params.id // pastikan route ada param id
-  const res = await fetch(`http://localhost:3000/packages/user/${userId}`, {
+  const res = await fetch(`/packages/user/${userId}`, {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await res.json()

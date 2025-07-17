@@ -32,22 +32,16 @@
             </n-form-item>
           </div>
           <div class="grid-form">
-            <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-2">
+            <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-3">
               <n-date-picker v-model:value="formValue.user.ttg" type="date" disabled />
             </n-form-item>
-            <n-form-item label="Jenis Kelamin" path="user.gender" class="col-span-2">
+            <n-form-item label="Jenis Kelamin" path="user.gender" class="col-span-3">
               <n-select
                 v-model:value="formValue.user.gender"
                 :options="optionsgender"
                 placeholder="Pilih jenis kelamin"
                 disabled
               />
-            </n-form-item>
-            <n-form-item label="Foto Diri" path="user.photo" class="col-span-2">
-              <div class="form-group third-width">
-                <!-- Upload dihilangkan, hanya info nama file jika ada -->
-                <p class="bodyr3" v-if="formValue.user.photo">File dipilih: {{ formValue.user.photo.name }}</p>
-              </div>
             </n-form-item>
           </div>
           <div class="grid-form">
@@ -199,7 +193,7 @@ onMounted(async () => {
   const id = route.params.id;
   const token = localStorage.getItem("token");
   try {
-    const res = await fetch(`http://localhost:3000/apply/${id}`, {
+    const res = await fetch(`/apply/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const { data } = await res.json();
@@ -315,7 +309,7 @@ async function handleReject() {
   const token = localStorage.getItem("token");
   if (!id) return;
   try {
-    const res = await fetch(`http://localhost:3000/apply/reject/${id}`, {
+    const res = await fetch(`/apply/reject/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -336,7 +330,7 @@ async function handleVerify() {
   if (!id) return;
   isLoading.value = true;
   try {
-    const res = await fetch(`http://localhost:3000/apply/verify/${id}`, {
+    const res = await fetch(`/apply/verify/${id}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` }
     });

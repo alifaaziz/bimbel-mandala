@@ -7,7 +7,6 @@ import jadwalHighlight from './Absen/jadwalHighlight.vue';
 import JadwalHighlightTutor from './Absen/JadwalHighlightTutor.vue';
 import NoProgram from './Absen/NoProgram.vue';
 import NoProgramTutor from './Absen/NoProgramTutor.vue';
-import NoJadwal from './Absen/noJadwal.vue';
 
 import { ref, onMounted } from 'vue';
 
@@ -18,7 +17,7 @@ onMounted(async () => {
   const token = localStorage.getItem('token');
   if (!token) return;
 
-  const resUser = await fetch('http://localhost:3000/users/me', {
+  const resUser = await fetch('/users/me', {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   if (resUser.ok) {
@@ -26,7 +25,7 @@ onMounted(async () => {
     userRole.value = data.data?.role || null;
   }
 
-  const resStat = await fetch('http://localhost:3000/packages/statistics/my', {
+  const resStat = await fetch('/packages/statistics/my', {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   if (resStat.ok) {
@@ -53,7 +52,6 @@ onMounted(async () => {
       </template>
       <template v-else>
         <Absensi />
-        <NoJadwal />
         <jadwalHighlight />
       </template>
     </template>

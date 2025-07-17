@@ -10,7 +10,7 @@ const router = useRouter();
 
 onMounted(async () => {
   try {
-    const res = await fetch('http://localhost:3000/packages/populer');
+    const res = await fetch('/packages/populer');
     const data = await res.json();
     limitedPrograms.value = data.slice(0, 4);
   } catch (err) {
@@ -52,7 +52,7 @@ function handleButton(slug) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo ? `http://localhost:3000/${program.photo}` : '/Tutor_Default.png'" 
+              :src="program.photo ? `${program.photo}` : '/Tutor_Default.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>

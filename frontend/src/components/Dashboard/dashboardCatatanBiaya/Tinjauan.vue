@@ -12,7 +12,7 @@ async function fetchTinjauan() {
   const classId = route.params.classId
   const token = localStorage.getItem('token')
   try {
-    const res = await fetch(`http://localhost:3000/attendance/alert/${classId}`, {
+    const res = await fetch(`/attendance/alert/${classId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

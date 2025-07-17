@@ -114,7 +114,7 @@ onMounted(async () => {
 
   const token = localStorage.getItem('token')
   if (!token) return
-  const res = await fetch('http://localhost:3000/users/me', {
+  const res = await fetch('/users/me', {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -134,7 +134,7 @@ onBeforeUnmount(() => {
 async function fetchNotifications() {
   try {
     const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:3000/notification', {
+    const res = await fetch('/notification', {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
     const result = await res.json();
@@ -144,9 +144,7 @@ async function fetchNotifications() {
       message: item.description,
       read: item.viewed,
       createdAt: item.createdAt,
-      photo: item.photo
-        ? (item.photo.startsWith('http') ? item.photo : `http://localhost:3000/${item.photo}`)
-        : '/mandala.png',
+      photo: item.photo ?  `${item.photo}` : '/mandala.png',
       reason: item.reason,
       scheduleId: item.scheduleId
     }));
@@ -165,7 +163,7 @@ const notificationsWithTime = computed(() =>
 const readNotification = async (notifId) => {
   try {
     const token = localStorage.getItem('token');
-    await fetch(`http://localhost:3000/notification/${notifId}`, {
+    await fetch(`/notification/${notifId}`, {
       method: 'POST',
       headers: {
         'Authorization': token ? `Bearer ${token}` : '',

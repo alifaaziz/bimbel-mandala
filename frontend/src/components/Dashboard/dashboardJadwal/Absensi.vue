@@ -1,4 +1,6 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { NTag, NTable } from 'naive-ui'
 
 function statusLabel(status) {
@@ -18,13 +20,30 @@ const tagTypeMap = {
   "Izin": "error",
 }
 
-// Dummy data (bisa kamu ganti dengan fetch dari API)
-const attendanceData = [
-  { name: "Arell", time: "08:00", status: "masuk", note: "Tepat waktu" },
-  { name: "Dendy Wan S.Pd", time: "08:20", status: "terlambat", note: "-" },
-  { name: "Budi", time: "08:05", status: "izin", note: "Sakit" },
-  { name: "Dina", time: "08:20", status: "jadwal_ulang", note: "Reschedule" }
-]
+const attendanceData = ref([])
+
+const route = useRoute()
+const slug = route.params.slug
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`/attendance/${slug}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (res.ok) {
+      const result = await res.json()
+      attendanceData.value = result.data.map(item => ({
+        name: item.name,
+        time: item.jamAbsen,
+        status: item.status,
+        note: item.reason
+      }))
+    }
+  } catch (err) {
+    attendanceData.value = []
+  }
+})
 </script>
 
 <template>

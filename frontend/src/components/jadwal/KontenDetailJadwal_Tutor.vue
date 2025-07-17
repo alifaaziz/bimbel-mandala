@@ -27,7 +27,7 @@ onMounted(async () => {
   if (!token) return
 
   const slug = route.params.slug
-  const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
+  const res = await fetch(`/schedules/${slug}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -187,7 +187,7 @@ async function saveEditInfo() {
     return;
   }
 
-  const res = await fetch(`http://localhost:3000/schedules/${schedule.value.id}`, {
+  const res = await fetch(`/schedules/${schedule.value.id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ async function saveEditInfo() {
   <div class="card-container" v-if="schedule">
     <img
       class="tutor-photo"
-      :src="schedule.photo ? `http://localhost:3000/${schedule.photo}` : '/Tutor_Default.png'"
+      :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
       alt="Tutor Photo"
     />
     <div class="card-content">

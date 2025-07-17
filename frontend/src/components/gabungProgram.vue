@@ -31,7 +31,7 @@ async function submitprogram() {
 
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch('http://localhost:3000/classes/join', {
+    const res = await fetch('/classes/join', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

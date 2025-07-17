@@ -91,7 +91,7 @@ const fetchRecap = async () => {
   try {
     const token = localStorage.getItem('token');
     const response = await fetch(
-      `http://localhost:3000/salaries/recap?search=${encodeURIComponent(searchTerm.value)}&page=${page.value}&limit=${pageSize.value}`,
+      `/salaries/recap?search=${encodeURIComponent(searchTerm.value)}&page=${page.value}&limit=${pageSize.value}`,
       { headers: { 'Authorization': `Bearer ${token}` } }
     );
     const result = await response.json();
@@ -117,7 +117,7 @@ const fetchRecap = async () => {
 const fetchStats = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:3000/salaries/stats', {
+    const response = await fetch('/salaries/stats', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const result = await response.json();

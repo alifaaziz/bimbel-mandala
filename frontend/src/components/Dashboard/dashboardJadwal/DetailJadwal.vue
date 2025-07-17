@@ -5,6 +5,7 @@ import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue'
 import butSecondSmall from '@/components/dirButton/butSecondSmall.vue'
 import butPrimerSmall from '@/components/dirButton/butPrimerSmall.vue'
 import Absensi from './Absensi.vue'
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal.js'
 
 const showRescheduleModal = ref(false)
 const rescheduleDate = ref('')
@@ -41,7 +42,7 @@ async function fetchScheduleDetail() {
     return
   }
   try {
-    const res = await fetch(`http://localhost:3000/schedules/${slug}`, {
+    const res = await fetch(`/schedules/${slug}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -112,7 +113,7 @@ function closeRescheduleModal() {
       <div class="header-program">
         <img
           class="tutor-photo"
-            :src="schedule.photo ? `http://localhost:3000/${schedule.photo}` : '/Tutor_Default.png'"
+            :src="schedule.photo ? `${schedule.photo}` : '/Tutor_Default.png'"
           alt="Tutor Photo"
         />
         <div class="card-content">
@@ -181,7 +182,7 @@ function closeRescheduleModal() {
           </div>
           <div class="info-row">
             <span class="label-detail">No. WhatsApp Admin</span>
-            <span class="value">: 08xxxxxxxxx</span>
+            <span class="value">: 085540000900</span>
           </div>
         </div>
       </div>
