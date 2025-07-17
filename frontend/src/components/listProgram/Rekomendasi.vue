@@ -76,7 +76,7 @@ function handleButton(slug) {
               </div>
               <div class="info-row" v-if="groupTypeLabel(program.groupType) == 'Kelas'">
                 <span class="label"><strong>Kapasitas</strong></span>
-                <span class="value">:Tersisa  <strong>10</strong> siswa</span>
+                <span class="value">:Tersisa  <strong>{{ program.sisaKursi }}</strong> siswa</span>
               </div>
               <div class="info-row">
                   <span class="label"><strong>Area</strong></span>

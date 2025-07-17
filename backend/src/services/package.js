@@ -32,9 +32,11 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
         },
         groupType: {
           select: {
+            id: true,
             type: true,
             price: true,
-            discPrice: true
+            discPrice: true,
+            maxStudent: true
           }
         }
       },
@@ -52,8 +54,32 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
     })
   ]);
 
-  return {
-    data: packages.map(pkg => ({
+  // Tambahkan maxStudent dan sisaKursi jika ada tipe kelas
+  const result = [];
+  for (const pkg of packages) {
+    const kelasGroup = pkg.groupType.find(gt => gt.type === 'kelas');
+    let maxStudent = null;
+    let sisaKursi = null;
+
+    if (kelasGroup) {
+      maxStudent = kelasGroup.maxStudent;
+
+      const kelas = await prisma.class.findFirst({
+        where: {
+          order: {
+            packageId: pkg.id
+          }
+        },
+        include: {
+          studentClasses: true
+        }
+      });
+
+      const jumlahSiswa = kelas ? kelas.studentClasses.length : 0;
+      sisaKursi = maxStudent - jumlahSiswa;
+    }
+
+    result.push({
       name: pkg.name,
       level: pkg.level,
       totalMeetings: pkg.totalMeetings,
@@ -67,10 +93,19 @@ async function getActiveBimbelPackages({ page = 1, pageSize = 8 } = {}) {
       groupType: pkg.groupType.map(gt => ({
         type: gt.type,
         price: gt.price,
-        discPrice: gt.discPrice
+        discPrice: gt.discPrice,
+        maxStudent: gt.maxStudent
       })),
-      days: pkg.days ? JSON.parse(pkg.days) : [] 
-    })),
+      days: pkg.days ? JSON.parse(pkg.days) : [],
+      ...(kelasGroup && {
+        maxStudent,
+        sisaKursi
+      })
+    });
+  }
+
+  return {
+    data: result,
     total,
     page,
     pageSize
@@ -189,7 +224,8 @@ async function getBimbelPackageBySlug(slug) {
           id: true,
           type: true,
           price: true,
-          discPrice: true
+          discPrice: true,
+          maxStudent: true
         }
       }
     },
@@ -197,6 +233,28 @@ async function getBimbelPackageBySlug(slug) {
 
   if (!pkg) {
     return null;
+  }
+
+  const kelasGroup = pkg.groupType.find(gt => gt.type === 'kelas');
+  let maxStudent = null;
+  let sisaKursi = null;
+
+  if (kelasGroup) {
+    maxStudent = kelasGroup.maxStudent;
+
+    const kelas = await prisma.class.findFirst({
+      where: {
+        order: {
+          packageId: pkg.id
+        }
+      },
+      include: {
+        studentClasses: true
+      }
+    });
+
+    const jumlahSiswa = kelas ? kelas.studentClasses.length : 0;
+    sisaKursi = maxStudent - jumlahSiswa;
   }
 
   return {
@@ -218,8 +276,13 @@ async function getBimbelPackageBySlug(slug) {
       id: gt.id,
       type: gt.type,
       price: gt.price,
-      discPrice: gt.discPrice 
+      discPrice: gt.discPrice,
+      maxStudent: gt.maxStudent
     })),
+    ...(kelasGroup && {
+      maxStudent,
+      sisaKursi
+    }),
     days: pkg.days ? JSON.parse(pkg.days) : [] 
   };
 }
@@ -740,19 +803,44 @@ async function getBimbelPackagesByPopularity() {
       },
       groupType: {
         select: {
+          id: true,
           type: true,
           price: true,
-          discPrice: true
+          discPrice: true,
+          maxStudent: true
         }
       }
     }
   });
 
-  const packagesWithOrderCount = packages.map(pkg => {
+  const result = [];
+  for (const pkg of packages) {
     const orderCountEntry = orderCounts.find(order => order.packageId === pkg.id);
     const orderCount = orderCountEntry ? orderCountEntry._count.packageId : 0;
 
-    return {
+    const kelasGroup = pkg.groupType.find(gt => gt.type === 'kelas');
+    let maxStudent = null;
+    let sisaKursi = null;
+
+    if (kelasGroup) {
+      maxStudent = kelasGroup.maxStudent;
+
+      const kelas = await prisma.class.findFirst({
+        where: {
+          order: {
+            packageId: pkg.id
+          }
+        },
+        include: {
+          studentClasses: true
+        }
+      });
+
+      const jumlahSiswa = kelas ? kelas.studentClasses.length : 0;
+      sisaKursi = maxStudent - jumlahSiswa;
+    }
+
+    result.push({
       id: pkg.id,
       name: pkg.name,
       level: pkg.level,
@@ -767,14 +855,19 @@ async function getBimbelPackagesByPopularity() {
       groupType: pkg.groupType.map(gt => ({
         type: gt.type,
         price: gt.price,
-        discPrice: gt.discPrice
+        discPrice: gt.discPrice,
+        maxStudent: gt.maxStudent
       })),
-      days: pkg.days ? JSON.parse(pkg.days) : [], 
-      orderCount
-    };
-  });
+      days: pkg.days ? JSON.parse(pkg.days) : [],
+      orderCount,
+      ...(kelasGroup && {
+        maxStudent,
+        sisaKursi
+      })
+    });
+  }
 
-  return packagesWithOrderCount
+  return result
     .sort((a, b) => b.orderCount - a.orderCount)
     .slice(0, 4);
 }
@@ -1075,15 +1168,18 @@ async function getRecommendations(user) {
       },
       groupType: {
         select: {
+          id: true,
           type: true,
           price: true,
-          discPrice: true
+          discPrice: true,
+          maxStudent: true
         }
       },
       orders: true
     }
   });
 
+  // Tambahkan maxStudent dan sisaKursi jika ada tipe kelas
   const packagesWithOrderCount = recommendedPackages.map(pkg => ({
     ...pkg,
     orderCount: pkg.orders.length,
@@ -1098,27 +1194,60 @@ async function getRecommendations(user) {
       return a.hasDiscPrice ? -1 : 1;
     })
     .slice(0, 4);
-  
-  return sortedPackages.map(pkg => ({
-    id: pkg.id,
-    name: pkg.name,
-    level: pkg.level,
-    totalMeetings: pkg.totalMeetings,
-    time: pkg.time,
-    duration: pkg.duration,
-    area: pkg.area,
-    slug: pkg.slug,
-    isActive: pkg.isActive,
-    tutorName: pkg.user.name,
-    photo: pkg.user.tutors[0]?.photo || null,
-    groupType: pkg.groupType.map(gt => ({
-      type: gt.type,
-      price: gt.price,
-      discPrice: gt.discPrice
-    })),
-    days: pkg.days ? JSON.parse(pkg.days) : [], // <-- langsung dari kolom days
-    orderCount: pkg.orderCount
-  }));
+
+  // Hitung maxStudent dan sisaKursi untuk kelas
+  const result = [];
+  for (const pkg of sortedPackages) {
+    const kelasGroup = pkg.groupType.find(gt => gt.type === 'kelas');
+    let maxStudent = null;
+    let sisaKursi = null;
+
+    if (kelasGroup) {
+      maxStudent = kelasGroup.maxStudent;
+
+      const kelas = await prisma.class.findFirst({
+        where: {
+          order: {
+            packageId: pkg.id
+          }
+        },
+        include: {
+          studentClasses: true
+        }
+      });
+
+      const jumlahSiswa = kelas ? kelas.studentClasses.length : 0;
+      sisaKursi = maxStudent - jumlahSiswa;
+    }
+
+    result.push({
+      id: pkg.id,
+      name: pkg.name,
+      level: pkg.level,
+      totalMeetings: pkg.totalMeetings,
+      time: pkg.time,
+      duration: pkg.duration,
+      area: pkg.area,
+      slug: pkg.slug,
+      isActive: pkg.isActive,
+      tutorName: pkg.user.name,
+      photo: pkg.user.tutors[0]?.photo || null,
+      groupType: pkg.groupType.map(gt => ({
+        type: gt.type,
+        price: gt.price,
+        discPrice: gt.discPrice,
+        maxStudent: gt.maxStudent
+      })),
+      days: pkg.days ? JSON.parse(pkg.days) : [],
+      orderCount: pkg.orderCount,
+      ...(kelasGroup && {
+        maxStudent,
+        sisaKursi
+      })
+    });
+  }
+
+  return result;
 }
 
 /**
@@ -1162,9 +1291,11 @@ async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {
       },
       groupType: {
         select: {
+          id: true,
           type: true,
           price: true,
-          discPrice: true
+          discPrice: true,
+          maxStudent: true
         }
       }
     },
@@ -1181,24 +1312,57 @@ async function getFilteredBimbelPackages({ searchText, level, hari, durasi } = {
     });
   }
 
-  return filteredPackages.map(pkg => ({
-    name: pkg.name,
-    level: pkg.level,
-    totalMeetings: pkg.totalMeetings,
-    time: pkg.time,
-    duration: pkg.duration,
-    area: pkg.area,
-    slug: pkg.slug,
-    isActive: pkg.isActive,
-    tutorName: pkg.user.name,
-    photo: pkg.user.tutors[0]?.photo,
-    groupType: pkg.groupType.map(gt => ({
-      type: gt.type,
-      price: gt.price,
-      discPrice: gt.discPrice
-    })),
-    days: pkg.days ? JSON.parse(pkg.days) : [] 
-  }));
+  // Tambahkan maxStudent dan sisaKursi jika ada tipe kelas
+  const result = [];
+  for (const pkg of filteredPackages) {
+    const kelasGroup = pkg.groupType.find(gt => gt.type === 'kelas');
+    let maxStudent = null;
+    let sisaKursi = null;
+
+    if (kelasGroup) {
+      maxStudent = kelasGroup.maxStudent;
+
+      const kelas = await prisma.class.findFirst({
+        where: {
+          order: {
+            packageId: pkg.id
+          }
+        },
+        include: {
+          studentClasses: true
+        }
+      });
+
+      const jumlahSiswa = kelas ? kelas.studentClasses.length : 0;
+      sisaKursi = maxStudent - jumlahSiswa;
+    }
+
+    result.push({
+      name: pkg.name,
+      level: pkg.level,
+      totalMeetings: pkg.totalMeetings,
+      time: pkg.time,
+      duration: pkg.duration,
+      area: pkg.area,
+      slug: pkg.slug,
+      isActive: pkg.isActive,
+      tutorName: pkg.user.name,
+      photo: pkg.user.tutors[0]?.photo,
+      groupType: pkg.groupType.map(gt => ({
+        type: gt.type,
+        price: gt.price,
+        discPrice: gt.discPrice,
+        maxStudent: gt.maxStudent
+      })),
+      days: pkg.days ? JSON.parse(pkg.days) : [],
+      ...(kelasGroup && {
+        maxStudent,
+        sisaKursi
+      })
+    });
+  }
+
+  return result;
 }
 
 /**
