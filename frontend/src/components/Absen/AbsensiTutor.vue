@@ -108,7 +108,7 @@ function confirmAbsen() {
     return
   }
 
-  fetch('/attendance/masuk', {
+  fetch('http://localhost:3000/attendance/masuk', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

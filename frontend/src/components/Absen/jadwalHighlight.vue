@@ -12,6 +12,7 @@ const router = useRouter();
 const tagTypeMap = {
   "Terjadwal": "success",
   "Jadwal Ulang": "warning",
+  "Terlambat": "error",
   "Masuk": "info",
   "Izin": "error"
 };
@@ -20,6 +21,7 @@ function statusLabel(status) {
   switch (status) {
     case "masuk": return "Masuk";
     case "terjadwal": return "Terjadwal";
+    case "terlambat": return "Terlambat";
     case "jadwal_ulang": return "Jadwal Ulang";
     case "izin": return "Izin";
     default: return status;

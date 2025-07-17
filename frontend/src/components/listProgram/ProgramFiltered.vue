@@ -144,6 +144,10 @@ function handleButton(slug) {
               </div>
               <div class="badge">{{ program.level }}</div>
             </div>
+            <div class="info-row" v-if="groupTypeLabel(program.groupType) == 'Kelas'">
+              <span class="label"><strong>Kapasitas</strong></span>
+              <span class="value">:Tersisa  <strong>10</strong> siswa</span>
+            </div>
             <div class="info-row"><span class="label"><strong>Area</strong></span><span class="value">: {{ program.area }}</span></div>
             <div class="info-row"><span class="label"><strong>Hari</strong></span><span class="value">: {{ program.days.join(', ') }}</span></div>
             <div class="info-row"><span class="label"><strong>Pukul</strong></span><span class="value">: {{ formatWaktu(program.time) }}</span></div>
@@ -212,7 +216,7 @@ function handleButton(slug) {
 }
 .label {
     text-align: left;
-    width: 60px;
+    min-width: 80px;
 }
 
 
