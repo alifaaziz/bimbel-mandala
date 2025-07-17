@@ -4,18 +4,20 @@
 
     <div class="search-container">
       <n-input
-        type="text"
-        round
-        size="large"
-        placeholder="Cari jadwal program bimbel...">
+      type="text"
+      v-model:value="searchText"
+      round
+      size="large"
+      placeholder="Cari jadwal">
         <template #prefix>
           <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
         </template>
       </n-input>
     </div>
 
+    <h2 class="headersb3">Daftar Jadwal</h2>
+
     <section class="schedule-section">
-      <h2 class="headersb2">Jadwal Program</h2>
       <div class="table-responsive">
         <table class="schedule-table">
           <thead>
@@ -24,7 +26,7 @@
               <th>Kode <i class="fas fa-chevron-down sort-icon"></i></th>
               <th>Tanggal <i class="fas fa-chevron-down sort-icon"></i></th>
               <th>Jam <i class="fas fa-chevron-down sort-icon"></i></th>
-              <th>Status</th> <th>Detail</th>
+              <th>Detail</th>
             </tr>
           </thead>
           <tbody>
@@ -36,15 +38,6 @@
               <td>#{{ item.kode }}</td>
               <td>{{ item.tanggal }}</td>
               <td>{{ item.jam }}</td>
-              <td>
-                <n-tag
-                  :type="getStatusInfo(item.status).type"
-                  :bordered="false"
-                  round
-                  style="width: 100px; justify-content: center;">
-                  {{ getStatusInfo(item.status).label }}
-                </n-tag>
-              </td>
               <td>
                 <button class="detail-button" @click="showDetail(item)">
                   <img src="@/assets/icons/more-horizontal.svg" alt="">
@@ -67,41 +60,34 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-// [TAMBAH] Impor NTag dari Naive UI
-import { NInput, NPagination, NTag } from 'naive-ui';
 import { formatTanggal, formatWaktu } from '@/utils/formatTanggal';
-
+import { ref, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const scheduleItems = ref([]);
 const page = ref(1);
 const limit = ref(10);
 const totalPages = ref(1);
+const searchText = ref('');
 const router = useRouter();
+let searchTimeout = null;
 
 const fetchClosestSchedules = async (requestedPage = page.value) => {
   try {
     const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Token tidak ditemukan. Silakan login kembali.');
-    }
-    const response = await fetch(`http://localhost:3000/schedules/closest?page=${requestedPage}&limit=${limit.value}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    if (!token) throw new Error('Token tidak ditemukan. Silakan login kembali.');
+    const response = await fetch(
+      `http://localhost:3000/schedules/closest?page=${requestedPage}&limit=${limit.value}&search=${encodeURIComponent(searchText.value)}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
-
     scheduleItems.value = result.data.data.map(item => ({
-      id: item.id,
       kode: item.classCode,
       bimbel: {
         subject: item.packageName,
@@ -109,40 +95,15 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
       },
       tanggal: formatTanggal(item.date),
       jam: formatWaktu(item.date),
-      slug: item.slug,
-      status: item.status
+      slug: item.slug
     }));
-
     page.value = result.data.page;
     totalPages.value = result.data.totalPages;
-
   } catch (error) {
     console.error('Error fetching closest schedules:', error);
     alert('Gagal mengambil data jadwal terdekat.');
   }
 };
-
-// [TAMBAH] Fungsi untuk memproses status dan mengembalikan tipe & label
-const getStatusInfo = (status) => {
-  let type = 'default';
-  let label = status;
-
-  switch (status) {
-    case 'terjadwal':
-      type = 'success';
-      label = 'Terjadwal';
-      break;
-    case 'jadwal_ulang':
-      type = 'warning';
-      label = 'Jadwal Ulang';
-      break;
-    default:
-      type = 'default';
-      label = status;
-  }
-  return { type, label };
-};
-
 
 const showDetail = (item) => {
   const id = item.slug;
@@ -154,13 +115,21 @@ const onPageChange = (newPage) => {
   fetchClosestSchedules(newPage);
 };
 
+// Watcher dengan debounce agar fetch tidak terlalu sering
+watch(searchText, () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    page.value = 1;
+    fetchClosestSchedules(1);
+  }, 350);
+});
+
 onMounted(() => {
   fetchClosestSchedules();
 });
 </script>
 
 <style scoped>
-/* Tidak ada perubahan pada CSS, jadi saya singkat untuk keringkasan */
 .dashboard-view {
   width: 100%;
   background-color: white;
@@ -169,7 +138,7 @@ onMounted(() => {
   height: fit-content;
 }
 
-.headlineb2, .schedule-section h2 {
+.headlineb2, .schedule-section h2, .headersb3 {
   color: #154484;
 }
 
@@ -180,7 +149,7 @@ onMounted(() => {
 .img-search {
   width: 16px;
   height: auto;
-    margin-right: 8px;
+   margin-right: 8px;
 }
 
 .table-responsive {

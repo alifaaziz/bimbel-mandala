@@ -91,42 +91,48 @@ function onAccountNumberInput(e) {
 </script>
 
 <template>
-  <div class="container">
-    <h2 class="headersb1">Metode Pembayaran</h2>
-    <n-button type="primary" @click="showModal = true">+ Tambah Metode Pembayaran</n-button>
-
-    <div class="method-list">
-      <n-card v-for="item in paymentMethods" :key="item.id" style="margin-bottom: 12px">
-        <div class="card-content">
-          <div>
-            <strong>{{ item.name }}</strong><br />
-            {{ item.accountNumber }}<br />
+  <div class="container-luar">
+    <div class="container">
+      <h2 class="headersb1">Metode Pembayaran</h2>
+      <n-button type="primary" @click="showModal = true">+ Tambah Metode Pembayaran</n-button>
+  
+      <div class="method-list">
+        <n-card v-for="item in paymentMethods" :key="item.id" style="margin-bottom: 12px">
+          <div class="card-content">
+            <div>
+              <strong>{{ item.name }}</strong><br />
+              {{ item.accountNumber }}<br />
+            </div>
+            <n-button type="error" size="small" @click="removeMethod(item.id)">Hapus</n-button>
           </div>
-          <n-button type="error" size="small" @click="removeMethod(item.id)">Hapus</n-button>
-        </div>
-      </n-card>
-    </div>
-
-    <!-- Modal Tambah -->
-    <n-modal v-model:show="showModal" title="Tambah Metode Pembayaran" preset="dialog">
-      <div style="display: flex; flex-direction: column; gap: 1rem;">
-        <n-input type="text" v-model:value="newPayment.name" placeholder="Nama Bank / E-Wallet"/>
-        <n-input
-          type="text"
-          v-model:value="newPayment.accountNumber"
-          placeholder="Nomor Rekening / HP"
-          @input="onAccountNumberInput"
-        />
-        <n-button type="primary" block @click="addPaymentMethod">Simpan</n-button>
+        </n-card>
       </div>
-    </n-modal>
+  
+      <!-- Modal Tambah -->
+      <n-modal v-model:show="showModal" title="Tambah Metode Pembayaran" preset="dialog">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <n-input type="text" v-model:value="newPayment.name" placeholder="Nama Bank / E-Wallet"/>
+          <n-input
+            type="text"
+            v-model:value="newPayment.accountNumber"
+            placeholder="Nomor Rekening / HP"
+            @input="onAccountNumberInput"
+          />
+          <n-button type="primary" block @click="addPaymentMethod">Simpan</n-button>
+        </div>
+      </n-modal>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.container-luar{
+  overflow-y: auto;
+  width: 100%;
+}
 .container {
   margin: 20px;
-  width: 100%;
+  width: 100wh;
   padding: 24px;
   background-color: white;
   border-radius: 16px;
