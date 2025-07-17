@@ -12,7 +12,7 @@ const route = useRoute();
 const slug = route.params.id as string; // Ambil slug dari route params
 const programData = ref<any>(null);
 const isTutor = ref(false);
-const isRegisteredProgram = ref(false); // State untuk mengecek apakah program terdaftar
+const isRegisteredProgram = ref(false);
 const isKelasType = ref(false);
 
 onMounted(async () => {
@@ -49,7 +49,9 @@ onMounted(async () => {
     });
     if (classesRes.ok) {
       const classesData = await classesRes.json();
-      isRegisteredProgram.value = classesData.data.some((cls: any) => cls.slug === slug);
+      isRegisteredProgram.value = classesData.data.some(
+        (cls) => cls.slug === slug && cls.status !== 'selesai'
+      );
     }
   } catch (err) {
     programData.value = null;
