@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { NCard } from 'naive-ui';
 import butSecondSmall from '../dirButton/butSecondSmall.vue';
+import { formatWaktu } from '@/utils/formatTanggal';
 
 const limitedPrograms = ref([]);
 const router = useRouter();
@@ -16,11 +17,6 @@ onMounted(async () => {
     console.error('Gagal fetch data:', err);
   }
 });
-
-function formatTime(dateTime) {
-  const date = new Date(dateTime);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-}
 
 function truncateName(name) {
   return name.length > 16 ? name.slice(0, 16) + '...' : name;
@@ -79,7 +75,7 @@ function handleButton(slug) {
             </div>
             <div class="info-row">
                 <span class="label"><strong>Pukul</strong></span>
-                <span class="value">: {{ formatTime(program.time) }}</span>
+                <span class="value">: {{ formatWaktu(program.time) }}</span>
             </div>
             <div class="info-row">
                 <span class="label"><strong>Durasi</strong></span>

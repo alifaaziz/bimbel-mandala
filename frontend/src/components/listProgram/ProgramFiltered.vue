@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { NCard } from 'naive-ui';
 import butSecondSmall from '../dirButton/butSecondSmall.vue';
+import { formatWaktu } from '@/utils/formatTanggal';
 
 const props = defineProps({
   filters: {
@@ -101,11 +102,6 @@ async function fetchData() {
   }
 }
 
-function formatTime(dateTime) {
-  const date = new Date(dateTime);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-}
-
 function truncateName(name) {
   return name.length > 16 ? name.slice(0, 16) + '...' : name;
 }
@@ -150,7 +146,7 @@ function handleButton(slug) {
             </div>
             <div class="info-row"><span class="label"><strong>Area</strong></span><span class="value">: {{ program.area }}</span></div>
             <div class="info-row"><span class="label"><strong>Hari</strong></span><span class="value">: {{ program.days.join(', ') }}</span></div>
-            <div class="info-row"><span class="label"><strong>Pukul</strong></span><span class="value">: {{ formatTime(program.time) }}</span></div>
+            <div class="info-row"><span class="label"><strong>Pukul</strong></span><span class="value">: {{ formatWaktu(program.time) }}</span></div>
             <div class="info-row"><span class="label"><strong>Durasi</strong></span><span class="value">: {{ program.duration }} menit</span></div>
             <div class="Action">
               <butSecondSmall :label="isTutor ? 'Detail Program' : 'Daftar Program'" @click="handleButton(program.slug)" />

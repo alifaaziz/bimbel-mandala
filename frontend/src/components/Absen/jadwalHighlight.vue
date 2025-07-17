@@ -4,6 +4,7 @@ import { NCard, NTag } from 'naive-ui';
 import butJadwal from '../dirButton/butJadwal.vue';
 import butDetailJadwal from '../dirButton/butDetailJadwal.vue';
 import { useRouter } from 'vue-router';
+import { formatTanggal, formatWaktu } from '../../utils/formatTanggal.js';
 
 const jadwalList = ref([]);
 const router = useRouter();
@@ -25,18 +26,6 @@ function statusLabel(status) {
   }
 }
 
-function formatTanggal(dateStr) {
-  const date = new Date(dateStr);
-  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
-  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-  return `${hari}, ${tanggal}`;
-}
-
-function formatJam(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-}
-
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (!token) return;
@@ -53,7 +42,7 @@ onMounted(async () => {
         level: item.level,
         tutorName: item.tutorName,
         tanggal: formatTanggal(item.date),
-        jam: formatJam(item.date),
+        jam: formatWaktu(item.date),
         status: statusLabel(item.status),
         photo: item.photo,
         slug: item.slug

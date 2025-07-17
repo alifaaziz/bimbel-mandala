@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, watch, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ButPrimerNormal from '../dirButton/butPrimerNormal.vue';
+import { formatTanggal } from '@/utils/formatTanggal';
 
 const route = useRoute();
 const router = useRouter();
@@ -12,6 +13,8 @@ const options = ref<any[]>([]); // Opsi dropdown
 const selectedOption = ref<string | null>(null); // Opsi yang dipilih
 const address = ref(''); // Alamat lokasi bimbing
 const isSubmitting = ref(false);
+const banks = ref([]);
+const selectedBankId = ref(null);
 
 onMounted(async () => {
   try {
@@ -40,6 +43,23 @@ onMounted(async () => {
       { label: "Kelompok 5 Siswa", value: "grup5", disabled: !availableGroupTypes.includes("grup5") },
       { label: "Kelas", value: "kelas", disabled: !availableGroupTypes.includes("kelas") },
     ];
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/payments', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (res.ok) {
+        const result = await res.json();
+        banks.value = result.data.map((bank) => ({
+          value: bank.id,
+          label: `${bank.accountNumber} (${bank.platform})`
+        }));
+      }
+    } catch (err) {
+      banks.value = [];
+      console.error('Gagal mengambil data bank:', err);
+    }
   } catch (err) {
     programData.value = null;
     console.error('Error:', err);
@@ -93,7 +113,7 @@ async function handleConfirm() {
     return;
   }
 
-  if (!selectedOption.value || !address.value) {
+  if (!selectedOption.value || !address.value || !selectedBankId.value) {
     alert('Harap lengkapi semua data sebelum melanjutkan.');
     isSubmitting.value = false;
     return;
@@ -113,6 +133,7 @@ async function handleConfirm() {
     packageId: programData.value.id,
     groupTypeId: selectedGroup.id,
     address: address.value,
+    paymentId: selectedBankId.value
   };
 
   try {
@@ -211,28 +232,6 @@ const InfoRow = defineComponent({
 
 const value = ref(null)
 
-const banks = [
-  {
-    value: "BRI",
-    label: "xxxx-xxxx-xxxx-1234 (BRI)"
-  },
-  {
-    value: "BCA",
-    label: "xxxx-xxxx-xxxx-5678 (BCA)"
-  },
-  {
-    value: "BNI",
-    label: "xxxx-xxxx-xxxx-9101 (BNI)"
-  },
-  {
-    value: "Mandiri",
-    label: "08xx-xxxx-xxxx (DANA)"
-  }
-].map((s) => ({
-  value: s.value.toLowerCase(),
-  label: s.label
-}))
-
 </script>
 
 <template>
@@ -279,7 +278,7 @@ const banks = [
                 <InfoRow label="Area/Lokasi" :value="programData.area" />
                 <InfoRow
                   label="Mulai"
-                  :value="programData.startDate ? new Date(programData.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'"
+                  :value="programData.startDate ? formatTanggal(programData.startDate) : '-'"
                   v-if="programData.groupType && programData.groupType.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))"
                 />
                 <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
@@ -341,7 +340,7 @@ const banks = [
             <p>List Rakening</p>
             <p>Transfer</p>
           </div>
-          <n-radio-group v-model:value="value" name="radiogroup">
+          <n-radio-group v-model:value="selectedBankId" name="radiogroup">
             <n-space vertical>
               <n-radio 
                 v-for="bank in banks"

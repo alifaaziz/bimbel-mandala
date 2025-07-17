@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatWaktu } from '@/utils/formatTanggal';
 import { ref, onMounted, h } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -45,16 +46,6 @@ onMounted(async () => {
     console.error('Error:', err);
   }
 });
-
-function formatTime(isoString: string): string {
-  if (!isoString) return '';
-  const date = new Date(isoString);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) + ' WIB';
-}
-
-function formatCurrency(amount: number): string {
-  return `Rp${amount.toLocaleString('id-ID')}`;
-}
 
 interface InfoRowProps {
   label: string;
@@ -128,7 +119,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
           <n-space vertical size="medium" class="space-detail bodyr2">
             <InfoRow label="Area" :value="programData.area" />
             <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
-            <InfoRow label="Pukul" :value="formatTime(programData.time)" />
+            <InfoRow label="Pukul" :value="formatWaktu(programData.time)" />
             <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
           </n-space>
         </div>

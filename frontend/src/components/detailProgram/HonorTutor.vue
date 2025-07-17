@@ -72,10 +72,7 @@ onMounted(async () => {
         <h3 class="headersb4">{{ formatGroupType(group.type) }}</h3>
         <div class="detail-skema">
           <div>
-            <span v-if="group.discPrice" class="bodysb3">
-              Rp {{ group.discPrice.toLocaleString('id-ID') }}
-            </span>
-            <span v-else class="bodysb3">
+            <span class="bodysb3">
               Rp {{ group.price.toLocaleString('id-ID') }}
             </span>
           </div>

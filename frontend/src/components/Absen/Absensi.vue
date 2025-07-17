@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { NTag } from 'naive-ui'
 import butAbsen from '../dirButton/butAbsen.vue'
 import butIzin from '../dirButton/butIzin.vue'
+import { formatTanggal, formatWaktu } from '../../utils/formatTanggal.js'
 
 // State
 const showAbsenModal = ref(false)
@@ -18,27 +19,22 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('http://localhost:3000/schedules', {
+    const res = await fetch('http://localhost:3000/schedules/highlight', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
     if (!res.ok) throw new Error('Gagal mengambil jadwal')
     const result = await res.json()
-    const item = (result.data.data || [])[0] // Ambil item pertama
+    const item = result.data
 
     if (item) {
       schedule.value = {
         id: item.id,
         subject: item.packageName + ' ' + (item.level || ''),
         tutor: item.tutorName,
-        date: new Date(item.date).toLocaleDateString('id-ID', {
-          weekday: 'long',
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        }),
-        time: item.date ? new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+        date: formatTanggal(item.date), 
+        time: formatWaktu(item.date),
         duration: item.duration + ' menit',
         location: item.address,
         meetingNumber: item.meet,

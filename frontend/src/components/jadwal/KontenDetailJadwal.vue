@@ -7,6 +7,7 @@ import butIzin from '../dirButton/butIzin.vue'
 // --- [BARU] Impor untuk Tombol Hubungi Admin ---
 import { NButton, NIcon } from 'naive-ui'
 import { LogoWhatsapp } from '@vicons/ionicons5'
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal'
 
 // const isScheduled = ref(true)
 const showAbsenModal = ref(false)
@@ -140,18 +141,6 @@ function handleContact() {
   window.open(`https://wa.me/${adminWhatsappNumber}`, '_blank');
 }
 
-function formatTanggal(dateStr: string) {
-  const date = new Date(dateStr);
-  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
-  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-  return `${hari}, ${tanggal}`;
-}
-
-function formatJam(dateStr: string) {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
-
 const tagTypeMap = {
   "terjadwal": "success",
   "jadwal_ulang": "warning",
@@ -198,7 +187,7 @@ function statusLabel(status: string) {
         </div>
         <div class="info-row">
           <span class="label"><strong>Pukul</strong></span>
-          <span class="value">: {{ formatJam(schedule.date) }}</span>
+          <span class="value">: {{ formatWaktu(schedule.date) }}</span>
         </div>
         <div class="info-row">
           <span class="label"><strong>Durasi</strong></span>

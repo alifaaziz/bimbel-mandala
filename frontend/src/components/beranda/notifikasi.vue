@@ -1,19 +1,11 @@
 <script setup>
+import { formatWaktu } from '@/utils/formatTanggal';
 import { ref, computed, onMounted } from 'vue';
 
 const showNotificationPopup = ref(false);
 const notifications = ref([]);
 const isLoggedIn = ref(!!localStorage.getItem('token'));
 
-function formatNotifTime(dateStr) {
-  const now = new Date();
-  const date = new Date(dateStr);
-  const diff = now - date;
-  if (diff < 86400000) {
-    return dateStr.slice(11, 16);
-  }
-  return date.toLocaleDateString('id-ID');
-}
 
 const unreadCount = computed(() => notifications.value.filter(n => !n.read).length);
 
@@ -44,7 +36,7 @@ async function fetchNotifications() {
 const notificationsWithTime = computed(() =>
   notifications.value.map(item => ({
     ...item,
-    time: formatNotifTime(item.createdAt)
+    time: formatWaktu(item.createdAt)
   }))
 );
 

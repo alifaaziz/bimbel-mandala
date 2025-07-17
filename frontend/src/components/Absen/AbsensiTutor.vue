@@ -6,6 +6,7 @@ import butSumJadwalUlang from '../dirButton/butPrimerSmall.vue'
 import butBatal from '../dirButton/butSecondSmall.vue'
 import butJadwalUlang from '../dirButton/butSecondNormal.vue'
 import butSucJadwalUlang from '../dirButton/butPrimerNormal.vue'
+import { formatTanggal, formatWaktu } from '../../utils/formatTanggal.js'
 
 // State
 const showAbsenModal = ref(false)
@@ -26,26 +27,22 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('http://localhost:3000/schedules', {
+    const res = await fetch('http://localhost:3000/schedules/highlight', {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (!res.ok) throw new Error('Gagal mengambil jadwal')
     const result = await res.json()
 
     // Ambil jadwal pertama
-    const item = (result.data.data || [])[0]
+    const item = result.data
     if (item) {
       schedule.value = {
         id: item.id,
         subject: item.packageName + ' ' + (item.level || ''),
         tutor: item.tutorName,
-        date: new Date(item.date).toLocaleDateString('id-ID', {
-          weekday: 'long',
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        }),
-        time: item.date ? new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+        date: item.date ? formatTanggal(item.date) : '',
+        time: item.date ? formatWaktu(item.date) : '',
+        rawDate: item.date, // <-- tambahkan ini
         duration: item.duration + ' menit',
         location: item.address,
         meetingNumber: item.meet,
@@ -81,17 +78,13 @@ const tagTypeMap: Record<string, "default" | "error" | "success" | "warning" | "
 // Absen
 function openAbsenModal() {
   const now = new Date();
-  absenTime.value = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  now.setHours(now.getHours() + 7);
+  absenTime.value = formatWaktu(now.toISOString());
 
-  if (schedule.value?.time && schedule.value?.date) {
-    const [hour, minute] = schedule.value.time.split(':').map(Number);
-    const scheduledDate = new Date(schedule.value.date); // Ini sudah lokal ID string
-    const scheduled = new Date(scheduledDate);
-    scheduled.setHours(hour);
-    scheduled.setMinutes(minute);
+  if (schedule.value?.rawDate) {
+    const scheduled = new Date(schedule.value.rawDate);
     scheduled.setSeconds(0);
 
-    // Tambahkan 15 menit ke waktu jadwal
     const lateLimit = new Date(scheduled.getTime() + 15 * 60 * 1000);
     isLate.value = now > lateLimit;
   } else {

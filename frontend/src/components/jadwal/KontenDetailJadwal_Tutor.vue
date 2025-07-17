@@ -8,6 +8,7 @@ import butSecondNormal from '../dirButton/butSecondNormal.vue'
 
 import butSecondSmall from '../dirButton/butSecondSmall.vue'
 import butPrimerSmall from '../dirButton/butPrimerSmall.vue'
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal'
 
 const showAbsenModal = ref(false)
 const schedule = ref<any>(null)
@@ -40,17 +41,13 @@ onMounted(async () => {
 // Absen
 function openAbsenModal() {
   const now = new Date();
-  absenTime.value = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  now.setHours(now.getHours() + 7); // jika backend sudah GMT+7, baris ini bisa dihapus
+  absenTime.value = formatWaktu(now.toISOString());
 
-  if (schedule.value?.time && schedule.value?.date) {
-    const [hour, minute] = schedule.value.time.split(':').map(Number);
-    const scheduledDate = new Date(schedule.value.date); // Ini sudah lokal ID string
-    const scheduled = new Date(scheduledDate);
-    scheduled.setHours(hour);
-    scheduled.setMinutes(minute);
+  if (schedule.value?.date) {
+    const scheduled = new Date(schedule.value.date);
     scheduled.setSeconds(0);
 
-    // Tambahkan 15 menit ke waktu jadwal
     const lateLimit = new Date(scheduled.getTime() + 15 * 60 * 1000);
     isLate.value = now > lateLimit;
   } else {
@@ -99,18 +96,6 @@ function confirmAbsen() {
     .catch(err => {
       alert(err.message)
     })
-}
-
-function formatTanggal(dateStr: string) {
-  const date = new Date(dateStr);
-  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
-  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-  return `${hari}, ${tanggal}`;
-}
-
-function formatJam(dateStr: string) {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.');
 }
 
 const tagTypeMap = {
@@ -253,7 +238,7 @@ async function saveEditInfo() {
         </div>
         <div class="info-row">
           <span class="label"><strong>Pukul</strong></span>
-          <span class="value">: {{ formatJam(schedule.date) }}</span>
+          <span class="value">: {{ formatWaktu(schedule.date) }}</span>
         </div>
         <div class="info-row">
           <span class="label"><strong>Durasi</strong></span>
