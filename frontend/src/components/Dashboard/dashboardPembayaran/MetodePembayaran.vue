@@ -1,53 +1,92 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { NButton, NCard, NInput, NModal, NSelect, useMessage } from 'naive-ui'
 
 const message = useMessage()
 
-const paymentMethods = ref([
-  { id: 1, type: 'bank', name: 'BCA', accountNumber: '1234567890', accountName: 'Arel Savero' },
-  { id: 2, type: 'ewallet', name: 'OVO', accountNumber: '081234567890', accountName: 'Arel Savero' }
-])
-
+const paymentMethods = ref([])
 const showModal = ref(false)
 const newPayment = ref({
   type: '',
   name: '',
-  accountNumber: '',
-  accountName: ''
+  accountNumber: ''
 })
 
-const typeOptions = [
-  { label: 'Bank', value: 'bank' },
-  { label: 'E-Wallet', value: 'ewallet' }
-]
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const res = await fetch('http://localhost:3000/payments', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
+    if (res.ok) {
+      const result = await res.json()
+      paymentMethods.value = result.data.map(item => ({
+        id: item.id,
+        name: item.platform,
+        accountNumber: item.accountNumber,
+      }))
+    }
+  } catch (err) {
+    message.error('Gagal mengambil metode pembayaran')
+  }
+})
 
-const addPaymentMethod = () => {
-  if (!newPayment.value.type || !newPayment.value.name || !newPayment.value.accountNumber || !newPayment.value.accountName) {
+const addPaymentMethod = async () => {
+  if (!newPayment.value.name || !newPayment.value.accountNumber) {
     message.warning('Lengkapi semua data metode pembayaran!')
     return
   }
 
-  paymentMethods.value.push({
-    id: Date.now(),
-    ...newPayment.value
-  })
-
-  message.success('Metode pembayaran berhasil ditambahkan!')
-  showModal.value = false
-  newPayment.value = {
-    type: '',
-    name: '',
-    accountNumber: '',
-    accountName: ''
+  try {
+    const token = localStorage.getItem('token')
+    const res = await fetch('http://localhost:3000/payments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({
+        platform: newPayment.value.name,
+        accountNumber: newPayment.value.accountNumber
+      })
+    })
+    if (!res.ok) throw new Error('Gagal menambah metode pembayaran')
+    const result = await res.json()
+    paymentMethods.value.push({
+      id: result.data.id,
+      name: result.data.platform,
+      accountNumber: result.data.accountNumber
+    })
+    message.success('Metode pembayaran berhasil ditambahkan!')
+    showModal.value = false
+    newPayment.value = {
+      name: '',
+      accountNumber: ''
+    }
+  } catch (err) {
+    message.error('Gagal menambah metode pembayaran')
   }
 }
 
-const removeMethod = (id) => {
+const removeMethod = async (id) => {
   if (confirm('Yakin ingin menghapus metode pembayaran ini?')) {
-    paymentMethods.value = paymentMethods.value.filter(p => p.id !== id)
-    message.success('Metode pembayaran dihapus.')
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:3000/payments/${id}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (!res.ok) throw new Error('Gagal menghapus metode pembayaran');
+      paymentMethods.value = paymentMethods.value.filter(p => p.id !== id);
+      message.success('Metode pembayaran dihapus.');
+    } catch (err) {
+      message.error('Gagal menghapus metode pembayaran');
+    }
   }
+}
+
+function onAccountNumberInput(e) {
+  newPayment.value.accountNumber = e.target.value.replace(/\D/g, '');
 }
 </script>
 
@@ -57,25 +96,11 @@ const removeMethod = (id) => {
     <n-button type="primary" @click="showModal = true">+ Tambah Metode Pembayaran</n-button>
 
     <div class="method-list">
-      <h3 class="headersb2">Rekening Bank</h3>
-      <n-card v-for="item in paymentMethods.filter(p => p.type === 'bank')" :key="item.id" style="margin-bottom: 12px">
+      <n-card v-for="item in paymentMethods" :key="item.id" style="margin-bottom: 12px">
         <div class="card-content">
           <div>
             <strong>{{ item.name }}</strong><br />
             {{ item.accountNumber }}<br />
-            a.n. {{ item.accountName }}
-          </div>
-          <n-button type="error" size="small" @click="removeMethod(item.id)">Hapus</n-button>
-        </div>
-      </n-card>
-
-      <h3 class="headersb2">E-Wallet</h3>
-      <n-card v-for="item in paymentMethods.filter(p => p.type === 'ewallet')" :key="item.id" style="margin-bottom: 12px">
-        <div class="card-content">
-          <div>
-            <strong>{{ item.name }}</strong><br />
-            {{ item.accountNumber }}<br />
-            a.n. {{ item.accountName }}
           </div>
           <n-button type="error" size="small" @click="removeMethod(item.id)">Hapus</n-button>
         </div>
@@ -85,10 +110,13 @@ const removeMethod = (id) => {
     <!-- Modal Tambah -->
     <n-modal v-model:show="showModal" title="Tambah Metode Pembayaran" preset="dialog">
       <div style="display: flex; flex-direction: column; gap: 1rem;">
-        <n-select v-model:value="newPayment.type" :options="typeOptions" placeholder="Pilih Tipe"/>
         <n-input type="text" v-model:value="newPayment.name" placeholder="Nama Bank / E-Wallet"/>
-        <n-input-number v-model:value="newPayment.accountNumber" placeholder="Nomor Rekening / HP"/>
-        <n-input type="text" v-model:value="newPayment.accountName" placeholder="Nama Pemilik"/>
+        <n-input
+          type="text"
+          v-model:value="newPayment.accountNumber"
+          placeholder="Nomor Rekening / HP"
+          @input="onAccountNumberInput"
+        />
         <n-button type="primary" block @click="addPaymentMethod">Simpan</n-button>
       </div>
     </n-modal>

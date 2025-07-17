@@ -1,4 +1,5 @@
 <script setup>
+import { formatTanggal } from '@/utils/formatTanggal'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -20,16 +21,7 @@ async function fetchTinjauan() {
     dataTable.value = (json.data || []).map(item => ({
       jenis: item.jenis,
       tanggal: item.tanggal
-        ? `${new Date(item.tanggal).toLocaleDateString('id-ID', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-          })}, ${new Date(item.tanggal).toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit'
-          })}`
-        : '',
+        ? `${formatTanggal(item.tanggal)}, ${formatWaktu(item.tanggal)}` : '-',
       pertemuan: item.meet,
       jam: item.waktuAbsen,
       keterangan: item.keterangan

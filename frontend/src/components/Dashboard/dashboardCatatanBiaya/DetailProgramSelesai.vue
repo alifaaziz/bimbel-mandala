@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import butWaTambahPrimerNormal from '@/components/dirButton/butWaTambahPrimerNormal.vue';
 import BiayaProgram from './BiayaProgram.vue';
 import BiayaTutor from './BiayaTutor.vue';
+import { formatWaktu } from '@/utils/formatTanggal';
 
 const programData = ref<any>(null);
 
@@ -83,7 +84,7 @@ function waTutor() {
           </div>
           <div class="info-row">
             <span class="label"><strong>Pukul</strong></span>
-            <span class="value">: {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB</span>
+            <span class="value">: {{ formatWaktu(programData.time) }} WIB</span>
           </div>
           <div class="info-row">
             <span class="label"><strong>Durasi</strong></span>

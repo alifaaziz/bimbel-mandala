@@ -135,11 +135,11 @@ function closeRescheduleModal() {
           <div class="info-section bodyr2">
             <div class="info-row">
               <span class="label"><strong>Hari</strong></span>
-              <span class="value">: {{ new Date(schedule.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
+              <span class="value">: {{ formatTanggal(schedule.date) }}</span>
             </div>
             <div class="info-row">
               <span class="label"><strong>Pukul</strong></span>
-              <span class="value">: {{ new Date(schedule.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB</span>
+              <span class="value">: {{ formatWaktu(schedule.date) }} WIB</span>
             </div>
             <div class="info-row">
               <span class="label"><strong>Durasi</strong></span>
@@ -204,7 +204,7 @@ function closeRescheduleModal() {
         <p class="bodyr3" style="margin-bottom: 16px;">
           Pilih tanggal dan jam baru untuk:<br>
           <strong>
-            {{ schedule ? new Date(schedule.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '' }}
+            {{ schedule ? formatTanggal(schedule.date) : '' }}
           </strong>
           bersama {{ schedule ? schedule.tutorName : '' }}<br>
           <span>Pertemuan ke {{ schedule ? schedule.meet : '' }}</span>

@@ -1,15 +1,7 @@
 <script setup>
+import { formatTanggal } from '@/utils/formatTanggal';
 import { ref, onMounted } from 'vue';
 
-// Format tanggal ke "DD MMMM YYYY" (contoh: 12 Maret 2025)
-function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('id-ID', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  });
-}
 
 const latestTutors = ref([]);
 
@@ -24,7 +16,7 @@ const fetchLatestTutors = async () => {
     const json = await res.json();
     latestTutors.value = json.data.map(tutor => ({
       name: tutor.name,
-      date: formatDate(tutor.createdAt),
+      date: formatTanggal(tutor.createdAt),
       level: tutor.teachLevel
     }));
   } catch (e) {

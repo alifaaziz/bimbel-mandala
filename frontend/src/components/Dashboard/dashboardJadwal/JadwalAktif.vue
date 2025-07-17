@@ -58,6 +58,7 @@
 </template>
 
 <script setup>
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal';
 import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -90,15 +91,8 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
         subject: item.packageName,
         teacher: item.tutorName
       },
-      tanggal: new Date(item.date).toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }),
-      jam: new Date(item.date).toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
+      tanggal: formatTanggal(item.date),
+      jam: formatWaktu(item.date),
       slug: item.slug
     }));
     page.value = result.data.page;

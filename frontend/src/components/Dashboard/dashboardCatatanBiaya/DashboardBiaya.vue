@@ -69,6 +69,7 @@ import { ref, h, computed, onMounted, watch } from 'vue';
 import { NTag, NButton, NIcon } from 'naive-ui';
 import { EllipsisHorizontal } from '@vicons/ionicons5';
 import { useRouter } from 'vue-router'
+import { formatTanggal } from '@/utils/formatTanggal';
 
 const router = useRouter();
 
@@ -101,8 +102,8 @@ const fetchRecap = async () => {
         subject: item.packageName,
         tutor: item.tutorName,
         code: item.classCode,
-        startDate: new Date(item.startDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
-        endDate: new Date(item.endDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
+        startDate: formatTanggal(item.startDate),
+        endDate: formatTanggal(item.endDate),
         paymentStatus: item.salaryStatus === 'pending' ? 'Belum Terbayar' : 'Terbayar'
       }));
       total.value = result.total || result.data.length;

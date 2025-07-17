@@ -82,7 +82,7 @@ async function fetchData() {
       ...(durasi && { durasi: durasi.toString() })
     }).toString();
 
-    const url = `/packages/filtered?${queryParams}`;
+    const url = `http://localhost:3000/packages/filtered?${queryParams}`;
 
     try {
       const res = await fetch(url, {
