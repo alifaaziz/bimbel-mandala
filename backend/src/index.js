@@ -13,49 +13,51 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function main() {
-  const app = express();
-  const server = createServer(app);
+// 1. Inisialisasi app dan server dikeluarkan dari dalam function
+const app = express();
+const server = createServer(app);
 
-  if (appEnv.NODE_ENV === 'development') {
-    const { default: monitor } = await import('express-status-monitor');
-    app.use(monitor());
-  }
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-  app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+app.use(morgan('dev'));
 
-  app.use(express.static(path.resolve(__dirname, '../public')));
+// 2. Menggunakan top-level await untuk status monitor (hanya jalan di lokal)
+if (appEnv.NODE_ENV === 'development') {
+  const { default: monitor } = await import('express-status-monitor');
+  app.use(monitor());
+}
 
-  app.use(morgan('dev'));
+app.use(express.static(path.resolve(__dirname, '../public')));
 
-  loaders(app, server);
-  routes(app);
+loaders(app, server);
+routes(app);
 
-  app.get('*', (req, res, next) => {
-    if (req.path.includes('.')) return next();
-    if (
-      req.path.startsWith('/auth') ||
-      req.path.startsWith('/users') ||
-      req.path.startsWith('/notification') ||
-      req.path.startsWith('/docs') ||
-      req.path.startsWith('/status') ||
-      req.path.startsWith('/packages') ||
-      req.path.startsWith('/payments') ||
-      req.path.startsWith('/classes') ||
-      req.path.startsWith('/attendance') ||
-      req.path.startsWith('/orders') ||
-      req.path.startsWith('/apply') ||
-      req.path.startsWith('/salaries')
-    ) return next();
-    res.sendFile(path.resolve(__dirname, '../public/index.html'));
-  });
+app.get('*', (req, res, next) => {
+  if (req.path.includes('.')) return next();
+  if (
+    req.path.startsWith('/auth') ||
+    req.path.startsWith('/users') ||
+    req.path.startsWith('/notification') ||
+    req.path.startsWith('/docs') ||
+    req.path.startsWith('/status') ||
+    req.path.startsWith('/packages') ||
+    req.path.startsWith('/payments') ||
+    req.path.startsWith('/classes') ||
+    req.path.startsWith('/attendance') ||
+    req.path.startsWith('/orders') ||
+    req.path.startsWith('/apply') ||
+    req.path.startsWith('/salaries')
+  ) return next();
+  res.sendFile(path.resolve(__dirname, '../public/index.html'));
+});
 
-  errorMiddleware(app);
+errorMiddleware(app);
 
+if (!process.env.VERCEL) {
   server.listen(appEnv.PORT, () => {
     logger.info(`🚀 Server running on http://localhost:${appEnv.PORT}`);
     if (appEnv.NODE_ENV === 'development') {
@@ -78,4 +80,4 @@ function handleExit(signal) {
 process.on('SIGTERM', handleExit);
 process.on('SIGINT', handleExit);
 
-main();
+export default app;
