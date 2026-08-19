@@ -1,6 +1,6 @@
-# Bimbingan Belajar Mandala
+# Bimbingan Belajar
 
-This repository contains both the backend (Express.js) and frontend (Vue 3 + Vite) code for the Bimbingan Belajar Mandala application.
+This repository contains both the backend (Express.js) and frontend (Vue 3 + Vite) code for the Bimbingan Belajar application.
 
 ## Backend - Express.js
 
