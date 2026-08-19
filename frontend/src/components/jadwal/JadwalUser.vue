@@ -21,7 +21,6 @@
                   :page-count="pagination.pageCount"
                   @update:page="handlePageChange"
                   :page-slot="7"
-                  v-model:page="page"
                 />
               </div>
           </div>
@@ -30,7 +29,7 @@
 </template>
   
 <script>
-import { formatTanggal } from "@/utils/formatTanggal";
+import { formatTanggal, formatWaktu } from "@/utils/formatTanggal";
 import { NTag, useMessage, NPagination } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
 

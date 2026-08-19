@@ -1,5 +1,5 @@
 <script setup>
-import { formatTanggal } from '@/utils/formatTanggal'
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 

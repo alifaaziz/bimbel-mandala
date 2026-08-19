@@ -29,14 +29,14 @@ async function createStudent(payload, options = {}) {
         googleId: payload.googleId || null,
         ...(options.skipOtp ? { verified: true } : {})
     };
-    
+
 
     const verifiedUser = await prisma.user.findFirst({
         where: {
-          email: payload.email,
-          verified: true
+            email: payload.email,
+            verified: true
         }
-      });
+    });
 
     if (verifiedUser) {
         let errorMessage = 'Email already exists';
@@ -47,10 +47,10 @@ async function createStudent(payload, options = {}) {
 
     const unverifiedUser = await prisma.user.findFirst({
         where: {
-          email: payload.email,
-          verified: false
+            email: payload.email,
+            verified: false
         }
-      });
+    });
 
     if (unverifiedUser) {
         let errorMessage = 'Email already exists but not verified';
@@ -108,7 +108,7 @@ async function createUserWithRole(payload, file) {
         password: encryptedPassword,
         role,
         googleId: payload.googleId || null,
-        verified: true 
+        verified: true
     };
 
     let user = await prisma.user.findFirst({
@@ -310,7 +310,7 @@ async function getTutorsSortedByClassCount({ page = 1, pageSize = 10 } = {}) {
                 subject: detail.subjects || null,
                 teachLevel: detail.teachLevel || null,
                 description: detail.description || null,
-                photo: detail.photo || null,
+                photo: detail.photo || '/tutors/Tutor_Default.png',
                 classCount: tutor._count.class,
                 phone: detail.phone || null,
                 age: detail.birthDate ? getAge(detail.birthDate) : null
@@ -505,19 +505,19 @@ async function getNewTutors() {
  * @returns {Promise<Object>} The statistics object.
  */
 async function getStatistics() {
-  const [tutorCount, studentCount, packageCount, activePackageCount] = await Promise.all([
-    prisma.user.count({ where: { role: 'tutor' } }),
-    prisma.user.count({ where: { role: 'siswa' } }),
-    prisma.bimbelPackage.count(),
-    prisma.bimbelPackage.count({ where: { isActive: true } })
-  ]);
+    const [tutorCount, studentCount, packageCount, activePackageCount] = await Promise.all([
+        prisma.user.count({ where: { role: 'tutor' } }),
+        prisma.user.count({ where: { role: 'siswa' } }),
+        prisma.bimbelPackage.count(),
+        prisma.bimbelPackage.count({ where: { isActive: true } })
+    ]);
 
-  return {
-    tutorCount,
-    studentCount,
-    packageCount,
-    activePackageCount
-  };
+    return {
+        tutorCount,
+        studentCount,
+        packageCount,
+        activePackageCount
+    };
 }
 
 /**
@@ -594,10 +594,10 @@ async function getAllTutors() {
     }));
 }
 
-export const UserService = { 
+export const UserService = {
     createStudent,
-    createUserWithRole, 
-    updateUser, 
+    createUserWithRole,
+    updateUser,
     getTutorsSortedByClassCount,
     getUserById,
     getTopStudents,

@@ -1,5 +1,5 @@
 <script>
-import { formatTanggal } from "@/utils/formatTanggal";
+import { formatTanggal, formatWaktu } from "@/utils/formatTanggal";
 import { NTag } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
 
