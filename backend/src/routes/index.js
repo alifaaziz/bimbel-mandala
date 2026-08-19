@@ -10,11 +10,13 @@ import docs from './docs.js';
 import attendance from './attendance.js';
 import tutorApplication from './tutorApplication.js';
 import salary from './salary.js';
+import payment from './payment.js';
 
 export default (app) => {
     root(app);
     auth(app);
     users(app);
+    payment(app);
     notification(app);
     _package(app);
     order(app);

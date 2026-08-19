@@ -4,6 +4,7 @@
 
     <div class="search-container">
       <n-input
+      type="text"
       v-model:value="searchText"
       round
       size="large"
@@ -57,6 +58,7 @@
 </template>
 
 <script setup>
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal';
 import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -79,8 +81,8 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
-      }
-    );
+      }
+    );
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     scheduleItems.value = result.data.data.map(item => ({
@@ -89,15 +91,8 @@ const fetchClosestSchedules = async (requestedPage = page.value) => {
         subject: item.packageName,
         teacher: item.tutorName
       },
-      tanggal: new Date(item.date).toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }),
-      jam: new Date(item.date).toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
+      tanggal: formatTanggal(item.date),
+      jam: formatWaktu(item.date),
       slug: item.slug
     }));
     page.value = result.data.page;

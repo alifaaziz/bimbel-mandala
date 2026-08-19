@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { NTag } from 'naive-ui'
 import butAbsen from '../dirButton/butAbsen.vue'
 import butIzin from '../dirButton/butIzin.vue'
+import { formatTanggal, formatWaktu } from '../../utils/formatTanggal.js'
 
 // State
 const showAbsenModal = ref(false)
@@ -18,27 +19,22 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('/schedules', {
+    const res = await fetch('/schedules/highlight', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
     if (!res.ok) throw new Error('Gagal mengambil jadwal')
     const result = await res.json()
-    const item = (result.data.data || [])[0] // Ambil item pertama
+    const item = result.data
 
     if (item) {
       schedule.value = {
         id: item.id,
         subject: item.packageName + ' ' + (item.level || ''),
         tutor: item.tutorName,
-        date: new Date(item.date).toLocaleDateString('id-ID', {
-          weekday: 'long',
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        }),
-        time: item.date ? new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+        date: formatTanggal(item.date), 
+        time: formatWaktu(item.date),
         duration: item.duration + ' menit',
         location: item.address,
         meetingNumber: item.meet,
@@ -226,6 +222,16 @@ function confirmIzin() {
     </div>
   </div>
 
+    <div v-else class="nojadwal-container">
+      <img src="@/assets/noJadwal.svg" alt="Jadwal Kosong" class="nojadwal-img" />
+      <div class="nojadwal-text">
+          <h1 class="hero2">Kamu Belum memiliki Jadwal Saat ini.</h1>
+          <p class="bodyr1">
+              Saatnya bersiap! Jadwal akan muncul di sini begitu tersedia.
+          </p>
+      </div>
+  </div>
+
   <!-- Modal Absen -->
   <div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
     <div class="modal-content">
@@ -267,7 +273,6 @@ function confirmIzin() {
 .card-container {
   display: flex;
   gap: 4rem;
-  padding: 1rem;
   background-color: white;
   border-radius: 16px;
   margin-bottom: 2rem;
@@ -451,7 +456,41 @@ function confirmIzin() {
   .modal-actions button {
     font-size: 0.95rem;
   }
+
+  .nojadwal-container {
+    flex-direction: column;
+    padding: 2rem 1rem;
+    gap: 2rem;
+    align-items: center;
+  }
+  .nojadwal-text {
+    width: 100%;
+    text-align: left;
+  }
 }
 
+.nojadwal-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+}
+
+.nojadwal-img {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+}
+
+.nojadwal-text {
+    width: 50%;
+    color: #154484;
+}
+.nojadwal-text .hero2 {
+    line-height: 1;
+    padding-bottom: 1rem;
+}
 
 </style>

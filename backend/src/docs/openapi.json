@@ -11730,6 +11730,24 @@
         "summary": "Get Schedule From User",
         "description": "Get Schedule From User",
         "operationId": "getScheduleFromUser",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "1"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "5"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {

@@ -21,7 +21,6 @@
                   :page-count="pagination.pageCount"
                   @update:page="handlePageChange"
                   :page-slot="7"
-                  v-model:page="page"
                 />
               </div>
           </div>
@@ -30,6 +29,7 @@
 </template>
   
 <script>
+import { formatTanggal, formatWaktu } from "@/utils/formatTanggal";
 import { NTag, useMessage, NPagination } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
 
@@ -96,18 +96,6 @@ function createColumns({}) {
   ];
 }
 
-function formatTanggal(dateStr) {
-  const date = new Date(dateStr);
-  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
-  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-  return `${hari}, ${tanggal}`;
-}
-
-function formatJam(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-}
-
 function statusLabel(status) {
   switch (status) {
     case "masuk": return "Masuk";
@@ -154,7 +142,7 @@ export default defineComponent({
           jenis: groupTypeLabel(item.groupType),
           pertemuan: item.meet,
           tanggal: formatTanggal(item.date),
-          jam: formatJam(item.date),
+          jam: formatWaktu(item.date),
           durasi: `${item.duration} Menit`,
           status: [statusLabel(item.status)],
           slug: item.slug

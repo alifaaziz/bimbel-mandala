@@ -15,6 +15,8 @@ export default (app) => {
 
   router.get('/', AuthMiddleware.isAuthorized, ScheduleController.getSchedules);
 
+  router.get('/highlight', AuthMiddleware.isAuthorized, ScheduleController.getHighlightSchedule);
+
   router.get('/:slug', AuthMiddleware.isAuthorized, ScheduleController.getScheduleBySlug);
 
   router.get('/closest/:slug', AuthMiddleware.isAuthorized, ScheduleController.getClosestScheduleBySlug);

@@ -4,17 +4,20 @@
 
     <div class="search-container">
       <n-input
-        round
-        size="large"
-        placeholder="Cari jadwal program bimbel...">
+      type="text"
+      v-model:value="searchText"
+      round
+      size="large"
+      placeholder="Cari jadwal">
         <template #prefix>
           <img class="img-search" src="@/assets/icons/admin/search.svg" alt="search">
         </template>
       </n-input>
     </div>
 
+    <h2 class="headersb3">Daftar Jadwal</h2>
+
     <section class="schedule-section">
-      <h2 class="headersb2">Jadwal Program</h2>
       <div class="table-responsive">
         <table class="schedule-table">
           <thead>
@@ -57,57 +60,45 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal';
+import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const scheduleItems = ref([]);
 const page = ref(1);
 const limit = ref(10);
 const totalPages = ref(1);
+const searchText = ref('');
 const router = useRouter();
+let searchTimeout = null;
 
 const fetchClosestSchedules = async (requestedPage = page.value) => {
   try {
     const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Token tidak ditemukan. Silakan login kembali.');
-    }
-    const response = await fetch(`/schedules/closest?page=${requestedPage}&limit=${limit.value}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    if (!token) throw new Error('Token tidak ditemukan. Silakan login kembali.');
+    const response = await fetch(
+      `/schedules/closest?page=${requestedPage}&limit=${limit.value}&search=${encodeURIComponent(searchText.value)}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
-
     scheduleItems.value = result.data.data.map(item => ({
-      id: item.id,
       kode: item.classCode,
       bimbel: {
         subject: item.packageName,
         teacher: item.tutorName
       },
-      tanggal: new Date(item.date).toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }),
-      jam: new Date(item.date).toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
+      tanggal: formatTanggal(item.date),
+      jam: formatWaktu(item.date),
       slug: item.slug
     }));
-
     page.value = result.data.page;
     totalPages.value = result.data.totalPages;
-
   } catch (error) {
     console.error('Error fetching closest schedules:', error);
     alert('Gagal mengambil data jadwal terdekat.');
@@ -124,6 +115,15 @@ const onPageChange = (newPage) => {
   fetchClosestSchedules(newPage);
 };
 
+// Watcher dengan debounce agar fetch tidak terlalu sering
+watch(searchText, () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    page.value = 1;
+    fetchClosestSchedules(1);
+  }, 350);
+});
+
 onMounted(() => {
   fetchClosestSchedules();
 });
@@ -138,7 +138,7 @@ onMounted(() => {
   height: fit-content;
 }
 
-.headlineb2, .schedule-section h2 {
+.headlineb2, .schedule-section h2, .headersb3 {
   color: #154484;
 }
 

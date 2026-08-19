@@ -24,7 +24,7 @@ async function main() {
 
   app.use(cors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }));
 
@@ -44,6 +44,7 @@ async function main() {
       req.path.startsWith('/docs') ||
       req.path.startsWith('/status') ||
       req.path.startsWith('/packages') ||
+      req.path.startsWith('/payments') ||
       req.path.startsWith('/classes') ||
       req.path.startsWith('/attendance') ||
       req.path.startsWith('/orders') ||

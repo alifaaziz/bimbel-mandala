@@ -17,7 +17,7 @@
               <td class="bodyr3" data-label="Status">{{ formatStatus(program.status) }}</td>
               <td class="bodyr3" data-label="Jenis">{{ formatGroupType(program.groupType) }}</td>
               <td class="bodyr3" data-label="Hari">{{ program.days }}</td>
-              <td class="bodyr3" data-label="Jam">{{ formatTime(program.time) }}</td>
+              <td class="bodyr3" data-label="Jam">{{ formatWaktu(program.time) }}</td>
               <td class="bodyr3" data-label="Durasi">{{ program.duration }} Menit</td>
               <td data-label="Aksi">
                 <n-button
@@ -41,6 +41,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { NButton, NIcon } from 'naive-ui'
+import { formatWaktu } from '@/utils/formatTanggal'
 
 const programs = ref([])
 
@@ -52,12 +53,6 @@ onMounted(async () => {
   const data = await res.json()
   programs.value = data.data || []
 })
-
-function formatTime(timeStr) {
-  if (!timeStr) return '-'
-  const date = new Date(timeStr)
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
 
 function formatStatus(status) {
   if (status === 'berjalan') return 'Berjalan'

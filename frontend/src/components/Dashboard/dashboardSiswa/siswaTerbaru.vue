@@ -30,6 +30,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { NCard, NSpace, NH2, NText, NTag } from 'naive-ui';
+import { formatTanggal } from '@/utils/formatTanggal';
 
 const newStudents = ref([]);
 
@@ -47,9 +48,7 @@ async function fetchNewStudents() {
       id: student.id,
       name: student.name,
       level: student.level,
-      date: new Date(student.createdAt).toLocaleDateString('id-ID', {
-        day: '2-digit', month: 'long', year: 'numeric'
-      }),
+      date: formatTanggal(student.createdAt),
     }));
   } catch (err) {
     newStudents.value = [];

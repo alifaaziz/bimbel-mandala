@@ -10,7 +10,7 @@
         
         <n-grid :cols="1" :y-gap="12">
           <n-form-item-gi label="Nama Program" path="programName">
-            <n-input v-model:value="formModel.programName" placeholder="Tuliskan nama program" />
+            <n-input type="text" v-model:value="formModel.programName" placeholder="Tuliskan nama program" />
           </n-form-item-gi>
         </n-grid>
 
@@ -108,7 +108,7 @@
           <h2 class="section-title">Detail Kelas</h2>
           <n-grid :x-gap="24" :y-gap="12" :cols="2" responsive="screen" item-responsive>
             <n-form-item-gi label="Maksimal Siswa" path="studentsLimit">
-              <n-input v-model:value="formModel.studentsLimit" />
+              <n-input-number v-model:value="formModel.studentsLimit" />
             </n-form-item-gi>
             <n-form-item-gi label="Tanggal Mulai" path="startDate">
               <n-date-picker
@@ -123,7 +123,7 @@
           </n-grid>
           <n-grid :cols="1" :y-gap="12">
             <n-form-item-gi label="Biaya Per-Anak" path="pricePerChild">
-              <n-input v-model:value="formModel.pricePerChild" placeholder="Tuliskan Biaya Program Per-Anak" />
+              <n-input-number v-model:value="formModel.pricePerChild" placeholder="Tuliskan Biaya Program Per-Anak" />
             </n-form-item-gi>
           </n-grid>
         </template>

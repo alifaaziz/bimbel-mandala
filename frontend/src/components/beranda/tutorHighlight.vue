@@ -34,7 +34,7 @@ onMounted(async () => {
         </template>
         <template #cover>
           <img
-            :src="item.photo ? `${item.photo}` : 'https://via.placeholder.com/400x300?text=No+Photo'"
+            :src="item.photo ? `${item.photo}` : '/Tutor_Default.png'"
             alt="Card Image"
           >
         </template>

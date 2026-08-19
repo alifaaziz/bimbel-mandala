@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, watch, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ButPrimerNormal from '../dirButton/butPrimerNormal.vue';
+import { formatTanggal } from '@/utils/formatTanggal';
 
 const route = useRoute();
 const router = useRouter();
@@ -12,6 +13,8 @@ const options = ref<any[]>([]); // Opsi dropdown
 const selectedOption = ref<string | null>(null); // Opsi yang dipilih
 const address = ref(''); // Alamat lokasi bimbing
 const isSubmitting = ref(false);
+const banks = ref([]);
+const selectedBankId = ref(null);
 
 onMounted(async () => {
   try {
@@ -40,6 +43,27 @@ onMounted(async () => {
       { label: "Kelompok 5 Siswa", value: "grup5", disabled: !availableGroupTypes.includes("grup5") },
       { label: "Kelas", value: "kelas", disabled: !availableGroupTypes.includes("kelas") },
     ];
+
+    if (programData.value.groupType.length === 1) {
+      selectedOption.value = programData.value.groupType[0].type;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/payments', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (res.ok) {
+        const result = await res.json();
+        banks.value = result.data.map((bank) => ({
+          value: bank.id,
+          label: `${bank.accountNumber} (${bank.platform})`
+        }));
+      }
+    } catch (err) {
+      banks.value = [];
+      console.error('Gagal mengambil data bank:', err);
+    }
   } catch (err) {
     programData.value = null;
     console.error('Error:', err);
@@ -93,7 +117,7 @@ async function handleConfirm() {
     return;
   }
 
-  if (!selectedOption.value || !address.value) {
+  if (!selectedOption.value || !address.value || !selectedBankId.value) {
     alert('Harap lengkapi semua data sebelum melanjutkan.');
     isSubmitting.value = false;
     return;
@@ -113,6 +137,7 @@ async function handleConfirm() {
     packageId: programData.value.id,
     groupTypeId: selectedGroup.id,
     address: address.value,
+    paymentId: selectedBankId.value
   };
 
   try {
@@ -207,154 +232,146 @@ const InfoRow = defineComponent({
       ]);
   },
 });
+
+
+const value = ref(null)
+
 </script>
 
 <template>
-  <div class="padding-components">
-    <div class="container-detail" v-if="programData">
-      <div>
-        <img
-          class="program-photo"
-          :src="programData.photo ? `${programData.photo}` : '/Tutor_Default.png'"
-          alt="Program Photo"
-        />
-      </div>
-      <div>
-        <div class="head-detail">
-          <div>
-            <div class="headersb1 head-program">{{ programData.name }}</div>
-            <div class="bodym2">{{ programData.tutorName }}</div>
+  <div class="container">
+    <div class="padding-components">
+      <div class="container-detail" v-if="programData">
+        <div>
+          <img
+            class="program-photo"
+            :src="programData.photo ? `${programData.photo}` : '/Tutor_Default.png'"
+            alt="Program Photo"
+          />
+        </div>
+        <div>
+          <div class="head-detail">
+            <div>
+              <div class="headersb1 head-program">{{ programData.name }}</div>
+              <div class="bodym2">{{ programData.tutorName }}</div>
+            </div>
+            <div>
+              <div
+                class="headerb1"
+                :class="badgeClass(programData.level)"
+              >
+                {{ programData.level }}
+              </div>
+            </div>
           </div>
-          <div>
-            <div
-              class="headerb1"
-              :class="badgeClass(programData.level)"
-            >
-              {{ programData.level }}
+          <div class="space-detail">
+            <div>
+              <n-space class="bodyr2">
+                <n-tag
+                  v-for="(day, index) in allDays"
+                  :key="index"
+                  class="tag"
+                  :class="{ 'tag-unselected': !programData.days.includes(day) }"
+                >
+                  {{ day }}
+                </n-tag>
+              </n-space>
+            </div>
+            <div>
+              <n-space vertical size="medium" class="space-detail bodyr2">
+                <InfoRow label="Area/Lokasi" :value="programData.area" />
+                <InfoRow
+                  label="Mulai"
+                  :value="programData.startDate ? formatTanggal(programData.startDate) : '-'"
+                  v-if="programData.groupType && programData.groupType.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))"
+                />
+                <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
+                <InfoRow label="Pukul" :value="formatTime(programData.time)" />
+                <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
+              </n-space>
+            </div>
+            <div>
+              <p class="bodyb1 type-program">
+                {{ groupTypeLabel(programData.groupType) }}
+              </p>
+              <p v-if="!isTutor" class="bodyb1 price">
+                {{ getPriceRange(programData.groupType) }}
+              </p>
             </div>
           </div>
         </div>
-        <div class="space-detail">
-          <div>
-            <n-space class="bodyr2">
-              <n-tag
-                v-for="(day, index) in allDays"
-                :key="index"
-                class="tag"
-                :class="{ 'tag-unselected': !programData.days.includes(day) }"
-              >
-                {{ day }}
-              </n-tag>
-            </n-space>
-          </div>
-          <div>
-            <n-space vertical size="medium" class="space-detail bodyr2">
-              <InfoRow label="Area/Lokasi" :value="programData.area" />
-              <InfoRow
-                label="Mulai"
-                :value="programData.startDate ? new Date(programData.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'"
-                v-if="programData.groupType && programData.groupType.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))"
-              />
-              <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />
-              <InfoRow label="Pukul" :value="formatTime(programData.time)" />
-              <InfoRow label="Durasi" :value="`${programData.duration} Menit`" />
-            </n-space>
-          </div>
-          <div>
-            <p class="bodyb1 type-program">
-              {{ groupTypeLabel(programData.groupType) }}
-            </p>
-            <p v-if="!isTutor" class="bodyb1 price">
-              {{ getPriceRange(programData.groupType) }}
-            </p>
-          </div>
-        </div>
       </div>
-    </div>
-    <div class="form-pemesanan">
-      <h3 class="headerb2">
-        Lengkapi Data
-      </h3>
-      <div class="input-pemesanan">
-        <p class="bodym2">Lokasi Bimbingan Belajar</p>
-        <n-input
-          round
-          v-model:value="address"
-          placeholder="Alamat Lokasi Bimbing"
-          class="input-custom mb-2 bodyr2"
-          :disabled="hasKelasGroupType"
-        />
-      </div>
-      <div class="input-pemesanan">
-        <p class="bodym2">Peserta</p>
-        <n-space vertical>
-          <n-select 
-            round 
-            v-model:value="selectedOption" 
-            :options="options"
-            class="select-rounded"
-          />
-        </n-space>
-      </div>
-      <div class="input-pemesanan">
-        <p class="bodym2">Total Biaya</p>
-        <p>
-          <span class="bodyb2 price">
-            {{ totalBiaya }}
-          </span>
-        </p>
-      </div>
-      <n-divider class="divider" />
       <div class="form-pemesanan">
         <h3 class="headerb2">
-          Pembayaran
+          Lengkapi Data
         </h3>
-        <div class="metode-pembayaran bodym3">
-          <p>List Rakening</p>
-          <p>Transfer</p>
-        </div>
-        <div class="bank-pembayaran">
-          <img
-            style="max-width: 60px;"
-            src="@/assets/bank/bca.svg"
-            alt="BCA Logo"
+        <div class="input-pemesanan">
+          <p class="bodym2">Lokasi Bimbingan Belajar</p>
+          <n-input
+            type="text"
+            round
+            v-model:value="address"
+            placeholder="Alamat Lokasi Bimbing"
+            class="input-custom mb-2 bodyr2"
+            :disabled="hasKelasGroupType"
           />
-          <p class=" bodyr2 no-rek">
-            xxx-xxx-xxx
+        </div>
+        <div class="input-pemesanan">
+          <p class="bodym2">Peserta</p>
+          <n-space vertical>
+            <n-select 
+              round 
+              v-model:value="selectedOption" 
+              :options="options"
+              class="select-rounded"
+            />
+          </n-space>
+        </div>
+        <div class="input-pemesanan">
+          <p class="bodym2">Total Biaya</p>
+          <p>
+            <span class="bodyb2 price">
+              {{ totalBiaya }}
+            </span>
           </p>
         </div>
-        <div class="bank-pembayaran">
-          <img
-             style="max-width: 60px;"
-            src="@/assets/bank/bni.svg"
-            alt="BNI Logo"
-          />
-          <p class=" bodyr2 no-rek">
-            xxx-xxx-xxx
-          </p>
+        <n-divider class="divider" />
+        <div class="form-pemesanan">
+          <h3 class="headerb2">
+            Pembayaran
+          </h3>
+          <div class="metode-pembayaran bodym3">
+            <p>List Rakening</p>
+            <p>Transfer</p>
+          </div>
+          <n-radio-group v-model:value="selectedBankId" name="radiogroup">
+            <n-space vertical>
+              <n-radio 
+                v-for="bank in banks"
+                :key="bank.value"
+                :value="bank.value"
+                :label="bank.label"
+              />
+            </n-space>
+          </n-radio-group>
         </div>
-        <div class="bank-pembayaran">
-          <img
-            style="max-width: 60px;"
-            src="@/assets/bank/mandiri.svg"
-            alt="Mandiri Logo"
-          />
-          <p class=" bodyr2 no-rek">
-            xxx-xxx-xxx
-          </p>
-        </div>
+        <ButPrimerNormal 
+          label="Konfirmasi" 
+          class="but-konfirmasi" 
+          @click="handleConfirm"
+          :disabled="isSubmitting"
+        />
       </div>
-      <ButPrimerNormal 
-        label="Konfirmasi" 
-        class="but-konfirmasi" 
-        @click="handleConfirm"
-        :disabled="isSubmitting"
-      />
     </div>
   </div>
 </template>
 
 <style scoped>
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
 .container-detail {
   display: flex;
   align-items: flex-start;
@@ -469,7 +486,7 @@ const InfoRow = defineComponent({
 
 .bank-pembayaran {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 1rem;
 }
 

@@ -5,7 +5,7 @@
       <n-grid :x-gap="24" :y-gap="20" :cols="1" responsive="screen" s-responsive="2">
         <n-gi :span="2">
           <n-form-item label="Nama Lengkap" path="fullName">
-            <n-input v-model="formValue.fullName" placeholder="Tuliskan nama tutor" />
+            <n-input type="text" v-model="formValue.fullName" placeholder="Tuliskan nama tutor" />
           </n-form-item>
         </n-gi>
         
@@ -23,13 +23,13 @@
 
         <n-gi>
           <n-form-item label="E-mail" path="email">
-            <n-input v-model="formValue.email" placeholder="Tuliskan email tutor" />
+            <n-input type="email" v-model="formValue.email" placeholder="Tuliskan email tutor" />
           </n-form-item>
         </n-gi>
         
         <n-gi>
           <n-form-item label="No. WhatsApp" path="whatsapp">
-            <n-input v-model="formValue.whatsapp" placeholder="08xxxxxxxxxx" />
+            <n-input type="tel" v-model="formValue.whatsapp" placeholder="08xxxxxxxxxx" />
           </n-form-item>
         </n-gi>
         
@@ -52,13 +52,13 @@
       <n-grid :x-gap="24" :y-gap="20" :cols="1" responsive="screen" s-responsive="2">
         <n-gi :span="2">
           <n-form-item label="Asal Universitas" path="university">
-            <n-input v-model="formValue.university" placeholder="Tuliskan universitas asal tutor" />
+            <n-input type="text" v-model="formValue.university" placeholder="Tuliskan universitas asal tutor" />
           </n-form-item>
         </n-gi>
         
         <n-gi>
           <n-form-item label="Prodi" path="major">
-            <n-input v-model="formValue.major" placeholder="Tuliskan prodi tutor" />
+            <n-input type="text" v-model="formValue.major" placeholder="Tuliskan prodi tutor" />
           </n-form-item>
         </n-gi>
 

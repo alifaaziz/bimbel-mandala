@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { NCard } from 'naive-ui';
 import ButtonProgram from '../dirButton/butprogram.vue';
 import butSecondSmall from '../dirButton/butSecondSmall.vue';
+import { formatWaktu } from '@/utils/formatTanggal';
 
 const limitedPrograms = ref([]);
 const isTutor = ref(false);
@@ -51,10 +52,7 @@ onMounted(async () => {
   }
 });
 
-function formatTime(dateTime) {
-  const date = new Date(dateTime);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-}
+
 
 function truncateName(name) {
   return name.length > 16 ? name.slice(0, 16) + '...' : name;
@@ -90,7 +88,7 @@ function handleButton(slug) {
         <div class="card-content">
           <div class="card-image">
             <img 
-              :src="program.photo ? `${program.photo}` : '/public/tutor/3.png'" 
+              :src="program.photo ? `${program.photo}` : 'Tutor_Default.png'" 
               :alt="`Image of ${program.name}`" 
             />
             <p class="headersb3 privat">{{ groupTypeLabel(program.groupType) }}</p>
@@ -103,6 +101,10 @@ function handleButton(slug) {
               </div>
               <div class="badge">{{ program.level }}</div>
             </div>
+            <div class="info-row" v-if="groupTypeLabel(program.groupType) == 'Kelas'">
+              <span class="label"><strong>Kapasitas</strong></span>
+              <span class="value">:Tersisa  <strong>{{ program.sisaKursi }}</strong> siswa</span>
+            </div>
             <div class="info-row">
                 <span class="label"><strong>Area</strong></span>
                 <span class="value">: {{ program.area }}</span>
@@ -113,7 +115,7 @@ function handleButton(slug) {
             </div>
             <div class="info-row">
                 <span class="label"><strong>Pukul</strong></span>
-                <span class="value">: {{ formatTime(program.time) }}</span>
+                <span class="value">: {{ formatWaktu(program.time) }}</span>
             </div>
             <div class="info-row">
                 <span class="label"><strong>Durasi</strong></span>
@@ -183,7 +185,7 @@ function handleButton(slug) {
 }
 .label {
     text-align: left;
-    width: 60px;
+    min-width: 80px;
 }
 
 

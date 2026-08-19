@@ -5,6 +5,7 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NLayout, NLayoutHeader, NMenu, NButton, NDrawer } from 'naive-ui';
 import ButSecondNormal from './dirButton/butSecondNormal.vue';
+import { formatWaktu } from '@/utils/formatTanggal';
 
 const props = defineProps({});
 
@@ -19,16 +20,6 @@ const showNotificationPopup = ref(false);
 const isLoggedIn = ref(!!localStorage.getItem('token'))
 
 const notifications = ref([]);
-
-function formatNotifTime(dateStr) {
-  const now = new Date();
-  const date = new Date(dateStr);
-  const diff = now - date;
-  if (diff < 86400000) {
-    return dateStr.slice(11, 16);
-  }
-  return date.toLocaleDateString('id-ID');
-}
 
 const unreadCount = computed(() => notifications.value.filter(n => !n.read).length);
 
@@ -103,22 +94,7 @@ const closeNotifications = (event) => {
   if (!event.target.closest('.notification-popup') && 
       !event.target.closest('.notification-wrapper')) {
     showNotificationPopup.value = false;
-    markAllNotificationsRead();
   }
-};
-
-const markAllNotificationsRead = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    await fetch('/notification', {
-      method: 'POST',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json'
-      }
-    });
-    await fetchNotifications();
-  } catch (err) {}
 };
 
 watch(
@@ -168,9 +144,7 @@ async function fetchNotifications() {
       message: item.description,
       read: item.viewed,
       createdAt: item.createdAt,
-      photo: item.photo
-        ? (item.photo.startsWith('http') ? item.photo : `${item.photo}`)
-        : '/mandala.png',
+      photo: item.photo ?  `${item.photo}` : '/mandala.png',
       reason: item.reason,
       scheduleId: item.scheduleId
     }));
@@ -182,9 +156,23 @@ async function fetchNotifications() {
 const notificationsWithTime = computed(() =>
   notifications.value.map(item => ({
     ...item,
-    time: formatNotifTime(item.createdAt)
+    time: formatWaktu(item.createdAt)
   }))
 );
+
+const readNotification = async (notifId) => {
+  try {
+    const token = localStorage.getItem('token');
+    await fetch(`/notification/${notifId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json'
+      }
+    });
+    await fetchNotifications();
+  } catch (err) {}
+};
 </script>
 
 <template>
@@ -258,6 +246,7 @@ const notificationsWithTime = computed(() =>
                         :key="notification.id"
                         class="notification-item"
                         :class="{ 'unread': !notification.read }"
+                        @click="readNotification(notification.id)"
                       >
                         <span v-if="!notification.read" class="unread-dot"></span>
                         <div class="notification-photo">
@@ -361,6 +350,7 @@ const notificationsWithTime = computed(() =>
                           :key="notification.id"
                           class="notification-item"
                           :class="{ 'unread': !notification.read }"
+                          @click="readNotification(notification.id)"
                         >
                           <div class="notification-photo">
                             <img 

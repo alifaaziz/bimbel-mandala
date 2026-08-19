@@ -4,6 +4,7 @@
     <div class="search-tambah">
       <div class="search-container">
         <n-input
+        type="text"
         v-model:value="searchText"
         round
         size="large"
@@ -37,7 +38,7 @@
                 <div class="bimbel-teacher">{{ item.tutorName }}</div>
               </td>
               <td>{{ item.days.join(', ') }}</td>
-              <td>{{ new Date(item.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}</td>
+              <td>{{ formatWaktu(item.time) }}</td>
               <td>{{ item.duration }} menit</td>
               <td>
                 <n-icon v-if="item.isActive" color="#4caf50" size="22">
@@ -76,6 +77,7 @@
 import { NIcon, NPagination } from 'naive-ui'
 import { CheckmarkCircleOutline, CloseCircleOutline } from '@vicons/ionicons5'
 import ButImgTambahSecondNormal from '@/components/dirButton/butImgTambahSecondNormal.vue'
+import { formatWaktu } from '@/utils/formatTanggal';
 
 export default {
   name: 'DashboardContainer',
@@ -103,6 +105,7 @@ export default {
     }
   },
   methods: {
+    formatWaktu,
     async fetchPackages() {
       try {
         const token = localStorage.getItem('token');

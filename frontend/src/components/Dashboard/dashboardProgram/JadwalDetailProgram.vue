@@ -1,4 +1,5 @@
 <script>
+import { formatTanggal, formatWaktu } from "@/utils/formatTanggal";
 import { NTag } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
 
@@ -34,24 +35,12 @@ export default defineComponent({
         guru: item.tutorName || '-',
         jenis: formatGroupType(item.groupType),
         pertemuan: item.meet ? `Pertemuan ${item.meet}` : '-',
-        tanggal: item.date ? formatDate(item.date) : '-',
-        jam: item.date ? formatTime(item.date) : '-',
+        tanggal: item.date ? formatTanggal(item.date) : '-',
+        jam: item.date ? formatWaktu(item.date) : '-',
         durasi: item.duration ? `${item.duration} Menit` : '-',
         status: [formatStatus(item.status)],
       }));
     });
-
-    function formatTime(dateStr) {
-      if (!dateStr) return '-'
-      const date = new Date(dateStr)
-      return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-    }
-
-    function formatDate(dateStr) {
-      if (!dateStr) return '-'
-      const date = new Date(dateStr)
-      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-    }
 
     function formatStatus(status) {
       if (!status) return '-'

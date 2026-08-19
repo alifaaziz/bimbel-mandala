@@ -122,6 +122,7 @@ import {
 import {
   PencilOutline, TrashOutline, MailOutline, LogoWhatsapp, CallOutline, SchoolOutline, HomeOutline, EllipsisHorizontal
 } from '@vicons/ionicons5';
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal';
 
 const message = useMessage();
 const router = useRouter();
@@ -191,7 +192,7 @@ async function fetchRegisteredPrograms() {
       status: item.status === 'berjalan' ? 'Berjalan' : item.status,
       type: mapGroupType(item.groupType),
       schedule: item.days,
-      time: item.time ? new Date(item.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+      time: item.time ? formatWaktu(item.time) : '',
       duration: item.duration ? `${item.duration} Menit` : '',
       code: item.code
     }));
@@ -215,8 +216,8 @@ async function fetchProgramSchedule() {
       tutor: item.tutorName,
       type: mapGroupType(item.groupType),
       session: item.meet,
-      date: item.date ? new Date(item.date).toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : '',
-      time: item.date ? new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+      date: item.date ? formatTanggal(item.date) : '',
+      time: item.date ? formatWaktu(item.date) : '',
       duration: item.duration ? `${item.duration} Menit` : '',
       status: item.status,
       code: item.classCode,

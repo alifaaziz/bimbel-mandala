@@ -11,11 +11,11 @@ model BimbelPackage {
     slug          String     @unique
     startDate     DateTime?  @map("start_date")
     isActive      Boolean    @default(true) @map("is_active")
+    days          String?
 
     user User @relation(fields: [userId], references: [id])
 
     groupType   GroupType[]
-    packageDay  PackageDay[]
     orders      Order[]
 
     deletedAt DateTime? @map("deleted_at")

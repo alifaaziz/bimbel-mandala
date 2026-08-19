@@ -81,6 +81,7 @@ async function submitprogram() {
         <n-form @submit.prevent="submitprogram">
           <n-form-item label="Kode Program" :feedback="feedback" :validation-status="status">
             <n-input
+              type="text"
               v-model:value="programCode"
               placeholder="Masukkan kode program"
               maxlength="10"

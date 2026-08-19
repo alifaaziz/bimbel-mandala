@@ -6,23 +6,13 @@ import butJadwalUlang from "../dirButton/butJadwalUlangTabel.vue";
 import butBatal from "../dirButton/butSecondSmall.vue";
 import butSumJadwalUlang from "../dirButton/butPrimerSmall.vue";
 import butJadwalUlangSuccess from "../dirButton/butPrimerSmall.vue";
-
-function formatTanggal(dateStr) {
-  const date = new Date(dateStr);
-  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
-  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-  return `${hari}, ${tanggal}`;
-}
-
-function formatJam(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace(':', '.');
-}
+import { formatTanggal, formatWaktu } from "@/utils/formatTanggal";
 
 function statusLabel(status) {
   switch (status) {
     case "masuk": return "Masuk";
     case "terjadwal": return "Terjadwal";
+    case "terlambat": return "Terlambat";
     case "jadwal_ulang": return "Jadwal Ulang";
     case "izin": return "Izin";
     default: return status;
@@ -143,7 +133,8 @@ export default defineComponent({
     const tagTypeMap = {
       Masuk: "info",
       Terjadwal: "success",
-      "Jadwal Ulang": "warning"
+      "Jadwal Ulang": "warning",
+      Terlambat: "error",
     };
 
     const rowProps = (row) => {
@@ -249,7 +240,7 @@ export default defineComponent({
           jenis: groupTypeLabel(item.groupType),
           pertemuan: item.meet,
           tanggal: formatTanggal(item.date),
-          jam: formatJam(item.date),
+          jam: formatWaktu(item.date),
           durasi: `${item.duration} Menit`,
           status: [statusLabel(item.status)],
           slug: item.slug

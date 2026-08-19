@@ -202,6 +202,7 @@ const renderIcon = (icon) => {
       <div class="search-tambah">
         <div class="search-container">
           <n-input
+            type="text"
             v-model:value="searchQuery"
             round
             size="large"

@@ -8,6 +8,7 @@ import butSecondNormal from '../dirButton/butSecondNormal.vue'
 
 import butSecondSmall from '../dirButton/butSecondSmall.vue'
 import butPrimerSmall from '../dirButton/butPrimerSmall.vue'
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal'
 
 const showAbsenModal = ref(false)
 const schedule = ref<any>(null)
@@ -17,7 +18,8 @@ const rescheduleTime = ref('')
 const selectedSchedule = ref<any>(null)
 const showEditInfoModal = ref(false)
 const editInfoText = ref('')
-
+const absenTime = ref('');
+const isLate = ref(false);
 const route = useRoute()
 
 onMounted(async () => {
@@ -38,7 +40,21 @@ onMounted(async () => {
 
 // Absen
 function openAbsenModal() {
-  showAbsenModal.value = true
+  const now = new Date();
+  now.setHours(now.getHours() + 7); // jika backend sudah GMT+7, baris ini bisa dihapus
+  absenTime.value = formatWaktu(now.toISOString());
+
+  if (schedule.value?.date) {
+    const scheduled = new Date(schedule.value.date);
+    scheduled.setSeconds(0);
+
+    const lateLimit = new Date(scheduled.getTime() + 15 * 60 * 1000);
+    isLate.value = now > lateLimit;
+  } else {
+    isLate.value = false;
+  }
+
+  showAbsenModal.value = true;
 }
 
 function closeAbsenModal() {
@@ -80,18 +96,6 @@ function confirmAbsen() {
     .catch(err => {
       alert(err.message)
     })
-}
-
-function formatTanggal(dateStr: string) {
-  const date = new Date(dateStr);
-  const hari = date.toLocaleDateString('id-ID', { weekday: 'long' });
-  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-  return `${hari}, ${tanggal}`;
-}
-
-function formatJam(dateStr: string) {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.');
 }
 
 const tagTypeMap = {
@@ -234,7 +238,7 @@ async function saveEditInfo() {
         </div>
         <div class="info-row">
           <span class="label"><strong>Pukul</strong></span>
-          <span class="value">: {{ formatJam(schedule.date) }}</span>
+          <span class="value">: {{ formatWaktu(schedule.date) }}</span>
         </div>
         <div class="info-row">
           <span class="label"><strong>Durasi</strong></span>
@@ -286,10 +290,14 @@ async function saveEditInfo() {
       <div class="popup-content">
         <h3 class="headersb2">Absensi</h3>
         <p class="bodyr2">Silahkan melakukan absensi untuk sesi Bimbingan belajar kali ini.</p>
-      </div>
-      <div class="modal-actions">
-        <button class="buttonm1" @click="confirmAbsen">Masuk</button>
-        <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        <p class="bodyr2">Jam saat ini: <strong>{{ absenTime }}</strong></p>
+        <p v-if="isLate" class="bodyr2" style="color: #d03050;">
+          Anda terlambat lebih dari 15 menit. Harap konfirmasi dengan admin.
+        </p>
+        <div class="modal-actions">
+          <button class="buttonm1" @click="confirmAbsen">Masuk</button>
+          <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        </div>
       </div>
     </div>
   </div>

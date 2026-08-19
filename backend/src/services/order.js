@@ -21,7 +21,7 @@ function getTutorDisplayName(tutor) {
  * @param {Object} data - The order data.
  * @returns {Promise<Object>} The created order.
  */
-async function createOrder(userId, packageId, groupTypeId, address) {
+async function createOrder(userId, packageId, groupTypeId, address, paymentId) {
   const groupType = await prisma.groupType.findUnique({
     where: { id: groupTypeId }
   });
@@ -42,7 +42,8 @@ async function createOrder(userId, packageId, groupTypeId, address) {
       groupTypeId,
       address,
       status: 'pending',
-      amount
+      amount,
+      paymentId
     }
   });
 
@@ -224,7 +225,7 @@ async function getOrderById(id) {
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
-      user: { select: { name: true } }, // siswa yang order
+      user: { select: { name: true } },
       bimbelPackage: {
         select: {
           name: true,
@@ -243,11 +244,7 @@ async function getOrderById(id) {
               discPrice: true
             }
           },
-          packageDay: {
-            select: {
-              day: { select: { daysName: true } }
-            }
-          }
+          days: true 
         }
       },
       groupType: {
@@ -257,13 +254,17 @@ async function getOrderById(id) {
           price: true,
           discPrice: true
         }
+      },
+      payment: {
+        select: {
+          platform: true
+        }
       }
     }
   });
 
   if (!order) return null;
 
-  // Ambil groupType yang dipilih (dari order)
   const selectedGroupType = order.groupType;
 
   let paid = null;
@@ -271,22 +272,19 @@ async function getOrderById(id) {
     paid = selectedGroupType.discPrice != null ? selectedGroupType.discPrice : selectedGroupType.price;
   }
 
-  // Nama siswa
   const studentName = order.user?.name || null;
 
-  // Hari-hari paket
-  const packageDays = order.bimbelPackage?.packageDay?.map(pd => pd.day.daysName) || [];
+  const packageDays = order.bimbelPackage?.days ? JSON.parse(order.bimbelPackage.days) : [];
 
-  // Cari hari terdekat dari hari ini
   function getNextDateForDay(dayName) {
     const daysMap = {
       'Senin': 1, 'Selasa': 2, 'Rabu': 3, 'Kamis': 4, 'Jumat': 5, 'Sabtu': 6, 'Minggu': 0
     };
     const today = new Date();
-    const todayDay = today.getDay(); // 0 = Minggu, 1 = Senin, dst
+    const todayDay = today.getDay();
     const targetDay = daysMap[dayName];
     let diff = (targetDay - todayDay + 7) % 7;
-    if (diff === 0) diff = 7; // ambil minggu depan jika hari ini sudah lewat
+    if (diff === 0) diff = 7; 
     const nextDate = new Date(today);
     nextDate.setDate(today.getDate() + diff);
     return nextDate;
@@ -318,10 +316,11 @@ async function getOrderById(id) {
     duration: order.bimbelPackage?.duration || null,
     type: selectedGroupType?.type || null,
     paid,
+    paymentMethod: order.payment?.platform || null,
     studentName,
     address: order.address,
-    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null, // format YYYY-MM-DD
-    days: packageDays,
+    startDate: nearestDate ? nearestDate.toISOString().split('T')[0] : null,
+    days: packageDays, 
     photo: order.bimbelPackage?.user?.tutors?.[0]?.photo || null,
     slug: order.bimbelPackage?.slug || null,
   };

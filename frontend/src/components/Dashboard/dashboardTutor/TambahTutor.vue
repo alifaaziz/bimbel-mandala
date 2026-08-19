@@ -15,6 +15,7 @@
         <div class="grid-form">
           <n-form-item label="Nama Lengkap" path="user.name" class="col-span-6">
             <n-input
+              type="text"
               v-model:value="formValue.user.name"
               placeholder="Tuliskan nama tutor disini"
             />
@@ -46,6 +47,7 @@
         <div class="grid-form">
           <n-form-item label="E-mail Tutor" path="user.email" class="col-span-3">
             <n-input
+              type="email"
               v-model:value="formValue.user.email"
               placeholder="Tuliskan email tutor disini"
             />
@@ -53,6 +55,7 @@
           <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-3">
             <n-input-group-label style="border-radius: 8px 0 0 8px;">+62</n-input-group-label>
             <n-input
+              type="tel"
               v-model:value="formValue.user.wa"
               placeholder="Tuliskan No. WhatsApp tutor disini"
               style="border-radius: 0 8px 8px 0;"
@@ -62,6 +65,7 @@
         <div class="grid-form">
           <n-form-item label="Alamat" path="user.alamat" class="col-span-6">
             <n-input
+              type="text"
               v-model:value="formValue.user.alamat"
               placeholder="Tuliskan alamat tutor disini"
             />
@@ -82,6 +86,7 @@
         <div class="grid-form">
           <n-form-item label="Asal Universitas" path="user.univ" class="col-span-6">
             <n-input
+              type="text"
               v-model:value="formValue.user.univ"
               placeholder="Tuliskan asal universitas tutor disini"
             />
@@ -90,6 +95,7 @@
         <div class="grid-form">
           <n-form-item label="Program Studi" path="user.prodi" class="col-span-4">
             <n-input
+              type="text"
               v-model:value="formValue.user.prodi"
               placeholder="Tuliskan program studi tutor disini"
             />
@@ -107,6 +113,7 @@
         <div class="grid-form">
           <n-form-item label="Jenjang" path="user.jenjangAjar" class="col-span-6">
             <n-input
+              type="text"
               v-model:value="formValue.user.jenjangAjar"
               placeholder="SD, SMP, atau SMA"
             />
@@ -115,6 +122,7 @@
         <div class="grid-form">
           <n-form-item label="Mata Pelajaran" path="user.pelajaran" class="col-span-6">
             <n-input
+              type="text"
               v-model:value="formValue.user.pelajaran"
               placeholder="Matematika, Bahasa Inggris, Fisika, dll."
             />

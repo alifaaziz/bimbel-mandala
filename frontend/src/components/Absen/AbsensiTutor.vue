@@ -6,6 +6,7 @@ import butSumJadwalUlang from '../dirButton/butPrimerSmall.vue'
 import butBatal from '../dirButton/butSecondSmall.vue'
 import butJadwalUlang from '../dirButton/butSecondNormal.vue'
 import butSucJadwalUlang from '../dirButton/butPrimerNormal.vue'
+import { formatTanggal, formatWaktu } from '../../utils/formatTanggal.js'
 
 // State
 const showAbsenModal = ref(false)
@@ -17,6 +18,8 @@ const lastRescheduleDate = ref('')
 const lastRescheduleTime = ref('')
 const selectedSchedule = ref<any>(null)
 const schedule = ref<any>(null)
+const absenTime = ref('');
+const isLate = ref(false);
 
 // Ambil jadwal dari backend
 onMounted(async () => {
@@ -24,26 +27,22 @@ onMounted(async () => {
   if (!token) return
 
   try {
-    const res = await fetch('/schedules', {
+    const res = await fetch('/schedules/highlight', {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (!res.ok) throw new Error('Gagal mengambil jadwal')
     const result = await res.json()
 
     // Ambil jadwal pertama
-    const item = (result.data.data || [])[0]
+    const item = result.data
     if (item) {
       schedule.value = {
         id: item.id,
         subject: item.packageName + ' ' + (item.level || ''),
         tutor: item.tutorName,
-        date: new Date(item.date).toLocaleDateString('id-ID', {
-          weekday: 'long',
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        }),
-        time: item.date ? new Date(item.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+        date: item.date ? formatTanggal(item.date) : '',
+        time: item.date ? formatWaktu(item.date) : '',
+        rawDate: item.date, // <-- tambahkan ini
         duration: item.duration + ' menit',
         location: item.address,
         meetingNumber: item.meet,
@@ -78,8 +77,23 @@ const tagTypeMap: Record<string, "default" | "error" | "success" | "warning" | "
 
 // Absen
 function openAbsenModal() {
-  showAbsenModal.value = true
+  const now = new Date();
+  now.setHours(now.getHours() + 7);
+  absenTime.value = formatWaktu(now.toISOString());
+
+  if (schedule.value?.rawDate) {
+    const scheduled = new Date(schedule.value.rawDate);
+    scheduled.setSeconds(0);
+
+    const lateLimit = new Date(scheduled.getTime() + 15 * 60 * 1000);
+    isLate.value = now > lateLimit;
+  } else {
+    isLate.value = false;
+  }
+
+  showAbsenModal.value = true;
 }
+
 function closeAbsenModal() {
   showAbsenModal.value = false
 }
@@ -247,16 +261,30 @@ function closeSuccessModal() {
     </div>
   </div>
 
+  <div v-else class="nojadwal-container">
+    <img src="@/assets/noJadwal.svg" alt="Jadwal Kosong" class="nojadwal-img" />
+      <div class="nojadwal-text">
+          <h1 class="hero2">Kamu Belum memiliki Jadwal Saat ini.</h1>
+          <p class="bodyr1">
+              Saatnya bersiap! Jadwal akan muncul di sini begitu tersedia.
+          </p>
+      </div>
+  </div>
+
   <!-- Modal Absen -->
   <div v-if="showAbsenModal" class="modal-overlay" @click.self="closeAbsenModal">
     <div class="modal-content">
       <div class="popup-content">
         <h3 class="headersb2">Absensi</h3>
         <p class="bodyr2">Silahkan melakukan absensi untuk sesi Bimbingan belajar kali ini.</p>
-      </div>
-      <div class="modal-actions">
-        <button class="buttonm1" @click="confirmAbsen">Masuk</button>
-        <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        <p class="bodyr2">Jam saat ini: <strong>{{ absenTime }}</strong></p>
+        <p v-if="isLate" class="bodyr2" style="color: #d03050;">
+          Anda terlambat lebih dari 15 menit. Harap konfirmasi dengan admin.
+        </p>
+        <div class="modal-actions">
+          <button class="buttonm1" @click="confirmAbsen">Masuk</button>
+          <button class="buttonm1" @click="closeAbsenModal">Batal</button>
+        </div>
       </div>
     </div>
   </div>
@@ -522,6 +550,17 @@ function closeSuccessModal() {
   .modal-actions button {
     font-size: 0.95rem;
   }
+
+  .nojadwal-container {
+    flex-direction: column;
+    padding: 2rem 1rem;
+    gap: 2rem;
+    align-items: center;
+  }
+  .nojadwal-text {
+    width: 100%;
+    text-align: left;
+  }
 }
 
 .success-modal .headersb2 {
@@ -530,5 +569,29 @@ function closeSuccessModal() {
 }
 .success-modal .bodyr2 {
   text-align: left;
+}
+
+.nojadwal-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+}
+
+.nojadwal-img {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+}
+
+.nojadwal-text {
+    width: 50%;
+    color: #154484;
+}
+.nojadwal-text .hero2 {
+    line-height: 1;
+    padding-bottom: 1rem;
 }
 </style>

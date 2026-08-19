@@ -5,6 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 import SkemaBiaya from './SkemaBiaya.vue';
 import {TrashOutline} from '@vicons/ionicons5';
 import { useMessage } from 'naive-ui';
+import { formatWaktu } from '@/utils/formatTanggal';
 
 const router = useRouter();
 const route = useRoute();
@@ -128,7 +129,7 @@ onMounted(async () => {
             </div>
             <div class="info-row">
               <span class="label-data"><strong>Pukul</strong></span>
-              <span class="value">: {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}</span>
+              <span class="value">: {{ formatWaktu(programData.time) }}</span>
             </div>
             <div class="info-row">
               <span class="label-data"><strong>Durasi</strong></span>

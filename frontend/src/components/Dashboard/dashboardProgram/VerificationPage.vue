@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import butPrimerNormal from "@/components/dirButton/butPrimerNormal.vue";
 import butSecondNormal from "@/components/dirButton/butSecondNormal.vue";
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal';
 
 const route = useRoute();
 const router = useRouter();
@@ -160,7 +161,7 @@ const typeLabel = (type) => {
             <div class="info-row">
               <span class="label-data"><strong>Pukul</strong></span>
               <span class="value">
-                : {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB
+                : {{ formatWaktu(programData.time) }} WIB
               </span>
             </div>
             <div class="info-row">
@@ -199,7 +200,7 @@ const typeLabel = (type) => {
             <p class="bodyr2">
             {{
               programData.startDate
-              ? new Date(programData.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+              ? formatTanggal(programData.startDate)
               : ''
             }}
             </p>

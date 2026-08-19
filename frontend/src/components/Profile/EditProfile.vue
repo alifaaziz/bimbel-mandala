@@ -93,11 +93,16 @@ const submitForm = async () => {
       </div>
 
       <div class="input-line">
-        <div class="input-alamat">
+        <div class="input-wa">
           <p class="input-judul">Alamat</p>
           <n-input v-model:value="alamat" type="text" placeholder="Ganti alamat kamu" />
         </div>
+        <div class="input-nowali">
+          <p class="input-judul">Password</p>
+          <n-input v-model:value="password" type="text" placeholder="Ganti password kamu" />
+        </div>
       </div>
+      
     </n-space>
     <butSimpan @click="submitForm"/>
   </div>

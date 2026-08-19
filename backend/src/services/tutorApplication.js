@@ -36,8 +36,16 @@ async function applyTutor(data, file) {
     data.photo = photoPath;
   }
 
-  if (data.days && Array.isArray(data.days)) {
-    data.days = JSON.stringify(data.days);
+  if (data.days) {
+    if (Array.isArray(data.days)) {
+      data.days = JSON.stringify(data.days);
+    } else if (typeof data.days === 'string') {
+      if (data.days.includes(',')) {
+        data.days = JSON.stringify(data.days.split(',').map(d => d.trim()));
+      } else {
+        data.days = JSON.stringify([data.days.trim()]);
+      }
+    }
   }
 
   const application = await prisma.tutorApplication.create({
@@ -81,7 +89,7 @@ async function verifyTutor(applicationId) {
       },
     });
 
-    const tutor = await tx.tutor.create({
+    await tx.tutor.create({
       data: {
         userId: user.id,
         birthDate: application.birthDate,
@@ -94,31 +102,10 @@ async function verifyTutor(applicationId) {
         teachLevel: application.teachLevel,
         description: application.description,
         photo: application.photo,
-        percent: 60
+        percent: 60,
+        days: application.days,
       },
     });
-
-    if (application.days) {
-      let daysArr;
-      try {
-        daysArr = JSON.parse(application.days);
-      } catch {
-        daysArr = [];
-      }
-      if (Array.isArray(daysArr)) {
-        for (const dayName of daysArr) {
-          const day = await tx.day.findFirst({ where: { daysName: dayName } });
-          if (day) {
-            await tx.tutorDay.create({
-              data: {
-                tutorId: tutor.id,
-                daysId: day.id,
-              },
-            });
-          }
-        }
-      }
-    }
 
     await tx.tutorApplication.delete({
       where: { id: applicationId },
@@ -146,7 +133,7 @@ async function verifyTutor(applicationId) {
  * @param {Object} [options] - Pagination options.
  * @param {number} [options.page=1] - Page number (1-based).
  * @param {number} [options.pageSize=10] - Number of items per page.
- * @returns {Promise<Object>} The paginated list of tutor applications and total count.
+ * @returns {Promise<Object} The paginated list of tutor applications and total count.
  */
 async function getTutorApplications({ page = 1, pageSize = 10 } = {}) {
   const skip = (page - 1) * pageSize;

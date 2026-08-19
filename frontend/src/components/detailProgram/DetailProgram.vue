@@ -2,6 +2,7 @@
 import { defineComponent, h, ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import butPrimerNormal from '../dirButton/butPrimerNormal.vue';
+import { formatTanggal } from '@/utils/formatTanggal';
 
 const route = useRoute();
 const router = useRouter();
@@ -156,10 +157,15 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         </div>
         <div>
           <n-space vertical size="medium" class="space-detail bodyr2">
+            <InfoRow
+              label="Kapasitas Tersedia"
+              :value="`${programData.sisaKursi} dari ${programData.maxStudent}`"
+              v-if="programData.groupType && programData.groupType.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))"
+            />
             <InfoRow label="Area/Lokasi" :value="programData.area" />
             <InfoRow
               label="Mulai"
-              :value="programData.startDate ? new Date(programData.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'"
+              :value="programData.startDate ? formatTanggal(programData.startDate) : 'Tidak diketahui'"
               v-if="programData.groupType && programData.groupType.some(gt => gt.type && gt.type.toLowerCase().includes('kelas'))"
             />
             <InfoRow label="Pertemuan" :value="`${programData.totalMeetings} Pertemuan`" />

@@ -1,4 +1,5 @@
 <script>
+import { formatTanggal, formatWaktu } from "@/utils/formatTanggal";
 import { NTag } from "naive-ui";
 import { defineComponent, h, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
@@ -35,18 +36,8 @@ export default defineComponent({
           guru: item.tutorName,
           jenis: item.groupType,
           pertemuan: `Pertemuan ${item.meet}`,
-          tanggal: new Date(item.date).toLocaleDateString("id-ID", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-            }),
-            jam: item.date
-              ? new Date(item.date).toLocaleTimeString("id-ID", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
-              : "-",
+          tanggal: formatTanggal(item.date),
+          jam: formatWaktu(item.date),
           durasi: `${item.duration} Menit`,
           status: [formatStatus(item.status)],
         }));

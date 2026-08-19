@@ -19,8 +19,6 @@ const formatGroupType = (type) => {
       return '4 Siswa';
     case 'grup5':
       return '5 Siswa';
-    case 'kelas':
-      return 'Kelas';
     default:
       return type;
   }
@@ -47,7 +45,7 @@ onMounted(async () => {
     if (data) {
       program.value = data;
 
-      const order = ['privat', 'grup2', 'grup3', 'grup4', 'grup5', 'kelas'];
+      const order = ['privat', 'grup2', 'grup3', 'grup4', 'grup5'];
       // Buat map dari data API
       const typeMap = {};
       (data.groupType || []).forEach((g) => {

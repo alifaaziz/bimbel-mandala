@@ -42,7 +42,7 @@ async function handleLogin() {
   if (!emailError.value && !passwordError.value) {
     isLoading.value = true
     try {
-      const response = await fetch('/auth/login', {
+      const response = await fetch('http://localhost:3000/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value }),
@@ -61,7 +61,7 @@ async function handleLogin() {
       localStorage.setItem('token', data.data.token)
       isLoggedIn.value = true
 
-      const userRes = await fetch('/users/me', {
+      const userRes = await fetch('http://localhost:3000/users/me', {
       headers: {
         'Authorization': `Bearer ${data.data.token}`,
         'Content-Type': 'application/json'
@@ -86,6 +86,10 @@ const emit = defineEmits(['toggle-form'])
 function goToSignup() {
   emit('toggle-form')
 }
+
+function goToTutorSignup() {
+  router.push('/pendaftarantutor')
+} 
 
 function handleForgotPassword() {
   router.push('/resetpassword')
@@ -171,6 +175,7 @@ function handleGoogleLogin() {
           Daftar disini
         </button>
       </p>
+
     </div>
   </div>
 </template>

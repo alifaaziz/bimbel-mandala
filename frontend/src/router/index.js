@@ -15,6 +15,7 @@ import Otp from '@/components/Auth/otp.vue';
 import ResetPassword from '@/components/Auth/ResetPassword.vue';
 import ResetPasswordEmail from '@/components/Auth/ResetPassword_Email.vue';
 import ResetPasswordPass from '@/components/Auth/ResetPassword_Password.vue';
+import MenjadiTutor from '@/components/successPage/MenjadiTutor.vue';
 
 import Jadwal from '@/components/Jadwal.vue';
 import TabelJadwal from '@/components/jadwal/TabelJadwal.vue'
@@ -59,6 +60,8 @@ import ProgramScheduleDetail from '@/components/Dashboard/dashboardProgram/Progr
 import CatatanBiaya from '@/components/Dashboard/dashboardCatatanBiaya/CatatanBiaya.vue';
 import DashboardBiaya from '@/components/Dashboard/dashboardCatatanBiaya/DashboardBiaya.vue';
 import DetailProgramSelesai from '@/components/Dashboard/dashboardCatatanBiaya/DetailProgramSelesai.vue';
+
+import MetodePembayaran from '@/components/Dashboard/dashboardPembayaran/MetodePembayaran.vue';
 
 import Error404 from '@/components/error404.vue';
 import Error403 from '@/components/error403.vue';
@@ -142,6 +145,11 @@ const routes = [
         component: ResetPasswordPass
       }
     ]
+  },
+  {
+    path: '/menjaditutor',
+    name: 'MenjadiTutor',
+    component: MenjadiTutor
   },
   {
     path: '/jadwal', 
@@ -329,6 +337,11 @@ const routes = [
           },
         ]
       },
+      {
+        path: 'metodePembayaran',
+        name: 'MetodePembayaran',
+        component: MetodePembayaran
+      }
     ]
   }
 ]

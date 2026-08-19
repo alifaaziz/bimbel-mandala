@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import butPrimerNormal from '@/components/dirButton/butPrimerNormal.vue'
 import butSecondSmall from '@/components/dirButton/butSecondSmall.vue'
 import butPrimerSmall from '@/components/dirButton/butPrimerSmall.vue'
+import Absensi from './Absensi.vue'
+import { formatTanggal, formatWaktu } from '@/utils/formatTanggal.js'
 
 const showRescheduleModal = ref(false)
 const rescheduleDate = ref('')
@@ -134,11 +136,11 @@ function closeRescheduleModal() {
           <div class="info-section bodyr2">
             <div class="info-row">
               <span class="label"><strong>Hari</strong></span>
-              <span class="value">: {{ new Date(schedule.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
+              <span class="value">: {{ formatTanggal(schedule.date) }}</span>
             </div>
             <div class="info-row">
               <span class="label"><strong>Pukul</strong></span>
-              <span class="value">: {{ new Date(schedule.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB</span>
+              <span class="value">: {{ formatWaktu(schedule.date) }} WIB</span>
             </div>
             <div class="info-row">
               <span class="label"><strong>Durasi</strong></span>
@@ -180,9 +182,12 @@ function closeRescheduleModal() {
           </div>
           <div class="info-row">
             <span class="label-detail">No. WhatsApp Admin</span>
-            <span class="value">: 08xxxxxxxxx</span>
+            <span class="value">: 085540000900</span>
           </div>
         </div>
+      </div>
+      <div class="detail-program">
+        <Absensi />
       </div>
     </div>
     <div v-else-if="isLoading" class="detail-content">
@@ -200,7 +205,7 @@ function closeRescheduleModal() {
         <p class="bodyr3" style="margin-bottom: 16px;">
           Pilih tanggal dan jam baru untuk:<br>
           <strong>
-            {{ schedule ? new Date(schedule.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '' }}
+            {{ schedule ? formatTanggal(schedule.date) : '' }}
           </strong>
           bersama {{ schedule ? schedule.tutorName : '' }}<br>
           <span>Pertemuan ke {{ schedule ? schedule.meet : '' }}</span>

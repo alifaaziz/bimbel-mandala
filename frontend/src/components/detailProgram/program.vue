@@ -9,11 +9,11 @@ import CaraPendaftaran from './CaraPendaftaran.vue';
 import ProgramTerdaftar from './ProgramTerdaftar/ProgramTerdaftar.vue';
 
 const route = useRoute();
-const router = useRouter();
 const slug = route.params.id as string; // Ambil slug dari route params
 const programData = ref<any>(null);
 const isTutor = ref(false);
-const isRegisteredProgram = ref(false); // State untuk mengecek apakah program terdaftar
+const isRegisteredProgram = ref(false);
+const isKelasType = ref(false);
 
 onMounted(async () => {
   try {
@@ -26,12 +26,15 @@ onMounted(async () => {
     const program = await res.json();
     programData.value = program;
 
-    if (program.status === 'aktif') {
-      const hasKelas = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
-      if (!hasKelas) {
-        return;
-      }
-    }
+    isKelasType.value = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
+
+    // if (program.status === 'aktif') {
+    //   const hasKelas = Array.isArray(program.groupType) && program.groupType.some(gt => gt.type === 'kelas');
+    //   isKelasType.value = hasKelas;
+    //   if (!hasKelas) {
+    //     return;
+    //   }
+    // }
 
     const userRes = await fetch('/users/me', {
       headers: { Authorization: `Bearer ${token}` }
@@ -46,7 +49,9 @@ onMounted(async () => {
     });
     if (classesRes.ok) {
       const classesData = await classesRes.json();
-      isRegisteredProgram.value = classesData.data.some((cls: any) => cls.slug === slug);
+      isRegisteredProgram.value = classesData.data.some(
+        (cls) => cls.slug === slug && cls.status !== 'selesai'
+      );
     }
   } catch (err) {
     programData.value = null;
@@ -56,7 +61,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <ProgramTerdaftar v-if="isRegisteredProgram" />
     
     <template v-else>
@@ -66,7 +71,7 @@ onMounted(async () => {
           <HonorTutor />
         </div>
         <div v-else>
-          <BiayaSiswa />
+          <BiayaSiswa v-if="!isKelasType" />
         </div>
         <InfoProgram />
         <CaraPendaftaran />
@@ -76,6 +81,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
 .container-detail {
   display: flex;
   align-items: flex-start;

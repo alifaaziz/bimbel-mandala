@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import JadwalDetailProgram from './JadwalDetailProgram.vue';
+import { formatWaktu } from '@/utils/formatTanggal';
 
 const route = useRoute();
 
@@ -138,7 +139,7 @@ const allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
               <div class="info-row">
                 <span class="label-data"><strong>Pukul</strong></span>
                 <span class="value">
-                  : {{ new Date(programData.time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }} WIB
+                  : {{ formatWaktu(programData.time) }} WIB
                 </span>
               </div>
               <div class="info-row">

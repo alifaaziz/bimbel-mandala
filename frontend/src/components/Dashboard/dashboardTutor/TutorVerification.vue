@@ -24,6 +24,7 @@
           <div class="grid-form">
             <n-form-item label="Nama Lengkap" path="user.name" class="col-span-6">
               <n-input
+                type="text"
                 v-model:value="formValue.user.name"
                 placeholder="Tuliskan nama tutor disini"
                 disabled
@@ -31,10 +32,10 @@
             </n-form-item>
           </div>
           <div class="grid-form">
-            <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-2">
+            <n-form-item label="Tanggal Lahir" path="user.ttg" class="col-span-3">
               <n-date-picker v-model:value="formValue.user.ttg" type="date" disabled />
             </n-form-item>
-            <n-form-item label="Jenis Kelamin" path="user.gender" class="col-span-2">
+            <n-form-item label="Jenis Kelamin" path="user.gender" class="col-span-3">
               <n-select
                 v-model:value="formValue.user.gender"
                 :options="optionsgender"
@@ -42,16 +43,11 @@
                 disabled
               />
             </n-form-item>
-            <n-form-item label="Foto Diri" path="user.photo" class="col-span-2">
-              <div class="form-group third-width">
-                <!-- Upload dihilangkan, hanya info nama file jika ada -->
-                <p class="bodyr3" v-if="formValue.user.photo">File dipilih: {{ formValue.user.photo.name }}</p>
-              </div>
-            </n-form-item>
           </div>
           <div class="grid-form">
             <n-form-item label="E-mail Tutor" path="user.email" class="col-span-3">
               <n-input
+                type="email"
                 v-model:value="formValue.user.email"
                 placeholder="Tuliskan email tutor disini"
                 disabled
@@ -59,6 +55,7 @@
             </n-form-item>
             <n-form-item label="No. WhatsApp" path="user.wa" class="col-span-3">
               <n-input
+                type="tel"
                 v-model:value="formValue.user.wa"
                 placeholder="Tuliskan No. WhatsApp tutor disini"
                 disabled
@@ -73,6 +70,7 @@
           <div class="grid-form">
             <n-form-item label="Asal Universitas" path="user.univ" class="col-span-6">
               <n-input
+                type="text"
                 v-model:value="formValue.user.univ"
                 placeholder="Tuliskan asal universitas tutor disini"
                 disabled
@@ -82,6 +80,7 @@
           <div class="grid-form">
             <n-form-item label="Program Studi" path="user.prodi" class="col-span-4">
               <n-input
+                type="text"
                 v-model:value="formValue.user.prodi"
                 placeholder="Tuliskan program studi tutor disini"
                 disabled
@@ -101,6 +100,7 @@
           <div class="grid-form">
             <n-form-item label="Jenjang" path="user.jenjangAjar" class="col-span-6">
               <n-input
+                type="text"
                 v-model:value="formValue.user.jenjangAjar"
                 placeholder="SD, SMP, atau SMA"
                 disabled
@@ -110,6 +110,7 @@
           <div class="grid-form">
             <n-form-item label="Mata Pelajaran" path="user.pelajaran" class="col-span-6">
               <n-input
+                type="text"
                 v-model:value="formValue.user.pelajaran"
                 placeholder="Matematika, Bahasa Inggris, Fisika, dll."
                 disabled

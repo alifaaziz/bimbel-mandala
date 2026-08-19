@@ -167,6 +167,21 @@ async function getAttendanceAlerts(req, res) {
     res.status(200).json({ data: alerts });
 }
 
+/**
+ * Handles the request to get attendance summary for a schedule by slug.
+ *
+ * @async
+ * @function getAttendanceBySlug
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} Resolves with the attendance summary.
+ */
+async function getAttendanceBySlug(req, res) {
+    const { slug } = req.params;
+    const summary = await AttendanceService.getAttendanceBySlug(slug);
+    res.status(200).json({ data: summary });
+}
+
 export const AttendanceController = {
     absenMasuk: asyncWrapper(absenMasuk),
     absenIzin: asyncWrapper(absenIzin),
@@ -175,4 +190,5 @@ export const AttendanceController = {
     getMyAttendanceStatistics: asyncWrapper(getMyAttendanceStatistics),
     downloadRekapPDF: asyncWrapper(downloadRekapPDF),
     getAttendanceAlerts: asyncWrapper(getAttendanceAlerts),
+    getAttendanceBySlug: asyncWrapper(getAttendanceBySlug),
 };

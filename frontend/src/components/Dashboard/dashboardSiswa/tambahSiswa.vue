@@ -135,6 +135,7 @@ function handleValidateClick(e) {
         <div class="grid-form">
           <n-form-item label="Nama Lengkap" path="user.name" class="col-span-3">
             <n-input
+              type="text"
               v-model:value="formValue.user.name"
               placeholder="Tuliskan nama siswa disini"
             />
@@ -150,6 +151,7 @@ function handleValidateClick(e) {
         <div class="grid-form">
           <n-form-item label="E-mail Siswa" path="user.email" class="col-span-4">
             <n-input
+              type="email"
               v-model:value="formValue.user.email"
               placeholder="Tuliskan email siswa disini"
             />
@@ -188,6 +190,7 @@ function handleValidateClick(e) {
         <div class="grid-form">
           <n-form-item label="Alamat Siswa" path="user.alamat" class="col-span-4">
             <n-input
+              type="text"
               v-model:value="formValue.user.alamat"
               placeholder="Tuliskan alamat siswa disini"
             />

@@ -9,6 +9,7 @@ const email = ref('')
 const password = ref('')
 const emailError = ref('')
 const passwordError = ref('')
+const passwordSuccess = ref('')
 const isLoading = ref(false)
 
 // Tambahkan state untuk toggle password visibility
@@ -25,12 +26,21 @@ function validateEmail() {
 }
 
 function validatePassword() {
-  if (!password.value) {
+  const value = password.value
+
+  if (!value) {
     passwordError.value = 'Password wajib diisi.'
-  } else if (password.value.length < 8) {
+  } else if (value.length < 8) {
     passwordError.value = 'Password minimal 8 karakter.'
+  } else if (!/[A-Z]/.test(value)) {
+    passwordError.value = 'Password harus mengandung huruf kapital.'
+  } else if (!/[0-9]/.test(value)) {
+    passwordError.value = 'Password harus mengandung angka.'
+  } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+    passwordError.value = 'Password harus mengandung karakter khusus.'
   } else {
-    passwordError.value = ''
+    passwordSuccess.value = 'Password cukup kuat.'
+
   }
 }
 
@@ -81,6 +91,10 @@ function goToLogin() {
   emit('toggle-form')
 }
 
+function goToMenjadiTutor() {
+  router.push('/pendaftarantutor')
+}
+
 </script>
 
 <template>
@@ -94,6 +108,7 @@ function goToLogin() {
       <div class="form-input">
         <p class="bodym2">Nama Lengkap</p>
         <n-input
+          type="text"
           round
           v-model:value="name"
           placeholder="Nama Lengkap"
@@ -129,6 +144,7 @@ function goToLogin() {
         </div>
         <p class="bodyr4">Password harus lebih dari 8 karakter</p>
         <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
+        <p v-else-if="passwordSuccess" class="success-message">{{ passwordSuccess }}</p>
       </div>
 
       <n-button
@@ -162,6 +178,12 @@ function goToLogin() {
           Masuk disini
         </button>
       </p>
+      <p class="bodym3" style="margin-top: 1rem;">
+      Ingin menjadi tutor?
+      <button @click="goToMenjadiTutor" class="toggle-link">
+        Daftar disini
+      </button>
+    </p>
     </div>
   </div>
 </template>
@@ -173,6 +195,11 @@ function goToLogin() {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.menjadi-tutor{
+  margin: 1rem 0;
+  text-align: left;
 }
 
 .form-wrapper > div {
@@ -230,6 +257,12 @@ function goToLogin() {
 
 .error-message {
   color: red !important;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.success-message { 
+  color: green !important;
   font-size: 0.75rem;
   margin-top: 0.25rem;
 }

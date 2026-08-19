@@ -123,6 +123,13 @@ const submitForm = async () => {
         </div>
 
         <div class="input-line">
+          <div class="input-password">
+            <p class="input-judul">Password</p>
+            <n-input v-model="password" type="text" placeholder="Ganti password kamu" />
+          </div>
+        </div>
+
+        <div class="input-line">
           <div class="input-alamat">
             <p class="input-judul">Alamat</p>
             <n-input v-model="alamat" type="text" placeholder="Ganti alamat kamu" />
@@ -131,7 +138,7 @@ const submitForm = async () => {
 
         <div class="input-line">
           <div class="input-jenjang">
-            <p class="input-judul">Jenjang diajar</p>
+            <p class="input-judul">Jenjang </p>
             <n-input v-model="jenjang" type="text" placeholder="masukkan jenjang yang bisa anda ajar" />
           </div>
         </div>
@@ -194,7 +201,7 @@ const submitForm = async () => {
 }
 .input-line .input-sekolah,
 .input-alamat, .input-wa, 
-.input-jenjang, .input-pelajaran{
+.input-jenjang, .input-pelajaran, .input-password{
   grid-column: span 12;
 }
 

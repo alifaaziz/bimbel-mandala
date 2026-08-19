@@ -4,6 +4,7 @@
     <n-space vertical size="large">
       <n-form-item label="Nama Program">
         <n-input
+          type="text"
           v-model="formModel.namaProgram"
           placeholder="Tuliskan nama program"
           size="large"
@@ -12,6 +13,7 @@
 
       <n-form-item label="Area/lokasi">
         <n-input
+          type="text"
           v-model="formModel.lokasi"
           placeholder="Masukkan area atau lokasi"
           size="large"
